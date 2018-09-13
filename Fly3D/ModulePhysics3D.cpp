@@ -52,9 +52,8 @@ bool ModulePhysics3D::Start()
 	world = new btDiscreteDynamicsWorld(dispatcher, broad_phase, solver, collision_conf);
 	world->setDebugDrawer(debug_draw);
 	world->setGravity(GRAVITY);
-	vehicle_raycaster = new btDefaultVehicleRaycaster(world);
 
-	// Big plane as ground    //change to a sensor that sets the player to start and restarts map
+	// Debug Plane for axis control
 	{
 		btCollisionShape* colShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
 
