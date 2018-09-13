@@ -83,6 +83,7 @@ bool ModuleRenderer3D::Init()
 		lights[0].SetPos(0.0f, 0.0f, 2.5f);
 		lights[0].Init();
 		
+
 		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
 
@@ -98,7 +99,7 @@ bool ModuleRenderer3D::Init()
 
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
+	
 	return ret;
 }
 

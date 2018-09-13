@@ -78,13 +78,6 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
-	//Do here object move?
-	if (scene_intro->set_to_cp == true)
-	{
-		scene_intro->set_to_cp = false;
-
-		scene_intro->SetToCP(player->vehicle);
-	}
 
 }
 
