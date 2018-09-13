@@ -1,7 +1,8 @@
 #include "Globals.h"
 #include "ModuleUI.h"
 #include "Application.h"
-
+#include "imgui/imgui.h"
+using namespace ImGui;
 
 ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -16,6 +17,8 @@ bool ModuleUI::Init()
 	LOG("Initiating IMGUI Module")
 	bool ret = true;
 
+	ShowDemoWindow();
+
 	return ret;
 }
 
@@ -26,6 +29,7 @@ update_status ModuleUI::PreUpdate(float dt)
 
 update_status ModuleUI::PostUpdate(float dt)
 {
+
 	return UPDATE_CONTINUE;
 }
 
