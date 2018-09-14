@@ -2,7 +2,8 @@
 
 #include "Module.h"
 #include "Globals.h"
-
+#include "imgui/imgui.h"
+#include "imgui/implements/imgui_impl_sdl.h"
 
 // Module for IMGUI use and implementation
 // Includes for imgui when necessary...
@@ -19,6 +20,16 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	
+
 public:
+
+	const ImVec4 clear_color = { 0.45f, 0.55f, 0.60f, 1.00f };
+
+public:
+	void ProcessEvent(SDL_Event* event)
+	{
+		ImGui_ImplSDL2_ProcessEvent(event);
+	}
 
 };
