@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Module.h"
 #include "ModuleUI.h"
+#include "ModuleInput.h"
 #include "Application.h"
 #include "imgui/imgui.h"
 #include "imgui/implements/imgui_impl_sdl.h"
@@ -35,6 +36,8 @@ update_status ModuleUI::PreUpdate(float dt)
 	ImGui::NewFrame();
 
 	ImGui::ShowDemoWindow();
+	ExitWindow();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -49,10 +52,23 @@ bool ModuleUI::CleanUp()
 {
 	LOG("Cleaning UP IMGUI Module")
 	bool ret = true;
-
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+bool ModuleUI::ExitWindow()
+{
+	ImGui::Begin("Exit App");
+	
+	if (ImGui::Button("Exit", ImVec2(50, 25)))
+	{
+		App->input->StopRunning();
+	}
+
+	ImGui::End();
+
+	return false;
 }

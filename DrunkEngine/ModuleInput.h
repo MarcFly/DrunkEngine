@@ -58,6 +58,11 @@ public:
 		return mouse_y_motion;
 	}
 
+	void StopRunning()
+	{
+		quit = true;
+	}
+
 private:
 	KEY_STATE* keyboard;
 	KEY_STATE mouse_buttons[MAX_MOUSE_BUTTONS];
@@ -67,4 +72,7 @@ private:
 	int mouse_x_motion;
 	int mouse_y_motion;
 	//int mouse_z_motion;
+
+public:
+	bool quit;
 };
