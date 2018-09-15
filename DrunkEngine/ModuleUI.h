@@ -21,6 +21,9 @@ public:
 	bool CleanUp();
 
 	bool ExitWindow();
+	bool MenuWindow();
+
+	bool TestMenus(); // Just for testing
 
 public:
 

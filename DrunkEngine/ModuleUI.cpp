@@ -35,8 +35,9 @@ update_status ModuleUI::PreUpdate(float dt)
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 	ExitWindow();
+	MenuWindow();
 
 	return UPDATE_CONTINUE;
 }
@@ -70,5 +71,47 @@ bool ModuleUI::ExitWindow()
 
 	ImGui::End();
 
-	return false;
+	return true;
+}
+
+bool ModuleUI::MenuWindow()
+{
+	ImGui::Begin("Menu");
+	ImGui::BeginMenuBar();
+	
+	if (ImGui::BeginMenu("Examples"))
+	{
+		if (ImGui::MenuItem("Console"))
+			TestMenus();
+		if (ImGui::MenuItem("Log"))
+			TestMenus();
+		if (ImGui::MenuItem("Simple layout"))
+			TestMenus();
+		if (ImGui::MenuItem("Property editor"))
+			TestMenus();
+		if (ImGui::MenuItem("Long text display"))
+			TestMenus();
+		if (ImGui::MenuItem("Auto-resizing window"))
+			TestMenus();
+		if (ImGui::MenuItem("Constrained-resizing window"))
+			TestMenus();
+		if (ImGui::MenuItem("Simple overlay"))
+			TestMenus();
+		if (ImGui::MenuItem("Manipulating window titles"))
+			TestMenus();
+		if (ImGui::MenuItem("Custom rendering"))
+			TestMenus();
+
+		ImGui::EndMenu();
+	}
+	ImGui::End();
+
+	return true;
+}
+
+bool ModuleUI::TestMenus()
+{
+	ImGui::Begin("dummy menu");
+	ImGui::End();
+	return true;
 }
