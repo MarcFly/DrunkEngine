@@ -26,6 +26,8 @@ bool ModuleUI::Init()
 	ImGui_ImplOpenGL2_Init();
 	ImGui::StyleColorsDark();
 
+	show_demo_window = false;
+
 	return ret;
 }
 
@@ -36,8 +38,7 @@ update_status ModuleUI::PreUpdate(float dt)
 	ImGui::NewFrame();
 
 	//ImGui::ShowDemoWindow();
-	ExitWindow();
-	MenuWindow();
+	MainMenu();
 
 	return UPDATE_CONTINUE;
 }
@@ -60,58 +61,27 @@ bool ModuleUI::CleanUp()
 	return ret;
 }
 
-bool ModuleUI::ExitWindow()
+bool ModuleUI::MainMenu()
 {
-	ImGui::Begin("Exit App");
+	ImGui::BeginMainMenuBar();
 	
-	if (ImGui::Button("Exit", ImVec2(50, 25)))
+	if (ImGui::BeginMenu("Menu"))
 	{
-		App->input->StopRunning();
-	}
-
-	ImGui::End();
-
-	return true;
-}
-
-bool ModuleUI::MenuWindow()
-{
-	ImGui::Begin("Menu");
-	ImGui::BeginMenuBar();
-	
-	if (ImGui::BeginMenu("Examples"))
-	{
-		if (ImGui::MenuItem("Console"))
-			TestMenus();
-		if (ImGui::MenuItem("Log"))
-			TestMenus();
-		if (ImGui::MenuItem("Simple layout"))
-			TestMenus();
-		if (ImGui::MenuItem("Property editor"))
-			TestMenus();
-		if (ImGui::MenuItem("Long text display"))
-			TestMenus();
-		if (ImGui::MenuItem("Auto-resizing window"))
-			TestMenus();
-		if (ImGui::MenuItem("Constrained-resizing window"))
-			TestMenus();
-		if (ImGui::MenuItem("Simple overlay"))
-			TestMenus();
-		if (ImGui::MenuItem("Manipulating window titles"))
-			TestMenus();
-		if (ImGui::MenuItem("Custom rendering"))
-			TestMenus();
+		if (ImGui::MenuItem("Exit"))
+			App->input->StopRunning();
 
 		ImGui::EndMenu();
 	}
-	ImGui::End();
+	
+	if (ImGui::BeginMenu("Examples"))
+	{
+		show_demo_window = !show_demo_window;
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
 
-	return true;
-}
+	if(show_demo_window)
+		ImGui::ShowDemoWindow();
 
-bool ModuleUI::TestMenus()
-{
-	ImGui::Begin("dummy menu");
-	ImGui::End();
 	return true;
 }

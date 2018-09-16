@@ -20,10 +20,10 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	bool ExitWindow();
-	bool MenuWindow();
+	bool MainMenu();
 
-	bool TestMenus(); // Just for testing
+private:
+	bool show_demo_window;
 
 public:
 
