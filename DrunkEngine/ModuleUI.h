@@ -39,8 +39,6 @@ private:
 	bool borderless;
 	bool full_desktop;
 
-	bool hardware_update;
-
 public:
 
 	const ImVec4 clear_color = { 0.45f, 0.55f, 0.60f, 1.00f };

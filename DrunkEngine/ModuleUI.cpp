@@ -6,7 +6,10 @@
 #include "imgui/imgui.h"
 #include "imgui/implements/imgui_impl_sdl.h"
 #include "imgui/implements/imgui_impl_opengl2.h"
+#include <gl/GL.h>
 
+#define MEM_BUDGET_NVX 0x9048
+#define MEM_AVAILABLE_NVX 0x9049
 
 ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -36,8 +39,6 @@ bool ModuleUI::Init()
 	resizable = false;
 	borderless = false;
 	full_desktop = false;
-
-	hardware_update = false;
 
 	return ret;
 }
@@ -150,7 +151,6 @@ void ModuleUI::ShowOptionsWindow()
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
-			ImGui::Checkbox("Active", &hardware_update);
 			ImGui::Text("SDL Version: ");
 			SDL_version ver;
 			SDL_GetVersion(&ver);
@@ -203,6 +203,33 @@ void ModuleUI::ShowOptionsWindow()
 			if (SDL_HasSSE42())
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE42");
 
+			ImGui::Separator();
+
+			// GPU
+			ImGui::Text("Brand: ");
+			ImGui::SameLine(); 
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", glGetString(GL_VENDOR));
+
+			ImGui::Text("GPU: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", glGetString(GL_RENDERER));
+
+			ImGui::Text("Drivers: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s",glGetString(GL_VERSION));
+
+			ImGui::Text("VRAM Budget: ");
+			ImGui::SameLine();
+			GLint budget = 0;
+			glGetIntegerv(MEM_BUDGET_NVX, &budget);
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", budget / 1024.0f);
+
+			ImGui::Text("VRAM Budget: ");
+			ImGui::SameLine();
+			GLint available = 0;
+			glGetIntegerv(MEM_AVAILABLE_NVX, &available);
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", available / 1024.0f);
+			
 		}
 	}
 	ImGui::End();
