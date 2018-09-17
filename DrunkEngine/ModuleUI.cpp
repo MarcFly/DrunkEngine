@@ -28,6 +28,14 @@ bool ModuleUI::Init()
 
 	show_demo_window = false;
 	show_about_window = false;
+	show_options_window = false;
+
+	window_update = false;
+
+	fullscreen = false;
+	resizable = false;
+	borderless = false;
+	full_desktop = false;
 
 	return ret;
 }
@@ -66,26 +74,43 @@ bool ModuleUI::MainMenu()
 	bool ret = true;
 
 	ImGui::BeginMainMenuBar();
-	
-	if (ImGui::BeginMenu("Menu"))
 	{
-		if (ImGui::MenuItem("About..."))
-			show_about_window = !show_about_window;
-		if (ImGui::MenuItem("Exit"))
-			App->input->StopRunning();
+		if (ImGui::BeginMenu("Menu"))
+		{
+			if (ImGui::MenuItem("Options"))
+				show_options_window = !show_options_window;
 
-		ImGui::EndMenu();
-	}
-	
-	if (ImGui::BeginMenu("Examples"))
-	{
-		show_demo_window = !show_demo_window;
-		ImGui::EndMenu();
+			if (ImGui::MenuItem("About..."))
+				show_about_window = !show_about_window;
+
+			if (ImGui::MenuItem("Exit"))
+				App->input->StopRunning();
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Examples"))
+		{
+			show_demo_window = !show_demo_window;
+			ImGui::EndMenu();
+		}
 	}
 	ImGui::EndMainMenuBar();
 
+	CheckOpenWindows();
+
+	return ret;
+}
+
+bool ModuleUI::CheckOpenWindows()
+{
+	bool ret = true;
+
 	if (show_demo_window)
 		ImGui::ShowDemoWindow(&show_demo_window);
+
+	if (show_options_window)
+		ShowOptionsWindow();
 
 	if (show_about_window)
 		ShowAboutWindow();
@@ -93,24 +118,61 @@ bool ModuleUI::MainMenu()
 	return ret;
 }
 
+void ModuleUI::ShowOptionsWindow()
+{
+	ImGui::Begin("Options");
+	{
+		if (ImGui::CollapsingHeader("Application"))
+		{
+			
+		}
+		if (ImGui::CollapsingHeader("Windows"))
+		{
+			ImGui::Checkbox("Active", &window_update);
+			float brightness = 1.0;
+			ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f);
+
+			int w, h;
+			SDL_GetWindowSize(App->window->window, &w, &h);
+			ImGui::SliderInt("Width", &w, 100, 2000);
+			ImGui::SliderInt("Height", &h, 100, 2000);
+
+			ImGui::Text("Refresh rate: %d", 60);
+
+			ImGui::Checkbox("Fullscreen", &fullscreen);
+			ImGui::SameLine();
+			ImGui::Checkbox("Resizable", &resizable);
+			ImGui::Checkbox("Borderless", &borderless);
+			ImGui::SameLine();
+			ImGui::Checkbox("Full Desktop", &full_desktop);
+		}
+		if (ImGui::CollapsingHeader("Hardware"))
+		{
+
+		}
+	}
+	ImGui::End();
+}
+
 void ModuleUI::ShowAboutWindow()
 {
 	ImGui::Begin("About this engine", &show_about_window);
-
-	ImGui::Text("DrunkEngine (2018).");
-	ImGui::Separator();
-	ImGui::TextWrapped("\nThis engine has been made as a project for a 3rd course subject on videogame development.\n\n");
-	ImGui::Text("Authors: Andreu Sacasas\n         Marc Torres\n\n");
-	ImGui::Separator();
-	ImGui::Text("\nLibraries used: OpenGL (V 2.1)\n				SDL    (V 2.0.8)\n				ImGui  (V 1.66)\n				Bullet (V 2.84)\n\n");
-	ImGui::Separator();
-	ImGui::TextWrapped("\nMIT License\n\nCopyright(c) 2018 Marc Torres Jimenez & Andreu Sacasas Velazquez\n\n"
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files(the 'Software'), to deal "
-		"in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
-		"copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions :\n\n"
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. "
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, "
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'");
+	{
+		ImGui::Text("DrunkEngine (2018).");
+		ImGui::Separator();
+		ImGui::TextWrapped("\nThis engine has been made as a project for a 3rd course subject on videogame development.\n\n");
+		ImGui::Text("Authors: Andreu Sacasas\n         Marc Torres\n\n");
+		ImGui::Separator();
+		ImGui::Text("\nLibraries used: OpenGL (V 2.1)\n				SDL    (V 2.0.8)\n				ImGui  (V 1.66)\n				Bullet (V 2.84)\n\n");
+		ImGui::Separator();
+		ImGui::TextWrapped("\nMIT License\n\nCopyright(c) 2018 Marc Torres Jimenez & Andreu Sacasas Velazquez\n\n"
+			"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files(the 'Software'), to deal "
+			"in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
+			"copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions :\n\n"
+			"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. "
+			"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, "
+			"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
+			"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'");
+	}
 	ImGui::End();
 }

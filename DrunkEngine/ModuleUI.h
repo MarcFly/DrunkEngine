@@ -21,10 +21,23 @@ public:
 	bool CleanUp();
 
 	bool MainMenu();
+
+	bool CheckOpenWindows();
+
+	void ShowOptionsWindow();
 	void ShowAboutWindow();
+
 private:
 	bool show_demo_window;
 	bool show_about_window;
+	bool show_options_window;
+
+	bool window_update;
+
+	bool fullscreen;
+	bool resizable;
+	bool borderless;
+	bool full_desktop;
 
 public:
 
