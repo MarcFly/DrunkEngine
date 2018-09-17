@@ -37,6 +37,8 @@ bool ModuleUI::Init()
 	borderless = false;
 	full_desktop = false;
 
+	hardware_update = false;
+
 	return ret;
 }
 
@@ -120,7 +122,7 @@ bool ModuleUI::CheckOpenWindows()
 
 void ModuleUI::ShowOptionsWindow()
 {
-	ImGui::Begin("Options");
+	ImGui::Begin("Options", &show_options_window);
 	{
 		if (ImGui::CollapsingHeader("Application"))
 		{
@@ -148,6 +150,58 @@ void ModuleUI::ShowOptionsWindow()
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
+			ImGui::Checkbox("Active", &hardware_update);
+			ImGui::Text("SDL Version: ");
+			SDL_version ver;
+			SDL_GetVersion(&ver);
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d.%d.%d", ver.major, ver.minor, ver.patch);
+
+			ImGui::Separator();
+
+			ImGui::Text("Logical CPUs: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d Threads (%d KB)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+		
+			ImGui::Text("System Ram: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f GB", SDL_GetSystemRAM() / 1024.0f);
+
+			ImGui::Text("Caps: ");
+			ImGui::SameLine();
+			if(SDL_Has3DNow())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "3DNow,");
+			ImGui::SameLine();
+			if (SDL_HasAVX())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AVX,");
+			ImGui::SameLine();
+			if (SDL_HasAVX2())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AVX2,");
+			ImGui::SameLine();
+			if (SDL_HasAltiVec())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AltiVec,");
+			ImGui::SameLine();
+			if (SDL_HasMMX())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MMX,");
+			ImGui::SameLine();
+			ImGui::Text("\n");
+			if (SDL_HasRDTSC())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "       RDTSC,");
+			ImGui::SameLine();
+			if (SDL_HasSSE())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE,");
+			ImGui::SameLine();
+			if (SDL_HasSSE2())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE2,");
+			ImGui::SameLine();
+			if (SDL_HasSSE3())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE3,");
+			ImGui::SameLine();
+			if (SDL_HasSSE41())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE41,");
+			ImGui::SameLine();
+			if (SDL_HasSSE42())
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE42");
 
 		}
 	}
