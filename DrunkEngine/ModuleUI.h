@@ -21,9 +21,10 @@ public:
 	bool CleanUp();
 
 	bool MainMenu();
-
+	void ShowAboutWindow();
 private:
 	bool show_demo_window;
+	bool show_about_window;
 
 public:
 
