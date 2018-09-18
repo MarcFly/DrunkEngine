@@ -36,9 +36,12 @@ bool ModuleUI::Init()
 	window_update = false;
 
 	fullscreen = false;
-	resizable = false;
+	resizable = true;
 	borderless = false;
 	full_desktop = false;
+
+	brightness = 1.0;
+	SDL_GetWindowSize(App->window->window, &width, &height);
 
 	return ret;
 }
@@ -132,22 +135,35 @@ void ModuleUI::ShowOptionsWindow()
 		if (ImGui::CollapsingHeader("Windows"))
 		{
 			ImGui::Checkbox("Active", &window_update);
-			float brightness = 1.0;
-			ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f);
+			if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f) && window_update)
+				SDL_SetWindowBrightness(App->window->window, brightness);
+			
+			if (ImGui::SliderInt("Width", &width, 720, 1920) && window_update && !fullscreen)
+				SDL_SetWindowSize(App->window->window, width, height);
 
-			int w, h;
-			SDL_GetWindowSize(App->window->window, &w, &h);
-			ImGui::SliderInt("Width", &w, 100, 2000);
-			ImGui::SliderInt("Height", &h, 100, 2000);
+			if (ImGui::SliderInt("Height", &height, 480, 1080) && window_update && !fullscreen)
+				SDL_SetWindowSize(App->window->window, width, height);
+			
 
-			ImGui::Text("Refresh rate: %d", 60);
+			ImGui::Text("Refresh rate: %d", 0);
 
-			ImGui::Checkbox("Fullscreen", &fullscreen);
+			if (ImGui::Checkbox("Fullscreen", &fullscreen) && window_update)
+			{
+				SDL_SetWindowFullscreen(App->window->window, fullscreen);
+				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
+				SDL_SetWindowSize(App->window->window, width, height);
+				
+			}
 			ImGui::SameLine();
-			ImGui::Checkbox("Resizable", &resizable);
-			ImGui::Checkbox("Borderless", &borderless);
+			if (ImGui::Checkbox("Resizable", &resizable) && window_update)
+				SDL_SetWindowResizable(App->window->window, (SDL_bool)resizable);
+
+			if (ImGui::Checkbox("Borderless", &borderless) && window_update)
+				SDL_SetWindowBordered(App->window->window, (SDL_bool)!borderless);
+
 			ImGui::SameLine();
 			ImGui::Checkbox("Full Desktop", &full_desktop);
+			
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
@@ -186,7 +202,7 @@ void ModuleUI::ShowOptionsWindow()
 			ImGui::SameLine();
 			ImGui::Text("\n");
 			if (SDL_HasRDTSC())
-				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "       RDTSC,");
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RDTSC,");
 			ImGui::SameLine();
 			if (SDL_HasSSE())
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE,");
