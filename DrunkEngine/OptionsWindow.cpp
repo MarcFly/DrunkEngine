@@ -25,8 +25,7 @@ OptionsWindow::~OptionsWindow()
 
 void OptionsWindow::Draw()
 {
-	
-	ImGui::Begin("Options", &active);
+	ImGui::Begin(GetName().c_str(), &active);
 	{
 		if (ImGui::CollapsingHeader("Application"))
 		{

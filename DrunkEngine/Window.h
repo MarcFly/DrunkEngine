@@ -9,7 +9,7 @@
 class Window
 {
 public:
-	Window(const char* name, SDL_Scancode shortcut = SDL_SCANCODE_UNKNOWN);
+	Window(const char* name, SDL_Scancode shortcut);
 	virtual ~Window();
 
 	void SwitchActive();

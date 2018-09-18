@@ -11,6 +11,7 @@
 
 class Window;
 class OptionsWindow;
+class AboutWindow;
 
 class ModuleUI : public Module
 {
@@ -26,17 +27,12 @@ public:
 
 	bool MainMenu();
 
-	bool CheckOpenWindows();
-
-	void ShowAboutWindow();
-
 public:
 	OptionsWindow * options_win = nullptr;
-
+	AboutWindow * about_win = nullptr;
 
 private:
 	bool show_demo_window;
-	bool show_about_window;
 
 	std::vector<Window *> windows;
 

@@ -2,6 +2,8 @@
 
 Window::Window(const char * name, SDL_Scancode shortcut)
 {
+	this->name = name;
+	this->shortcut = shortcut;
 }
 
 Window::~Window()
