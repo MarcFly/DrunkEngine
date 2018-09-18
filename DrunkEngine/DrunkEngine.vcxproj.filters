@@ -28,6 +28,9 @@
     <Filter Include="Sources\Modules\UI\imgui\Implements">
       <UniqueIdentifier>{8d1a7469-276a-4f0f-9ce2-e8b43d951bce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\UI\WindowSystem">
+      <UniqueIdentifier>{d79c159e-3f55-4882-adda-4cdbe993f94b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -117,6 +120,12 @@
     <ClInclude Include="imgui\implements\imgui_impl_sdl.h">
       <Filter>Sources\Modules\UI\imgui\Implements</Filter>
     </ClInclude>
+    <ClInclude Include="OptionsWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -190,6 +199,12 @@
     </ClCompile>
     <ClCompile Include="imgui\implements\imgui_impl_sdl.cpp">
       <Filter>Sources\Modules\UI\imgui\Implements</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
