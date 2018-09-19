@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "p2List.h"
 #include "Primitive.h"
+#include "MGL/MathGeoLib.h"
+#include "MGL/MathGeoLibFwd.h"
 
 /*#include "MGL\MathGeoLib.h"
 #include "MGL\MathGeoLibFwd.h"*/
@@ -30,12 +32,12 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const Sphere& sphere, float mass = 1.0f);
-	PhysBody3D* AddBody(const Cube& cube, float mass = 1.0f);
-	PhysBody3D* AddBody(const Cylinder& cylinder, float mass = 1.0f);
+	PhysBody3D* AddBody(const PSphere& sphere, float mass = 1.0f);
+	PhysBody3D* AddBody(const PCube& cube, float mass = 1.0f);
+	PhysBody3D* AddBody(const PCylinder& cylinder, float mass = 1.0f);
 
-	void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB);
-	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB, const vec3& axisS, const vec3& axisB, bool disable_collision = false);
+	void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
+	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
 
 private:
 
@@ -69,6 +71,6 @@ public:
 	int	 getDebugMode() const;
 
 	DebugDrawModes mode;
-	Line line;
+	PLine line;
 	Primitive point;
 };

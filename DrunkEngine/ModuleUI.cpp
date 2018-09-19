@@ -22,7 +22,7 @@ ModuleUI::~ModuleUI()
 
 bool ModuleUI::Init()
 {
-	LOG("Initiating IMGUI Module")
+	PLOG("Initiating IMGUI Module")
 	bool ret = true;
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
@@ -66,7 +66,7 @@ update_status ModuleUI::PostUpdate(float dt)
 
 bool ModuleUI::CleanUp()
 {
-	LOG("Cleaning UP IMGUI Module")
+	PLOG("Cleaning UP IMGUI Module")
 	bool ret = true;
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -175,7 +175,7 @@ void ModuleUI::ShowOptionsWindow()
 
 			ImGui::Separator();
 
-			ImGui::Text("Logical CPUs: ");
+			ImGui::Text("PLOGical CPUs: ");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d Threads (%d KB)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
 		

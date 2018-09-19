@@ -38,7 +38,7 @@ ModulePhysics3D::~ModulePhysics3D()
 // Render not available yet----------------------------------
 bool ModulePhysics3D::Init()
 {
-	LOG("Creating 3D Physics simulation");
+	PLOG("Creating 3D Physics simulation");
 	bool ret = true;
 
 	return ret;
@@ -47,7 +47,7 @@ bool ModulePhysics3D::Init()
 // ---------------------------------------------------------
 bool ModulePhysics3D::Start()
 {
-	LOG("Creating Physics environment");
+	PLOG("Creating Physics environment");
 
 	world = new btDiscreteDynamicsWorld(dispatcher, broad_phase, solver, collision_conf);
 	world->setDebugDrawer(debug_draw);
@@ -131,7 +131,7 @@ update_status ModulePhysics3D::PostUpdate(float dt)
 // Called before quitting
 bool ModulePhysics3D::CleanUp()
 {
-	LOG("Destroying 3D Physics simulation");
+	PLOG("Destroying 3D Physics simulation");
 
 	// Remove from the world all collision bodies
 	for(int i = world->getNumCollisionObjects() - 1; i >= 0; i--)
@@ -169,13 +169,13 @@ bool ModulePhysics3D::CleanUp()
 }
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
 {
 	btCollisionShape* colShape = new btSphereShape(sphere.radius);
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&sphere.transform);
+	startTransform.setFromOpenGLMatrix(&sphere.transform.v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)
@@ -196,13 +196,13 @@ PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const Cube& cube, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
 {
 	btCollisionShape* colShape = new btBoxShape(btVector3(cube.size.x*0.5f, cube.size.y*0.5f, cube.size.z*0.5f));
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cube.transform);
+	startTransform.setFromOpenGLMatrix(&cube.transform.v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)
@@ -222,13 +222,13 @@ PhysBody3D* ModulePhysics3D::AddBody(const Cube& cube, float mass)
 }
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const Cylinder& cylinder, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
 {
 	btCollisionShape* colShape = new btCylinderShapeX(btVector3(cylinder.height*0.5f, cylinder.radius, 0.0f));
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cylinder.transform);
+	startTransform.setFromOpenGLMatrix(&cylinder.transform.v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)
@@ -249,7 +249,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const Cylinder& cylinder, float mass)
 
 
 // ---------------------------------------------------------
-void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB)
+void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB)
 {
 	btTypedConstraint* p2p = new btPoint2PointConstraint(
 		*(bodyA.body), 
@@ -261,7 +261,7 @@ void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, con
 	p2p->setDbgDrawSize(2.0f);
 }
 
-void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB, const vec3& axisA, const vec3& axisB, bool disable_collision)
+void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisA, const vec& axisB, bool disable_collision)
 {
 	btHingeConstraint* hinge = new btHingeConstraint(
 		*(bodyA.body), 
@@ -287,19 +287,19 @@ void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btV
 
 void DebugDrawer::drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
 {
-	point.transform.translate(PointOnB.getX(), PointOnB.getY(), PointOnB.getZ());
+	point.transform.Translate(PointOnB.getX(), PointOnB.getY(), PointOnB.getZ());
 	point.color.Set(color.getX(), color.getY(), color.getZ());
 	point.Render();
 }
 
 void DebugDrawer::reportErrorWarning(const char* warningString)
 {
-	LOG("Bullet warning: %s", warningString);
+	PLOG("Bullet warning: %s", warningString);
 }
 
 void DebugDrawer::draw3dText(const btVector3& location, const char* textString)
 {
-	LOG("Bullet draw text: %s", textString);
+	PLOG("Bullet draw text: %s", textString);
 }
 
 void DebugDrawer::setDebugMode(int debugMode)
