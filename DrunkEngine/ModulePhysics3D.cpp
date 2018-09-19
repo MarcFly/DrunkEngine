@@ -4,6 +4,8 @@
 #include "PhysBody3D.h"
 #include "Primitive.h"
 
+
+
 #ifdef _DEBUG
 	#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
 	#pragma comment (lib, "Bullet/libx86/BulletCollision_debug.lib")
@@ -70,6 +72,8 @@ bool ModulePhysics3D::Start()
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
+	// Not used for now
+	/*
 	world->stepSimulation(dt, 15);
 
 	int numManifolds = world->getDispatcher()->getNumManifolds();
@@ -103,6 +107,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 			}
 		}
 	}
+	*/
 
 	return UPDATE_CONTINUE;
 }
@@ -110,6 +115,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
+	/*
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
@@ -118,7 +124,7 @@ update_status ModulePhysics3D::Update(float dt)
 		world->debugDrawWorld();
 
 	}
-
+	*/
 	return UPDATE_CONTINUE;
 }
 
@@ -132,7 +138,7 @@ update_status ModulePhysics3D::PostUpdate(float dt)
 bool ModulePhysics3D::CleanUp()
 {
 	PLOG("Destroying 3D Physics simulation");
-
+/*
 	// Remove from the world all collision bodies
 	for(int i = world->getNumCollisionObjects() - 1; i >= 0; i--)
 	{
@@ -164,9 +170,10 @@ bool ModulePhysics3D::CleanUp()
 	bodies.clear();
 
 	delete world;
-
+	*/
 	return true;
 }
+
 
 // ---------------------------------------------------------
 PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
@@ -247,7 +254,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
 	return pbody;
 }
 
-
+/*
 // ---------------------------------------------------------
 void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB)
 {
@@ -275,6 +282,7 @@ void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, c
 	constraints.add(hinge);
 	hinge->setDbgDrawSize(2.0f);
 }
+*/
 
 // =============================================
 void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)

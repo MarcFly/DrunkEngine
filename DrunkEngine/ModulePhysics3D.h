@@ -5,8 +5,6 @@
 #include "Globals.h"
 #include "p2List.h"
 #include "Primitive.h"
-#include "MGL/MathGeoLib.h"
-#include "MGL/MathGeoLibFwd.h"
 
 /*#include "MGL\MathGeoLib.h"
 #include "MGL\MathGeoLibFwd.h"*/
@@ -18,8 +16,6 @@
 
 class DebugDrawer;
 struct PhysBody3D;
-struct PhysVehicle3D;
-struct VehicleInfo;
 
 class ModulePhysics3D : public Module
 {
@@ -38,8 +34,8 @@ public:
 	PhysBody3D* AddBody(const PCube& cube, float mass = 1.0f);
 	PhysBody3D* AddBody(const PCylinder& cylinder, float mass = 1.0f);
 
-	void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
-	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
+	//void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
+	//void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
 
 private:
 

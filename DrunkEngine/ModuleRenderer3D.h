@@ -3,7 +3,6 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "MGL\MathGeoLib.h"
 #include "Light.h"
 
 #define MAX_LIGHTS 8
