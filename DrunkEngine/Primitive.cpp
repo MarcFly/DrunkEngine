@@ -5,8 +5,10 @@
 #include "Primitive.h"
 
 // ------------------------------------------------------------
-Primitive::Primitive() : transform(IdentityMatrix4x4), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
-{}
+Primitive::Primitive() : /*transform(IdentityMatrix4x4)*/color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
+{
+	transform.setIdentity();
+}
 
 // ------------------------------------------------------------
 PrimitiveTypes Primitive::GetType() const
@@ -17,12 +19,12 @@ PrimitiveTypes Primitive::GetType() const
 // ------------------------------------------------------------
 void Primitive::Render() const
 {
-	glPushMatrix();
+	//glPushMatrix();
 	/*float trMatrix[16];
 	for (int i = 0; i < 16; i++)
 		trMatrix[i] = transform.At(i/4,i/(i/4));*/
-	glMultMatrixf(&transform.v[0][0]);
-
+	//glMultMatrixf(&transform.v[0][0]);
+	/*
 	if(axis == true)
 	{
 		// Draw Axis Grid
@@ -65,11 +67,13 @@ void Primitive::Render() const
 	InnerRender();
 
 	glPopMatrix();
+	*/
 }
 
 // ------------------------------------------------------------
 void Primitive::InnerRender() const
 {
+	/*
 	glPointSize(5.0f);
 
 	glBegin(GL_POINTS);
@@ -79,42 +83,45 @@ void Primitive::InnerRender() const
 	glEnd();
 
 	glPointSize(1.0f);
+	*/
 }
+
 
 // ------------------------------------------------------------
 void Primitive::SetPos(float x, float y, float z)
 {
-	transform.TransformPos({ x,y,z,0 });
+	//transform.TransformPos({ x,y,z,0 });
 }
 
 // ------------------------------------------------------------
-void Primitive::SetRotation(float angle, const vec &u)
+void Primitive::SetRotation(float angle, const btVector3 &u)
 {
-	transform.SetRotatePart(u, angle);
+	//transform.SetRotatePart(u, angle);
 }
 
 // ------------------------------------------------------------
 void Primitive::Scale(float x, float y, float z)
 {
-	transform.Scale({ x,y,z });
+	//transform.Scale({ x,y,z });
 }
 
 // CUBE ============================================
 PCube::PCube() : Primitive(), size(1.0f, 1.0f, 1.0f)
 {
-	type = PrimitiveTypes::Primitive_Cube;
+	//type = PrimitiveTypes::Primitive_Cube;
 }
 
 PCube::PCube(float sizeX, float sizeY, float sizeZ) : Primitive(), size(sizeX, sizeY, sizeZ)
 {
-	type = PrimitiveTypes::Primitive_Cube;
+	//type = PrimitiveTypes::Primitive_Cube;
 }
 
 void PCube::InnerRender() const
 {	
-	float sx = size.x * 0.5f;
-	float sy = size.y * 0.5f;
-	float sz = size.z * 0.5f;
+	
+	float sx = size.getX() * 0.5f;
+	float sy = size.getY() * 0.5f;
+	float sz = size.getZ() * 0.5f;
 
 	glBegin(GL_QUADS);
 
@@ -155,6 +162,7 @@ void PCube::InnerRender() const
 	glVertex3f(-sx, -sy,  sz);
 
 	glEnd();
+	
 }
 
 // SPHERE ============================================
@@ -220,6 +228,7 @@ void PCylinder::InnerRender() const
 		glVertex3f(-height*0.5f, radius * cos(a), radius * sin(a) );
 	}
 	glEnd();
+	
 }
 
 // LINE ==================================================
@@ -239,8 +248,8 @@ void PLine::InnerRender() const
 
 	glBegin(GL_LINES);
 
-	glVertex3f(origin.x, origin.y, origin.z);
-	glVertex3f(destination.x, destination.y, destination.z);
+	glVertex3f(origin.getX(), origin.getY(), origin.getZ());
+	glVertex3f(destination.getX(), destination.getY(), destination.getZ());
 
 	glEnd();
 

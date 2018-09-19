@@ -3,6 +3,7 @@
 
 #include "Color.h"
 #include "MGL\MathGeoLib.h"
+#include "ModulePhysics3D.h"
 
 struct Light
 {
@@ -15,7 +16,8 @@ struct Light
 
 	Color ambient;
 	Color diffuse;
-	vec position;
+	//vec position;
+	btVector3 position;
 
 	int ref;
 	bool on;

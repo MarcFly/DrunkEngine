@@ -6,6 +6,8 @@
 #include "MGL\MathGeoLib.h"
 #include "MGL\MathGeoLibFwd.h"
 
+#include "Primitive.h"
+
 class ModuleCamera3D : public Module
 {
 public:
@@ -16,9 +18,9 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void Look(const vec &Position, const vec &Reference, bool RotateAroundReference = false);
-	void LookAt(const vec &Spot);
-	void Move(const vec &Movement);
+	void Look(const btVector3 &Position, const btVector3 &Reference, bool RotateAroundReference = false);
+	void LookAt(const btVector3 &Spot);
+	void Move(const btVector3 &Movement);
 	float* GetViewMatrix();
 
 private:
@@ -27,11 +29,11 @@ private:
 
 public:
 	
-	vec X, Y, Z, Position, Reference;
+	btVector3 X, Y, Z, Position, Reference;
 
 private:
 
-	float4x4 ViewMatrix, ViewMatrixInverse;
+	btMatrixX<float> ViewMatrix = btMatrixX<float>(4, 4), ViewMatrixInverse = btMatrixX<float>(4, 4);
 };
 
 #endif

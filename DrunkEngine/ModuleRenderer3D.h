@@ -5,6 +5,7 @@
 #include "Globals.h"
 #include "MGL\MathGeoLib.h"
 #include "Light.h"
+#include "Bullet\include\LinearMath\btMatrixX.h"
 
 #define MAX_LIGHTS 8
 
@@ -25,8 +26,9 @@ public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	float3x3 NormalMatrix;
-	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	btMatrix3x3 NormalMatrix;
+	//float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	btMatrixX<float> ModelMatrix = btMatrixX<float>(4,4), ViewMatrix = btMatrixX<float>(4, 4), ProjectionMatrix = btMatrixX<float>(4, 4);
 };
 
 #endif

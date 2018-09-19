@@ -5,7 +5,10 @@
 #include "MGL/MathGeoLibFwd.h"
 #include "Color.h"
 
-#define IdentityMatrix4x4 float4x4({{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}})
+#include "Bullet/include/btBulletDynamicsCommon.h"
+#include "Bullet\include\LinearMath\btMatrixX.h"
+
+#define IdentityMatrix4x4 btMatrixX<float>({{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}})
 
 enum PrimitiveTypes
 {
@@ -26,14 +29,14 @@ public:
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const vec &u);
+	void			SetRotation(float angle, const btVector3 &u);
 	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
 
 public:
 	
 	Color color;
-	float4x4 transform;
+	btMatrixX<float> transform = btMatrixX<float>(4, 4);
 	bool axis,wire;
 
 protected:
@@ -48,7 +51,7 @@ public :
 	PCube(float sizeX, float sizeY, float sizeZ);
 	void InnerRender() const;
 public:
-	vec size;
+	btVector3 size;
 };
 
 // ============================================
@@ -82,8 +85,8 @@ public:
 	PLine(float x, float y, float z);
 	void InnerRender() const;
 public:
-	vec origin;
-	vec destination;
+	btVector3 origin;
+	btVector3 destination;
 };
 
 // ============================================
@@ -94,7 +97,7 @@ public:
 	PPlane(float x, float y, float z, float d);
 	void InnerRender() const;
 public:
-	vec normal;
+	btVector3 normal;
 	float constant;
 };
 
