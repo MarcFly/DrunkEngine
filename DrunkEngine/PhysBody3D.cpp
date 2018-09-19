@@ -20,7 +20,7 @@ void PhysBody3D::Push(float x, float y, float z)
 	body->applyCentralImpulse(btVector3(x, y, z));
 }
 
-void PhysBody3D::PushDyn(float magnitude, vec3& test)
+void PhysBody3D::PushDyn(float magnitude, vec& test)
 {
 	
 	btVector3 impulse_point = body->getCenterOfMassPosition() + btVector3(test.x,test.y,test.z);

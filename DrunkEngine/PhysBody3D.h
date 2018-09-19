@@ -2,7 +2,7 @@
 #define __PhysBody3D_H__
 
 #include "p2List.h"
-#include "glmath.h"
+#include "MGL\MathGeoLib.h"
 
 class btRigidBody;
 class Module;
@@ -32,7 +32,7 @@ public:
 
 public:
 	//Own Code, new Mechanincs
-	void PushDyn(float magnitude, vec3& test);
+	void PushDyn(float magnitude, vec& test);
 };
 
 #endif // __PhysBody3D_H__
