@@ -6,11 +6,10 @@
 #include "p2List.h"
 #include "Primitive.h"
 
-
 /*#include "MGL\MathGeoLib.h"
 #include "MGL\MathGeoLibFwd.h"*/
 
-
+#include "Bullet/include/btBulletDynamicsCommon.h"
 
 // Recommended scale is 1.0f == 1 meter, no less than 0.2 objects
 #define GRAVITY btVector3(0.0f, -10.0f, 0.0f) 
@@ -35,8 +34,8 @@ public:
 	PhysBody3D* AddBody(const PCube& cube, float mass = 1.0f);
 	PhysBody3D* AddBody(const PCylinder& cylinder, float mass = 1.0f);
 
-	void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const btVector3& anchorA, const btVector3& anchorB);
-	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const btVector3& anchorA, const btVector3& anchorB, const btVector3& axisS, const btVector3& axisB, bool disable_collision = false);
+	//void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
+	//void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
 
 private:
 

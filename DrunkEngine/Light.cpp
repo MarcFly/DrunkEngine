@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Light.h"
 #include <gl/GL.h>
-//#include <gl/GLU.h>
+#include <gl/GLU.h>
 
 Light::Light() : ref(-1), on(false), position(0.0f, 0.0f, 0.0f)
 {}
@@ -14,23 +14,22 @@ void Light::Init()
 
 void Light::SetPos(float x, float y, float z)
 {
-	position.setX(x);
-	position.setY(y);
-	position.setZ(z);
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 
 void Light::Render()
 {
 	if(on)
 	{
-		float pos[] = {position.getX(), position.getY(), position.getZ(), 1.0f};
+		float pos[] = {position.x, position.y, position.z, 1.0f};
 		glLightfv(ref, GL_POSITION, pos);
 	}
 }
 
 void Light::Active(bool active)
 {
-	
 	if(on != active)
 	{
 		on = !on;
@@ -40,5 +39,4 @@ void Light::Active(bool active)
 		else
 			glDisable(ref);
 	}
-	
 }
