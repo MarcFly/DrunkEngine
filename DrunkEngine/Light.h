@@ -2,6 +2,7 @@
 #define _LIGHT_H_
 
 #include "Color.h"
+
 #include "MGL\MathGeoLib.h"
 #include "ModulePhysics3D.h"
 

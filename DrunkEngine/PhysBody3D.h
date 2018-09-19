@@ -2,7 +2,7 @@
 #define __PhysBody3D_H__
 
 #include "p2List.h"
-#include "MGL\MathGeoLib.h"
+#include "Module.h"
 
 class btRigidBody;
 class Module;

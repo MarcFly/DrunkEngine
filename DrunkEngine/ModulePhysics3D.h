@@ -5,8 +5,6 @@
 #include "Globals.h"
 #include "p2List.h"
 #include "Primitive.h"
-#include "MGL/MathGeoLib.h"
-#include "MGL/MathGeoLibFwd.h"
 
 
 /*#include "MGL\MathGeoLib.h"
@@ -19,8 +17,6 @@
 
 class DebugDrawer;
 struct PhysBody3D;
-struct PhysVehicle3D;
-struct VehicleInfo;
 
 class ModulePhysics3D : public Module
 {

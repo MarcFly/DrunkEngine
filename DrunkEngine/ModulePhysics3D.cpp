@@ -5,6 +5,8 @@
 #include "Primitive.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
+
+
 #ifdef _DEBUG
 	#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
 	#pragma comment (lib, "Bullet/libx86/BulletCollision_debug.lib")
@@ -71,6 +73,8 @@ bool ModulePhysics3D::Start()
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
+	// Not used for now
+	
 	world->stepSimulation(dt, 15);
 
 	int numManifolds = world->getDispatcher()->getNumManifolds();
@@ -104,12 +108,15 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 			}
 		}
 	}
+	
+
 	return UPDATE_CONTINUE;
 }
 
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
+	
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
@@ -118,6 +125,8 @@ update_status ModulePhysics3D::Update(float dt)
 		world->debugDrawWorld();
 
 	}
+	
+
 	return UPDATE_CONTINUE;
 }
 
@@ -163,9 +172,10 @@ bool ModulePhysics3D::CleanUp()
 	bodies.clear();
 
 	delete world;
-
+	
 	return true;
 }
+
 
 // ---------------------------------------------------------
 PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
@@ -246,7 +256,6 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
 	return pbody;
 }
 
-
 // ---------------------------------------------------------
 void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const btVector3& anchorA, const btVector3& anchorB)
 {
@@ -276,6 +285,7 @@ void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, c
 }
 
 // =============================================
+
 void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 {
 	line.origin.setX(from.getX());			line.origin.setY(from.getY());			line.origin.setZ(from.getZ());

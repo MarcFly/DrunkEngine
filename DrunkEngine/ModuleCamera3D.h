@@ -3,8 +3,8 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "MGL\MathGeoLib.h"
-#include "MGL\MathGeoLibFwd.h"
+#include "MGL/MathGeoLib.h"
+#include "MGL/MathGeoLibFwd.h"
 
 #include "Primitive.h"
 
