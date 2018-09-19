@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _APPLICATION_H_
+#define _APPLICATION_H_
 
 #include "p2List.h"
 #include "Globals.h"
@@ -46,3 +47,5 @@ private:
 	void PrepareUpdate();
 	void FinishUpdate();
 };
+
+#endif

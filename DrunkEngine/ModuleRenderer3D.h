@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _MODULE_RENDERER_3D_H_
+#define _MODULE_RENDERER_3D_H_
+
 #include "Module.h"
 #include "Globals.h"
 #include "MGL\MathGeoLib.h"
@@ -26,3 +28,5 @@ public:
 	float3x3 NormalMatrix;
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 };
+
+#endif

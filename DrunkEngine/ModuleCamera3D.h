@@ -1,7 +1,10 @@
-#pragma once
+#ifndef _MODULE_CAMERA_3D_H_
+#define _MODULE_CAMERA_3D_H_
+
 #include "Module.h"
 #include "Globals.h"
 #include "MGL\MathGeoLib.h"
+#include "MGL\MathGeoLibFwd.h"
 
 class ModuleCamera3D : public Module
 {
@@ -30,3 +33,5 @@ private:
 
 	float4x4 ViewMatrix, ViewMatrixInverse;
 };
+
+#endif

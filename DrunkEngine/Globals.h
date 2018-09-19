@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _GLOBALS_
+#define _GLOBALS_
 
 // Warning disabled ---
 #pragma warning( disable : 4577 ) // Warning that exceptions are disabled
@@ -37,3 +38,6 @@ enum update_status
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
 #define TITLE "3D Physics Playground"
+
+
+#endif 

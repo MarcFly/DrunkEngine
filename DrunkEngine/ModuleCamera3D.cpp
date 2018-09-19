@@ -2,7 +2,6 @@
 #include "Application.h"
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
-
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	CalculateViewMatrix();
@@ -80,18 +79,36 @@ update_status ModuleCamera3D::Update(float dt)
 		{
 			float DeltaX = (float)dx * Sensitivity;
 
-			/*
-			X = rotate(X, DeltaX, vec(0.0f, 1.0f, 0.0f));
+			Quat qX = { X.x,X.y,X.z,1.0f };
+			Quat qY = { Y.x,Y.y,Y.z,1.0f };
+			Quat qZ = { Z.x,Z.y,Z.z,1.0f };
+
+			qX.RotateY(DeltaX);
+			qY.RotateY(DeltaX);
+			qZ.RotateY(DeltaX);
+			/*X = rotate(X, DeltaX, vec(0.0f, 1.0f, 0.0f));
 			Y = rotate(Y, DeltaX, vec(0.0f, 1.0f, 0.0f));
 			Z = rotate(Z, DeltaX, vec(0.0f, 1.0f, 0.0f));*/
+
+			X = { qX.x, qX.y, qX.z };
+			Y = { qY.x, qY.y, qY.z };
+			Z = { qZ.x, qZ.y, qZ.z };
 		}
 
 		if(dy != 0)
 		{
 			float DeltaY = (float)dy * Sensitivity;
 
+			Quat qY = { Y.x,Y.y,Y.z,1.0f };
+			Quat qZ = { Z.x,Z.y,Z.z,1.0f };
+
+			qY.RotateY(DeltaY);
+			qZ.RotateY(DeltaY);
 			/*Y = rotate(Y, DeltaY, X);
 			Z = rotate(Z, DeltaY, X);*/
+
+			Y = { qY.x, qY.y, qY.z };
+			Z = { qZ.x, qZ.y, qZ.z };
 
 			if(Y.y < 0.0f)
 			{
