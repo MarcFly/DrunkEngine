@@ -1,6 +1,5 @@
-#ifndef _PRIMITIVE_H_
-#define _PRIMITIVE_H_
 
+#pragma once
 #include "MGL/MathGeoLib.h"
 #include "MGL/MathGeoLibFwd.h"
 #include "Color.h"
@@ -97,5 +96,3 @@ public:
 	vec normal;
 	float constant;
 };
-
-#endif // !_PRIMITIVE_H_
