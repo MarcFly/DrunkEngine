@@ -37,6 +37,9 @@
 #include "Clock.h"
 #include "../Math/myassert.h"
 #include "../Math/assume.h"
+#include <time.h>
+#include <stdio.h>
+#include <intrin.h>
 
 MATH_BEGIN_NAMESPACE
 
@@ -107,7 +110,7 @@ void Clock::Sleep(int milliseconds)
 	timespec ts;
 	ts.tv_sec = milliseconds / 1000;
 	ts.tv_nsec = (milliseconds - ts.tv_sec * 1000) * 1000 * 1000;
-	int ret = nanosleep(&ts, NULL);
+	int ret = 0;//nanosleep(&ts, (struct timespec *) NULL);
 	if (ret == -1)
 		LOGI("nanosleep returned -1! Reason: %s(%d).", strerror(errno), (int)errno);
 #else
@@ -244,7 +247,7 @@ tick_t Clock::Tick()
 #elif defined(__APPLE__)
 	return mach_absolute_time();
 #elif defined(_POSIX_MONOTONIC_CLOCK)
-	timespec t;
+	struct timespec t;
 	clock_gettime(CLOCK_MONOTONIC, &t);
 	return (tick_t)t.tv_sec * 1000 * 1000 * 1000 + (tick_t)t.tv_nsec;
 #elif defined(_POSIX_C_SOURCE)
@@ -297,7 +300,7 @@ tick_t Clock::TicksPerSec()
 unsigned long long Clock::Rdtsc()
 {
 #if defined(_MSC_VER) && !defined(WIN8PHONE)
-	return __rdtsc();
+	return  __rdtsc();
 #elif defined(__x86_64__)
 	unsigned hi, lo;
 	__asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
