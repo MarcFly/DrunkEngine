@@ -4,6 +4,8 @@
 #include <gl/GLU.h>
 #include "Primitive.h"
 
+//using namespace math;
+
 // ------------------------------------------------------------
 Primitive::Primitive() : transform(IdentityMatrix4x4), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
 {}

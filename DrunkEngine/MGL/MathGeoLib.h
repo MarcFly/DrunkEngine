@@ -19,9 +19,9 @@
 #ifndef _MGL_ALL_
 #define _MGL_ALL_
 
-#include "Geometry/GeometryAll.h"
-#include "Math/MathAll.h"
-#include "Algorithm/Random/LCG.h"
-#include "Time/Clock.h"
+#include "./Geometry/GeometryAll.h"
+#include "./Math/MathAll.h"
+#include "./Algorithm/Random/LCG.h"
+#include "./Time/Clock.h"
 
 #endif

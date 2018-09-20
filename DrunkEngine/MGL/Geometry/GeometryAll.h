@@ -16,7 +16,8 @@
 	@author Jukka Jylänki
 	@brief A conveniency file to include all files in the folder Geometry/. */
 
-#pragma once
+#ifndef _GEOMETRY_H_
+#define _GEOMETRY_H_
 
 #include "../MathBuildConfig.h"
 #include "../Math/MathNamespace.h"
@@ -25,24 +26,26 @@
 #include "../Math/InclWindows.h"
 #endif
 
-#include "AABB.h"
-#include "AABB2D.h"
-#include "Capsule.h"
-#include "Circle.h"
-#include "Frustum.h"
-#include "GeometryAll.h"
-#include "HitInfo.h"
-#include "KDTree.h"
-#include "Line.h"
-#include "LineSegment.h"
-#include "OBB.h"
-#include "Plane.h"
-#include "Polygon.h"
-#include "Polyhedron.h"
-#include "QuadTree.h"
-#include "Ray.h"
-#include "Sphere.h"
-#include "Triangle.h"
-#include "TriangleMesh.h"
-#include "GeomType.h"
-#include "PBVolume.h"
+#include "./AABB.h"
+#include "./AABB2D.h"
+#include "./Capsule.h"
+#include "./Circle.h"
+#include "./Frustum.h"
+#include "./GeometryAll.h"
+#include "./HitInfo.h"
+#include "./KDTree.h"
+#include "./Line.h"
+#include "./LineSegment.h"
+#include "./OBB.h"
+#include "./Plane.h"
+#include "./Polygon.h"
+#include "./Polyhedron.h"
+#include "./QuadTree.h"
+#include "./Ray.h"
+#include "./Sphere.h"
+#include "./Triangle.h"
+#include "./TriangleMesh.h"
+#include "./GeomType.h"
+#include "./PBVolume.h"
+
+#endif

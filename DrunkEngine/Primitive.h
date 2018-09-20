@@ -4,6 +4,8 @@
 #include "Color.h"
 #include "Module.h"
 
+//using namespace math;
+
 #define IdentityMatrix4x4 float4x4({{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}})
 
 enum PrimitiveTypes
