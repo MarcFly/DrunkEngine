@@ -105,6 +105,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		}
 	}
 	
+	// Mathbody pos update in relation to physic body
 	p2List_item<PhysBody3D*>* item = bodies.getFirst();
 	p2List_item<OBB*>* item_math = Mathbodies.getFirst();
 	while (item != nullptr && item->data != nullptr) {
