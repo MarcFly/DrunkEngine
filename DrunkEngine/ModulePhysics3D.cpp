@@ -112,7 +112,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
-	/*
+	
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
@@ -121,7 +121,7 @@ update_status ModulePhysics3D::Update(float dt)
 		world->debugDrawWorld();
 
 	}
-	*/
+	
 	return UPDATE_CONTINUE;
 }
 
@@ -135,7 +135,7 @@ update_status ModulePhysics3D::PostUpdate(float dt)
 bool ModulePhysics3D::CleanUp()
 {
 	PLOG("Destroying 3D Physics simulation");
-/*
+
 	// Remove from the world all collision bodies
 	for(int i = world->getNumCollisionObjects() - 1; i >= 0; i--)
 	{
@@ -167,7 +167,7 @@ bool ModulePhysics3D::CleanUp()
 	bodies.clear();
 
 	delete world;
-	*/
+	
 	return true;
 }
 
