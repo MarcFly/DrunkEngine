@@ -23,7 +23,7 @@ void Primitive::Render() const
 	/*float trMatrix[16];
 	for (int i = 0; i < 16; i++)
 		trMatrix[i] = transform.At(i/4,i/(i/4));*/
-	glMultMatrixf(&transform.v[0][0]);
+	glMultMatrixf(&transform.Transposed().v[0][0]);
 
 	if(axis == true)
 	{
@@ -86,7 +86,7 @@ void Primitive::InnerRender() const
 // ------------------------------------------------------------
 void Primitive::SetPos(float x, float y, float z)
 {
-	transform.TransformPos({ x,y,z,0 });
+	transform.TransformPos(float3( x,y,z ));
 }
 
 // ------------------------------------------------------------
@@ -174,6 +174,7 @@ void PSphere::InnerRender() const
 {
 	//TODO
 	//glutSolidSphere(radius, 25, 25);
+
 }
 
 

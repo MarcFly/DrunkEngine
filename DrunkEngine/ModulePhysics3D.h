@@ -30,7 +30,7 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const PSphere& sphere, float mass = 1.0f);
+	PhysBody3D* AddBody(const OBB& sphere, float mass = 1.0f); // This creates a mathematical sphere and technically a renderable sphere (passed as the transform of a polyhedron)
 	PhysBody3D* AddBody(const PCube& cube, float mass = 1.0f);
 	PhysBody3D* AddBody(const PCylinder& cylinder, float mass = 1.0f);
 
@@ -51,6 +51,7 @@ private:
 
 	p2List<btCollisionShape*> shapes;
 	p2List<PhysBody3D*> bodies;
+	p2List<OBB*> Mathbodies;
 	p2List<btDefaultMotionState*> motions;
 	p2List<btTypedConstraint*> constraints;
 };

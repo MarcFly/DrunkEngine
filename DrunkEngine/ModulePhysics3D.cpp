@@ -70,9 +70,9 @@ bool ModulePhysics3D::Start()
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
 	// Not used for now
-	/*
+	
 	world->stepSimulation(dt, 15);
-
+	
 	int numManifolds = world->getDispatcher()->getNumManifolds();
 	for(int i = 0; i<numManifolds; i++)
 	{
@@ -104,7 +104,14 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 			}
 		}
 	}
-	*/
+	
+	p2List_item<PhysBody3D*>* item = bodies.getFirst();
+	p2List_item<OBB*>* item_math = Mathbodies.getFirst();
+	while (item != nullptr && item->data != nullptr) {
+		item_math->data->pos = (vec)item->data->body->getCenterOfMassPosition();
+		item = item->next;
+		item_math = item_math->next;
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -173,16 +180,16 @@ bool ModulePhysics3D::CleanUp()
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const OBB& sphere, float mass)
 {
-	btCollisionShape* colShape = new btSphereShape(sphere.radius);
+	btCollisionShape* colShape = new btSphereShape(sphere.MaximalContainedSphere().Diameter() / 2.0f);
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&sphere.transform.v[0][0]);
+	startTransform.setFromOpenGLMatrix(&sphere.ToPolyhedron().v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
-	if(mass != 0.f)
+	if (mass != 0.f)
 		colShape->calculateLocalInertia(mass, localInertia);
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
@@ -191,6 +198,11 @@ PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
 
 	btRigidBody* body = new btRigidBody(rbInfo);
 	PhysBody3D* pbody = new PhysBody3D(body);
+
+	// Add Mathematical Sphere
+	Sphere test = Sphere({ 0,0,0 }, sphere.MaximalContainedSphere().Diameter()/2.0f);
+	OBB* tests = new OBB(sphere);
+	Mathbodies.add(tests);
 
 	world->addRigidBody(body);
 	bodies.add(pbody);
@@ -206,7 +218,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cube.transform.v[0][0]);
+	startTransform.setFromOpenGLMatrix(&cube.transform.Transposed().v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)
@@ -232,7 +244,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cylinder.transform.v[0][0]);
+	startTransform.setFromOpenGLMatrix(&cylinder.transform.Transposed().v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)

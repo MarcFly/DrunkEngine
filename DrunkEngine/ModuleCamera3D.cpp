@@ -25,6 +25,9 @@ bool ModuleCamera3D::Start()
 	App->camera->Move(vec(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec(0, 0, 0));
 
+	// test body just in case how it works
+	
+
 	return ret;
 }
 
@@ -64,6 +67,11 @@ update_status ModuleCamera3D::Update(float dt)
 	// TODO: Requires mouse reset properly without affecting MouseMotion
 	// if want to get camera rotation without pressing Right Mouse Button
 	// Or move mouse around the render windows while you are pressing then be able to continously drag around
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN) {
+		OBB test;
+		test.SetFrom(Sphere({ 0,0,0 }, 1.0f));
+		App->physics->AddBody(test);
+	}
 
 	if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
@@ -103,6 +111,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 			qY.RotateY(DeltaY);
 			qZ.RotateY(DeltaY);
+
 			/*Y = rotate(Y, DeltaY, X);
 			Z = rotate(Z, DeltaY, X);*/
 
@@ -177,15 +186,23 @@ void ModuleCamera3D::Move(const vec &Movement)
 // -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
-	return &ViewMatrix.v[0][0];
+	return &ViewMatrix.Transposed().v[0][0];
 }
 
 // -----------------------------------------------------------------
 void ModuleCamera3D::CalculateViewMatrix()
 {
 
-	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f,	-dot(btQuaternion(X.x,X.y,X.z,X.Length()), btQuaternion(Position.x, Position.y, Position.z, Position.Length())), 
+	/*ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f,	-dot(btQuaternion(X.x,X.y,X.z,X.Length()), btQuaternion(Position.x, Position.y, Position.z, Position.Length())), 
 																							-dot(btQuaternion(Y.x,Y.y,Y.z,Y.Length()), btQuaternion(Position.x, Position.y, Position.z, Position.Length())), 
 																							-dot(btQuaternion(Z.x,Z.y,Z.z,Z.Length()), btQuaternion(Position.x, Position.y, Position.z, Position.Length())), 1.0f);
+	*/
+	/*ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(btQuaternion(X., X.x, X.y, X.z), btQuaternion(Position.Length(), Position.x, Position.y, Position.z)),
+																						 -dot(btQuaternion(Y.Length(), Y.x, Y.y, Y.z), btQuaternion(Position.Length(), Position.x, Position.y, Position.z)),
+																						 -dot(btQuaternion(Z.Length(), Z.x, Z.y, Z.z), btQuaternion(Position.Length(),Position.x, Position.y, Position.z)), 1.0f);*/
+	//ViewMatrix = float4x4({ X.x, Y.x, Z.x, 1.0f }, { X.y, Y.y, Z.y, 1.0f }, { X.z, Y.z, Z.z, 1.0f }, { -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f });
+
+	ViewMatrix = float4x4({ X.x, X.y, X.z, 1.0f }, { Y.x, Y.y, Y.z, 1.0f }, { Z.x, Z.y, Z.z, 1.0f }, { -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f });
+	
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }

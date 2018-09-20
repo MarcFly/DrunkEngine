@@ -50,6 +50,7 @@ public :
 	void InnerRender() const;
 public:
 	vec size;
+	Polyhedron MathBody;
 };
 
 // ============================================
@@ -61,6 +62,7 @@ public:
 	void InnerRender() const;
 public:
 	float radius;
+	Sphere MathBody;
 };
 
 // ============================================
@@ -73,6 +75,7 @@ public:
 public:
 	float radius;
 	float height;
+	Capsule MathBody;
 };
 
 // ============================================
@@ -85,6 +88,7 @@ public:
 public:
 	vec origin;
 	vec destination;
+	Line MathBody;
 };
 
 // ============================================
@@ -97,6 +101,7 @@ public:
 public:
 	vec normal;
 	float constant;
+	Plane MathBody;
 };
 
 #endif // !_PRIMITIVE_H_
