@@ -12,6 +12,7 @@
 class Window;
 class OptionsWindow;
 class AboutWindow;
+class RandomGenWindow;
 
 class ModuleUI : public Module
 {
@@ -30,6 +31,7 @@ public:
 public:
 	OptionsWindow * options_win = nullptr;
 	AboutWindow * about_win = nullptr;
+	RandomGenWindow* random_win = nullptr;
 
 private:
 	bool show_demo_window;

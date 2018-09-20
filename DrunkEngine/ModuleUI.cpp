@@ -11,6 +11,7 @@
 #include "Window.h"
 #include "OptionsWindow.h"
 #include "AboutWindow.h"
+#include "RandomGenWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -39,6 +40,7 @@ bool ModuleUI::Init()
 
 	windows.push_back(options_win = new OptionsWindow(App));
 	windows.push_back(about_win = new AboutWindow());
+	windows.push_back(random_win = new RandomGenWindow());
 
 	return ret;
 }
@@ -93,6 +95,9 @@ bool ModuleUI::MainMenu()
 		{
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();
+
+			if (ImGui::MenuItem("Random Generator"))
+				random_win->SwitchActive();
 
 			if (ImGui::MenuItem("About..."))
 				about_win->SwitchActive();
