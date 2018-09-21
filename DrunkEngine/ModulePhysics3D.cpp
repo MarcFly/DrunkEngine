@@ -107,11 +107,25 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	
 	// Mathbody pos update in relation to physic body
 	p2List_item<PhysBody3D*>* item = bodies.getFirst();
-	p2List_item<OBB*>* item_math = Mathbodies.getFirst();
+	p2List_item<Sphere*>* item_sphere = spheres.getFirst();
+	p2List_item<Capsule*>* item_capsule = capsules.getFirst();
+	p2List_item<AABB*>* item_AABB = cubes.getFirst();
+	p2List_item<OBB*>* item_OBB = obbs.getFirst();
+	p2List_item<Plane*>* item_plane = planes.getFirst();
+	p2List_item<Ray*>* item_ray = rays.getFirst();
+	p2List_item<Triangle*>* item_tri = tris.getFirst();
+
 	while (item != nullptr && item->data != nullptr) {
-		item_math->data->pos = (vec)item->data->body->getCenterOfMassPosition();
+		if (item_sphere != nullptr && item->data != nullptr)
+		{
+			item_sphere->data->pos = (vec)item->data->body->getCenterOfMassPosition();
+			item_sphere = item_sphere->next;
+		}
+		
+		// Do for all types
+
 		item = item->next;
-		item_math = item_math->next;
+		
 	}
 
 	return UPDATE_CONTINUE;
@@ -181,13 +195,13 @@ bool ModulePhysics3D::CleanUp()
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const OBB& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
 {
-	btCollisionShape* colShape = new btSphereShape(sphere.MaximalContainedSphere().Diameter() / 2.0f);
+	btCollisionShape* colShape = new btSphereShape(sphere.radius);
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&sphere.ToPolyhedron().v[0][0]);
+	startTransform.setFromOpenGLMatrix(&sphere.transform.v[0][0]);
 
 	btVector3 localInertia(0, 0, 0);
 	if (mass != 0.f)
@@ -201,9 +215,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const OBB& sphere, float mass)
 	PhysBody3D* pbody = new PhysBody3D(body);
 
 	// Add Mathematical Sphere
-	Sphere test = Sphere({ 0,0,0 }, sphere.MaximalContainedSphere().Diameter()/2.0f);
-	OBB* tests = new OBB(sphere);
-	Mathbodies.add(tests);
+	AddMBody(Sphere((vec)body->getCenterOfMassPosition(), sphere.radius));
 
 	world->addRigidBody(body);
 	bodies.add(pbody);

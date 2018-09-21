@@ -30,9 +30,14 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const OBB& sphere, float mass = 1.0f); // This creates a mathematical sphere and technically a renderable sphere (passed as the transform of a polyhedron)
+	PhysBody3D* AddBody(const PSphere& sphere, float mass = 1.0f); // This creates a mathematical sphere and technically a renderable sphere (passed as the transform of a polyhedron)
 	PhysBody3D* AddBody(const PCube& cube, float mass = 1.0f);
 	PhysBody3D* AddBody(const PCylinder& cylinder, float mass = 1.0f);
+
+	// Create the MathObjs
+	void AddMBody(const Sphere& sphere) {
+		Sphere* add = new Sphere(sphere); spheres.add(add);
+	}
 
 	//void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
 	//void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
@@ -51,9 +56,23 @@ private:
 
 	p2List<btCollisionShape*> shapes;
 	p2List<PhysBody3D*> bodies;
-	p2List<OBB*> Mathbodies;
 	p2List<btDefaultMotionState*> motions;
 	p2List<btTypedConstraint*> constraints;
+
+	// Math Objects list, I don't know how to make a "MathObj" list
+	p2List<Sphere*> spheres;
+	p2List<Capsule*> capsules;
+	p2List<AABB*> cubes;
+	p2List<OBB*> obbs;
+	p2List<Plane*> planes;
+	p2List<Ray*> rays;
+	p2List<Triangle*> tris;
+
+	p2List<Cylinder*> cylinders;
+	p2List<Frustum*> frustums;
+	p2List<LineSegment*> segments;
+	p2List<btConvexHullShape*> convex_hull_shapes;
+	p2List<TriangleMesh*> tri_meshes;
 };
 
 class DebugDrawer : public btIDebugDraw

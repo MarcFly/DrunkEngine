@@ -68,9 +68,8 @@ update_status ModuleCamera3D::Update(float dt)
 	// if want to get camera rotation without pressing Right Mouse Button
 	// Or move mouse around the render windows while you are pressing then be able to continously drag around
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN) {
-		OBB test;
-		test.SetFrom(Sphere({ 0,0,0 }, 1.0f));
-		App->physics->AddBody(test);
+		
+		App->physics->AddBody(PSphere(1.0f));
 	}
 
 	if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
