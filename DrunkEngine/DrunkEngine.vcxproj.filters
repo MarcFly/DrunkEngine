@@ -45,6 +45,11 @@
     </Filter>
     <Filter Include="Sources\Tools\MathGeoLib\Algorithm\Random">
       <UniqueIdentifier>{7c1619bf-2048-4cd1-93fd-a849cea7ddc8}</UniqueIdentifier>
+    <Filter Include="Sources\Modules\UI\WindowSystem">
+      <UniqueIdentifier>{d79c159e-3f55-4882-adda-4cdbe993f94b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\PCG">
+      <UniqueIdentifier>{587e4038-c000-421f-98af-2e1b871f9b4c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -386,117 +391,6 @@
     <ClCompile Include="imgui\implements\imgui_impl_sdl.cpp">
       <Filter>Sources\Modules\UI\imgui\Implements</Filter>
     </ClCompile>
-    <ClCompile Include="MGL\Algorithm\GJK.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\AABB.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Capsule.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Circle.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Frustum.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Line.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\LineSegment.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\OBB.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\PBVolume.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Plane.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Polygon.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Polyhedron.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Ray.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Sphere.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\Triangle.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Geometry\TriangleMesh.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\BitOps.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\Callstack.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float2.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float3.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float3x3.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float3x4.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float4.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float4d.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\float4x4.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\grisu3.c">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\grisu3_cpp.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\MathFunc.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\MathLog.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\MathOps.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\MiniFloat.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\Polynomial.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\Quat.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\SSEMath.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Math\TransformOps.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Algorithm\Random\LCG.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Algorithm\Random</Filter>
-    </ClCompile>
-    <ClCompile Include="MGL\Time\Clock.cpp">
-      <Filter>Sources\Tools\MathGeoLib\Time</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MGL\emscripten\library_system.js">
@@ -523,5 +417,20 @@
     <None Include="MGL\Math\Matrix.inl">
       <Filter>Sources\Tools\MathGeoLib\Math</Filter>
     </None>
+    <ClCompile Include="OptionsWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="pcg-c-basic-0.9\pcg_basic.c">
+      <Filter>Sources\Tools\PCG</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomGenWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

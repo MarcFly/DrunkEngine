@@ -7,9 +7,16 @@
 #include "imgui/implements/imgui_impl_sdl.h"
 #include "imgui/implements/imgui_impl_opengl2.h"
 #include <gl/GL.h>
+#include <string.h>
+#include "Window.h"
+#include "OptionsWindow.h"
+#include "AboutWindow.h"
+#include "RandomGenWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
+
+using namespace std;
 
 ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -30,18 +37,10 @@ bool ModuleUI::Init()
 	ImGui::StyleColorsDark();
 
 	show_demo_window = false;
-	show_about_window = false;
-	show_options_window = false;
 
-	window_update = false;
-
-	fullscreen = false;
-	resizable = true;
-	borderless = false;
-	full_desktop = false;
-
-	brightness = 1.0;
-	SDL_GetWindowSize(App->window->window, &width, &height);
+	windows.push_back(options_win = new OptionsWindow(App));
+	windows.push_back(about_win = new AboutWindow());
+	windows.push_back(random_win = new RandomGenWindow());
 
 	return ret;
 }
@@ -53,6 +52,17 @@ update_status ModuleUI::PreUpdate(float dt)
 	ImGui::NewFrame();
 
 	MainMenu();
+
+	for (vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
+	{
+		Window* windows = (*it);
+
+		if (App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
+			windows->SwitchActive();
+
+		if (windows->IsActive())
+			windows->Draw();
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -84,10 +94,13 @@ bool ModuleUI::MainMenu()
 		if (ImGui::BeginMenu("Menu"))
 		{
 			if (ImGui::MenuItem("Options"))
-				show_options_window = !show_options_window;
+				options_win->SwitchActive();
+
+			if (ImGui::MenuItem("Random Generator"))
+				random_win->SwitchActive();
 
 			if (ImGui::MenuItem("About..."))
-				show_about_window = !show_about_window;
+				about_win->SwitchActive();
 
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
@@ -100,26 +113,12 @@ bool ModuleUI::MainMenu()
 			show_demo_window = !show_demo_window;
 			ImGui::EndMenu();
 		}
+
 	}
 	ImGui::EndMainMenuBar();
 
-	CheckOpenWindows();
-
-	return ret;
-}
-
-bool ModuleUI::CheckOpenWindows()
-{
-	bool ret = true;
-
 	if (show_demo_window)
 		ImGui::ShowDemoWindow(&show_demo_window);
-
-	if (show_options_window)
-		ShowOptionsWindow();
-
-	if (show_about_window)
-		ShowAboutWindow();
 
 	return ret;
 }

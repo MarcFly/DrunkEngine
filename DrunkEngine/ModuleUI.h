@@ -4,9 +4,15 @@
 #include "Globals.h"
 #include "imgui/imgui.h"
 #include "imgui/implements/imgui_impl_sdl.h"
+#include <vector>
 
 // Module for IMGUI use and implementation
 // Includes for imgui when necessary...
+
+class Window;
+class OptionsWindow;
+class AboutWindow;
+class RandomGenWindow;
 
 class ModuleUI : public Module
 {
@@ -22,25 +28,16 @@ public:
 
 	bool MainMenu();
 
-	bool CheckOpenWindows();
-
-	void ShowOptionsWindow();
-	void ShowAboutWindow();
+public:
+	OptionsWindow * options_win = nullptr;
+	AboutWindow * about_win = nullptr;
+	RandomGenWindow* random_win = nullptr;
 
 private:
 	bool show_demo_window;
-	bool show_about_window;
-	bool show_options_window;
 
-	bool window_update;
+	std::vector<Window *> windows;
 
-	bool fullscreen;
-	bool resizable;
-	bool borderless;
-	bool full_desktop;
-
-	float brightness;
-	int width, height;
 public:
 
 	const ImVec4 clear_color = { 0.45f, 0.55f, 0.60f, 1.00f };
