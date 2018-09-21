@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _MODULE_INPUT_H_
+#define _MODULE_INPUT_H_
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -76,3 +78,5 @@ private:
 public:
 	bool quit;
 };
+
+#endif

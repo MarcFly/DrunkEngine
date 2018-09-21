@@ -5,11 +5,9 @@ Application::Application()
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
-	scene_intro = new ModuleSceneIntro(this);
 	renderer3D = new ModuleRenderer3D(this);
 	camera = new ModuleCamera3D(this);
 	physics = new ModulePhysics3D(this);
-	player = new ModulePlayer(this);
 	ui = new ModuleUI(this);
 
 	// The order of calls is very important!
@@ -24,10 +22,6 @@ Application::Application()
 	AddModule(physics);
 
 	AddModule(ui);
-	
-	// Scenes
-	AddModule(scene_intro);
-	AddModule(player);
 
 	// Renderer last!
 	AddModule(renderer3D);
@@ -58,7 +52,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	LOG("Application Start --------------");
+	PLOG("Application Start --------------");
 	item = list_modules.getFirst();
 
 	while(item != NULL && ret == true)

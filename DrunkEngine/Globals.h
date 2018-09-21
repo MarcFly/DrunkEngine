@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _GLOBALS_
+#define _GLOBALS_
 
 // Warning disabled ---
 #pragma warning( disable : 4577 ) // Warning that exceptions are disabled
@@ -7,7 +8,9 @@
 #include <windows.h>
 #include <stdio.h>
 
-#define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
+#include "MGL/MathGeoLib.h"
+
+#define PLOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
 void log(const char file[], int line, const char* format, ...);
 
@@ -37,3 +40,6 @@ enum update_status
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
 #define TITLE "3D Physics Playground"
+
+
+#endif 

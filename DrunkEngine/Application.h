@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _APPLICATION_H_
+#define _APPLICATION_H_
 
 #include "p2List.h"
 #include "Globals.h"
@@ -7,11 +8,10 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
-#include "ModuleSceneIntro.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModulePhysics3D.h"
-#include "ModulePlayer.h"
+
 
 #include "ModuleUI.h"
 
@@ -21,11 +21,9 @@ public:
 	ModuleWindow* window;
 	ModuleInput* input;
 	ModuleAudio* audio;
-	ModuleSceneIntro* scene_intro;
 	ModuleRenderer3D* renderer3D;
 	ModuleCamera3D* camera;
 	ModulePhysics3D* physics;
-	ModulePlayer* player;
 	ModuleUI* ui;
 
 private:
@@ -49,3 +47,5 @@ private:
 	void PrepareUpdate();
 	void FinishUpdate();
 };
+
+#endif
