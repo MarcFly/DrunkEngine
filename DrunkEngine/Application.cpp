@@ -71,13 +71,11 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
+	//dt
 	dt = (float)ms_timer.Read() / 1000.0f;
 	ms_timer.Start();
-}
 
-// ---------------------------------------------
-void Application::FinishUpdate()
-{
+	//FPS
 	if ((float)fps_timer.Read() < 1000.0f)
 		count_fps++;
 	else
@@ -86,6 +84,12 @@ void Application::FinishUpdate()
 		fps = count_fps;
 		count_fps = 0;
 	}
+}
+
+// ---------------------------------------------
+void Application::FinishUpdate()
+{
+	
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules
@@ -137,7 +141,7 @@ bool Application::CleanUp()
 
 int Application::GetFPS()
 {
-	return fps;
+	return dt*60;
 }
 
 void Application::AddModule(Module* mod)
