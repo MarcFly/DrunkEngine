@@ -22,6 +22,9 @@ public:
 	bool resizable;
 	bool borderless;
 	bool full_desktop;
+	bool vsync;
+
+	float max_fps;
 };
 
 #endif

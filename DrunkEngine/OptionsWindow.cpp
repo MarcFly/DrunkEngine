@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "OptionsWindow.h"
+#include "ModuleRenderer3D.h"
 #include "Imgui/imgui.h"
 #include <gl/GL.h>
 
@@ -16,8 +17,10 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_
 	resizable = true;
 	borderless = false;
 	full_desktop = false;
+	vsync = true;
 
 	brightness = 1.0;
+	max_fps = 60;
 }
 
 OptionsWindow::~OptionsWindow()
@@ -29,10 +32,26 @@ void OptionsWindow::Draw()
 	{
 		if (ImGui::CollapsingHeader("Application"))
 		{
-			
-			//const float frame_rate = 60.0f;
-			//char title[15] = "Framerate";
-			//ImGui::PlotHistogram("##framerate", frame_rate, 5, 0, title, 0.0f, 100.0f, ImVec2(310, 100), 4);
+			ImGui::Text("Application Name:");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), TITLE);
+
+			ImGui::Text("Organization:");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);
+
+			if (ImGui::Checkbox("Vsync", &vsync))
+				App->renderer3D->ChangeVsync(vsync);
+
+			if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
+			{
+				//Modify max_fps
+			}
+
+			float fps = App->GetFPS();
+			char title[15];
+			sprintf_s(title, 15, "Framerate %.1f", fps);
+			ImGui::PlotHistogram("##framerate", &fps, 1, 0, title, 0.0f, max_fps + 1, ImVec2(310, max_fps + 1));
 		}
 		if (ImGui::CollapsingHeader("Windows"))
 		{

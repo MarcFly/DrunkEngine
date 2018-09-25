@@ -19,6 +19,7 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
+	void ChangeVsync(bool active);
 
 public:
 
@@ -26,6 +27,7 @@ public:
 	SDL_GLContext context;
 	float3x3 NormalMatrix;
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	bool vsync;
 };
 
 #endif

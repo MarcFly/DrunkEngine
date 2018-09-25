@@ -29,7 +29,10 @@ public:
 private:
 
 	Timer	ms_timer;
+	Timer	fps_timer;
 	float	dt;
+	int		count_fps;
+	int		fps;
 	p2List<Module*> list_modules;
 
 public:
@@ -40,6 +43,8 @@ public:
 	bool Init();
 	update_status Update();
 	bool CleanUp();
+
+	int GetFPS();
 
 private:
 

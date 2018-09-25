@@ -108,9 +108,8 @@ bool ModuleUI::MainMenu()
 		if (ImGui::BeginMenu("Help"))
 		{
 			if (ImGui::MenuItem("Examples"))
-			{
 				show_demo_window = !show_demo_window;
-			}
+
 
 			if (ImGui::MenuItem("Documentation"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
