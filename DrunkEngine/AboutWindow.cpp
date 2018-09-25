@@ -1,7 +1,8 @@
 #include "AboutWindow.h"
 
-AboutWindow::AboutWindow() : Window("About...", SDL_SCANCODE_I)
+AboutWindow::AboutWindow(Application* app) : Window("About...", SDL_SCANCODE_I)
 {
+	App = app;
 }
 
 AboutWindow::~AboutWindow()
