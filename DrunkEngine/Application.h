@@ -46,6 +46,7 @@ public:
 	bool CleanUp();
 
 	float GetFPS();
+	float GetDt();
 	void Cap_FPS(const int& cap);
 
 private:

@@ -40,6 +40,7 @@ void OptionsWindow::Draw()
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);
 
 			ImGui::Checkbox("Vsync", &App->renderer3D->vsync);
+			App->renderer3D->ChangeVsync();
 
 			if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
 			{
@@ -47,23 +48,35 @@ void OptionsWindow::Draw()
 			}
 
 			
-			if (fps_history.Count() > 40) 
+			if (fps_history.Count() > 25) 
 			{
 				for (int i = 1; i < fps_history.Count(); i++)
 					fps_history[i-1] = fps_history[i];
-				fps_history.Pop(fps_history[39]);
+				fps_history.Pop(fps_history[24]);
 			}
 
-			char title[17];
+			char title[20];
 			if (frame_read_time.Read() >= 200) {
-				fps_history.PushBack(fps = App->GetFPS());
+				fps_history.PushBack(App->GetFPS());
 				frame_read_time.Start();
 			}
-			sprintf_s(title, 17, "Framerate %.2f", fps);
+			sprintf_s(title, 20, "Framerate %.2f", fps_history[fps_history.Count() - 1]);
 
 			
-			ImGui::PlotHistogram("##framerate", &fps_history[0], fps_history.Count(), 0, title, 0.0f, max_fps + 1, ImVec2(310, 100));
+			ImGui::PlotHistogram("##framerate", fps_history.At(0), fps_history.Count(), 0, title, 0.0f, max_fps + 1, ImVec2(310, 100));
 			
+			if (dt_history.Count() > 60) 
+			{
+				for (int i = 1; i < dt_history.Count(); i++)
+					dt_history[i-1] = dt_history[i];
+				dt_history.Pop(dt_history[59]);
+			}
+			
+			dt_history.PushBack(App->GetDt());
+			
+			sprintf_s(title, 20, "DT %.2f ms", dt_history[dt_history.Count() - 1]);
+
+			ImGui::PlotHistogram("##time_differential", &dt_history[0], dt_history.Count(), 0, title, 0.0f, 1000*(1.0f / max_fps) + 1, ImVec2(310, 100));
 			
 		}
 		if (ImGui::CollapsingHeader("Windows"))

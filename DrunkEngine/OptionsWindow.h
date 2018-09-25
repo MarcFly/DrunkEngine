@@ -31,6 +31,7 @@ public:
 	Timer frame_read_time;
 
 	p2DynArray<float> fps_history;
+	p2DynArray<float> dt_history;
 };
 
 #endif

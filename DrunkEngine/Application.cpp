@@ -142,9 +142,12 @@ void Application::AddModule(Module* mod)
 void Application::Frame_Metrics()
 {
 	//dt
+
+	if (dt > 0 && fps_cap > 0 && (dt < 1.0f / (float)fps_cap))
+		true;//SDL_Delay(1000*((1.0f / (float)fps_cap) - dt));
+
 	dt = (float)ms_timer.Read() / 1000.0f;
-	if (dt < 1.0f / (float)fps_cap)
-		SDL_Delay((1.0f / (float)fps_cap) - dt);
+
 	ms_timer.Start();
 
 }
@@ -152,4 +155,9 @@ void Application::Frame_Metrics()
 void Application::Cap_FPS(const int& cap) 
 {
 	fps_cap = cap;
+}
+
+float Application::GetDt()
+{
+	return 1000 * dt;
 }

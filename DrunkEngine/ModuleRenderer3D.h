@@ -19,7 +19,7 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
-	void ChangeVsync(bool active);
+	void ChangeVsync();
 
 public:
 
