@@ -24,7 +24,9 @@ public:
 	bool full_desktop;
 	bool vsync;
 
+	float fps;
 	float max_fps;
+	std::string log_fps;
 };
 
 #endif

@@ -35,7 +35,7 @@ void OptionsWindow::Draw()
 			ImGui::Text("Application Name:");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), TITLE);
-
+			
 			ImGui::Text("Organization:");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);
@@ -48,10 +48,11 @@ void OptionsWindow::Draw()
 				//Modify max_fps
 			}
 
-			float fps = App->GetFPS();
+			fps = App->GetFPS();
 			char title[15];
 			sprintf_s(title, 15, "Framerate %.1f", fps);
-			ImGui::PlotHistogram("##framerate", &fps, 1, 0, title, 0.0f, max_fps + 1, ImVec2(310, max_fps + 1));
+
+			ImGui::PlotHistogram("##framerate", &fps, 1, 0, title, 0.0f, max_fps + 1, ImVec2(310, 100));
 		}
 		if (ImGui::CollapsingHeader("Windows"))
 		{
