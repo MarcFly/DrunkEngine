@@ -17,7 +17,6 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_
 	resizable = true;
 	borderless = false;
 	full_desktop = false;
-	vsync = true;
 
 	brightness = 1.0;
 	max_fps = 60;
@@ -40,19 +39,32 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);
 
-			if (ImGui::Checkbox("Vsync", &vsync))
-				App->renderer3D->ChangeVsync(vsync);
+			ImGui::Checkbox("Vsync", &App->renderer3D->vsync);
 
 			if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
 			{
-				//Modify max_fps
+				App->Cap_FPS(max_fps);
 			}
 
-			fps = App->GetFPS();
-			char title[15];
-			sprintf_s(title, 15, "Framerate %.1f", fps);
+			
+			if (fps_history.Count() > 40) 
+			{
+				for (int i = 1; i < fps_history.Count(); i++)
+					fps_history[i-1] = fps_history[i];
+				fps_history.Pop(fps_history[39]);
+			}
 
-			ImGui::PlotHistogram("##framerate", &fps, 1, 0, title, 0.0f, max_fps + 1, ImVec2(310, 100));
+			char title[17];
+			if (frame_read_time.Read() >= 200) {
+				fps_history.PushBack(fps = App->GetFPS());
+				frame_read_time.Start();
+			}
+			sprintf_s(title, 17, "Framerate %.2f", fps);
+
+			
+			ImGui::PlotHistogram("##framerate", &fps_history[0], fps_history.Count(), 0, title, 0.0f, max_fps + 1, ImVec2(310, 100));
+			
+			
 		}
 		if (ImGui::CollapsingHeader("Windows"))
 		{

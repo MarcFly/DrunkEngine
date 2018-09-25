@@ -71,19 +71,7 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	//dt
-	dt = (float)ms_timer.Read() / 1000.0f;
-	ms_timer.Start();
-
-	//FPS
-	if ((float)fps_timer.Read() < 1000.0f)
-		count_fps++;
-	else
-	{
-		fps_timer.Start();
-		fps = count_fps;
-		count_fps = 0;
-	}
+	Frame_Metrics();
 }
 
 // ---------------------------------------------
@@ -91,6 +79,8 @@ void Application::FinishUpdate()
 {
 	
 }
+
+
 
 // Call PreUpdate, Update and PostUpdate on all modules
 update_status Application::Update()
@@ -139,12 +129,27 @@ bool Application::CleanUp()
 	return ret;
 }
 
-int Application::GetFPS()
+float Application::GetFPS()
 {
-	return dt*60;
+	return 1.0f / dt;
 }
 
 void Application::AddModule(Module* mod)
 {
 	list_modules.add(mod);
+}
+
+void Application::Frame_Metrics()
+{
+	//dt
+	dt = (float)ms_timer.Read() / 1000.0f;
+	if (dt < 1.0f / (float)fps_cap)
+		SDL_Delay((1.0f / (float)fps_cap) - dt);
+	ms_timer.Start();
+
+}
+
+void Application::Cap_FPS(const int& cap) 
+{
+	fps_cap = cap;
 }

@@ -33,6 +33,7 @@ private:
 	float	dt;
 	int		count_fps;
 	int		fps;
+	int		fps_cap;
 	p2List<Module*> list_modules;
 
 public:
@@ -44,13 +45,15 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-	int GetFPS();
+	float GetFPS();
+	void Cap_FPS(const int& cap);
 
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
+	void Frame_Metrics();
 };
 
 #endif
