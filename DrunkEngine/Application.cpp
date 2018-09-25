@@ -29,12 +29,12 @@ Application::Application()
 
 Application::~Application()
 {
-	p2List_item<Module*>* item = list_modules.getLast();
+	std::list<Module*>::iterator item = list_modules.begin();
 
-	while(item != NULL)
+	while(item != list_modules.end())
 	{
-		delete item->data;
-		item = item->prev;
+		delete item._Ptr->_Myval;
+		item++;
 	}
 }
 
@@ -43,22 +43,22 @@ bool Application::Init()
 	bool ret = true;
 
 	// Call Init() in all modules
-	p2List_item<Module*>* item = list_modules.getFirst();
+	std::list<Module*>::iterator item = list_modules.begin();
 
-	while(item != NULL && ret == true)
+	while(item != list_modules.end() && ret == true)
 	{
-		ret = item->data->Init();
-		item = item->next;
+		ret = item._Ptr->_Myval->Init();
+		item++;
 	}
 
 	// After all Init calls we call Start() in all modules
 	PLOG("Application Start --------------");
-	item = list_modules.getFirst();
+	item = list_modules.begin();
 
-	while(item != NULL && ret == true)
+	while(item != list_modules.end() && ret == true)
 	{
-		ret = item->data->Start();
-		item = item->next;
+		ret = item._Ptr->_Myval->Start();
+		item++;
 	}
 	
 	fps_timer.Start();
@@ -80,22 +80,22 @@ void Application::FinishUpdate()
 
 	bool ret = true;
 
-	p2List_item<Module*>* item = list_modules.getFirst();
+	std::list<Module*>::iterator item = list_modules.begin();
 
 	if(input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
-		while (item != NULL && ret == UPDATE_CONTINUE)
+		while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 		{
-			ret = item->data->Save(nullptr);
-			item = item->next;
+			ret = item._Ptr->_Myval->Save(nullptr);
+			item++;
 		}
 
-	item = list_modules.getFirst();
+	item = list_modules.begin();
 
 	if(input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
-		while (item != NULL && ret == UPDATE_CONTINUE)
+		while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 		{
-			ret = item->data->Load(nullptr);
-			item = item->next;
+			ret = item._Ptr->_Myval->Load(nullptr);
+			item++;
 		}
 
 }
@@ -108,28 +108,28 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 	
-	p2List_item<Module*>* item = list_modules.getFirst();
+	std::list<Module*>::iterator item = list_modules.begin();
 	
-	while(item != NULL && ret == UPDATE_CONTINUE)
+	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		ret = item->data->PreUpdate(dt);
-		item = item->next;
+		ret = item._Ptr->_Myval->PreUpdate(dt);
+		item++;
 	}
 
-	item = list_modules.getFirst();
+	item = list_modules.begin();
 
-	while(item != NULL && ret == UPDATE_CONTINUE)
+	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		ret = item->data->Update(dt);
-		item = item->next;
+		ret = item._Ptr->_Myval->Update(dt);
+		item++;
 	}
 
-	item = list_modules.getFirst();
+	item = list_modules.begin();
 
-	while(item != NULL && ret == UPDATE_CONTINUE)
+	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		ret = item->data->PostUpdate(dt);
-		item = item->next;
+		ret = item._Ptr->_Myval->PostUpdate(dt);
+		item++;
 	}
 
 	FinishUpdate();
@@ -139,12 +139,12 @@ update_status Application::Update()
 bool Application::CleanUp()
 {
 	bool ret = true;
-	p2List_item<Module*>* item = list_modules.getLast();
-
-	while(item != NULL && ret == true)
+	std::list<Module*>::iterator item = list_modules.end();
+	item--;
+	while(item != list_modules.begin() && ret == true)
 	{
-		ret = item->data->CleanUp();
-		item = item->prev;
+		ret = item._Ptr->_Myval->CleanUp();
+		item--;
 	}
 	return ret;
 }
@@ -156,7 +156,7 @@ float Application::GetFPS()
 
 void Application::AddModule(Module* mod)
 {
-	list_modules.add(mod);
+	list_modules.push_back(mod);
 }
 
 void Application::Frame_Metrics()

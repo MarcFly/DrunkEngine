@@ -1,7 +1,7 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
-#include "p2List.h"
+#include <list>
 #include "Globals.h"
 #include "Timer.h"
 #include "Module.h"
@@ -34,7 +34,7 @@ private:
 	int		count_fps;
 	int		fps;
 	int		fps_cap;
-	p2List<Module*> list_modules;
+	std::list<Module*> list_modules;
 
 public:
 

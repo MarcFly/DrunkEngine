@@ -3,7 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "p2List.h"
+#include <list>
 #include "Primitive.h"
 
 /*#include "MGL\MathGeoLib.h"
@@ -36,7 +36,7 @@ public:
 
 	// Create the MathObjs
 	void AddMBody(const Sphere& sphere) {
-		Sphere* add = new Sphere(sphere); spheres.add(add);
+		Sphere* add = new Sphere(sphere); spheres.push_back(add);
 	}
 
 	//void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
@@ -54,25 +54,25 @@ private:
 	btDefaultVehicleRaycaster*			vehicle_raycaster;
 	DebugDrawer*						debug_draw;
 
-	p2List<btCollisionShape*> shapes;
-	p2List<PhysBody3D*> bodies;
-	p2List<btDefaultMotionState*> motions;
-	p2List<btTypedConstraint*> constraints;
+	std::list<btCollisionShape*> shapes;
+	std::list<PhysBody3D*> bodies;
+	std::list<btDefaultMotionState*> motions;
+	std::list<btTypedConstraint*> constraints;
 
 	// Math Objects list, I don't know how to make a "MathObj" list
-	p2List<Sphere*> spheres;
-	p2List<Capsule*> capsules;
-	p2List<AABB*> cubes;
-	p2List<OBB*> obbs;
-	p2List<Plane*> planes;
-	p2List<Ray*> rays;
-	p2List<Triangle*> tris;
+	std::list<Sphere*> spheres;
+	std::list<Capsule*> capsules;
+	std::list<AABB*> cubes;
+	std::list<OBB*> obbs;
+	std::list<Plane*> planes;
+	std::list<Ray*> rays;
+	std::list<Triangle*> tris;
 
-	p2List<Cylinder*> cylinders;
-	p2List<Frustum*> frustums;
-	p2List<LineSegment*> segments;
-	p2List<btConvexHullShape*> convex_hull_shapes;
-	p2List<TriangleMesh*> tri_meshes;
+	std::list<Cylinder*> cylinders;
+	std::list<Frustum*> frustums;
+	std::list<LineSegment*> segments;
+	std::list<btConvexHullShape*> convex_hull_shapes;
+	std::list<TriangleMesh*> tri_meshes;
 };
 
 class DebugDrawer : public btIDebugDraw

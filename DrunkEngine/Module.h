@@ -2,6 +2,8 @@
 #define _MODULE_H_
 
 #include "parson/parson.h"
+#include <list>
+#include "Globals.h"
 
 class Application;
 struct PhysBody3D;

@@ -1,7 +1,7 @@
 #ifndef __PhysBody3D_H__
 #define __PhysBody3D_H__
 
-#include "p2List.h"
+#include <list>
 #include "Module.h"
 
 class btRigidBody;
@@ -27,7 +27,7 @@ private:
 	bool is_sensor = false;
 
 public:
-	p2List<Module*> collision_listeners;
+	std::list<Module*> collision_listeners;
 	btRigidBody* body = nullptr;
 
 public:
