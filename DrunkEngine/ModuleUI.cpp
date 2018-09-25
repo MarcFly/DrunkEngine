@@ -39,7 +39,7 @@ bool ModuleUI::Init()
 	show_demo_window = false;
 
 	windows.push_back(options_win = new OptionsWindow(App));
-	windows.push_back(about_win = new AboutWindow());
+	windows.push_back(about_win = new AboutWindow(App));
 	windows.push_back(random_win = new RandomGenWindow());
 
 	return ret;
@@ -99,21 +99,33 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Random Generator"))
 				random_win->SwitchActive();
 
-			if (ImGui::MenuItem("About..."))
-				about_win->SwitchActive();
-
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
 
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Examples"))
+		if (ImGui::BeginMenu("Help"))
 		{
-			show_demo_window = !show_demo_window;
+			if (ImGui::MenuItem("Examples"))
+			{
+				show_demo_window = !show_demo_window;
+			}
+
+			if (ImGui::MenuItem("Documentation"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
+
+			if (ImGui::MenuItem("Download Latest"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
+
+			if (ImGui::MenuItem("Report a Bug"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/issues", NULL, NULL, SW_SHOWNORMAL);
+						
+			if (ImGui::MenuItem("About..."))
+				about_win->SwitchActive();
+
 			ImGui::EndMenu();
 		}
-
 	}
 	ImGui::EndMainMenuBar();
 

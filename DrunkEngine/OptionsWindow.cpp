@@ -30,6 +30,9 @@ void OptionsWindow::Draw()
 		if (ImGui::CollapsingHeader("Application"))
 		{
 			
+			//const float frame_rate = 60.0f;
+			//char title[15] = "Framerate";
+			//ImGui::PlotHistogram("##framerate", frame_rate, 5, 0, title, 0.0f, 100.0f, ImVec2(310, 100), 4);
 		}
 		if (ImGui::CollapsingHeader("Windows"))
 		{
