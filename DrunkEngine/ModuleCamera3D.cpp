@@ -205,3 +205,36 @@ void ModuleCamera3D::CalculateViewMatrix()
 	
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }
+
+bool ModuleCamera3D::Load(JSON_Value* root_value)
+{
+	bool ret = false;
+
+	root_value = json_parse_file("config_data.json");
+	//SDL_SetWindowSize(window, json_object_dotget_number(json_object(root_value), "window.size.width"), json_object_dotget_number(json_object(root_value), "window.size.height"));
+	Look({ (float)json_object_dotget_number(json_object(root_value), "camera.pos.x") ,(float)json_object_dotget_number(json_object(root_value), "camera.pos.y") ,(float)json_object_dotget_number(json_object(root_value), "camera.pos.z") }, { 0,0,0 });
+
+	ret = true;
+	return ret;
+}
+
+bool ModuleCamera3D::Save(JSON_Value* root_value)
+{
+	bool ret = false;
+
+	//JSON_Value* window_value = root_value;
+	//JSON_Value *schema = json_parse_string("{\"width\:\"\"height\":\"\"}");
+	root_value = json_parse_file("config_data.json");
+	//root_value = json_value_init_object();
+	JSON_Object* root_obj = json_value_get_object(root_value);
+
+	//SDL_GetWindowSize(window, &width, &height);
+	json_object_dotset_number(root_obj, "camera.pos.x", X.x);
+	json_object_dotset_number(root_obj, "camera.pos.y", X.x);
+	json_object_dotset_number(root_obj, "camera.pos.z", X.x);
+
+	json_serialize_to_file(root_value, "config_data.json");
+
+	ret = true;
+	return ret;
+}

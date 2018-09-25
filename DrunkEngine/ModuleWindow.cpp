@@ -97,8 +97,8 @@ bool ModuleWindow::Load(JSON_Value* root_value)
 {
 	bool ret = false;
 
-	root_value = json_parse_file("window_data.json");
-	SDL_SetWindowSize(window, json_object_get_number(json_object(root_value), "width"), json_object_get_number(json_object(root_value), "height"));
+	root_value = json_parse_file("config_data.json");
+	SDL_SetWindowSize(window, json_object_dotget_number(json_object(root_value), "window.size.width"), json_object_dotget_number(json_object(root_value), "window.size.height"));
 
 	ret = true;
 	return ret;
@@ -110,15 +110,16 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 
 	//JSON_Value* window_value = root_value;
 	//JSON_Value *schema = json_parse_string("{\"width\:\"\"height\":\"\"}");
-	root_value = json_parse_file("window_data.json");
-	root_value = json_value_init_object();
+	root_value = json_parse_file("config_data.json");
+	//root_value = json_value_init_object();
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	
 	int width, height;
 	SDL_GetWindowSize(window, &width, &height);
-	json_object_set_number(root_obj, "width", width);
-	json_object_set_number(root_obj, "height", height);
-	json_serialize_to_file(root_value, "window_data.json");
+	json_object_dotset_number(root_obj, "window.size.width", width);
+	//json_object_set_number(root_obj, "width", width);
+	json_object_dotset_number(root_obj, "window.size.height", height);
+	json_serialize_to_file(root_value, "config_data.json");
 
 	ret = true;
 	return ret;
