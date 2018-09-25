@@ -18,6 +18,9 @@ public:
 	bool Init();
 	bool CleanUp();
 
+	bool Load(JSON_Value* root_value);
+	bool Save(JSON_Value* root_value);
+
 	void SetTitle(const char* title);
 
 public:

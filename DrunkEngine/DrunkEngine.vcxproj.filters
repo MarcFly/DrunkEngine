@@ -55,6 +55,9 @@
     <Filter Include="Sources\Tools\MathGeoLib\Time">
       <UniqueIdentifier>{ce911b42-d1f3-479a-8893-2b786d3d554a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\JSON">
+      <UniqueIdentifier>{c8c2b772-e1bf-4912-ada0-9dc7f711adf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -348,6 +351,9 @@
     <ClInclude Include="MGL\Time\Clock.h">
       <Filter>Sources\Tools\MathGeoLib\Time</Filter>
     </ClInclude>
+    <ClInclude Include="parson\parson.h">
+      <Filter>Sources\Tools\JSON</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -541,6 +547,9 @@
     </ClCompile>
     <ClCompile Include="MGL\Time\Clock.cpp">
       <Filter>Sources\Tools\MathGeoLib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="parson\parson.c">
+      <Filter>Sources\Tools\JSON</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

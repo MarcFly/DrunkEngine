@@ -55,6 +55,7 @@ private:
 	void PrepareUpdate();
 	void FinishUpdate();
 	void Frame_Metrics();
+
 };
 
 #endif

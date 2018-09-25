@@ -77,7 +77,27 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
-	
+
+	bool ret = true;
+
+	p2List_item<Module*>* item = list_modules.getFirst();
+
+	if(input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+		while (item != NULL && ret == UPDATE_CONTINUE)
+		{
+			ret = item->data->Save(nullptr);
+			item = item->next;
+		}
+
+	item = list_modules.getFirst();
+
+	if(input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
+		while (item != NULL && ret == UPDATE_CONTINUE)
+		{
+			ret = item->data->Load(nullptr);
+			item = item->next;
+		}
+
 }
 
 
