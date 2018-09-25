@@ -75,6 +75,10 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
+	if(input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+		window->Save(nullptr);
+	if(input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
+		window->Load(nullptr);
 
 }
 

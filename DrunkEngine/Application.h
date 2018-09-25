@@ -46,6 +46,9 @@ private:
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
+
+	/*void Save();
+	void Load();*/
 };
 
 #endif

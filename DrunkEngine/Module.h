@@ -1,6 +1,7 @@
 #ifndef _MODULE_H_
 #define _MODULE_H_
 
+#include "parson/parson.h"
 
 class Application;
 struct PhysBody3D;
@@ -51,6 +52,17 @@ public:
 
 	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	{}
+
+	virtual bool Load(JSON_Value* root_value)
+	{
+		return UPDATE_CONTINUE; 
+	}
+
+	virtual bool Save(JSON_Value* root_value)
+	{
+		return UPDATE_CONTINUE; 
+	}
+
 };
 
 #endif // !_MODULE_H_
