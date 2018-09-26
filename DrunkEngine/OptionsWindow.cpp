@@ -47,19 +47,15 @@ void OptionsWindow::Draw()
 				App->Cap_FPS(max_fps);
 			}
 
-			
-			if (fps_history.size() > 25) 
-			{
-				for (int i = 1; i < fps_history.size(); i++)
-					fps_history[i-1] = fps_history[i];
-			}
-
 			char title[20];
 			if (frame_read_time.Read() >= 200) {
 				if(fps_history.size() < 25)
 					fps_history.push_back(App->GetFPS());
 				else
 				{
+					for (int i = 1; i < fps_history.size(); i++)
+						fps_history[i - 1] = fps_history[i];
+
 					--*fps_history.end()._Ptr = App->GetFPS();
 				}
 				frame_read_time.Start();
@@ -71,9 +67,9 @@ void OptionsWindow::Draw()
 		
 			if (dt_history.size() > 60) 
 			{
-				dt_history.erase(dt_history.begin(), dt_history.begin());
 				for (int i = 1; i < dt_history.size(); i++)
 					dt_history[i-1] = dt_history[i];
+
 				--*dt_history.end()._Ptr = App->GetDt();
 			}
 			else
