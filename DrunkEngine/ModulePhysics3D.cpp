@@ -116,14 +116,36 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	std::list<Triangle*>::iterator item_tri = tris.begin();
 
 	while (item != bodies.end() && bodies.size() > 0) {
-		if (item_sphere != spheres.end() && spheres.size() > 0)
+		if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE && item_sphere != spheres.end() && spheres.size() > 0)
 		{
-			item_sphere._Ptr->_Myval->pos = (vec)item._Ptr->_Myval->body->getCenterOfMassPosition();
+			item_sphere._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_sphere._Ptr->_Myval->Centroid()));
 			item_sphere++;
 		}
 		
+		else if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == CAPSULE_SHAPE_PROXYTYPE && item_capsule != capsules.end() && capsules.size() > 0)
+		{
+			item_capsule._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_capsule._Ptr->_Myval->Center()));
+			item_capsule++;
+		}
+
+		else if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == BOX_SHAPE_PROXYTYPE && item_AABB != cubes.end() && cubes.size() > 0)
+		{
+			item_AABB._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_AABB._Ptr->_Myval->Centroid()));
+			item_AABB++;
+		}
+
+		else if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == TRIANGLE_SHAPE_PROXYTYPE && item_tri != tris.end() && tris.size() > 0)
+		{
+			item_tri._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_capsule._Ptr->_Myval->Center()));
+			item_tri++;
+		}
 		// Do for all types
 
+		else if (item_OBB != obbs.end() && obbs.size() > 0)
+		{
+			item_OBB._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_OBB._Ptr->_Myval->CenterPoint()));
+			item_OBB++;
+		}
 		item++;
 		
 	}
@@ -215,7 +237,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
 	PhysBody3D* pbody = new PhysBody3D(body);
 
 	// Add Mathematical Sphere
-	AddMBody(Sphere((vec)body->getCenterOfMassPosition(), sphere.radius));
+	AddSphereMath((vec)body->getCenterOfMassPosition(), sphere.radius);
 
 	world->addRigidBody(body);
 	bodies.push_back(pbody);
@@ -243,6 +265,9 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
 
 	btRigidBody* body = new btRigidBody(rbInfo);
 	PhysBody3D* pbody = new PhysBody3D(body);
+
+	// Add Mathematical Sphere
+	AddAABBMath((vec)body->getCenterOfMassPosition(), cube.size.x);
 
 	world->addRigidBody(body);
 	bodies.push_back(pbody);

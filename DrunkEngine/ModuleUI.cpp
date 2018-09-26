@@ -12,6 +12,7 @@
 #include "OptionsWindow.h"
 #include "AboutWindow.h"
 #include "RandomGenWindow.h"
+#include "GeometryCreationWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -41,6 +42,7 @@ bool ModuleUI::Init()
 	windows.push_back(options_win = new OptionsWindow(App));
 	windows.push_back(about_win = new AboutWindow(App));
 	windows.push_back(random_win = new RandomGenWindow());
+	windows.push_back(geometry_win = new GEOMWindow(App));
 
 	return ret;
 }
@@ -123,6 +125,14 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("About..."))
 				about_win->SwitchActive();
 
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Render"))
+		{
+			if (ImGui::MenuItem("Test Objects"))
+				geometry_win->SwitchActive();
+			
 			ImGui::EndMenu();
 		}
 	}

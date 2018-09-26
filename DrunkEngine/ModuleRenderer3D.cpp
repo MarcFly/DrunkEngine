@@ -1,9 +1,11 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "GLEW/include/GL/glew.h"
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
+#pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
@@ -18,12 +20,17 @@ ModuleRenderer3D::~ModuleRenderer3D()
 // Called before render is available
 bool ModuleRenderer3D::Init()
 {
-	PLOG("Creating 3D Renderer context");
 	bool ret = true;
 	vsync = true;
 
 	//Create context
+	PLOG("Creating 3D Renderer context");
 	context = SDL_GL_CreateContext(App->window->window);
+	if (GLEW_OK != glewInit())
+	{
+		PLOG("Failed GLEW Initiation!\n")
+	}
+
 	if(context == NULL)
 	{
 		PLOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
