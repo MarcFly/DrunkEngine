@@ -13,12 +13,12 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_
 {
 	App = app;
 
-	fullscreen = false;
-	resizable = true;
-	borderless = false;
-	full_desktop = false;
+	fullscreen = App->window->GetFullscreen();
+	resizable = App->window->GetResizable();
+	borderless = App->window->GetBorderless();
+	full_desktop = App->window->GetFullDesktop();
 
-	brightness = 1.0;
+	brightness = App->window->GetBrightness();
 	max_fps = 60;
 }
 
@@ -59,7 +59,9 @@ void OptionsWindow::Draw()
 				if(fps_history.size() < 25)
 					fps_history.push_back(App->GetFPS());
 				else
+				{
 					--*fps_history.end()._Ptr = App->GetFPS();
+				}
 				frame_read_time.Start();
 			}
 			sprintf_s(title, 20, "Framerate %.2f", fps_history[fps_history.size() - 1]);
@@ -87,7 +89,7 @@ void OptionsWindow::Draw()
 			SDL_GetWindowSize(App->window->window, &width, &height);
 
 			if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f))
-				SDL_SetWindowBrightness(App->window->window, brightness);
+				App->window->SetBrightness(brightness);
 
 			if (ImGui::SliderInt("Width", &width, 720, 1920) && !fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
@@ -100,20 +102,21 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Checkbox("Fullscreen", &fullscreen))
 			{
-				SDL_SetWindowFullscreen(App->window->window, fullscreen);
+				App->window->SetFullscreen(fullscreen);
 				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
-				SDL_SetWindowSize(App->window->window, width, height);
+				//SDL_SetWindowSize(App->window->window, width, height);
 
 			}
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Resizable", &resizable))
-				SDL_SetWindowResizable(App->window->window, (SDL_bool)resizable);
+				App->window->SetResizable(resizable);
 
 			if (ImGui::Checkbox("Borderless", &borderless))
-				SDL_SetWindowBordered(App->window->window, (SDL_bool)!borderless);
+				App->window->SetBorderless(!borderless);
 
 			ImGui::SameLine();
-			ImGui::Checkbox("Full Desktop", &full_desktop);
+			if (ImGui::Checkbox("Full Desktop", &full_desktop))
+				App->window->SetFullDesktop(full_desktop);
 
 		}
 		if (ImGui::CollapsingHeader("Hardware"))

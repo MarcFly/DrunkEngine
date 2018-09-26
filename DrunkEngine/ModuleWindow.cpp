@@ -39,23 +39,24 @@ bool ModuleWindow::Init()
 		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, true);
 
+		Load(nullptr);
 
-		if(WIN_FULLSCREEN == true)
+		if(fullscreen == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if(WIN_RESIZABLE == true)
+		if(resizable == true)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if(WIN_BORDERLESS == true)
+		if(borderless == true)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if(WIN_FULLSCREEN_DESKTOP == true)
+		if(full_desktop == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
@@ -98,12 +99,56 @@ void ModuleWindow::SetTitle(const char* title)
 	SDL_SetWindowTitle(window, title);
 }
 
+void ModuleWindow::SetFullscreen(bool fullscreen)
+{
+	this->fullscreen = fullscreen;
+	SDL_SetWindowFullscreen(this->window, this->fullscreen);
+}
+
+void ModuleWindow::SetResizable(bool resizable)
+{
+	this->resizable = resizable;
+	SDL_SetWindowResizable(this->window, (SDL_bool)this->resizable);
+}
+
+void ModuleWindow::SetBorderless(bool borderless)
+{
+	this->borderless = borderless;
+	SDL_SetWindowBordered(App->window->window, (SDL_bool)this->borderless);
+}
+
+void ModuleWindow::SetFullDesktop(bool full_desktop)
+{
+	this->full_desktop = full_desktop;
+}
+
+void ModuleWindow::SetBrightness(float brightness)
+{
+	this->brightness = brightness;
+	SDL_SetWindowBrightness(this->window, this->brightness);
+}
+
 bool ModuleWindow::Load(JSON_Value* root_value)
 {
 	bool ret = false;
 
 	root_value = json_parse_file("config_data.json");
 	SDL_SetWindowSize(window, json_object_dotget_number(json_object(root_value), "window.size.width"), json_object_dotget_number(json_object(root_value), "window.size.height"));
+
+	bool fullscreen = json_object_dotget_boolean(json_object(root_value), "window.options.fullscreen");
+	SetFullscreen(fullscreen);
+
+	bool resizable = json_object_dotget_boolean(json_object(root_value), "window.options.resizable");
+	SetResizable(resizable);
+
+	bool borderless = json_object_dotget_boolean(json_object(root_value), "window.options.borderless");
+	SetBorderless(borderless);
+
+	bool full_desktop = json_object_dotget_boolean(json_object(root_value), "window.options.full_desktop");
+	SetFullDesktop(full_desktop);
+
+	float brightness = json_object_dotget_number(json_object(root_value), "window.options.brightness");
+	SetBrightness(brightness);
 
 	ret = true;
 	return ret;
@@ -124,6 +169,13 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 	json_object_dotset_number(root_obj, "window.size.width", width);
 	//json_object_set_number(root_obj, "width", width);
 	json_object_dotset_number(root_obj, "window.size.height", height);
+	
+	json_object_dotset_boolean(root_obj, "window.options.fullscreen", this->fullscreen);
+	json_object_dotset_boolean(root_obj, "window.options.resizable", this->resizable);
+	json_object_dotset_boolean(root_obj, "window.options.borderless", this->borderless);
+	json_object_dotset_boolean(root_obj, "window.options.full_desktop", this->full_desktop);
+	json_object_dotset_number(root_obj, "window.options.brightness", this->brightness);
+
 	json_serialize_to_file(root_value, "config_data.json");
 
 	ret = true;

@@ -1,14 +1,1 @@
-{
-  "camera": {
-    "pos": {
-      "x": 0.98058062791824341,
-      "y": 0.98058062791824341,
-      "z": 0.98058062791824341
-    }
-  },
-  "window": {
-    "size": {
-      "height": 738,
-      "width": 1323
-    }
-  }}
+{"camera":{"pos":{"x":0.70710676908493042,"y":0.70710676908493042,"z":0.70710676908493042}},"window":{"size":{"height":600,"width":800},"options":{"brightness":1,"fullscreen":false,"resizable":true,"borderless":false,"full_desktop":false}}}
