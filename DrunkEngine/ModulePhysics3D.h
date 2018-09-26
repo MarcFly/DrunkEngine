@@ -34,10 +34,8 @@ public:
 	PhysBody3D* AddBody(const PCube& cube, float mass = 1.0f);
 	PhysBody3D* AddBody(const PCylinder& cylinder, float mass = 1.0f);
 
-	// Create the MathObjs
-	void AddMBody(const Sphere& sphere) {
-		Sphere* add = new Sphere(sphere); spheres.push_back(add);
-	}
+	
+
 
 	//void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
 	//void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
@@ -73,6 +71,44 @@ private:
 	std::list<LineSegment*> segments;
 	std::list<btConvexHullShape*> convex_hull_shapes;
 	std::list<TriangleMesh*> tri_meshes;
+
+public:
+	// Create the MathObjs
+	void AddSphereMath(const vec& center, const float& radius)
+	{
+		Sphere* add = new Sphere(center,radius); 
+		spheres.push_back(add);
+	}
+	void AddCapsuleMath(const LineSegment& axis_segment, const float& radius) 
+	{
+		Capsule* add = new Capsule(axis_segment, radius);
+		capsules.push_back(add);
+	}
+	void AddAABBMath(const vec& min_point, const vec& max_point)
+	{
+		AABB* add = new AABB(min_point,max_point);
+		cubes.push_back(add);
+	}
+	void AddAABBMath(const vec& center, const float& radius)
+	{
+		AABB* add = new AABB(Sphere(center, radius));
+		cubes.push_back(add);
+	}
+	void AddPlaneMath(const vec& point, const vec& normal)
+	{
+		Plane* add = new Plane(point, normal);
+		planes.push_back(add);
+	}
+	void AddRayMath(const vec& start_pos, const vec& dir)
+	{
+		Ray* add = new Ray(start_pos, dir);
+		rays.push_back(add);
+	}
+	void AddTriMath(const vec& a, const vec& b, const vec& c)
+	{
+		Triangle* add = new Triangle(a,b,c);
+		tris.push_back(add);
+	}
 };
 
 class DebugDrawer : public btIDebugDraw
