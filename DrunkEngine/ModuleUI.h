@@ -13,6 +13,7 @@ class Window;
 class OptionsWindow;
 class AboutWindow;
 class RandomGenWindow;
+class GEOMWindow;
 
 class ModuleUI : public Module
 {
@@ -29,9 +30,10 @@ public:
 	bool MainMenu();
 
 public:
-	OptionsWindow * options_win = nullptr;
-	AboutWindow * about_win = nullptr;
+	OptionsWindow* options_win = nullptr;
+	AboutWindow* about_win = nullptr;
 	RandomGenWindow* random_win = nullptr;
+	GEOMWindow* geometry_win = nullptr;
 
 private:
 	bool show_demo_window;

@@ -58,6 +58,24 @@
     <Filter Include="Sources\Tools\JSON">
       <UniqueIdentifier>{c8c2b772-e1bf-4912-ada0-9dc7f711adf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\GLEW">
+      <UniqueIdentifier>{7d3c9532-e63a-4d46-afc1-ea213e673fa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\lib">
+      <UniqueIdentifier>{49e68988-9d26-4bd4-a9de-f87caa5b6e50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\include">
+      <UniqueIdentifier>{9c95f6f8-1c11-4b44-a520-9a14ec393bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\include\GL">
+      <UniqueIdentifier>{1900137a-542c-43f7-9742-4fe9083dba3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\lib\Release">
+      <UniqueIdentifier>{da8a6bf6-efd3-4b52-a054-4354f90d39cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\lib\Release\Win32">
+      <UniqueIdentifier>{f1254f7b-3cce-4fc5-a13e-856f64938aa4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -345,6 +363,21 @@
     <ClInclude Include="parson\parson.h">
       <Filter>Sources\Tools\JSON</Filter>
     </ClInclude>
+    <ClInclude Include="GLEW\include\GL\eglew.h">
+      <Filter>Sources\Tools\GLEW\include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GLEW\include\GL\glew.h">
+      <Filter>Sources\Tools\GLEW\include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GLEW\include\GL\glxew.h">
+      <Filter>Sources\Tools\GLEW\include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GLEW\include\GL\wglew.h">
+      <Filter>Sources\Tools\GLEW\include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryCreationWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -542,6 +575,9 @@
     <ClCompile Include="parson\parson.c">
       <Filter>Sources\Tools\JSON</Filter>
     </ClCompile>
+    <ClCompile Include="GeometryCreationWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MGL\Math\float2.inl">
@@ -568,5 +604,16 @@
     <None Include="MGL\emscripten\library_system.js">
       <Filter>Sources\Tools\MathGeoLib\emscriptem</Filter>
     </None>
+    <None Include="GLEW\lib\Release\Win32\glew32.dll">
+      <Filter>Sources\Tools\GLEW\lib\Release\Win32</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="GLEW\lib\Release\Win32\glew32.lib">
+      <Filter>Sources\Tools\GLEW\lib\Release\Win32</Filter>
+    </Library>
+    <Library Include="GLEW\lib\Release\Win32\glew32s.lib">
+      <Filter>Sources\Tools\GLEW\lib\Release\Win32</Filter>
+    </Library>
   </ItemGroup>
 </Project>

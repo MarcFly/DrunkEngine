@@ -77,6 +77,11 @@
     <ClInclude Include="AboutWindow.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="GeometryCreationWindow.h" />
+    <ClInclude Include="GLEW\include\GL\eglew.h" />
+    <ClInclude Include="GLEW\include\GL\glew.h" />
+    <ClInclude Include="GLEW\include\GL\glxew.h" />
+    <ClInclude Include="GLEW\include\GL\wglew.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
     <ClInclude Include="MGL\Algorithm\Random\LCG.h" />
     <ClInclude Include="MGL\Algorithm\SAT.h" />
@@ -174,6 +179,7 @@
     <ClCompile Include="AboutWindow.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="MGL\Algorithm\GJK.cpp" />
     <ClCompile Include="MGL\Algorithm\Random\LCG.cpp" />
     <ClCompile Include="MGL\Geometry\AABB.cpp" />
@@ -238,6 +244,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="GLEW\lib\Release\Win32\glew32.dll" />
     <None Include="MGL\emscripten\library_system.js" />
     <None Include="MGL\Geometry\KDTree.inl" />
     <None Include="MGL\Geometry\QuadTree.inl" />
@@ -246,6 +253,10 @@
     <None Include="MGL\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MGL\Math\float2.inl" />
     <None Include="MGL\Math\Matrix.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="GLEW\lib\Release\Win32\glew32.lib" />
+    <Library Include="GLEW\lib\Release\Win32\glew32s.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
