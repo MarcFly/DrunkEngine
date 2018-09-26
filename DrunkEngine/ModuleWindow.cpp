@@ -35,6 +35,11 @@ bool ModuleWindow::Init()
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
+		// Set Important SDL_GL_Attributes
+		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, true);
+
+
 		if(WIN_FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;

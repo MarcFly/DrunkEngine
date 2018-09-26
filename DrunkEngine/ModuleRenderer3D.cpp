@@ -20,11 +20,11 @@ ModuleRenderer3D::~ModuleRenderer3D()
 // Called before render is available
 bool ModuleRenderer3D::Init()
 {
-	PLOG("Creating 3D Renderer context");
 	bool ret = true;
 	vsync = true;
 
 	//Create context
+	PLOG("Creating 3D Renderer context");
 	context = SDL_GL_CreateContext(App->window->window);
 	if (GLEW_OK != glewInit())
 	{

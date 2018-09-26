@@ -1,4 +1,6 @@
 #include "AboutWindow.h"
+#include "GLEW/include/GL/glew.h"
+#include <gl/GL.h>
 
 AboutWindow::AboutWindow(Application* app) : Window("About...", SDL_SCANCODE_I)
 {
@@ -18,8 +20,17 @@ void AboutWindow::Draw()
 		ImGui::TextWrapped("\nThis engine has been made as a project for a 3rd course subject on videogame development.\n\n");
 		ImGui::Text("Authors: Andreu Sacasas\n         Marc Torres\n\n");
 		ImGui::Separator();
-		ImGui::Text("\nLibraries used: OpenGL (V 2.1)\n				SDL    (V 2.0.8)\n				ImGui  (V 1.66)\n				Bullet (V 2.84)\n\n");
+
+		// Get Library Versions
+		SDL_version sdl_ver;
+		SDL_GetVersion(&sdl_ver);
+		int major, minor;
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+		ImGui::Text("\nLibraries used: OpenGL (%d.%d)\n				SDL    (%d.%d.%d)\n				ImGui  (%.2f)\n				Bullet (%.2f)\n				GLEW (%d.%d.%d)\n\n", major, minor, sdl_ver.major, sdl_ver.minor, sdl_ver.patch, IMGUI_VERSION_NUM / 10000.0f, btGetVersion() / 100.0f, GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
+		
 		ImGui::Separator();
+
 		ImGui::TextWrapped("\nMIT License\n\nCopyright(c) 2018 Marc Torres Jimenez & Andreu Sacasas Velazquez\n\n"
 			"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files(the 'Software'), to deal "
 			"in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
