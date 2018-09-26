@@ -14,6 +14,7 @@ class OptionsWindow;
 class AboutWindow;
 class RandomGenWindow;
 class GEOMWindow;
+class OpenGLOptions;
 
 class ModuleUI : public Module
 {
@@ -34,6 +35,7 @@ public:
 	AboutWindow* about_win = nullptr;
 	RandomGenWindow* random_win = nullptr;
 	GEOMWindow* geometry_win = nullptr;
+	OpenGLOptions* opengl_win = nullptr;
 
 private:
 	bool show_demo_window;

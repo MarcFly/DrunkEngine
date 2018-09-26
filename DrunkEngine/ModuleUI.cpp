@@ -13,6 +13,7 @@
 #include "AboutWindow.h"
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
+#include "OpenGLOptions.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -43,6 +44,7 @@ bool ModuleUI::Init()
 	windows.push_back(about_win = new AboutWindow(App));
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow(App));
+	windows.push_back(opengl_win = new OpenGLOptions(App));
 
 	return ret;
 }
@@ -133,6 +135,9 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Test Objects"))
 				geometry_win->SwitchActive();
 			
+			if (ImGui::MenuItem("OpenGL Settings"))
+				opengl_win->SwitchActive();
+
 			ImGui::EndMenu();
 		}
 	}

@@ -29,6 +29,7 @@ private:
 public:
 	
 	vec X, Y, Z, Position, Reference;
+	Color background;
 
 private:
 
