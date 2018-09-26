@@ -114,7 +114,7 @@ void ModuleWindow::SetResizable(bool resizable)
 void ModuleWindow::SetBorderless(bool borderless)
 {
 	this->borderless = borderless;
-	SDL_SetWindowBordered(App->window->window, (SDL_bool)this->borderless);
+	SDL_SetWindowBordered(App->window->window, (SDL_bool)!this->borderless);
 }
 
 void ModuleWindow::SetFullDesktop(bool full_desktop)

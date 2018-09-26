@@ -108,12 +108,14 @@ void OptionsWindow::Draw()
 				App->window->SetResizable(resizable);
 
 			if (ImGui::Checkbox("Borderless", &borderless))
-				App->window->SetBorderless(!borderless);
+				App->window->SetBorderless(borderless);
 
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Full Desktop", &full_desktop))
 				App->window->SetFullDesktop(full_desktop);
 
+			if (ImGui::Button("Save Changes"))
+				App->window->Save(nullptr);
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{

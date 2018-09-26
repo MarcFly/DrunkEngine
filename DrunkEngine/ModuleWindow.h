@@ -44,11 +44,11 @@ public:
 
 public:
 
-	bool GetFullscreen()	{ return fullscreen; }
-	bool GetResizable()		{ return resizable; }
-	bool GetBorderless()	{ return borderless; }
-	bool GetFullDesktop()	{ return full_desktop; }
-	float GetBrightness()	{ return brightness; }
+	bool GetFullscreen() const		{ return fullscreen; }
+	bool GetResizable() const		{ return resizable; }
+	bool GetBorderless() const		{ return borderless; }
+	bool GetFullDesktop() const		{ return full_desktop; }
+	float GetBrightness() const		{ return brightness; }
 };
 
 #endif // __ModuleWindow_H__
