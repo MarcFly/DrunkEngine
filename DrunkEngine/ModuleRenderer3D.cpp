@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "GLEW/include/GL/glew.h"
-#include "SDL\include\SDL_opengl.h"
+#include "SDL/include/SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -112,7 +112,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClearColor(c.r,c.g,c.b,c.a);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glLoadIdentity();
+	glLoadIdentity();
 
 	int width, height;
 	SDL_GetWindowSize(App->window->window, &width, &height);
@@ -164,10 +164,10 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-
+	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix = temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	//ProjectionMatrix.Transpose();
 	glLoadMatrixf((float*)ProjectionMatrix.v);
 
