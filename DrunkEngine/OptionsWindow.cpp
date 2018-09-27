@@ -13,12 +13,12 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_
 {
 	App = app;
 
-	fullscreen = false;
-	resizable = true;
-	borderless = false;
-	full_desktop = false;
+	fullscreen = App->window->GetFullscreen();
+	resizable = App->window->GetResizable();
+	borderless = App->window->GetBorderless();
+	full_desktop = App->window->GetFullDesktop();
 
-	brightness = 1.0;
+	brightness = App->window->GetBrightness();
 	max_fps = 60;
 }
 
@@ -47,19 +47,17 @@ void OptionsWindow::Draw()
 				App->Cap_FPS(max_fps);
 			}
 
-			
-			if (fps_history.size() > 25) 
-			{
-				for (int i = 1; i < fps_history.size(); i++)
-					fps_history[i-1] = fps_history[i];
-			}
-
 			char title[20];
 			if (frame_read_time.Read() >= 200) {
 				if(fps_history.size() < 25)
 					fps_history.push_back(App->GetFPS());
 				else
+				{
+					for (int i = 1; i < fps_history.size(); i++)
+						fps_history[i - 1] = fps_history[i];
+
 					--*fps_history.end()._Ptr = App->GetFPS();
+				}
 				frame_read_time.Start();
 			}
 			sprintf_s(title, 20, "Framerate %.2f", fps_history[fps_history.size() - 1]);
@@ -69,9 +67,9 @@ void OptionsWindow::Draw()
 		
 			if (dt_history.size() > 60) 
 			{
-				dt_history.erase(dt_history.begin(), dt_history.begin());
 				for (int i = 1; i < dt_history.size(); i++)
 					dt_history[i-1] = dt_history[i];
+
 				--*dt_history.end()._Ptr = App->GetDt();
 			}
 			else
@@ -87,7 +85,7 @@ void OptionsWindow::Draw()
 			SDL_GetWindowSize(App->window->window, &width, &height);
 
 			if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f))
-				SDL_SetWindowBrightness(App->window->window, brightness);
+				App->window->SetBrightness(brightness);
 
 			if (ImGui::SliderInt("Width", &width, 720, 1920) && !fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
@@ -100,21 +98,24 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Checkbox("Fullscreen", &fullscreen))
 			{
-				SDL_SetWindowFullscreen(App->window->window, fullscreen);
+				App->window->SetFullscreen(fullscreen);
 				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
-				SDL_SetWindowSize(App->window->window, width, height);
+				//SDL_SetWindowSize(App->window->window, width, height);
 
 			}
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Resizable", &resizable))
-				SDL_SetWindowResizable(App->window->window, (SDL_bool)resizable);
+				App->window->SetResizable(resizable);
 
 			if (ImGui::Checkbox("Borderless", &borderless))
-				SDL_SetWindowBordered(App->window->window, (SDL_bool)!borderless);
+				App->window->SetBorderless(borderless);
 
 			ImGui::SameLine();
-			ImGui::Checkbox("Full Desktop", &full_desktop);
+			if (ImGui::Checkbox("Full Desktop", &full_desktop))
+				App->window->SetFullDesktop(full_desktop);
 
+			if (ImGui::Button("Save Changes"))
+				App->window->Save(nullptr);
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{

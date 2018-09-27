@@ -23,12 +23,32 @@ public:
 
 	void SetTitle(const char* title);
 
+	void SetFullscreen(bool fullscreen);
+	void SetResizable(bool resizable);
+	void SetBorderless(bool borderless);
+	void SetFullDesktop(bool full_desktop);
+	void SetBrightness(float brightness);
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window;
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
+
+	bool fullscreen;
+	bool resizable;
+	bool borderless;
+	bool full_desktop;
+	float brightness;
+
+public:
+
+	bool GetFullscreen() const		{ return fullscreen; }
+	bool GetResizable() const		{ return resizable; }
+	bool GetBorderless() const		{ return borderless; }
+	bool GetFullDesktop() const		{ return full_desktop; }
+	float GetBrightness() const		{ return brightness; }
 };
 
 #endif // __ModuleWindow_H__
