@@ -48,39 +48,36 @@ bool ModuleRenderer3D::Init()
 		glLoadIdentity();
 
 		//Check for error
-		GLenum error = glGetError();
-		if(error != GL_NO_ERROR)
-		{
-			PLOG("Error initializing OpenGL! %s\n", gluErrorString(error));
-			ret = false;
-		}
+		ret = CheckGLError();
 
 		//Initialize Modelview Matrix
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		//Check for error
-		error = glGetError();
-		if(error != GL_NO_ERROR)
-		{
-			PLOG("Error initializing OpenGL! %s\n", gluErrorString(error));
-			ret = false;
-		}
+		//Check for error;
+		ret = CheckGLError();
 		
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		glClearDepth(1.0f);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+		glClearDepth(0.0f);
 		
 		//Initialize clear color
-		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // This blend is for transparency, with primitives sorted from far to near, also to antialiased points
+		// There are different ways to optimize different effects, polygon optimization is SRC_ALPHA_SATURATE, GL_ONE for example, and disable PolygonSmooth
 
 		//Check for error
-		error = glGetError();
-		if(error != GL_NO_ERROR)
-		{
-			PLOG("Error initializing OpenGL! %s\n", gluErrorString(error));
-			ret = false;
-		}
+		ret = CheckGLError();
 		
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
+		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
+
+		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
+		glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
+
+		glEnable(GL_TEXTURE_2D); // Texturing is performed in 2D, important for activetexture
+
+		// Something about lights
 		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
 		
@@ -89,23 +86,21 @@ bool ModuleRenderer3D::Init()
 		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
 		lights[0].SetPos(0.0f, 0.0f, 2.5f);
 		lights[0].Init();
-		
+		lights[0].Active(true);
 
+		// Something about materials
 		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
 
 		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 		
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		lights[0].Active(true);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
+		
 	}
 
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 	
 	return ret;
 }
@@ -113,12 +108,20 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
+	Color c = App->camera->background;
+	glClearColor(c.r,c.g,c.b,c.a);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	//glLoadIdentity();
+
+	int width, height;
+	SDL_GetWindowSize(App->window->window, &width, &height);
+	glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
 
+	// Something Something lights
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
@@ -165,4 +168,18 @@ void ModuleRenderer3D::ChangeVsync()
 	if (SDL_GL_SetSwapInterval(vsync) < 0)
 		PLOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
+}
+
+bool ModuleRenderer3D::CheckGLError()
+{
+	bool ret = true;
+
+	//Check for error
+	if (glGetError() != GL_NO_ERROR)
+	{
+		PLOG("Error initializing OpenGL! %s\n", gluErrorString(glGetError()));
+		ret = false;
+	}
+
+	return ret;
 }

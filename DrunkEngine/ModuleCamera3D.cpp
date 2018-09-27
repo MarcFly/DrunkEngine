@@ -11,6 +11,8 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 
 	Position = vec(0.0f, 0.0f, 5.0f);
 	Reference = vec(0.0f, 0.0f, 0.0f);
+	
+	background = Color(0.f, 0.0f, 0.f, 1.0f);
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -24,8 +26,6 @@ bool ModuleCamera3D::Start()
 
 	App->camera->Move(vec(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec(0, 0, 0));
-
-	// test body just in case how it works
 	
 
 	return ret;

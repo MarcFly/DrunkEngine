@@ -378,6 +378,9 @@
     <ClInclude Include="GeometryCreationWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLOptions.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -576,6 +579,9 @@
       <Filter>Sources\Tools\JSON</Filter>
     </ClCompile>
     <ClCompile Include="GeometryCreationWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLOptions.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>

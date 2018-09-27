@@ -20,6 +20,7 @@ public:
 
 	void OnResize(int width, int height);
 	void ChangeVsync();
+	bool CheckGLError();
 
 public:
 
