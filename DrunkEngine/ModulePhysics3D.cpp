@@ -223,7 +223,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
 	shapes.push_back(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&sphere.transform.v[0][0]);
+	startTransform.setFromOpenGLMatrix((float*)sphere.transform.v);
 
 	btVector3 localInertia(0, 0, 0);
 	if (mass != 0.f)
@@ -253,7 +253,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
 	shapes.push_back(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cube.transform.Transposed().v[0][0]);
+	startTransform.setFromOpenGLMatrix((float*)cube.transform.Transposed().v);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)
@@ -282,7 +282,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
 	shapes.push_back(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cylinder.transform.Transposed().v[0][0]);
+	startTransform.setFromOpenGLMatrix((float*)cylinder.transform.Transposed().v);
 
 	btVector3 localInertia(0, 0, 0);
 	if(mass != 0.f)

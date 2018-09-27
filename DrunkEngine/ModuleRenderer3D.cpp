@@ -119,7 +119,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix());
+	glLoadMatrixf(App->camera->GetViewMatrix()); //App->camera->GetViewMatrix()
 
 	// Something Something lights
 	// light 0 on cam pos
@@ -127,6 +127,18 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
+
+	// Test Line
+	glLineWidth(2.0f);
+
+	glBegin(GL_LINES);
+	{
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(0.0f, 10.0f, 0.0f);
+	}
+	glEnd();
+
+	glLineWidth(1.0f);
 
 	return UPDATE_CONTINUE;
 }
@@ -155,8 +167,9 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix.OpenGLPerspProjRH(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	glLoadMatrixf(&ProjectionMatrix.v[0][0]);
+	ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	//ProjectionMatrix.Transpose();
+	glLoadMatrixf((float*)ProjectionMatrix.v);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

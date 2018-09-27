@@ -474,6 +474,25 @@ float4x4 float4x4::D3DOrthoProjLH(float n, float f, float h, float v)
 		(-h/2, -v/2, n) maps to (-1, -1, 0).
 		(h/2, v/2, f) maps to (1, 1, 1).
 	*/
+// OPENGL SIMPLE PERSPECTIVE ADDED DIRECTLY
+float4x4 float4x4::perspective(float fovy, float aspect, float n, float f)
+{
+
+	float4x4 Perspective;
+
+	float coty = 1.0f / tan(fovy * (float)pi / 360.0f);
+
+	Perspective.Set(0, 0, coty / aspect);
+	Perspective.Set(1, 1, coty);
+	Perspective.Set(2, 2, (n + f) / (n - f));
+	Perspective.Set(2, 3, -1.0f);
+	Perspective.Set(3, 2, 2.0f * n * f / (n - f));
+	Perspective.Set(3, 3, 0.0f);
+
+
+	return Perspective;
+}
+
 float4x4 float4x4::D3DOrthoProjRH(float n, float f, float h, float v)
 {
 	// D3DOrthoProjLH and D3DOrthoProjRH differ from each other in that the third column is negated.
