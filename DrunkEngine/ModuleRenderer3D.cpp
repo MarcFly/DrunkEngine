@@ -58,7 +58,7 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-		//glClearDepth(0.0f);
+		glClearDepth(0.0f);
 		
 		//Initialize clear color
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
@@ -69,7 +69,7 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		glEnable(GL_BLEND);
-		//glEnable(GL_DEPTH_TEST); // Tests depth when rendering
+		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
 
 		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
@@ -112,14 +112,14 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClearColor(c.r,c.g,c.b,c.a);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	//glLoadIdentity();
 
 	int width, height;
 	SDL_GetWindowSize(App->window->window, &width, &height);
 	glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix());
+	glLoadMatrixf(App->camera->GetViewMatrix()); //App->camera->GetViewMatrix()
 
 	// Something Something lights
 	// light 0 on cam pos
@@ -165,11 +165,9 @@ void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
 
-	float4x4 new_matrix;
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = new_matrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	//ProjectionMatrix.Transpose();
 	glLoadMatrixf((float*)ProjectionMatrix.v);
 
