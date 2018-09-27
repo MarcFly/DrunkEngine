@@ -217,13 +217,14 @@ bool ModulePhysics3D::CleanUp()
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const PSphere& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const vec& center, const PSphere& sphere, float mass)
 {
 	btCollisionShape* colShape = new btSphereShape(sphere.radius);
 	shapes.push_back(colShape);
 
 	btTransform startTransform;
 	startTransform.setFromOpenGLMatrix((float*)sphere.transform.v);
+	startTransform.setOrigin(btVector3(center.x,center.y,center.z));
 
 	btVector3 localInertia(0, 0, 0);
 	if (mass != 0.f)

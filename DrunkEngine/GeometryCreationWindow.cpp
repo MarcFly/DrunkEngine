@@ -24,7 +24,7 @@ void GEOMWindow::Draw()
 		if(ImGui::Button("Create"))
 		{
 			if (sphere_phys)
-				App->physics->AddBody(PSphere(sphere_radius));
+				App->physics->AddBody(sphere_center, PSphere(sphere_radius));
 			else
 				App->physics->AddSphereMath(sphere_center, sphere_radius);
 		}
