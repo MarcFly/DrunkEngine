@@ -20,9 +20,7 @@ PrimitiveTypes Primitive::GetType() const
 void Primitive::Render() const
 {
 	glPushMatrix();
-	/*float trMatrix[16];
-	for (int i = 0; i < 16; i++)
-		trMatrix[i] = transform.At(i/4,i/(i/4));*/
+
 	glMultMatrixf((float*)transform.v);
 
 	if(axis == true)
