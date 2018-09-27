@@ -119,7 +119,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix()); //App->camera->GetViewMatrix()
+	glLoadMatrixf(App->camera->GetViewMatrix());
 
 	// Something Something lights
 	// light 0 on cam pos

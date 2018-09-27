@@ -81,7 +81,7 @@ update_status ModuleCamera3D::Update(float dt)
 		if(dx != 0)
 		{
 			float DeltaX = (float)dx * Sensitivity;
-
+			
 			Quat qX = { X.x,X.y,X.z,1.0f };
 			Quat qY = { Y.x,Y.y,Y.z,1.0f };
 			Quat qZ = { Z.x,Z.y,Z.z,1.0f };
@@ -130,11 +130,11 @@ void ModuleCamera3D::Look(const vec &Position, const vec &Reference, bool Rotate
 	this->Position = Position;
 	this->Reference = Reference;
 
-	Z = (Position - Reference);
-	Z.Normalized();
+	vec aux_z = Position - Reference;
+	Z = aux_z.Normalized();
 
-	X = vec(0.0f, 1.0f, 0.0f).Cross(Z);
-	X.Normalized();
+	vec aux_x = vec(0.0f, 1.0f, 0.0f).Cross(Z);
+	X = aux_x.Normalized();
 
 	Y = Z.Cross(X);
 
@@ -152,11 +152,11 @@ void ModuleCamera3D::LookAt( const vec &Spot)
 {
 	Reference = Spot;
 
-	Z = (Position - Reference);
-	Z.Normalized();
+	vec aux_z = Position - Reference;
+	Z = aux_z.Normalized();
 
-	X = vec(0.0f, 1.0f, 0.0f).Cross(Z);
-	X.Normalized();
+	vec aux_x = vec(0.0f, 1.0f, 0.0f).Cross(Z);
+	X = aux_x.Normalized();
 
 	Y = Z.Cross(X);
 
