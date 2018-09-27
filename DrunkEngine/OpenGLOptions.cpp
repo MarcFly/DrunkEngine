@@ -5,7 +5,8 @@
 OpenGLOptions::OpenGLOptions(Application* app) : Window("OpenGL Settings", SDL_SCANCODE_O)
 {
 	App = app;
-	depth_test = cull_face = lighting = color_material = texture_2d = true;
+	depth_test = false;
+	cull_face = lighting = color_material = texture_2d = true;
 }
 
 void OpenGLOptions::Draw()

@@ -69,7 +69,7 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		glEnable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
+		//glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
 
 		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
@@ -134,7 +134,14 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glBegin(GL_LINES);
 	{
 		glVertex3f(0.0f, 0.0f, 0.0f);
-		glVertex3f(0.0f, 10.0f, 0.0f);
+		glVertex3f(10.0f, 0.0f, 10.0f);
+
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(10.0f, 10.0f, 0.0f);
+
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(0.0f, 10.0f, 10.0f);
+
 	}
 	glEnd();
 
@@ -147,6 +154,9 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	SDL_GL_SwapWindow(App->window->window);
+
+	
+
 	return UPDATE_CONTINUE;
 }
 
@@ -167,10 +177,10 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	//ProjectionMatrix.Transpose();
-	glLoadMatrixf((float*)ProjectionMatrix.v);
-
+	//ProjectionMatrix = temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);//temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	//glLoadMatrixf((float*)ProjectionMatrix.v);
+	glLoadMatrixf(&ProjectionMatrix);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }

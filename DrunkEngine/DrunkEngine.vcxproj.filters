@@ -76,6 +76,9 @@
     <Filter Include="Sources\Tools\GLEW\lib\Release\Win32">
       <UniqueIdentifier>{f1254f7b-3cce-4fc5-a13e-856f64938aa4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\glmath">
+      <UniqueIdentifier>{cba521c0-af3e-42ac-83b7-d1ee628c678c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -381,6 +384,9 @@
     <ClInclude Include="OpenGLOptions.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
+    <ClInclude Include="glmath\glmath.h">
+      <Filter>Sources\Tools\glmath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -583,6 +589,9 @@
     </ClCompile>
     <ClCompile Include="OpenGLOptions.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="glmath\glmath.cpp">
+      <Filter>Sources\Tools\glmath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
