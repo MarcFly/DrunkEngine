@@ -5,6 +5,8 @@
 #include "Globals.h"
 #include "Light.h"
 
+#include "glmath/glmath.h"
+
 #define MAX_LIGHTS 8
 
 class ModuleRenderer3D : public Module
@@ -26,8 +28,8 @@ public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	float3x3 NormalMatrix;
-	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	mat3x3 NormalMatrix;
+	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 	bool vsync;
 };
 

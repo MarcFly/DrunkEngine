@@ -82,6 +82,7 @@
     <ClInclude Include="GLEW\include\GL\glew.h" />
     <ClInclude Include="GLEW\include\GL\glxew.h" />
     <ClInclude Include="GLEW\include\GL\wglew.h" />
+    <ClInclude Include="glmath\glmath.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
     <ClInclude Include="MGL\Algorithm\Random\LCG.h" />
     <ClInclude Include="MGL\Algorithm\SAT.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
+    <ClCompile Include="glmath\glmath.cpp" />
     <ClCompile Include="MGL\Algorithm\GJK.cpp" />
     <ClCompile Include="MGL\Algorithm\Random\LCG.cpp" />
     <ClCompile Include="MGL\Geometry\AABB.cpp" />

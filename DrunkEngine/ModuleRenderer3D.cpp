@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "GLEW/include/GL/glew.h"
-#include "SDL\include\SDL_opengl.h"
+#include "SDL/include/SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -22,6 +22,8 @@ bool ModuleRenderer3D::Init()
 {
 	bool ret = true;
 	vsync = true;
+
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	//Create context
 	PLOG("Creating 3D Renderer context");
@@ -112,7 +114,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClearColor(c.r,c.g,c.b,c.a);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glLoadIdentity();
+	glLoadIdentity();
 
 	int width, height;
 	SDL_GetWindowSize(App->window->window, &width, &height);
@@ -128,6 +130,25 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
+	// Test Line
+	glLineWidth(2.0f);
+
+	glBegin(GL_LINES);
+	{
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(10.0f, 0.0f, 10.0f);
+
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(10.0f, 10.0f, 0.0f);
+
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(0.0f, 10.0f, 10.0f);
+
+	}
+	glEnd();
+
+	glLineWidth(1.0f);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -135,6 +156,9 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	SDL_GL_SwapWindow(App->window->window);
+
+	
+
 	return UPDATE_CONTINUE;
 }
 
@@ -152,12 +176,13 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-
+	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix.OpenGLPerspProjRH(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	glLoadMatrixf(&ProjectionMatrix.v[0][0]);
-
+	//ProjectionMatrix = temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);//temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	//glLoadMatrixf((float*)ProjectionMatrix.v);
+	glLoadMatrixf(&ProjectionMatrix);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }

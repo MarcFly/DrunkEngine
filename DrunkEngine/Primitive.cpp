@@ -23,7 +23,7 @@ void Primitive::Render() const
 	/*float trMatrix[16];
 	for (int i = 0; i < 16; i++)
 		trMatrix[i] = transform.At(i/4,i/(i/4));*/
-	glMultMatrixf(&transform.Transposed().v[0][0]);
+	glMultMatrixf((float*)transform.v);
 
 	if(axis == true)
 	{
