@@ -23,6 +23,8 @@ bool ModuleRenderer3D::Init()
 	bool ret = true;
 	vsync = true;
 
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
 	//Create context
 	PLOG("Creating 3D Renderer context");
 	context = SDL_GL_CreateContext(App->window->window);
@@ -69,7 +71,7 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		glEnable(GL_BLEND);
-		//glEnable(GL_DEPTH_TEST); // Tests depth when rendering
+		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
 
 		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
