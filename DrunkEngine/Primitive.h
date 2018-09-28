@@ -31,6 +31,8 @@ public:
 	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
 
+	virtual bool Intersects(Primitive* mbody2) { return false;};
+
 public:
 	
 	Color color;
@@ -48,6 +50,8 @@ public :
 	PCube();
 	PCube(float sizeX, float sizeY, float sizeZ);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	vec size;
 	Polyhedron MathBody;
@@ -60,6 +64,8 @@ public:
 	PSphere();
 	PSphere(float radius);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	float radius;
 	Sphere MathBody;
@@ -72,6 +78,8 @@ public:
 	PCylinder();
 	PCylinder(float radius, float height);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	float radius;
 	float height;
@@ -85,6 +93,8 @@ public:
 	PLine();
 	PLine(float x, float y, float z);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	vec origin;
 	vec destination;
@@ -98,6 +108,8 @@ public:
 	PPlane();
 	PPlane(float x, float y, float z, float d);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	vec normal;
 	float constant;

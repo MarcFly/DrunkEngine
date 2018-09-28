@@ -3,6 +3,7 @@
 
 #include <list>
 #include "Module.h"
+#include "Primitive.h"
 
 class btRigidBody;
 class Module;
@@ -12,7 +13,7 @@ struct PhysBody3D
 {
 	friend class ModulePhysics3D;
 public:
-	PhysBody3D(btRigidBody* body);
+	PhysBody3D(btRigidBody* body, Primitive* mathbody);
 	~PhysBody3D();
 
 	void Push(float x, float y, float z);
@@ -29,6 +30,7 @@ private:
 public:
 	std::list<Module*> collision_listeners;
 	btRigidBody* body = nullptr;
+	Primitive* mbody = nullptr;
 
 public:
 	//Own Code, new Mechanincs

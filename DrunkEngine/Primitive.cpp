@@ -279,3 +279,71 @@ void PPlane::InnerRender() const
 
 	glEnd();
 }
+
+bool PLine::Intersects(Primitive* mbody2)
+{
+	switch (type) {
+		case 3: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
+		case 4: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
+		case 5: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
+		case 6: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+		default: return false;
+	}
+
+	return false;
+}
+
+bool PPlane::Intersects(Primitive* mbody2)
+{
+	switch (type) {
+	case 3: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
+	case 4: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
+	case 5: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
+	case 6: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	default: return false;
+	}
+
+	return false;
+}
+
+bool PCube::Intersects(Primitive* mbody2)
+{
+	switch (type) {
+	case 2: return ((PLine*)mbody2)->MathBody.Intersects(MathBody);
+	case 3: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
+	case 4: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
+	case 5: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
+	case 6: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	default: return false;
+	}
+
+	return false;
+}
+
+bool PSphere::Intersects(Primitive* mbody2)
+{
+	switch (type) {
+	case 2: return ((PLine*)mbody2)->MathBody.Intersects(MathBody);
+	case 3: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
+	case 4: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
+	case 5: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
+	case 6: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	default: return false;
+	}
+
+	return false;
+}
+
+bool PCylinder::Intersects(Primitive* mbody2)
+{
+	switch (type) {
+	case 2: return ((PLine*)mbody2)->MathBody.Intersects(MathBody);
+	case 3: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
+	case 4: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
+	case 5: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
+	case 6: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	default: return false;
+	}
+
+	return false;
+}

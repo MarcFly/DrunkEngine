@@ -73,6 +73,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	
 	world->stepSimulation(dt, 15);
 	
+	// Bullet Collision detection
 	int numManifolds = world->getDispatcher()->getNumManifolds();
 	for(int i = 0; i<numManifolds; i++)
 	{
@@ -104,7 +105,27 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 			}
 		}
 	}
-	
+
+	// MathGeoLib Collision Detection
+	std::list<PhysBody3D*>::iterator item_pb = bodies.begin();
+
+	while (item_pb != bodies.end() && bodies.size() > 0)
+	{
+		std::list<PhysBody3D*>::iterator item_pb_2 = ++item_pb;
+		item_pb--;
+		while (item_pb_2 != bodies.end())
+		{
+			if (item_pb._Ptr->_Myval->mbody->Intersects(item_pb_2._Ptr->_Myval->mbody))
+			{
+				PLOG("Detected Collision!")
+			}
+			item_pb_2++;
+		}
+
+		item_pb++;
+	}
+
+
 	// Mathbody pos update in relation to physic body
 	std::list<PhysBody3D*>::iterator item = bodies.begin();
 	std::list<Sphere*>::iterator item_sphere = spheres.begin();
@@ -217,7 +238,7 @@ bool ModulePhysics3D::CleanUp()
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const vec& center, const PSphere& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, float mass)
 {
 	btCollisionShape* colShape = new btSphereShape(sphere.radius);
 	shapes.push_back(colShape);
@@ -235,7 +256,8 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, const PSphere& sphere, f
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
-	PhysBody3D* pbody = new PhysBody3D(body);
+	PSphere* new_sphere = new PSphere(sphere);
+	PhysBody3D* pbody = new PhysBody3D(body, new_sphere);
 
 	// Add Mathematical Sphere
 	AddSphereMath((vec)body->getCenterOfMassPosition(), sphere.radius);
@@ -248,7 +270,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, const PSphere& sphere, f
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(PCube& cube, float mass)
 {
 	btCollisionShape* colShape = new btBoxShape(btVector3(cube.size.x*0.5f, cube.size.y*0.5f, cube.size.z*0.5f));
 	shapes.push_back(colShape);
@@ -265,7 +287,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
-	PhysBody3D* pbody = new PhysBody3D(body);
+	PhysBody3D* pbody = new PhysBody3D(body, &cube);
 
 	// Add Mathematical Sphere
 	AddAABBMath((vec)body->getCenterOfMassPosition(), cube.size.x);
@@ -277,7 +299,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCube& cube, float mass)
 }
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(PCylinder& cylinder, float mass)
 {
 	btCollisionShape* colShape = new btCylinderShapeX(btVector3(cylinder.height*0.5f, cylinder.radius, 0.0f));
 	shapes.push_back(colShape);
@@ -294,7 +316,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const PCylinder& cylinder, float mass)
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
-	PhysBody3D* pbody = new PhysBody3D(body);
+	PhysBody3D* pbody = new PhysBody3D(body, &cylinder);
 
 	world->addRigidBody(body);
 	bodies.push_back(pbody);
