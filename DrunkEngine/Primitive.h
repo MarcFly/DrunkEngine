@@ -49,12 +49,13 @@ class PCube : public Primitive
 public :
 	PCube();
 	PCube(float sizeX, float sizeY, float sizeZ);
+	PCube(float size_cube);
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
 public:
 	vec size;
-	Polyhedron MathBody;
+	AABB MathBody;
 };
 
 // ============================================

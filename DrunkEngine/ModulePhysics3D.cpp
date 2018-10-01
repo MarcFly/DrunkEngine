@@ -111,6 +111,14 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 
 	while (item_pb != bodies.end() && bodies.size() > 0)
 	{
+		if(item_pb._Ptr->_Myval->body != nullptr)
+		{
+			vec center = (vec)item_pb._Ptr->_Myval->body->getCenterOfMassPosition();
+				
+			item_pb._Ptr->_Myval->mbody->SetPos(center.x, center.y, center.z);			
+		}
+			
+
 		std::list<PhysBody3D*>::iterator item_pb_2 = ++item_pb;
 		item_pb--;
 		while (item_pb_2 != bodies.end())
@@ -136,7 +144,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	std::list<Ray*>::iterator item_ray = rays.begin();
 	std::list<Triangle*>::iterator item_tri = tris.begin();
 
-	while (item != bodies.end() && bodies.size() > 0) {
+	/*while (item != bodies.end() && bodies.size() > 0) {
 		if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE && item_sphere != spheres.end() && spheres.size() > 0)
 		{
 			item_sphere._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_sphere._Ptr->_Myval->Centroid()));
@@ -169,7 +177,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		}
 		item++;
 		
-	}
+	*/
 
 	return UPDATE_CONTINUE;
 }
@@ -238,31 +246,41 @@ bool ModulePhysics3D::CleanUp()
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, bool phys, float mass)
 {
-	btCollisionShape* colShape = new btSphereShape(sphere.radius);
-	shapes.push_back(colShape);
+	btRigidBody* body = nullptr;
 
-	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix((float*)sphere.transform.v);
-	startTransform.setOrigin(btVector3(center.x,center.y,center.z));
+	if (phys == true) {
+		btCollisionShape* colShape = new btSphereShape(sphere.radius);
+		shapes.push_back(colShape);
 
-	btVector3 localInertia(0, 0, 0);
-	if (mass != 0.f)
-		colShape->calculateLocalInertia(mass, localInertia);
+		btTransform startTransform;
+		startTransform.setFromOpenGLMatrix((float*)sphere.transform.v);
+		startTransform.setOrigin(btVector3(center.x, center.y, center.z));
 
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	motions.push_back(myMotionState);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
+		btVector3 localInertia(0, 0, 0);
+		if (mass != 0.f)
+			colShape->calculateLocalInertia(mass, localInertia);
 
-	btRigidBody* body = new btRigidBody(rbInfo);
+		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+		motions.push_back(myMotionState);
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
+
+		body = new btRigidBody(rbInfo);
+
+		// Add mathsphere from btbody
+		AddSphereMath((vec)body->getCenterOfMassPosition(), sphere.radius);
+
+		world->addRigidBody(body);
+		
+	}
+
+	// Add Mathematical Sphere
+	if(!phys)
+		AddSphereMath(center, sphere.radius);
+
 	PSphere* new_sphere = new PSphere(sphere);
 	PhysBody3D* pbody = new PhysBody3D(body, new_sphere);
-
-	// Add Mathematical Sphere
-	AddSphereMath((vec)body->getCenterOfMassPosition(), sphere.radius);
-
-	world->addRigidBody(body);
 	bodies.push_back(pbody);
 
 	return pbody;
@@ -270,36 +288,62 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, float m
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(PCube& cube, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PCube& cube,bool phys, float mass)
 {
-	btCollisionShape* colShape = new btBoxShape(btVector3(cube.size.x*0.5f, cube.size.y*0.5f, cube.size.z*0.5f));
-	shapes.push_back(colShape);
+	
+	btRigidBody* body = nullptr;
 
-	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix((float*)cube.transform.Transposed().v);
+	if (phys) {
+		btCollisionShape* colShape = new btBoxShape(btVector3(cube.size.x*0.5f, cube.size.y*0.5f, cube.size.z*0.5f));
+		shapes.push_back(colShape);
 
-	btVector3 localInertia(0, 0, 0);
-	if(mass != 0.f)
-		colShape->calculateLocalInertia(mass, localInertia);
+		btTransform startTransform;
+		startTransform.setFromOpenGLMatrix((float*)cube.transform.Transposed().v);
+		startTransform.setOrigin(btVector3(center.x, center.y, center.z));
 
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	motions.push_back(myMotionState);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
+		btVector3 localInertia(0, 0, 0);
+		if (mass != 0.f)
+			colShape->calculateLocalInertia(mass, localInertia);
 
-	btRigidBody* body = new btRigidBody(rbInfo);
-	PhysBody3D* pbody = new PhysBody3D(body, &cube);
+		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+		motions.push_back(myMotionState);
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
-	// Add Mathematical Sphere
-	AddAABBMath((vec)body->getCenterOfMassPosition(), cube.size.x);
+		body = new btRigidBody(rbInfo);
+		
+		// Add Mathematical Sphere
+		AddAABBMath((vec)body->getCenterOfMassPosition(), cube.size.x);
 
-	world->addRigidBody(body);
+		world->addRigidBody(body);
+	}
+
+	if (!phys) {
+		
+
+		if (cube.size.x >= cube.size.y && cube.size.x >= cube.size.z)
+		{
+			AddAABBMath(center, cube.size.x);
+		}
+		else if (cube.size.y >= cube.size.x && cube.size.y >= cube.size.z)
+		{
+			AddAABBMath(center, cube.size.y);
+		}
+		else if (cube.size.z >= cube.size.x && cube.size.z >= cube.size.y)
+		{
+			AddAABBMath(center, cube.size.z);
+		}
+	}
+
+	PCube* new_cube = new PCube(cube);
+	new_cube->MathBody.
+	PhysBody3D* pbody = new PhysBody3D(body, new_cube);
 	bodies.push_back(pbody);
 
 	return pbody;
 }
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(PCylinder& cylinder, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(PCylinder& cylinder, bool phys, float mass)
 {
 	btCollisionShape* colShape = new btCylinderShapeX(btVector3(cylinder.height*0.5f, cylinder.radius, 0.0f));
 	shapes.push_back(colShape);

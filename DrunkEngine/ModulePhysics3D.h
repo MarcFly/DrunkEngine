@@ -30,15 +30,16 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const vec& center, PSphere& sphere, float mass = 1.0f); // This creates a mathematical sphere and technically a renderable sphere (passed as the transform of a polyhedron)
-	PhysBody3D* AddBody(PCube& cube, float mass = 1.0f);
-	PhysBody3D* AddBody(PCylinder& cylinder, float mass = 1.0f);
+	PhysBody3D* AddBody(const vec& center, PSphere& sphere, bool phys = true, float mass = 1.0f); // This creates a mathematical sphere and technically a renderable sphere (passed as the transform of a polyhedron)
+	PhysBody3D* AddBody(const vec& center, PCube& cube, bool phys = true, float mass = 1.0f);
+	PhysBody3D* AddBody(PCylinder& cylinder, bool phys = true, float mass = 1.0f);
 
 	
 
 
 	//void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB);
 	//void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec& anchorA, const vec& anchorB, const vec& axisS, const vec& axisB, bool disable_collision = false);
+	std::list<PhysBody3D*> bodies;
 
 private:
 
@@ -53,7 +54,7 @@ private:
 	DebugDrawer*						debug_draw;
 
 	std::list<btCollisionShape*> shapes;
-	std::list<PhysBody3D*> bodies;
+
 	std::list<btDefaultMotionState*> motions;
 	std::list<btTypedConstraint*> constraints;
 

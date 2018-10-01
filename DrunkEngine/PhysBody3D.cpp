@@ -5,7 +5,8 @@
 // =================================================
 PhysBody3D::PhysBody3D(btRigidBody* body, Primitive* mathbody) : body(body), mbody(mathbody)
 {
-	body->setUserPointer(this);
+	if(body != nullptr) // Because we can create non physics 3Dbodies
+		body->setUserPointer(this);
 }
 
 // ---------------------------------------------------------

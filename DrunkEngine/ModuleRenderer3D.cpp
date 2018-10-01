@@ -4,6 +4,7 @@
 #include "SDL/include/SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
+#include "PhysBody3D.h"
 
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -130,7 +131,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
-	// Test Line
+	// Test Lines
 	glLineWidth(2.0f);
 
 	glBegin(GL_LINES);
@@ -155,6 +156,13 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
+	// Render From primitive list?
+	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
+	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
+		item_render._Ptr->_Myval->mbody->InnerRender();
+		item_render++;
+	}
+	
 	SDL_GL_SwapWindow(App->window->window);
 
 	
