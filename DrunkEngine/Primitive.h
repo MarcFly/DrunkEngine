@@ -31,6 +31,8 @@ public:
 	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
 
+	virtual bool Intersects(Primitive* mbody2) { return false;};
+
 public:
 	
 	Color color;
@@ -47,10 +49,13 @@ class PCube : public Primitive
 public :
 	PCube();
 	PCube(float sizeX, float sizeY, float sizeZ);
+	PCube(float size_cube);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	vec size;
-	Polyhedron MathBody;
+	AABB* MathBody;
 };
 
 // ============================================
@@ -60,9 +65,11 @@ public:
 	PSphere();
 	PSphere(float radius);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	float radius;
-	Sphere MathBody;
+	Sphere* MathBody;
 };
 
 // ============================================
@@ -72,10 +79,12 @@ public:
 	PCylinder();
 	PCylinder(float radius, float height);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	float radius;
 	float height;
-	Capsule MathBody;
+	Capsule* MathBody;
 };
 
 // ============================================
@@ -85,10 +94,12 @@ public:
 	PLine();
 	PLine(float x, float y, float z);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	vec origin;
 	vec destination;
-	Line MathBody;
+	Line* MathBody;
 };
 
 // ============================================
@@ -98,10 +109,12 @@ public:
 	PPlane();
 	PPlane(float x, float y, float z, float d);
 	void InnerRender() const;
+	bool Intersects(Primitive* mbody2);
+
 public:
 	vec normal;
 	float constant;
-	Plane MathBody;
+	Plane* MathBody;
 };
 
 #endif // !_PRIMITIVE_H_

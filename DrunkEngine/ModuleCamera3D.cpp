@@ -81,18 +81,7 @@ update_status ModuleCamera3D::Update(float dt)
 		if(dx != 0)
 		{
 			float DeltaX = (float)dx * Sensitivity;
-			
-			/*Quat qX = { X.x,X.y,X.z,1.0f };
-			Quat qY = { Y.x,Y.y,Y.z,1.0f };
-			Quat qZ = { Z.x,Z.y,Z.z,1.0f };
-
-			qX.RotateY(DeltaX);
-			qY.RotateY(DeltaX);
-			qZ.RotateY(DeltaX);
-
-			X = { qX.x, qX.y, qX.z };
-			Y = { qY.x, qY.y, qY.z };
-			Z = { qZ.x, qZ.y, qZ.z };*/
+		
 			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
 			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
 			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
@@ -102,21 +91,6 @@ update_status ModuleCamera3D::Update(float dt)
 		if(dy != 0)
 		{
 			float DeltaY = (float)dy * Sensitivity;
-
-			/*Quat qY = { Y.x,Y.y,Y.z,1.0f };
-			Quat qZ = { Z.x,Z.y,Z.z,1.0f };
-
-			qY.RotateY(DeltaY);
-			qZ.RotateY(DeltaY);
-
-			Y = { qY.x, qY.y, qY.z };
-			Z = { qZ.x, qZ.y, qZ.z };
-
-			if(Y.y < 0.0f)
-			{
-				Z = vec(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = Z.Cross(X);
-			*/
 
 			Y = rotate(Y, DeltaY, X);
 			Z = rotate(Z, DeltaY, X);
@@ -129,7 +103,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		}
 
-		Position = Reference + Z * length(Position);//Position.Length();//length(btQuaternion(Position.x, Position.y,));
+		Position = Reference + Z * length(Position);
 	}
 
 	// Recalculate matrix -------------
@@ -143,21 +117,6 @@ void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool Rota
 {
 	this->Position = Position;
 	this->Reference = Reference;
-
-	/*
-	vec aux_z = Position - Reference;
-	Z = aux_z.Normalized();
-
-	vec aux_x = vec(0.0f, 1.0f, 0.0f).Cross(Z);
-	X = aux_x.Normalized();
-
-	Y = Z.Cross(X);
-
-	if(!RotateAroundReference)
-	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
-	}*/
 
 	this->Position = Position;
 	this->Reference = Reference;
@@ -181,16 +140,6 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 {
 	Reference = Spot;
 
-	/*
-	vec aux_z = Position - Reference;
-	Z = aux_z.Normalized();
-
-	vec aux_x = vec(0.0f, 1.0f, 0.0f).Cross(Z);
-	X = aux_x.Normalized();
-
-	Y = Z.Cross(X);
-	*/
-
 	Z = normalize(Position - Reference);
 	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
 	Y = cross(Z, X);
@@ -211,16 +160,12 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 // -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
-	//ViewMatrix.Transpose();
 	return (float*)ViewMatrix.v;
 }
 
 // -----------------------------------------------------------------
 void ModuleCamera3D::CalculateViewMatrix()
 {
-
-	//ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f);
-
 	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
 	
 	ViewMatrixInverse = ViewMatrix.Inverted();

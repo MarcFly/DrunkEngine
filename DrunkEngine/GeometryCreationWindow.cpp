@@ -17,19 +17,27 @@ void GEOMWindow::Draw()
 		ImGui::Separator();
 
 		ImGui::Text("Sphere");
-		ImGui::SliderFloat3("Center", &sphere_center[0], 0, 10);
-		ImGui::SliderFloat("Radius", &sphere_radius, 0, 10);
-		ImGui::Checkbox("PhysObj", &sphere_phys);
+		ImGui::SliderFloat3("Sphere Center", &sphere_center[0], 0, 10);
+		ImGui::SliderFloat("Sphere Radius", &sphere_radius, 0, 10);
+		ImGui::Checkbox("Sphere PhysObj", &sphere_phys);
 		ImGui::SameLine();
-		if(ImGui::Button("Create"))
+		if(ImGui::Button("Create Sphere"))
 		{
-			if (sphere_phys)
-				App->physics->AddBody(sphere_center, PSphere(sphere_radius));
-			else
-				App->physics->AddSphereMath(sphere_center, sphere_radius);
+			App->physics->AddBody(sphere_center, PSphere(sphere_radius), sphere_phys);
 		}
 
 		ImGui::Separator();
+
+		ImGui::Text("Cube");
+		ImGui::SliderFloat3("Cube Center", &box_center[0], 0, 10);
+		ImGui::SliderFloat("Cube Size", &box_size, 0, 10);
+		ImGui::Checkbox("Cube PhysObj", &box_phys);
+		ImGui::SameLine();
+		if (ImGui::Button("Create Cube"))
+		{
+			App->physics->AddBody(box_center, PCube(box_size), box_phys);
+		}
+
 	}
 	ImGui::End();
 }
