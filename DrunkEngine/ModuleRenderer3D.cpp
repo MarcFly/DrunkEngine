@@ -134,15 +134,22 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	return UPDATE_CONTINUE;
 }
 
-// PostUpdate present buffer to screen
-update_status ModuleRenderer3D::PostUpdate(float dt)
+// Do the render of Objects
+update_status ModuleRenderer3D::Update(float dt)
 {
-	// Render From primitive list?
+	// Render From primitive list
 	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
 	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
 		item_render._Ptr->_Myval->mbody->InnerRender();
 		item_render++;
 	}
+
+}
+
+// PostUpdate present buffer to screen
+update_status ModuleRenderer3D::PostUpdate(float dt)
+{
+	
 	
 	SDL_GL_SwapWindow(App->window->window);
 
