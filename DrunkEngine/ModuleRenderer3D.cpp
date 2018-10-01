@@ -144,6 +144,8 @@ update_status ModuleRenderer3D::Update(float dt)
 		item_render++;
 	}
 
+
+	return UPDATE_CONTINUE;
 }
 
 // PostUpdate present buffer to screen
