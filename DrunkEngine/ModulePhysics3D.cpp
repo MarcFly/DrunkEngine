@@ -115,7 +115,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		{
 			vec center = (vec)item_pb._Ptr->_Myval->body->getCenterOfMassPosition();
 				
-			item_pb._Ptr->_Myval->mbody->SetPos(center.x, center.y, center.z);			
+			item_pb._Ptr->_Myval->mbody->SetPos(center.x, center.y, center.z);
 		}
 			
 
@@ -134,8 +134,8 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	}
 
 
-	// Mathbody pos update in relation to physic body
-	std::list<PhysBody3D*>::iterator item = bodies.begin();
+	// Mathbody pos update in relation to physic body, old
+	/*std::list<PhysBody3D*>::iterator item = bodies.begin();
 	std::list<Sphere*>::iterator item_sphere = spheres.begin();
 	std::list<Capsule*>::iterator item_capsule = capsules.begin();
 	std::list<AABB*>::iterator item_AABB = cubes.begin();
@@ -144,7 +144,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	std::list<Ray*>::iterator item_ray = rays.begin();
 	std::list<Triangle*>::iterator item_tri = tris.begin();
 
-	/*while (item != bodies.end() && bodies.size() > 0) {
+	while (item != bodies.end() && bodies.size() > 0) {
 		if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE && item_sphere != spheres.end() && spheres.size() > 0)
 		{
 			item_sphere._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_sphere._Ptr->_Myval->Centroid()));
@@ -317,12 +317,14 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PCube& cube,bool phys, f
 		world->addRigidBody(body);
 	}
 
+	PCube* new_cube = new PCube(cube);
+
 	if (!phys) {
 		
 
 		if (cube.size.x >= cube.size.y && cube.size.x >= cube.size.z)
 		{
-			AddAABBMath(center, cube.size.x);
+			new_cube->MathBody = *AddAABBMath(center, cube.size.x);
 		}
 		else if (cube.size.y >= cube.size.x && cube.size.y >= cube.size.z)
 		{
@@ -334,8 +336,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PCube& cube,bool phys, f
 		}
 	}
 
-	PCube* new_cube = new PCube(cube);
-	new_cube->MathBody.
+	
 	PhysBody3D* pbody = new PhysBody3D(body, new_cube);
 	bodies.push_back(pbody);
 

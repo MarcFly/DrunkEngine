@@ -169,7 +169,9 @@ void PCube::InnerRender() const
 
 	glBegin(GL_TRIANGLES);
 	{
-	
+		vec verts[8];
+		MathBody.GetCornerPoints(&verts[0]);
+
 		// Face 1 ADC + ABD == 032 + 013
 		glVertex3f(MathBody.CornerPoint(0).x, MathBody.CornerPoint(0).y, MathBody.CornerPoint(0).z);
 		glVertex3f(MathBody.CornerPoint(3).x, MathBody.CornerPoint(3).y, MathBody.CornerPoint(3).z);

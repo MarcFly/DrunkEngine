@@ -85,15 +85,17 @@ public:
 		Capsule* add = new Capsule(axis_segment, radius);
 		capsules.push_back(add);
 	}
-	void AddAABBMath(const vec& min_point, const vec& max_point)
+	AABB* AddAABBMath(const vec& min_point, const vec& max_point)
 	{
 		AABB* add = new AABB(min_point,max_point);
 		cubes.push_back(add);
+		return add;
 	}
-	void AddAABBMath(const vec& center, const float& radius)
+	AABB* AddAABBMath(const vec& center, const float& radius)
 	{
 		AABB* add = new AABB(Sphere(center, radius));
 		cubes.push_back(add);
+		return add;
 	}
 	void AddPlaneMath(const vec& point, const vec& normal)
 	{
