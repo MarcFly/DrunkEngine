@@ -55,7 +55,7 @@ public :
 
 public:
 	vec size;
-	AABB MathBody;
+	AABB* MathBody;
 };
 
 // ============================================
@@ -69,7 +69,7 @@ public:
 
 public:
 	float radius;
-	Sphere MathBody;
+	Sphere* MathBody;
 };
 
 // ============================================
@@ -84,7 +84,7 @@ public:
 public:
 	float radius;
 	float height;
-	Capsule MathBody;
+	Capsule* MathBody;
 };
 
 // ============================================
@@ -99,7 +99,7 @@ public:
 public:
 	vec origin;
 	vec destination;
-	Line MathBody;
+	Line* MathBody;
 };
 
 // ============================================
@@ -114,7 +114,7 @@ public:
 public:
 	vec normal;
 	float constant;
-	Plane MathBody;
+	Plane* MathBody;
 };
 
 #endif // !_PRIMITIVE_H_

@@ -106,7 +106,8 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		}
 	}
 
-	// MathGeoLib Collision Detection
+
+	// MathGeoLib Collision Detection + Transform Update from the physbody if there is any
 	std::list<PhysBody3D*>::iterator item_pb = bodies.begin();
 
 	while (item_pb != bodies.end() && bodies.size() > 0)
@@ -116,6 +117,8 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 			vec center = (vec)item_pb._Ptr->_Myval->body->getCenterOfMassPosition();
 				
 			item_pb._Ptr->_Myval->mbody->SetPos(center.x, center.y, center.z);
+
+			// Try somehow to setup the transform identical to the new transform
 		}
 			
 
@@ -132,52 +135,6 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 
 		item_pb++;
 	}
-
-
-	// Mathbody pos update in relation to physic body, old
-	/*std::list<PhysBody3D*>::iterator item = bodies.begin();
-	std::list<Sphere*>::iterator item_sphere = spheres.begin();
-	std::list<Capsule*>::iterator item_capsule = capsules.begin();
-	std::list<AABB*>::iterator item_AABB = cubes.begin();
-	std::list<OBB*>::iterator item_OBB = obbs.begin();
-	std::list<Plane*>::iterator item_plane = planes.begin();
-	std::list<Ray*>::iterator item_ray = rays.begin();
-	std::list<Triangle*>::iterator item_tri = tris.begin();
-
-	while (item != bodies.end() && bodies.size() > 0) {
-		if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE && item_sphere != spheres.end() && spheres.size() > 0)
-		{
-			item_sphere._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_sphere._Ptr->_Myval->Centroid()));
-			item_sphere++;
-		}
-		
-		else if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == CAPSULE_SHAPE_PROXYTYPE && item_capsule != capsules.end() && capsules.size() > 0)
-		{
-			item_capsule._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_capsule._Ptr->_Myval->Center()));
-			item_capsule++;
-		}
-
-		else if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == BOX_SHAPE_PROXYTYPE && item_AABB != cubes.end() && cubes.size() > 0)
-		{
-			item_AABB._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_AABB._Ptr->_Myval->Centroid()));
-			item_AABB++;
-		}
-
-		else if (item._Ptr->_Myval->body->getCollisionShape()->getShapeType() == TRIANGLE_SHAPE_PROXYTYPE && item_tri != tris.end() && tris.size() > 0)
-		{
-			item_tri._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_capsule._Ptr->_Myval->Center()));
-			item_tri++;
-		}
-		// Do for all types
-
-		else if (item_OBB != obbs.end() && obbs.size() > 0)
-		{
-			item_OBB._Ptr->_Myval->Translate(((vec)item._Ptr->_Myval->body->getCenterOfMassPosition() - item_OBB._Ptr->_Myval->CenterPoint()));
-			item_OBB++;
-		}
-		item++;
-		
-	*/
 
 	return UPDATE_CONTINUE;
 }
@@ -292,6 +249,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PCube& cube,bool phys, f
 {
 	
 	btRigidBody* body = nullptr;
+	PCube* new_cube = new PCube(cube);
 
 	if (phys) {
 		btCollisionShape* colShape = new btBoxShape(btVector3(cube.size.x*0.5f, cube.size.y*0.5f, cube.size.z*0.5f));
@@ -310,29 +268,27 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PCube& cube,bool phys, f
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
 		body = new btRigidBody(rbInfo);
-		
+
 		// Add Mathematical Sphere
-		AddAABBMath((vec)body->getCenterOfMassPosition(), cube.size.x);
+		new_cube->MathBody = AddAABBMath((vec)body->getCenterOfMassPosition(), cube.size.x/2.0f);
 
 		world->addRigidBody(body);
-	}
-
-	PCube* new_cube = new PCube(cube);
+	}	
 
 	if (!phys) {
 		
 
 		if (cube.size.x >= cube.size.y && cube.size.x >= cube.size.z)
 		{
-			new_cube->MathBody = *AddAABBMath(center, cube.size.x);
+			new_cube->MathBody = AddAABBMath(center, cube.size.x/2.0f);
 		}
 		else if (cube.size.y >= cube.size.x && cube.size.y >= cube.size.z)
 		{
-			AddAABBMath(center, cube.size.y);
+			new_cube->MathBody = AddAABBMath(center, cube.size.y/2.0f);
 		}
 		else if (cube.size.z >= cube.size.x && cube.size.z >= cube.size.y)
 		{
-			AddAABBMath(center, cube.size.z);
+			new_cube->MathBody = AddAABBMath(center, cube.size.z/2.0f);
 		}
 	}
 

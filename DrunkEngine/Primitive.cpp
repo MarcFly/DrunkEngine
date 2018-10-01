@@ -169,67 +169,64 @@ void PCube::InnerRender() const
 
 	glBegin(GL_TRIANGLES);
 	{
-		vec verts[8];
-		MathBody.GetCornerPoints(&verts[0]);
-
 		// Face 1 ADC + ABD == 032 + 013
-		glVertex3f(MathBody.CornerPoint(0).x, MathBody.CornerPoint(0).y, MathBody.CornerPoint(0).z);
-		glVertex3f(MathBody.CornerPoint(3).x, MathBody.CornerPoint(3).y, MathBody.CornerPoint(3).z);
-		glVertex3f(MathBody.CornerPoint(2).x, MathBody.CornerPoint(2).y, MathBody.CornerPoint(2).z);
+		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
+		glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(2).y, MathBody->CornerPoint(2).z);
 	
-		glVertex3f(MathBody.CornerPoint(0).x, MathBody.CornerPoint(0).y, MathBody.CornerPoint(0).z);
-		glVertex3f(MathBody.CornerPoint(1).x, MathBody.CornerPoint(1).y, MathBody.CornerPoint(1).z);
-		glVertex3f(MathBody.CornerPoint(3).x, MathBody.CornerPoint(3).y, MathBody.CornerPoint(3).z);
+		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
+		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
 		
 		// Face 2 BFH + BHD == 157 + 173
 
-		glVertex3f(MathBody.CornerPoint(1).x, MathBody.CornerPoint(1).y, MathBody.CornerPoint(1).z);
-		glVertex3f(MathBody.CornerPoint(5).x, MathBody.CornerPoint(5).y, MathBody.CornerPoint(5).z);
-		glVertex3f(MathBody.CornerPoint(7).x, MathBody.CornerPoint(7).y, MathBody.CornerPoint(7).z);
+		glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
+		glVertex3f(MathBody->CornerPoint(5).x, MathBody->CornerPoint(5).y, MathBody->CornerPoint(5).z);
+		glVertex3f(MathBody->CornerPoint(7).x, MathBody->CornerPoint(7).y, MathBody->CornerPoint(7).z);
 
-		glVertex3f(MathBody.CornerPoint(1).x, MathBody.CornerPoint(1).y, MathBody.CornerPoint(1).z);
-		glVertex3f(MathBody.CornerPoint(7).x, MathBody.CornerPoint(7).y, MathBody.CornerPoint(7).z);
-		glVertex3f(MathBody.CornerPoint(3).x, MathBody.CornerPoint(3).y, MathBody.CornerPoint(3).z);
+		glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
+		glVertex3f(MathBody->CornerPoint(7).x, MathBody->CornerPoint(7).y, MathBody->CornerPoint(7).z);
+		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
 
 		// Face 3 FEH + EGH == 547 + 467
 
-		glVertex3f(MathBody.CornerPoint(5).x, MathBody.CornerPoint(5).y, MathBody.CornerPoint(5).z);
-		glVertex3f(MathBody.CornerPoint(4).x, MathBody.CornerPoint(4).y, MathBody.CornerPoint(4).z);
-		glVertex3f(MathBody.CornerPoint(7).x, MathBody.CornerPoint(7).y, MathBody.CornerPoint(7).z);
+		glVertex3f(MathBody->CornerPoint(5).x, MathBody->CornerPoint(5).y, MathBody->CornerPoint(5).z);
+		glVertex3f(MathBody->CornerPoint(4).x, MathBody->CornerPoint(4).y, MathBody->CornerPoint(4).z);
+		glVertex3f(MathBody->CornerPoint(7).x, MathBody->CornerPoint(7).y, MathBody->CornerPoint(7).z);
 
-		glVertex3f(MathBody.CornerPoint(4).x, MathBody.CornerPoint(4).y, MathBody.CornerPoint(4).z);
-		glVertex3f(MathBody.CornerPoint(6).x, MathBody.CornerPoint(6).y, MathBody.CornerPoint(6).z);
-		glVertex3f(MathBody.CornerPoint(7).x, MathBody.CornerPoint(7).y, MathBody.CornerPoint(7).z);
+		glVertex3f(MathBody->CornerPoint(4).x, MathBody->CornerPoint(4).y, MathBody->CornerPoint(4).z);
+		glVertex3f(MathBody->CornerPoint(6).x, MathBody->CornerPoint(6).y, MathBody->CornerPoint(6).z);
+		glVertex3f(MathBody->CornerPoint(7).x, MathBody->CornerPoint(7).y, MathBody->CornerPoint(7).z);
 
 		// Face 4 EAC + ECG == 402 + 426
 
-		glVertex3f(MathBody.CornerPoint(4).x, MathBody.CornerPoint(4).y, MathBody.CornerPoint(4).z);
-		glVertex3f(MathBody.CornerPoint(0).x, MathBody.CornerPoint(0).y, MathBody.CornerPoint(0).z);
-		glVertex3f(MathBody.CornerPoint(2).x, MathBody.CornerPoint(2).y, MathBody.CornerPoint(2).z);
+		glVertex3f(MathBody->CornerPoint(4).x, MathBody->CornerPoint(4).y, MathBody->CornerPoint(4).z);
+		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(2).y, MathBody->CornerPoint(2).z);
 
-		glVertex3f(MathBody.CornerPoint(4).x, MathBody.CornerPoint(4).y, MathBody.CornerPoint(4).z);
-		glVertex3f(MathBody.CornerPoint(2).x, MathBody.CornerPoint(3).y, MathBody.CornerPoint(2).z);
-		glVertex3f(MathBody.CornerPoint(6).x, MathBody.CornerPoint(6).y, MathBody.CornerPoint(6).z);
+		glVertex3f(MathBody->CornerPoint(4).x, MathBody->CornerPoint(4).y, MathBody->CornerPoint(4).z);
+		glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(2).z);
+		glVertex3f(MathBody->CornerPoint(6).x, MathBody->CornerPoint(6).y, MathBody->CornerPoint(6).z);
 
 		// Face 5 CDH + CHG == 237 + 276
 
-		glVertex3f(MathBody.CornerPoint(2).x, MathBody.CornerPoint(2).y, MathBody.CornerPoint(2).z);
-		glVertex3f(MathBody.CornerPoint(3).x, MathBody.CornerPoint(3).y, MathBody.CornerPoint(3).z);
-		glVertex3f(MathBody.CornerPoint(7).x, MathBody.CornerPoint(7).y, MathBody.CornerPoint(7).z);
+		glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(2).y, MathBody->CornerPoint(2).z);
+		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
+		glVertex3f(MathBody->CornerPoint(7).x, MathBody->CornerPoint(7).y, MathBody->CornerPoint(7).z);
 
-		glVertex3f(MathBody.CornerPoint(2).x, MathBody.CornerPoint(2).y, MathBody.CornerPoint(2).z);
-		glVertex3f(MathBody.CornerPoint(7).x, MathBody.CornerPoint(7).y, MathBody.CornerPoint(7).z);
-		glVertex3f(MathBody.CornerPoint(6).x, MathBody.CornerPoint(6).y, MathBody.CornerPoint(6).z);
+		glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(2).y, MathBody->CornerPoint(2).z);
+		glVertex3f(MathBody->CornerPoint(7).x, MathBody->CornerPoint(7).y, MathBody->CornerPoint(7).z);
+		glVertex3f(MathBody->CornerPoint(6).x, MathBody->CornerPoint(6).y, MathBody->CornerPoint(6).z);
 
 		// Face 6 AEF + AFB == 045 + 051
 
-		glVertex3f(MathBody.CornerPoint(0).x, MathBody.CornerPoint(0).y, MathBody.CornerPoint(0).z);
-		glVertex3f(MathBody.CornerPoint(4).x, MathBody.CornerPoint(4).y, MathBody.CornerPoint(4).z);
-		glVertex3f(MathBody.CornerPoint(5).x, MathBody.CornerPoint(5).y, MathBody.CornerPoint(5).z);
+		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glVertex3f(MathBody->CornerPoint(4).x, MathBody->CornerPoint(4).y, MathBody->CornerPoint(4).z);
+		glVertex3f(MathBody->CornerPoint(5).x, MathBody->CornerPoint(5).y, MathBody->CornerPoint(5).z);
 
-		glVertex3f(MathBody.CornerPoint(0).x, MathBody.CornerPoint(0).y, MathBody.CornerPoint(0).z);
-		glVertex3f(MathBody.CornerPoint(5).x, MathBody.CornerPoint(5).y, MathBody.CornerPoint(5).z);
-		glVertex3f(MathBody.CornerPoint(1).x, MathBody.CornerPoint(1).y, MathBody.CornerPoint(1).z);
+		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glVertex3f(MathBody->CornerPoint(5).x, MathBody->CornerPoint(5).y, MathBody->CornerPoint(5).z);
+		glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
 	}
 
 	// 
@@ -361,10 +358,10 @@ void PPlane::InnerRender() const
 bool PLine::Intersects(Primitive* mbody2)
 {
 	switch (mbody2->GetType()) {
-		case 2: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
-		case 3: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
-		case 4: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
-		case 5: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+		case 2: return ((PPlane*)mbody2)->MathBody->Intersects(*MathBody);
+		case 3: return ((PCube*)mbody2)->MathBody->Intersects(*MathBody);
+		case 4: return ((PSphere*)mbody2)->MathBody->Intersects(*MathBody);
+		case 5: return ((PCylinder*)mbody2)->MathBody->Intersects(*MathBody);
 		default: return false;
 	}
 
@@ -374,10 +371,10 @@ bool PLine::Intersects(Primitive* mbody2)
 bool PPlane::Intersects(Primitive* mbody2)
 {
 	switch (mbody2->GetType()) {
-	case 2: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
-	case 3: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
-	case 4: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
-	case 5: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	case 2: return ((PPlane*)mbody2)->MathBody->Intersects(*MathBody);
+	case 3: return ((PCube*)mbody2)->MathBody->Intersects(*MathBody);
+	case 4: return ((PSphere*)mbody2)->MathBody->Intersects(*MathBody);
+	case 5: return ((PCylinder*)mbody2)->MathBody->Intersects(*MathBody);
 	default: return false;
 	}
 
@@ -387,10 +384,10 @@ bool PPlane::Intersects(Primitive* mbody2)
 bool PCube::Intersects(Primitive* mbody2)
 {
 	switch (mbody2->GetType()) {
-	case 2: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
-	case 3: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
-	case 4: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
-	case 5: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	case 2: return ((PPlane*)mbody2)->MathBody->Intersects(*MathBody);
+	case 3: return ((PCube*)mbody2)->MathBody->Intersects(*MathBody);
+	case 4: return ((PSphere*)mbody2)->MathBody->Intersects(*MathBody);
+	case 5: return ((PCylinder*)mbody2)->MathBody->Intersects(*MathBody);
 	default: return false;
 	}
 
@@ -400,10 +397,10 @@ bool PCube::Intersects(Primitive* mbody2)
 bool PSphere::Intersects(Primitive* mbody2)
 {
 	switch (mbody2->GetType()) {
-	case 2: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
-	case 3: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
-	case 4: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
-	case 5: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	case 2: return ((PPlane*)mbody2)->MathBody->Intersects(*MathBody);
+	case 3: return ((PCube*)mbody2)->MathBody->Intersects(*MathBody);
+	case 4: return ((PSphere*)mbody2)->MathBody->Intersects(*MathBody);
+	case 5: return ((PCylinder*)mbody2)->MathBody->Intersects(*MathBody);
 	default: return false;
 	}
 
@@ -413,11 +410,10 @@ bool PSphere::Intersects(Primitive* mbody2)
 bool PCylinder::Intersects(Primitive* mbody2)
 {
 	switch (mbody2->GetType()) {
-	case 1: return ((PLine*)mbody2)->MathBody.Intersects(MathBody);
-	case 2: return ((PPlane*)mbody2)->MathBody.Intersects(MathBody);
-	case 3: return ((PCube*)mbody2)->MathBody.Intersects(MathBody);
-	case 4: return ((PSphere*)mbody2)->MathBody.Intersects(MathBody);
-	case 5: return ((PCylinder*)mbody2)->MathBody.Intersects(MathBody);
+	case 2: return ((PPlane*)mbody2)->MathBody->Intersects(*MathBody);
+	case 3: return ((PCube*)mbody2)->MathBody->Intersects(*MathBody);
+	case 4: return ((PSphere*)mbody2)->MathBody->Intersects(*MathBody);
+	case 5: return ((PCylinder*)mbody2)->MathBody->Intersects(*MathBody);
 	default: return false;
 	}
 
