@@ -1,8 +1,10 @@
 
 #include "Globals.h"
+#include "GLEW/include/GL/glew.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
+#include "SDL/include/SDL_opengl.h"
 
 //using namespace math;
 
@@ -166,7 +168,7 @@ void PCube::InnerRender() const
 	*/	
 
 	// From MGL to Cube with GL_Triangles
-
+	/*
 	glBegin(GL_TRIANGLES);
 	{
 		// Face 1 ADC + ABD == 032 + 013
@@ -228,9 +230,68 @@ void PCube::InnerRender() const
 		glVertex3f(MathBody->CornerPoint(5).x, MathBody->CornerPoint(5).y, MathBody->CornerPoint(5).z);
 		glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
 	}
+	
+	// Draw from array
+	{
+		// Prep Order
+		std::vector<int> vert_order = 
+			{	0,3,2,	0,1,3,
+				1,5,7,	1,7,3,
+				5,4,7,	4,6,7,
+				4,0,2,	4,2,6,
+				2,3,7,	2,7,6,
+				0,4,5,	0,5,1
+			};
 
-	// 
+		// Prep Draw Array
+		std::vector<vec> draw_verts;
+		for (int i = 0; i < vert_order.size(); i++)
+		{
+			draw_verts.push_back(MathBody->CornerPoint(vert_order[i]));
+		}
 
+		uint buff_id = 0;
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+
+		glGenBuffers(1, &buff_id1);
+		glBindBuffer(GL_ARRAY_BUFFER, buff_id1);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*draw_verts.size()*3, &draw_verts[0], GL_STATIC_DRAW);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glDrawArrays(GL_TRIANGLES, 0, draw_verts.size());
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	*/
+	// Draw from array, elementwise (quite the same fucking thing)
+	{
+		// Prep Order
+		std::vector<int> vert_order =
+		{	0,3,2,	0,1,3,
+			1,5,7,	1,7,3,
+			5,4,7,	4,6,7,
+			4,0,2,	4,2,6,
+			2,3,7,	2,7,6,
+			0,4,5,	0,5,1
+		};
+
+		// Prep Draw Array
+		std::vector<vec> vert_array;
+		for (int i = 0; i < 8; i++)
+		{
+			vert_array.push_back(MathBody->CornerPoint(i));
+		}
+
+		uint buff_id = 0;
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+
+		glGenBuffers(1, &buff_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buff_id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint)*vert_order.size(), &vert_order[0], GL_STATIC_DRAW);
+		glVertexPointer(3, GL_FLOAT, 0, &vert_array[0]);
+		glDrawElements(GL_TRIANGLES, vert_order.size(),GL_UNSIGNED_INT, NULL);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
 	glEnd();
 }
 
