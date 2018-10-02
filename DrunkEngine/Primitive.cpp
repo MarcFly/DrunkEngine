@@ -308,8 +308,136 @@ PSphere::PSphere(float radius) : Primitive(), radius(radius)
 
 void PSphere::InnerRender() const
 {
-	//TODO
-	//glutSolidSphere(radius, 25, 25);
+	// Direct Sphere Rendering
+
+	// Sector Count and Stack Count are the arbitrary resolutions of this Direct Sphere
+	float sectorCount = 4;
+	float stackCount = 2;
+
+	// clear memory of prev arrays
+	std::vector<float> vertices;
+	std::vector<float> normals;
+	std::vector<float> texCoords;
+
+	float4 vert_pos;	//	vertex position and w = xy =  r * cos(u)
+	float4 normal = { 0,0,0, 1.0f / MathBody->r };		//	vertex normals, w = lengthInv = 1.0f / radius
+	float s, t;			// vertex texCoord
+
+	float sectorStep = 2 * pi / sectorCount;
+	float stackStep = pi / stackCount;
+	float sectorAngle, stackAngle;
+
+	for (int i = 0; i <= stackCount; ++i)
+	{
+		stackAngle = pi / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+		vert_pos.w = radius * cosf(stackAngle);             // r * cos(u)
+		vert_pos.z = radius * sinf(stackAngle);              // r * sin(u)
+
+		// add (sectorCount+1) vertices per stack
+		// the first and last vertices have same position and normal, but different tex coods
+		for (int j = 0; j <= sectorCount; ++j)
+		{
+			sectorAngle = j * sectorStep;
+
+			// vertex position (x, y, z)
+			vert_pos.x = vert_pos.w * cosf(sectorAngle);             // r * cos(u) * cos(v)
+			vert_pos.y = vert_pos.w * sinf(sectorAngle);             // r * cos(u) * sin(v)
+			vertices.push_back(vert_pos.x);
+			vertices.push_back(vert_pos.y);
+			vertices.push_back(vert_pos.z);
+
+			// vertex normal (nx, ny, nz)
+			normal.x = vert_pos.x * normal.w;
+			normal.y = vert_pos.y * normal.w;
+			normal.z = vert_pos.z * normal.w;
+			normals.push_back(normal.x);
+			normals.push_back(normal.y);
+			normals.push_back(normal.z);
+
+			// vertex tex coord (s, t)
+			s = (float)j / sectorCount;
+			t = (float)i / stackCount;
+			texCoords.push_back(s);
+			texCoords.push_back(t);
+		}
+	}
+
+	// generate index list of sphere triangles
+	std::vector<int> indices;
+	int k1, k2;
+	for (int i = 0; i < stackCount; ++i)
+	{
+		k1 = i * (sectorCount + 1);     // beginning of current stack
+		k2 = k1 + sectorCount + 1;      // beginning of next stack
+
+		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+		{
+			// 2 triangles per sector excluding 1st and last stacks
+			if (i != 0)
+			{
+				indices.push_back(k1);
+				indices.push_back(k2);
+				indices.push_back(k1 + 1);
+			}
+
+			if (i != (stackCount - 1))
+			{
+				indices.push_back(k1 + 1);
+				indices.push_back(k2);
+				indices.push_back(k2 + 1);
+			}
+		}
+	}
+
+	// Rendering sphere
+
+	// copy interleaved vertex data (V/N/T) to VBO
+	GLuint vboId;
+	glGenBuffers(1, &vboId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBufferData(GL_ARRAY_BUFFER,                   // target
+		sizeof(float)*vertices.size(), // data size, bytes
+		&vertices[0],   // ptr to vertex data
+		GL_STATIC_DRAW);                   // usage
+
+// copy index data to VBO
+	GLuint iboId;
+	glGenBuffers(1, &iboId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,           // target
+		indices.size(),             // data size, bytes
+		&indices[0],               // ptr to index data
+		GL_STATIC_DRAW);                   // usage
+
+		// draw sphere with VBO
+		glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(1);
+
+	int stride = 32;     // should be 32 bytes
+	glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 6));
+
+	glDrawElements(GL_TRIANGLES,                    // primitive type
+		indices.size(),          // # of indices
+		GL_UNSIGNED_INT,                 // data type
+		(void*)0);                       // offset to indices
+
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(1);
+
+	// unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// Geosphere Rendering
+	
+	
 
 }
 

@@ -206,6 +206,7 @@ bool ModulePhysics3D::CleanUp()
 PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, bool phys, float mass)
 {
 	btRigidBody* body = nullptr;
+	PSphere* new_sphere = new PSphere(sphere);
 
 	if (phys == true) {
 		btCollisionShape* colShape = new btSphereShape(sphere.radius);
@@ -226,7 +227,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, bool ph
 		body = new btRigidBody(rbInfo);
 
 		// Add mathsphere from btbody
-		AddSphereMath((vec)body->getCenterOfMassPosition(), sphere.radius);
+		new_sphere->MathBody = AddSphereMath((vec)body->getCenterOfMassPosition(), sphere.radius);
 
 		world->addRigidBody(body);
 		
@@ -234,9 +235,8 @@ PhysBody3D* ModulePhysics3D::AddBody(const vec& center, PSphere& sphere, bool ph
 
 	// Add Mathematical Sphere
 	if(!phys)
-		AddSphereMath(center, sphere.radius);
+		new_sphere->MathBody = AddSphereMath(center, sphere.radius);
 
-	PSphere* new_sphere = new PSphere(sphere);
 	PhysBody3D* pbody = new PhysBody3D(body, new_sphere);
 	bodies.push_back(pbody);
 
