@@ -67,7 +67,10 @@ bool ModuleRenderer3D::Init()
 		//Check for error;
 		ret = CheckGLError();
 		
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+
+		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
 		glClearDepth(1.0f);
 		
 		//Initialize clear color
@@ -78,7 +81,7 @@ bool ModuleRenderer3D::Init()
 		//Check for error
 		ret = CheckGLError();
 		
-		glEnable(GL_BLEND);
+		//glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
 		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
