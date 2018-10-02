@@ -387,6 +387,9 @@
     <ClInclude Include="glmath\glmath.h">
       <Filter>Sources\Tools\glmath</Filter>
     </ClInclude>
+    <ClInclude Include="ConsoleWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -592,6 +595,9 @@
     </ClCompile>
     <ClCompile Include="glmath\glmath.cpp">
       <Filter>Sources\Tools\glmath</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
