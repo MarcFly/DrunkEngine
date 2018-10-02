@@ -24,6 +24,7 @@ public:
 	void OnResize(int width, int height);
 	void ChangeVsync();
 	bool CheckGLError();
+	void RenderGrid();
 
 public:
 
