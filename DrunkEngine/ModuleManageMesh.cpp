@@ -1,10 +1,5 @@
 #include "ModuleManageMesh.h"
-#include "GLEW/include/GL/glew.h"
-#include "Assimp/include/cimport.h"
-#include "Assimp/include/postprocess.h"
-#include "Assimp/include/cfileio.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
+
 #include "SDL/include/SDL_opengl.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
@@ -28,7 +23,7 @@ bool ModuleManageMesh::Start()
 {
 	bool ret = true;
 
-	LoadFBX("./glass cube.fbx");
+	LoadFBX("./warrior.fbx");
 
 	return ret;
 }
@@ -64,7 +59,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
-				add.index = new uint[add.num_index];
+				add.index = new int[add.num_index];
 
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
 				{

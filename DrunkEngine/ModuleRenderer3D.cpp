@@ -176,12 +176,12 @@ update_status ModuleRenderer3D::Update(float dt)
 				test_arr.push_back({ x,y,z });
 			}
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			glGenBuffers(1, (GLuint*)&mesh->id_index);
+			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glGenBuffers(1, &mesh->id_index);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mesh->num_index, mesh->index, GL_STATIC_DRAW);
-			glVertexPointer(3, GL_FLOAT, 0, &test_arr[0]);
-			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, mesh->index);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * mesh->num_index, mesh->index, GL_STATIC_DRAW);
+			glVertexPointer(3, GL_FLOAT, 0, mesh->vertex);
+			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_INT, NULL);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 	}

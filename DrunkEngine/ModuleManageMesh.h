@@ -2,17 +2,23 @@
 #define _LOAD_MESH_H_
 
 #include "Module.h"
+#include "GLEW/include/GL/glew.h"
+#include "Assimp/include/cimport.h"
+#include "Assimp/include/postprocess.h"
+#include "Assimp/include/cfileio.h"
+#include <gl/GL.h>
+#include <gl/GLU.h>
 #include "Assimp/include/scene.h"
 
 struct v_data
 {
 	//aiMesh* m = nullptr;
-	uint id_index = 0; // index in VRAM
-	uint num_index = 0;
-	uint* index = nullptr;
+	GLuint id_index = 0; // index in VRAM
+	int num_index = 0;
+	int* index = nullptr;
 
-	uint id_vertex = 0; // unique vertex in VRAM
-	uint num_vertex = 0;
+	int id_vertex = 0; // unique vertex in VRAM
+	int num_vertex = 0;
 	float* vertex = nullptr;
 };
 
