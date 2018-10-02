@@ -311,7 +311,7 @@ void PSphere::InnerRender() const
 	// Direct Sphere Rendering
 
 	// Sector Count and Stack Count are the arbitrary resolutions of this Direct Sphere
-	float sectorCount = 4;
+	/*float sectorCount = 4;
 	float stackCount = 2;
 
 	// clear memory of prev arrays
@@ -389,6 +389,51 @@ void PSphere::InnerRender() const
 		}
 	}
 
+	
+
+	// Geosphere Rendering
+	
+	const float H_ANGLE = pi / 180 * 72;    // 72 degree = 360 / 5
+	const float V_ANGLE = atanf(1.0f / 2);  // elevation = 26.565 degree
+
+	vec vertices[12];			// array of 12 vertices (x,y,z)
+	int i1, i2;                             // indices
+	float z, xy;                            // coords
+	float hAngle1 = -pi / 2 - H_ANGLE / 2;  // start from -126 deg at 1st row
+	float hAngle2 = -pi / 2;                // start from -90 deg at 2nd row
+
+	// the first top vertex at (0, 0, r)
+	vertices[0].x = 0;
+	vertices[0].y = 0;
+	vertices[0].z = radius;
+
+	// compute 10 vertices at 1st and 2nd rows
+	for (int i = 1; i <= 5; ++i)
+	{
+		i1 = i;         // for 1st row
+		i2 = (i + 5);   // for 2nd row
+
+		z = radius * sinf(V_ANGLE);				// elevaton
+		xy = radius * cosf(V_ANGLE);            // length on XY plane
+
+		vertices[i].x = xy * cosf(hAngle1);      // x
+		vertices[i + 5].x = xy * cosf(hAngle2);
+		vertices[i].y = xy * sinf(hAngle1);		// y
+		vertices[i + 5].y = xy * sinf(hAngle2);
+		vertices[i].z = z;						// z
+		vertices[i + 5].z = -z;
+
+		// next horizontal angles
+		hAngle1 += H_ANGLE;
+		hAngle2 += H_ANGLE;
+	}
+
+	// the last bottom vertex at (0, 0, -r)
+	vertices[11].x = 0;
+	vertices[11].y = 0;
+	vertices[11].z = -radius;
+	
+
 	// Rendering sphere
 
 	// copy interleaved vertex data (V/N/T) to VBO
@@ -396,11 +441,11 @@ void PSphere::InnerRender() const
 	glGenBuffers(1, &vboId);
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
 	glBufferData(GL_ARRAY_BUFFER,                   // target
-		sizeof(float)*vertices.size(), // data size, bytes
+		sizeof(float) * vertices.size(), // data size, bytes
 		&vertices[0],   // ptr to vertex data
 		GL_STATIC_DRAW);                   // usage
 
-// copy index data to VBO
+	// copy index data to VBO
 	GLuint iboId;
 	glGenBuffers(1, &iboId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
@@ -410,7 +455,7 @@ void PSphere::InnerRender() const
 		GL_STATIC_DRAW);                   // usage
 
 		// draw sphere with VBO
-		glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
 
 	glEnableVertexAttribArray(1);
@@ -434,11 +479,7 @@ void PSphere::InnerRender() const
 	// unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// Geosphere Rendering
-	
-	
-
+	*/
 }
 
 

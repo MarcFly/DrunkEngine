@@ -61,7 +61,7 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-		glClearDepth(0.0f);
+		glClearDepth(1.0f);
 		
 		//Initialize clear color
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
@@ -71,7 +71,7 @@ bool ModuleRenderer3D::Init()
 		//Check for error
 		ret = CheckGLError();
 		
-		glEnable(GL_BLEND);
+		//glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
 
