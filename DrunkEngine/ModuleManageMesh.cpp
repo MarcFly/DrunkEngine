@@ -25,8 +25,8 @@ bool ModuleManageMesh::Start()
 
 	//LoadFBX("./glass cube.fbx");
 	//LoadFBX("./Dragon 2.5_fbx.fbx");
-	//LoadFBX("./Toilet.fbx");
-	LoadFBX("./warrior.fbx");
+	LoadFBX("./Toilet.fbx");
+	//LoadFBX("./warrior.fbx");
 
 	return ret;
 }
@@ -61,10 +61,10 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			// Properly Binding Buffer 1 TIME
 			glGenBuffers(1, &add.id_vertex);
 			glBindBuffer(GL_ARRAY_BUFFER, add.id_vertex);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * add.num_vertex, add.vertex, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * add.num_vertex * 3, add.vertex, GL_STATIC_DRAW);
 			
 			// **Unbind Buffer**
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			PLOG("New mesh with %d vertices", add.num_vertex)
 
@@ -82,7 +82,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					}
 					else
 					{
-						memcpy(&add.index[i*3], scene->mMeshes[i]->mFaces[i].mIndices, 3*sizeof(GLuint));
+						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
 					}
 				}
 			}
@@ -90,7 +90,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			// Properly Generating the buffer for
 			glGenBuffers(1, &add.id_index);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, add.id_index);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * add.num_index, add.index, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * add.num_index, add.index, GL_STATIC_DRAW);
 			
 			// **Unbind Buffer**
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

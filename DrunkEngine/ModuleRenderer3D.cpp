@@ -162,18 +162,14 @@ update_status ModuleRenderer3D::Update(float dt)
 		{
 			glEnableClientState(GL_VERTEX_ARRAY);
 
-			/*// Render things in array mode
+			// Render things in Element mode
 			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
 			glVertexPointer(3, GL_FLOAT, 0, NULL);
-			glDrawArrays(GL_TRIANGLES, 0, mesh->num_vertex);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-			*/
-			// Render things in Element mode
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-			glVertexPointer(3, GL_FLOAT, 0, mesh->vertex);
-			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, mesh->index);
+			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDisableClientState(GL_VERTEX_ARRAY);
 		}
 	}
 
