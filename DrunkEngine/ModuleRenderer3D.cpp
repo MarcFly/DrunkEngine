@@ -14,6 +14,7 @@
 
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	
 }
 
 // Destructor
@@ -25,6 +26,7 @@ bool ModuleRenderer3D::Init()
 {
 	bool ret = true;
 	vsync = true;
+	wireframe = false;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -147,14 +149,18 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
+
+	if(wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	// Render From primitive list
 	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
 	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
 		item_render._Ptr->_Myval->mbody->InnerRender();
 		item_render++;
 	}
-
-
 
 	return UPDATE_CONTINUE;
 }
@@ -163,10 +169,7 @@ update_status ModuleRenderer3D::Update(float dt)
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	
-	
 	SDL_GL_SwapWindow(App->window->window);
-
-	
 
 	return UPDATE_CONTINUE;
 }
@@ -234,4 +237,12 @@ void ModuleRenderer3D::RenderGrid()
 		glVertex3i(GRID_SIZE, 0, -GRID_SIZE + i);
 		glEnd();
 	}
+}
+
+void ModuleRenderer3D::SwapWireframe(bool active)
+{
+	if (active)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
