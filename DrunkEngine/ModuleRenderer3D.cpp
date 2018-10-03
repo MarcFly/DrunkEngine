@@ -10,6 +10,8 @@
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
+#define GRID_SIZE 10
+
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -24,7 +26,12 @@ bool ModuleRenderer3D::Init()
 	bool ret = true;
 	vsync = true;
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
 	//Create context
 	PLOG("Creating 3D Renderer context");
@@ -61,7 +68,10 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-		glClearDepth(0.0f);
+
+		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+		glClearDepth(1.0f);
 		
 		//Initialize clear color
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
@@ -71,10 +81,9 @@ bool ModuleRenderer3D::Init()
 		//Check for error
 		ret = CheckGLError();
 		
-		glEnable(GL_BLEND);
+		//glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
-
 		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
 		glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
 
@@ -97,7 +106,6 @@ bool ModuleRenderer3D::Init()
 
 		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
-		
 		
 	}
 
@@ -124,6 +132,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
 
+	RenderGrid();
+
 	// Something Something lights
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
@@ -143,6 +153,7 @@ update_status ModuleRenderer3D::Update(float dt)
 		item_render._Ptr->_Myval->mbody->InnerRender();
 		item_render++;
 	}
+
 
 
 	return UPDATE_CONTINUE;
@@ -205,4 +216,22 @@ bool ModuleRenderer3D::CheckGLError()
 	}
 
 	return ret;
+}
+
+void ModuleRenderer3D::RenderGrid()
+{
+	for (int i = 0; i < GRID_SIZE * 2 + 1; i++)
+	{
+		glBegin(GL_LINES);
+		glColor3f(1.0f, 1.0f, 1.0f);
+
+		//Z
+		glVertex3i(GRID_SIZE - i, 0, GRID_SIZE);
+		glVertex3i(GRID_SIZE - i, 0, -GRID_SIZE);
+
+		//X
+		glVertex3i(-GRID_SIZE, 0, -GRID_SIZE + i);
+		glVertex3i(GRID_SIZE, 0, -GRID_SIZE + i);
+		glEnd();
+	}
 }

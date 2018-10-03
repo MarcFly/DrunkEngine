@@ -75,10 +75,11 @@ private:
 
 public:
 	// Create the MathObjs
-	void AddSphereMath(const vec& center, const float& radius)
+	Sphere* AddSphereMath(const vec& center, const float& radius)
 	{
 		Sphere* add = new Sphere(center,radius); 
 		spheres.push_back(add);
+		return add;
 	}
 	void AddCapsuleMath(const LineSegment& axis_segment, const float& radius) 
 	{
