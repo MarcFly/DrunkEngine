@@ -25,7 +25,6 @@ public:
 	void ChangeVsync();
 	bool CheckGLError();
 	void RenderGrid();
-	void SwapWireframe(bool active);
 
 public:
 
@@ -34,7 +33,6 @@ public:
 	mat3x3 NormalMatrix;
 	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 	bool vsync;
-	bool wireframe;
 };
 
 #endif
