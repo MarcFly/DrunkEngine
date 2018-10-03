@@ -10,7 +10,6 @@ OpenGLOptions::OpenGLOptions(Application* app) : Window("OpenGL Settings", SDL_S
 
 void OpenGLOptions::Draw()
 {
-	wireframe = App->renderer3D->wireframe;
 
 	ImGui::Begin(GetName().c_str(), &active);
 	{
@@ -37,7 +36,7 @@ void OpenGLOptions::Draw()
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
-		if(ImGui::Checkbox("Wireframe", &wireframe))
+		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe))
 			Check_Enable_Disable();
 		ImGui::SameLine();
 		
@@ -73,5 +72,4 @@ void OpenGLOptions::Check_Enable_Disable()
 		else if (!glIsEnabled(GL_TEXTURE_2D) && texture_2d == true)
 			glEnable(GL_TEXTURE_2D);
 
-		App->renderer3D->wireframe = wireframe;
 }
