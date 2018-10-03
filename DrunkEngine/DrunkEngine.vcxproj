@@ -77,6 +77,7 @@
     <ClInclude Include="AboutWindow.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ConsoleWindow.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
     <ClInclude Include="GLEW\include\GL\glew.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="AboutWindow.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ConsoleWindow.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
     <ClCompile Include="MGL\Algorithm\GJK.cpp" />
