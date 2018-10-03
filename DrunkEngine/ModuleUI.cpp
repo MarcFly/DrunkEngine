@@ -46,7 +46,7 @@ bool ModuleUI::Init()
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow(App));
 	windows.push_back(opengl_win = new OpenGLOptions(App));
-	windows.push_back(console_win = new ConsoleWindow(App));
+	windows.push_back(console_win = new ConsoleWindow());
 
 	return ret;
 }
