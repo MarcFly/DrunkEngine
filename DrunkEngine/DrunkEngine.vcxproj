@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>DrunkEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -76,6 +76,43 @@
   <ItemGroup>
     <ClInclude Include="AboutWindow.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Assimp\include\ai_assert.h" />
+    <ClInclude Include="Assimp\include\anim.h" />
+    <ClInclude Include="Assimp\include\camera.h" />
+    <ClInclude Include="Assimp\include\cexport.h" />
+    <ClInclude Include="Assimp\include\cfileio.h" />
+    <ClInclude Include="Assimp\include\cimport.h" />
+    <ClInclude Include="Assimp\include\color4.h" />
+    <ClInclude Include="Assimp\include\Compiler\poppack1.h" />
+    <ClInclude Include="Assimp\include\Compiler\pstdint.h" />
+    <ClInclude Include="Assimp\include\Compiler\pushpack1.h" />
+    <ClInclude Include="Assimp\include\config.h" />
+    <ClInclude Include="Assimp\include\DefaultLogger.hpp" />
+    <ClInclude Include="Assimp\include\defs.h" />
+    <ClInclude Include="Assimp\include\Exporter.hpp" />
+    <ClInclude Include="Assimp\include\Importer.hpp" />
+    <ClInclude Include="Assimp\include\importerdesc.h" />
+    <ClInclude Include="Assimp\include\IOStream.hpp" />
+    <ClInclude Include="Assimp\include\IOSystem.hpp" />
+    <ClInclude Include="Assimp\include\light.h" />
+    <ClInclude Include="Assimp\include\Logger.hpp" />
+    <ClInclude Include="Assimp\include\LogStream.hpp" />
+    <ClInclude Include="Assimp\include\material.h" />
+    <ClInclude Include="Assimp\include\matrix3x3.h" />
+    <ClInclude Include="Assimp\include\matrix4x4.h" />
+    <ClInclude Include="Assimp\include\mesh.h" />
+    <ClInclude Include="Assimp\include\metadata.h" />
+    <ClInclude Include="Assimp\include\NullLogger.hpp" />
+    <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h" />
+    <ClInclude Include="Assimp\include\postprocess.h" />
+    <ClInclude Include="Assimp\include\ProgressHandler.hpp" />
+    <ClInclude Include="Assimp\include\quaternion.h" />
+    <ClInclude Include="Assimp\include\scene.h" />
+    <ClInclude Include="Assimp\include\texture.h" />
+    <ClInclude Include="Assimp\include\types.h" />
+    <ClInclude Include="Assimp\include\vector2.h" />
+    <ClInclude Include="Assimp\include\vector3.h" />
+    <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ConsoleWindow.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
@@ -84,6 +121,7 @@
     <ClInclude Include="GLEW\include\GL\glxew.h" />
     <ClInclude Include="GLEW\include\GL\wglew.h" />
     <ClInclude Include="glmath\glmath.h" />
+    <ClInclude Include="ModuleManageMesh.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
     <ClInclude Include="MGL\Algorithm\Random\LCG.h" />
     <ClInclude Include="MGL\Algorithm\SAT.h" />
@@ -223,6 +261,7 @@
     <ClCompile Include="MGL\Math\TransformOps.cpp" />
     <ClCompile Include="MGL\SysInfo\SystemInfo.cpp" />
     <ClCompile Include="MGL\Time\Clock.cpp" />
+    <ClCompile Include="ModuleManageMesh.cpp" />
     <ClCompile Include="OpenGLOptions.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -250,6 +289,16 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assimp\include\.editorconfig" />
+    <None Include="Assimp\include\color4.inl" />
+    <None Include="Assimp\include\material.inl" />
+    <None Include="Assimp\include\matrix3x3.inl" />
+    <None Include="Assimp\include\matrix4x4.inl" />
+    <None Include="Assimp\include\quaternion.inl" />
+    <None Include="Assimp\include\vector2.inl" />
+    <None Include="Assimp\include\vector3.inl" />
+    <None Include="Assimp\libx86\assimp.dll" />
+    <None Include="Assimp\libx86\assimp.exp" />
     <None Include="GLEW\lib\Release\Win32\glew32.dll" />
     <None Include="MGL\emscripten\library_system.js" />
     <None Include="MGL\Geometry\KDTree.inl" />
@@ -261,6 +310,8 @@
     <None Include="MGL\Math\Matrix.inl" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="Assimp\libx86\assimp.lib" />
+    <Library Include="Assimp\libx86\zlibstatic.lib" />
     <Library Include="GLEW\lib\Release\Win32\glew32.lib" />
     <Library Include="GLEW\lib\Release\Win32\glew32s.lib" />
   </ItemGroup>
