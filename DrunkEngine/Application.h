@@ -11,7 +11,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModulePhysics3D.h"
-#include "ModuleManageMesh.h"
+
 
 #include "ModuleUI.h"
 
@@ -25,7 +25,6 @@ public:
 	ModuleCamera3D* camera;
 	ModulePhysics3D* physics;
 	ModuleUI* ui;
-	ModuleManageMesh* mesh_loader;
 
 private:
 

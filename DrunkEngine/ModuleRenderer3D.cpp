@@ -5,7 +5,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "PhysBody3D.h"
-#include "ModuleManageMesh.h"
 
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -161,24 +160,6 @@ update_status ModuleRenderer3D::Update(float dt)
 	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
 		item_render._Ptr->_Myval->mbody->InnerRender();
 		item_render++;
-	}
-	
-	for (int i = 0; i < App->mesh_loader->Meshes.size(); i++)
-	{
-		// Draw elements
-		v_data* mesh = &App->mesh_loader->Meshes[i];
-		{
-			glEnableClientState(GL_VERTEX_ARRAY);
-
-			// Render things in Element mode
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
-			glVertexPointer(3, GL_FLOAT, 0, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDisableClientState(GL_VERTEX_ARRAY);
-		}
 	}
 
 	return UPDATE_CONTINUE;

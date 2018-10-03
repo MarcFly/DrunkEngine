@@ -9,7 +9,6 @@ Application::Application()
 	camera = new ModuleCamera3D(this);
 	physics = new ModulePhysics3D(this);
 	ui = new ModuleUI(this);
-	mesh_loader = new ModuleManageMesh(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -21,7 +20,7 @@ Application::Application()
 	AddModule(input);
 	AddModule(audio);
 	AddModule(physics);
-	AddModule(mesh_loader);
+
 	AddModule(ui);
 
 	// Renderer last!
