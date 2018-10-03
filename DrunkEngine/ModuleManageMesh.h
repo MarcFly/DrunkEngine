@@ -24,6 +24,10 @@ struct v_data
 
 	float mesh_color[4];
 
+	GLuint id_normal = 0;
+	GLuint num_normal = 0;
+	GLfloat* normal = nullptr;
+
 };
 
 class ModuleManageMesh : public Module

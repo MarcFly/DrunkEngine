@@ -178,9 +178,17 @@ update_status ModuleRenderer3D::Update(float dt)
 			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDisableClientState(GL_VERTEX_ARRAY);
+			
 
-			glColor3f(0,1 ,0 );
+			glColor3f(0,1 ,0);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
+			glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
+			glDrawArrays(GL_LINE, 0, mesh->num_normal);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			glDisableClientState(GL_VERTEX_ARRAY);
 		}
 	}
 
