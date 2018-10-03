@@ -168,6 +168,7 @@ update_status ModuleRenderer3D::Update(float dt)
 		// Draw elements
 		v_data* mesh = &App->mesh_loader->Meshes[i];
 		{
+			glColor3f(mesh->mesh_color[0],mesh->mesh_color[1],mesh->mesh_color[2]);
 			glEnableClientState(GL_VERTEX_ARRAY);
 
 			// Render things in Element mode
@@ -178,6 +179,8 @@ update_status ModuleRenderer3D::Update(float dt)
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glDisableClientState(GL_VERTEX_ARRAY);
+
+			glColor3f(0,1 ,0 );
 		}
 	}
 

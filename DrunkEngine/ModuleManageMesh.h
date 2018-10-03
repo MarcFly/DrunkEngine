@@ -9,6 +9,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Assimp/include/scene.h"
+#include "Color.h"
 
 struct v_data
 {
@@ -20,6 +21,9 @@ struct v_data
 	GLuint id_vertex = 0; // unique vertex in VRAM
 	GLuint num_vertex = 0;
 	float* vertex = nullptr;
+
+	float mesh_color[4];
+
 };
 
 class ModuleManageMesh : public Module

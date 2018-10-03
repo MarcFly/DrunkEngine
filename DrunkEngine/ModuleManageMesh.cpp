@@ -23,9 +23,10 @@ bool ModuleManageMesh::Start()
 {
 	bool ret = true;
 
-	LoadFBX("./glass cube.fbx");
-	LoadFBX("./Dragon 2.5_fbx.fbx");
-	LoadFBX("./Toilet.fbx");
+	//LoadFBX("./glass cube.fbx");
+	//LoadFBX("./Dragon 2.5_fbx.fbx");
+	//LoadFBX("./Toilet.fbx");
+	//LoadFBX("./BakerHouse.fbx");
 	LoadFBX("./warrior.fbx");
 
 	return ret;
@@ -46,13 +47,29 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	bool ret = true;
 
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
-
+	
 	if (scene != nullptr && scene->HasMeshes())
 	{
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			v_data add;
+			
+			if(scene->mMeshes[i]->mColors[0] != nullptr)
+			{
+				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
+				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
+				add.mesh_color[2] = scene->mMeshes[i]->mColors[0]->b;
+				add.mesh_color[3] = scene->mMeshes[i]->mColors[0]->a;
+			}
+			else
+			{
+				add.mesh_color[0] = 1;
+				add.mesh_color[1] = 1;
+				add.mesh_color[2] = 1;
+				add.mesh_color[3] = 1;
+			}
+
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
 
