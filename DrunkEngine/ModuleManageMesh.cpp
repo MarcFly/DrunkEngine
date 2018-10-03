@@ -62,12 +62,16 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			glGenBuffers(1, &add.id_vertex);
 			glBindBuffer(GL_ARRAY_BUFFER, add.id_vertex);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * add.num_vertex, add.vertex, GL_STATIC_DRAW);
+			
+			// **Unbind Buffer**
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			PLOG("New mesh with %d vertices", add.num_vertex)
+
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
-				add.index = new uint[add.num_index];
+				add.index = new GLuint[add.num_index];
 
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
 				{
@@ -78,15 +82,18 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					}
 					else
 					{
-						memcpy(&add.index[i*3], scene->mMeshes[i]->mFaces[i].mIndices, 3*sizeof(uint));
+						memcpy(&add.index[i*3], scene->mMeshes[i]->mFaces[i].mIndices, 3*sizeof(GLuint));
 					}
 				}
 			}
-
+			PLOG("Said mesh starts with %d indices", add.num_index)
 			// Properly Generating the buffer for
 			glGenBuffers(1, &add.id_index);
-			glBindBuffer(GL_ARRAY_BUFFER, add.id_vertex);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * add.num_vertex, add.vertex, GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, add.id_index);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * add.num_index, add.index, GL_STATIC_DRAW);
+			
+			// **Unbind Buffer**
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			Meshes.push_back(add);
 		}
