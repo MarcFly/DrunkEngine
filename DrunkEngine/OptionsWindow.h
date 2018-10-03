@@ -26,6 +26,7 @@ public:
 
 	float fps;
 	float max_fps;
+	std::string log_fps;
 
 	Timer frame_read_time;
 

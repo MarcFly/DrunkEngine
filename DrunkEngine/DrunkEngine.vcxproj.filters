@@ -519,9 +519,6 @@
     <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
       <Filter>Sources\Tools\Assimp\include\port\Android</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleWindow.h">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -730,9 +727,6 @@
     </ClCompile>
     <ClCompile Include="ModuleManageMesh.cpp">
       <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClCompile Include="ConsoleWindow.cpp">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

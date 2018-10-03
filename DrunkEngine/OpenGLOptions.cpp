@@ -10,39 +10,31 @@ OpenGLOptions::OpenGLOptions(Application* app) : Window("OpenGL Settings", SDL_S
 
 void OpenGLOptions::Draw()
 {
-	wireframe = App->renderer3D->wireframe;
-
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 
 		ImGui::Text("Tinker with the settings we are currently using...");
 		ImGui::Separator();
 
-		if (ImGui::Checkbox("Depth Testing", &depth_test))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Depth Testing", &depth_test);
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Cull Faces", &cull_face))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Cull Faces", &cull_face);
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Lighting", &lighting))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Lighting", &lighting);
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Color Materials", &color_material))
-			Check_Enable_Disable();
-
-		if (ImGui::Checkbox("Textures 2D", &texture_2d))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Color Materials", &color_material);
 		ImGui::SameLine();
 
-		if(ImGui::Checkbox("Wireframe", &wireframe))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Textures 2D", &texture_2d);
 		ImGui::SameLine();
 		
 	}
 	ImGui::End();
+
+	Check_Enable_Disable();
 }
 
 void OpenGLOptions::Check_Enable_Disable()
@@ -73,5 +65,4 @@ void OpenGLOptions::Check_Enable_Disable()
 		else if (!glIsEnabled(GL_TEXTURE_2D) && texture_2d == true)
 			glEnable(GL_TEXTURE_2D);
 
-		App->renderer3D->wireframe = wireframe;
 }

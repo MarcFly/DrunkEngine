@@ -14,7 +14,6 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "OpenGLOptions.h"
-#include "ConsoleWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -46,7 +45,6 @@ bool ModuleUI::Init()
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow(App));
 	windows.push_back(opengl_win = new OpenGLOptions(App));
-	windows.push_back(console_win = new ConsoleWindow());
 
 	return ret;
 }
@@ -101,9 +99,6 @@ bool ModuleUI::MainMenu()
 		{
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();
-
-			if (ImGui::MenuItem("Console"))
-				console_win->SwitchActive();
 
 			if (ImGui::MenuItem("Random Generator"))
 				random_win->SwitchActive();
