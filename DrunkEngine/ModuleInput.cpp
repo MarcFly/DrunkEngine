@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleUI.h"
+#include "ModuleManageMesh.h"
 
 #define MAX_KEYS 300
 
@@ -113,6 +114,27 @@ update_status ModuleInput::PreUpdate(float dt)
 			{
 				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
 					App->renderer3D->OnResize(e.window.data1, e.window.data2);
+				break;
+			}
+
+			case SDL_DROPFILE:		// In case if dropped file
+			{      
+				char* dropped_filedir = nullptr;
+				
+				dropped_filedir = e.drop.file;
+				// Shows directory of dropped file
+
+
+				SDL_ShowSimpleMessageBox(
+					SDL_MESSAGEBOX_INFORMATION,
+					"File dropped on window",
+					dropped_filedir,
+					App->window->window);
+
+				App->mesh_loader->LoadFBX(dropped_filedir);
+
+				SDL_free(dropped_filedir);
+				break;
 			}
 		}
 	}

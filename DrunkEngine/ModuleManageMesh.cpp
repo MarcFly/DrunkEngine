@@ -23,10 +23,10 @@ bool ModuleManageMesh::Start()
 {
 	bool ret = true;
 
-	LoadFBX("./glass cube.fbx");
-	LoadFBX("./Dragon 2.5_fbx.fbx");
-	LoadFBX("./Toilet.fbx");
-	LoadFBX("./warrior.fbx");
+	//LoadFBX("./glass cube.fbx");
+	//LoadFBX("./Dragon 2.5_fbx.fbx");
+	//LoadFBX("./Toilet.fbx");
+	//LoadFBX("./warrior.fbx");
 
 	return ret;
 }
