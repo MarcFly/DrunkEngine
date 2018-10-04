@@ -21,6 +21,7 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void Render(bool mesh_color);
 	void OnResize(int width, int height);
 	void ChangeVsync();
 	bool CheckGLError();
@@ -35,6 +36,7 @@ public:
 	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 	bool vsync;
 	bool wireframe;
+	bool gl_fill_and_gl_line;
 };
 
 #endif
