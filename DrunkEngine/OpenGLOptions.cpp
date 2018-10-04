@@ -39,6 +39,10 @@ void OpenGLOptions::Draw()
 		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe))
 			Check_Enable_Disable();
 		ImGui::SameLine();
+
+		if (ImGui::Checkbox("Faces + Wireframe", &App->renderer3D->gl_fill_and_gl_line))
+			Check_Enable_Disable();
+		ImGui::SameLine();
 		
 	}
 	ImGui::End();

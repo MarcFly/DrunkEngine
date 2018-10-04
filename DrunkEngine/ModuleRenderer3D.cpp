@@ -28,6 +28,7 @@ bool ModuleRenderer3D::Init()
 	bool ret = true;
 	vsync = true;
 	wireframe = false;
+	gl_fill_and_gl_line = true;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -156,29 +157,13 @@ update_status ModuleRenderer3D::Update(float dt)
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	// Render From primitive list
-	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
-	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
-		item_render._Ptr->_Myval->mbody->InnerRender();
-		item_render++;
-	}
-	
-	for (int i = 0; i < App->mesh_loader->Meshes.size(); i++)
-	{
-		// Draw elements
-		v_data* mesh = &App->mesh_loader->Meshes[i];
-		{
-			glEnableClientState(GL_VERTEX_ARRAY);
+	Render(true);
 
-			// Render things in Element mode
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
-			glVertexPointer(3, GL_FLOAT, 0, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDisableClientState(GL_VERTEX_ARRAY);
-		}
+	if (!wireframe && gl_fill_and_gl_line)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glColor3f(0, 0, 0);
+		Render(false);
 	}
 
 	return UPDATE_CONTINUE;
@@ -203,6 +188,64 @@ bool ModuleRenderer3D::CleanUp()
 	return true;
 }
 
+
+void ModuleRenderer3D::Render(bool mesh_color)
+{
+	// Render From primitive list
+	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
+	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
+		item_render._Ptr->_Myval->mbody->InnerRender();
+		item_render++;
+	}
+
+	for (int i = 0; i < App->mesh_loader->Meshes.size(); i++)
+	{
+		// Draw elements
+		v_data* mesh = &App->mesh_loader->Meshes[i];
+		{
+			if (mesh_color)
+				glColor3f(mesh->mesh_color[0], mesh->mesh_color[1], mesh->mesh_color[2]);
+
+			else
+				glColor3f(0, 0, 0);
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+
+			// Render things in Element mode
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
+			glVertexPointer(3, GL_FLOAT, 0, NULL);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
+			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+			glColor3f(0, 1, 0);
+
+			//Draw normals (buffer)
+			//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
+			//glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
+			//glDrawArrays(GL_LINE, 0, mesh->num_normal);
+			//
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			// Draw Nornals
+			//glBegin(GL_LINES);
+			//glColor3f(1.0f, 1.0f, 1.0f);
+			//
+			//for (int i = 0; i < mesh->num_normal / 6; i++)
+			//{			
+			//	glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
+			//	glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
+			//}
+			//
+			//glEnd();
+
+
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
+	}
+}
 
 void ModuleRenderer3D::OnResize(int width, int height)
 {
