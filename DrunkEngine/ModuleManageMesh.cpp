@@ -105,7 +105,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					{
 						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
 					
-            float aux[9];
+						float aux[9];
 						aux[0] = add.vertex[add.index[j * 3]];
 						aux[1] = add.vertex[add.index[j * 3] + 1];
 						aux[2] = add.vertex[add.index[j * 3] + 2];
@@ -127,7 +127,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						add.normal[(j * 3 * 2) + 3] = v1 + v1;
 						add.normal[(j * 3 * 2) + 4] = v2 + v2;
 						add.normal[(j * 3 * 2) + 5] = v3 + v3;
-          }
+					}
 				}
 			}
 			PLOG("Said mesh starts with %d indices", add.num_index)
@@ -139,7 +139,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			// **Unbind Buffer**
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-      glGenBuffers(1, &add.id_normal);
+			glGenBuffers(1, &add.id_normal);
 			glBindBuffer(GL_ARRAY_BUFFER, add.id_normal);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * add.num_normal, add.normal, GL_STATIC_DRAW);
 
