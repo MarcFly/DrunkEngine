@@ -188,6 +188,18 @@ update_status ModuleRenderer3D::Update(float dt)
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+			glBegin(GL_LINES);
+			glColor3f(1.0f, 1.0f, 1.0f);
+
+			for (int i = 0; i < mesh->num_normal / 6; i++)
+			{			
+				glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
+				glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
+			}
+
+			glEnd();
+
+
 			glDisableClientState(GL_VERTEX_ARRAY);
 		}
 	}
