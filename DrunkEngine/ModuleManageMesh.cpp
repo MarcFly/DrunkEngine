@@ -48,15 +48,15 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	bool ret = true;
 
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
-	
+
 	if (scene != nullptr && scene->HasMeshes())
 	{
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			v_data add;
-			
-			if(scene->mMeshes[i]->mColors[0] != nullptr)
+      
+      if(scene->mMeshes[i]->mColors[0] != nullptr)
 			{
 				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
 				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
@@ -70,7 +70,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				add.mesh_color[2] = 1;
 				add.mesh_color[3] = 1;
 			}
-
+      
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
 
@@ -91,9 +91,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
 				add.index = new GLuint[add.num_index];
 
-				add.num_normal = add.num_index * 2;
+        add.num_normal = add.num_index * 2;
 				add.normal = new float[add.num_normal];
-
+        
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
 				{
 					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
@@ -104,8 +104,8 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					else
 					{
 						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
-
-						float aux[9];
+					
+            float aux[9];
 						aux[0] = add.vertex[add.index[j * 3]];
 						aux[1] = add.vertex[add.index[j * 3] + 1];
 						aux[2] = add.vertex[add.index[j * 3] + 2];
@@ -127,10 +127,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						add.normal[(j * 3 * 2) + 3] = v1 + v1;
 						add.normal[(j * 3 * 2) + 4] = v2 + v2;
 						add.normal[(j * 3 * 2) + 5] = v3 + v3;
-					}
-
-					
-
+          }
 				}
 			}
 			PLOG("Said mesh starts with %d indices", add.num_index)
@@ -139,15 +136,16 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, add.id_index);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * add.num_index, add.index, GL_STATIC_DRAW);
 			
+			// **Unbind Buffer**
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-			glGenBuffers(1, &add.id_normal);
+      glGenBuffers(1, &add.id_normal);
 			glBindBuffer(GL_ARRAY_BUFFER, add.id_normal);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * add.num_normal, add.normal, GL_STATIC_DRAW);
 
 			// **Unbind Buffer**
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+      
 			Meshes.push_back(add);
 		}
 

@@ -2,7 +2,7 @@
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
 
-#define MOUSE_WHEEL_SPEED 4
+#define MOUSE_WHEEL_SPEED 6
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
