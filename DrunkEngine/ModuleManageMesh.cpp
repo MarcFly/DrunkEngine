@@ -94,6 +94,12 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
         add.num_normal = add.num_index * 2;
 				add.normal = new float[add.num_normal];
         
+				float v1 = 0;
+				float v2 = 0;
+				float v3 = 0;
+				float aux[9];
+				int auxloop = 0;
+
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
 				{
 					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
@@ -106,27 +112,42 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
 					
 						float aux[9];
-						aux[0] = add.vertex[add.index[j * 3]];
-						aux[1] = add.vertex[add.index[j * 3] + 1];
-						aux[2] = add.vertex[add.index[j * 3] + 2];
-						aux[3] = add.vertex[add.index[(j * 3) + 1]];
-						aux[4] = add.vertex[add.index[(j * 3) + 1] + 1];
-						aux[5] = add.vertex[add.index[(j * 3) + 1] + 2];
-						aux[6] = add.vertex[add.index[(j * 3) + 2]];
-						aux[7] = add.vertex[add.index[(j * 3) + 2] + 1];
-						aux[8] = add.vertex[add.index[(j * 3) + 2] + 2];
 
-						float v1 = (aux[0] + aux[3] + aux[6]) / 3;
-						float v2 = (aux[1] + aux[4] + aux[7]) / 3;
-						float v3 = (aux[2] + aux[5] + aux[8]) / 3;
+						if (j % 3 == 0)
+						{
+							aux[0] = add.index[j * 3];
+							aux[1] = add.index[j * 3 + 1];
+							aux[2] = add.index[j * 3 + 2];
+						}
+						if (j % 3 == 1)
+						{
+							aux[3] = add.index[j * 3];
+							aux[4] = add.index[j * 3 + 1];
+							aux[5] = add.index[j * 3 + 2];
 
-						add.normal[j * 3 * 2] = v1;
-						add.normal[(j * 3 * 2) + 1] = v2;
-						add.normal[(j * 3 * 2) + 2] = v3;
+						}
+						if (j % 3 == 2)
+						{
+							aux[6] = add.index[j * 3];
+							aux[7] = add.index[j * 3 + 1];
+							aux[8] = add.index[j * 3 + 2];
 
-						add.normal[(j * 3 * 2) + 3] = v1 + v1;
-						add.normal[(j * 3 * 2) + 4] = v2 + v2;
-						add.normal[(j * 3 * 2) + 5] = v3 + v3;
+							float v1 = (aux[0] + aux[3] + aux[6]) / 3;
+							float v2 = (aux[1] + aux[4] + aux[7]) / 3;
+							float v3 = (aux[2] + aux[5] + aux[8]) / 3;
+
+							add.normal[j - 2 + auxloop] = v1;
+							add.normal[j - 1 + auxloop] = v2;
+							add.normal[j + auxloop] = v3;
+
+							add.normal[j + 1 + auxloop] = v1 + v1;
+							add.normal[j + 2 + auxloop] = v2 + v2;
+							add.normal[j + 3 + auxloop] = v3 + v3;
+
+							auxloop += 3;
+							
+
+						}		
 					}
 				}
 			}

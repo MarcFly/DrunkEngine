@@ -223,23 +223,23 @@ void ModuleRenderer3D::Render(bool mesh_color)
 			glColor3f(0, 1, 0);
 
 			//Draw normals (buffer)
-			//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
-			//glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
-			//glDrawArrays(GL_LINE, 0, mesh->num_normal);
-			//
-			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
+			glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
+			glDrawArrays(GL_LINE, 0, mesh->num_normal);
+			
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			// Draw Nornals
-			//glBegin(GL_LINES);
-			//glColor3f(1.0f, 1.0f, 1.0f);
-			//
-			//for (int i = 0; i < mesh->num_normal / 6; i++)
-			//{			
-			//	glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
-			//	glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
-			//}
-			//
-			//glEnd();
+			glBegin(GL_LINES);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			
+			for (int i = 0; i < mesh->num_normal / 6; i++)
+			{			
+				glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
+				glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
+			}
+			
+			glEnd();
 
 
 			glDisableClientState(GL_VERTEX_ARRAY);
