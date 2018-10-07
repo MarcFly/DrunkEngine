@@ -1,4 +1,6 @@
 #include "ModuleManageMesh.h"
+#include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "SDL/include/SDL_opengl.h"
 
@@ -56,7 +58,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			v_data add;
       
-      if(scene->mMeshes[i]->mColors[0] != nullptr)
+		if(scene->mMeshes[i]->mColors[0] != nullptr)
 			{
 				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
 				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
@@ -91,7 +93,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
 				add.index = new GLuint[add.num_index];
 
-        add.num_normal = add.num_index * 2;
+				add.num_normal = add.num_index * 2;
 				add.normal = new float[add.num_normal];
         
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
@@ -160,7 +162,81 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	return ret;
 }
 
+bool ModuleManageMesh::SetTexCoords(v_data* mesh)
+{
+	bool ret = true;
+	
+	// Set TexCoordinates
+
+	// Load Tex parameters and data to vram?
+	uint ImageName = 1;
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &ImageName);
+	glBindTexture(GL_TEXTURE_2D, ImageName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
+	
+	return ret;
+}
+
 void ModuleManageMesh::DrawMesh(const v_data* mesh) 
 {
-	
+	// Draw elements
+	{
+		
+		glColor3f(0, 0, 0);
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		// Setting material things
+		if (mesh->tex_coords != nullptr)
+			glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
+
+		// Bind buffers
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
+		glBindBuffer(GL_TEXTURE_COORD_ARRAY, mesh->id_tex);
+
+		// Set pointers to arrays
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glTexCoordPointer(2, GL_FLOAT, 0, mesh->tex_coords /*mesh->num_vertex * 3*/);
+
+		// Draw
+		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
+
+		// Unbind Buffers
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+		glColor3f(0, 1, 0);
+
+		//Draw normals (buffer)
+		//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
+		//glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
+		//glDrawArrays(GL_LINE, 0, mesh->num_normal);
+		//
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// Draw Nornals
+		//glBegin(GL_LINES);
+		//glColor3f(1.0f, 1.0f, 1.0f);
+		//
+		//for (int i = 0; i < mesh->num_normal / 6; i++)
+		//{			
+		//	glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
+		//	glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
+		//}
+		//
+		//glEnd();
+
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
 }

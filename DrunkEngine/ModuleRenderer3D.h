@@ -8,6 +8,8 @@
 #include "glmath/glmath.h"
 
 #define MAX_LIGHTS 8
+#define CHECKERS_HEIGHT 4
+#define CHECKERS_WIDTH 4
 
 class ModuleRenderer3D : public Module
 {
@@ -21,12 +23,14 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void Render(bool mesh_color);
+	void Render();
 	void OnResize(int width, int height);
 	void ChangeVsync();
 	bool CheckGLError();
 	void RenderGrid();
 	void SwapWireframe(bool active);
+
+	void InitCheckTex();
 
 public:
 
@@ -37,6 +41,8 @@ public:
 	bool vsync;
 	bool wireframe;
 	bool gl_fill_and_gl_line;
+
+	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 };
 
 #endif

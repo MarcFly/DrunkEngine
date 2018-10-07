@@ -28,6 +28,10 @@ struct v_data
 	GLuint num_normal = 0;
 	GLfloat* normal = nullptr;
 
+	GLuint id_tex = 0;
+	GLuint num_tex_coords;
+	GLfloat* tex_coords = nullptr;
+
 };
 
 class ModuleManageMesh : public Module
@@ -42,6 +46,8 @@ public:
 	bool CleanUp();
 
 	bool LoadFBX(const char* file_path);
+
+	bool SetTexCoords(v_data* mesh);
 
 	void DrawMesh(const v_data* mesh);
 
