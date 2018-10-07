@@ -231,7 +231,7 @@ void ModuleRenderer3D::Render(bool mesh_color)
 
 			// Draw Nornals
 			glBegin(GL_LINES);
-			glColor3f(1.0f, 1.0f, 1.0f);
+			glColor3f(0.0f, 1.0f, 0.0f);
 			
 			for (int i = 0; i < mesh->num_normal / 6; i++)
 			{			

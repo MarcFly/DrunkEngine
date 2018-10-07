@@ -132,17 +132,24 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 							aux[7] = add.vertex[j * 3 + 1];
 							aux[8] = add.vertex[j * 3 + 2];
 
-							float v1 = (aux[0] + aux[3] + aux[6]) / 3;
-							float v2 = (aux[1] + aux[4] + aux[7]) / 3;
-							float v3 = (aux[2] + aux[5] + aux[8]) / 3;
+							float p1 = (aux[0] + aux[3] + aux[6]) / 3;
+							float p2 = (aux[1] + aux[4] + aux[7]) / 3;
+							float p3 = (aux[2] + aux[5] + aux[8]) / 3;
 
-							add.normal[j - 2 + auxloop] = v1;
-							add.normal[j - 1 + auxloop] = v2;
-							add.normal[j + auxloop] = v3;
+							add.normal[j - 2 + auxloop] = p1;
+							add.normal[j - 1 + auxloop] = p2;
+							add.normal[j + auxloop] = p3;
 
-							add.normal[j + 1 + auxloop] = v1 + v1;
-							add.normal[j + 2 + auxloop] = v2 + v2;
-							add.normal[j + 3 + auxloop] = v3 + v3;
+							vec v1(aux[0], aux[1], aux[2]);
+							vec v2(aux[3], aux[4], aux[5]);
+							vec v3(aux[6], aux[7], aux[8]);
+
+							vec norm = (v2 - v1).Cross(v3 - v1);
+							norm.Normalize();
+
+							add.normal[j + 1 + auxloop] = p1 + norm.x;
+							add.normal[j + 2 + auxloop] = p2 + norm.y;
+							add.normal[j + 3 + auxloop] = p3 + norm.z;
 
 							auxloop += 3;
 							
