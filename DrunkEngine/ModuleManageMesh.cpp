@@ -115,22 +115,22 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 						if (j % 3 == 0)
 						{
-							aux[0] = add.index[j * 3];
-							aux[1] = add.index[j * 3 + 1];
-							aux[2] = add.index[j * 3 + 2];
+							aux[0] = add.vertex[j * 3];
+							aux[1] = add.vertex[j * 3 + 1];
+							aux[2] = add.vertex[j * 3 + 2];
 						}
 						if (j % 3 == 1)
 						{
-							aux[3] = add.index[j * 3];
-							aux[4] = add.index[j * 3 + 1];
-							aux[5] = add.index[j * 3 + 2];
+							aux[3] = add.vertex[j * 3];
+							aux[4] = add.vertex[j * 3 + 1];
+							aux[5] = add.vertex[j * 3 + 2];
 
 						}
 						if (j % 3 == 2)
 						{
-							aux[6] = add.index[j * 3];
-							aux[7] = add.index[j * 3 + 1];
-							aux[8] = add.index[j * 3 + 2];
+							aux[6] = add.vertex[j * 3];
+							aux[7] = add.vertex[j * 3 + 1];
+							aux[8] = add.vertex[j * 3 + 2];
 
 							float v1 = (aux[0] + aux[3] + aux[6]) / 3;
 							float v2 = (aux[1] + aux[4] + aux[7]) / 3;
