@@ -29,6 +29,8 @@ bool ModuleRenderer3D::Init()
 	vsync = true;
 	wireframe = false;
 	gl_fill_and_gl_line = true;
+	render_normals = false;
+	normal_length = 1.0f;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -223,24 +225,30 @@ void ModuleRenderer3D::Render(bool mesh_color)
 			glColor3f(0, 1, 0);
 
 			//Draw normals (buffer)
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
+			/*glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
 			glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
 			glDrawArrays(GL_LINE, 0, mesh->num_normal);
 			
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
-			// Draw Nornals
-			glBegin(GL_LINES);
-			glColor3f(0.0f, 1.0f, 0.0f);
-			
-			for (int i = 0; i < mesh->num_normal / 6; i++)
-			{			
-				glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
-				glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
+			// Draw Normals
+			if (render_normals)
+			{
+				glBegin(GL_LINES);
+				glColor3f(0.0f, 1.0f, 0.0f);
+
+				for (int i = 0; i < mesh->num_normal / 6; i++)
+				{
+					glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
+
+					vec norm(mesh->normal[i * 6 + 3] - mesh->normal[i * 6], mesh->normal[i * 6 + 4] - mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 5] - mesh->normal[i * 6 + 2]);
+					norm = norm.Mul(normal_length);
+
+					glVertex3f(mesh->normal[i * 6] + norm.x, mesh->normal[i * 6 + 1] + norm.y, mesh->normal[i * 6 + 2] + norm.z);
+				}
+
+				glEnd();
 			}
-			
-			glEnd();
-
 
 			glDisableClientState(GL_VERTEX_ARRAY);
 		}
