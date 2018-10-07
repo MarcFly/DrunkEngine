@@ -1,9 +1,5 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "GLEW/include/GL/glew.h"
-#include "SDL/include/SDL_opengl.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
 #include "PhysBody3D.h"
 #include "ModuleManageMesh.h"
 
@@ -15,7 +11,7 @@
 
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	
+	InitCheckTex();
 }
 
 // Destructor
@@ -111,8 +107,6 @@ bool ModuleRenderer3D::Init()
 		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 		
-		InitCheckTex();
-
 	}
 
 	// Projection matrix for
@@ -272,7 +266,9 @@ void ModuleRenderer3D::InitCheckTex()
 {
 	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
 		for (int j = 0; j < CHECKERS_WIDTH; j++) {
-			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			int c = 0;
+			if (j == 0 || j % 2 == 0)
+				c = 255;
 			checkTexture[i][j][0] = (GLubyte)c;
 			checkTexture[i][j][1] = (GLubyte)c;
 			checkTexture[i][j][2] = (GLubyte)c;

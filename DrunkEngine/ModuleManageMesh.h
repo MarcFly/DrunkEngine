@@ -11,7 +11,7 @@
 #include "Assimp/include/scene.h"
 #include "Color.h"
 
-struct v_data
+struct mesh_data
 {
 	//aiMesh* m = nullptr;
 	GLuint id_index = 0; // index in VRAM
@@ -28,9 +28,11 @@ struct v_data
 	GLuint num_normal = 0;
 	GLfloat* normal = nullptr;
 
-	GLuint id_tex = 0;
+	GLuint id_tex_coords = 0;
 	GLuint num_tex_coords;
 	GLfloat* tex_coords = nullptr;
+
+	GLuint id_tex = 0;
 
 };
 
@@ -47,13 +49,16 @@ public:
 
 	bool LoadFBX(const char* file_path);
 
-	bool SetTexCoords(v_data* mesh);
+	bool SetTexCoords(mesh_data* mesh, aiMesh* cpy_data);
+	bool SetColors(mesh_data* mesh, aiMesh* cpy_data);
 
-	void DrawMesh(const v_data* mesh);
+	void GenBuffers(mesh_data& mesh);
+	void DrawMesh(const mesh_data* mesh);
+	void SetTexParams(mesh_data* mesh);
 
 public:
-	//v_data test_mesh;
-	std::vector<v_data> Meshes;
+	//mesh_data test_mesh;
+	std::vector<mesh_data> Meshes;
 
 };
 

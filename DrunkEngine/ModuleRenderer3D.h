@@ -5,6 +5,11 @@
 #include "Globals.h"
 #include "Light.h"
 
+#include "GLEW/include/GL/glew.h"
+#include "SDL/include/SDL_opengl.h"
+#include <gl/GL.h>
+#include <gl/GLU.h>
+
 #include "glmath/glmath.h"
 
 #define MAX_LIGHTS 8

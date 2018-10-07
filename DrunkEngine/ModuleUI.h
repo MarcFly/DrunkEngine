@@ -30,6 +30,7 @@ public:
 	bool CleanUp();
 
 	bool MainMenu();
+	//void AddLog();
 
 public:
 	OptionsWindow* options_win = nullptr;
