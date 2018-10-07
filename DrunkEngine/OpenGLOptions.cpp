@@ -36,14 +36,15 @@ void OpenGLOptions::Draw()
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe);
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Faces + Wireframe", &App->renderer3D->gl_fill_and_gl_line))
-			Check_Enable_Disable();
+		ImGui::Checkbox("Faces + Wireframe", &App->renderer3D->gl_fill_and_gl_line);
 		ImGui::SameLine();
-		
+
+		ImGui::Checkbox("Show Normals", &App->renderer3D->render_normals);
+
+		ImGui::SliderFloat("Normal Length", &App->renderer3D->normal_length, 0.2f, 300.0f);
 	}
 	ImGui::End();
 }

@@ -56,7 +56,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			v_data add;
       
-      if(scene->mMeshes[i]->mColors[0] != nullptr)
+		if(scene->mMeshes[i]->mColors[0] != nullptr)
 			{
 				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
 				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
@@ -94,6 +94,12 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
         add.num_normal = add.num_index * 2;
 				add.normal = new float[add.num_normal];
         
+				float v1 = 0;
+				float v2 = 0;
+				float v3 = 0;
+				float aux[9];
+				int auxloop = 0;
+
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
 				{
 					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
@@ -106,27 +112,36 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
 					
 						float aux[9];
-						aux[0] = add.vertex[add.index[j * 3]];
-						aux[1] = add.vertex[add.index[j * 3] + 1];
-						aux[2] = add.vertex[add.index[j * 3] + 2];
-						aux[3] = add.vertex[add.index[(j * 3) + 1]];
-						aux[4] = add.vertex[add.index[(j * 3) + 1] + 1];
-						aux[5] = add.vertex[add.index[(j * 3) + 1] + 2];
-						aux[6] = add.vertex[add.index[(j * 3) + 2]];
-						aux[7] = add.vertex[add.index[(j * 3) + 2] + 1];
-						aux[8] = add.vertex[add.index[(j * 3) + 2] + 2];
 
-						float v1 = (aux[0] + aux[3] + aux[6]) / 3;
-						float v2 = (aux[1] + aux[4] + aux[7]) / 3;
-						float v3 = (aux[2] + aux[5] + aux[8]) / 3;
+						aux[0] = add.vertex[add.index[j * 3] * 3];
+						aux[1] = add.vertex[(add.index[j * 3] * 3) + 1];
+						aux[2] = add.vertex[(add.index[j * 3] * 3) + 2];
+						aux[3] = add.vertex[(add.index[(j * 3) + 1] * 3)];
+						aux[4] = add.vertex[(add.index[(j * 3) + 1] * 3) + 1];
+						aux[5] = add.vertex[(add.index[(j * 3) + 1] * 3) + 2];
+						aux[6] = add.vertex[(add.index[(j * 3) + 2] * 3)];
+						aux[7] = add.vertex[(add.index[(j * 3) + 2] * 3) + 1];
+						aux[8] = add.vertex[(add.index[(j * 3) + 2] * 3) + 2];
 
-						add.normal[j * 3 * 2] = v1;
-						add.normal[(j * 3 * 2) + 1] = v2;
-						add.normal[(j * 3 * 2) + 2] = v3;
+						float p1 = (aux[0] + aux[3] + aux[6]) / 3;
+						float p2 = (aux[1] + aux[4] + aux[7]) / 3;
+						float p3 = (aux[2] + aux[5] + aux[8]) / 3;
 
-						add.normal[(j * 3 * 2) + 3] = v1 + v1;
-						add.normal[(j * 3 * 2) + 4] = v2 + v2;
-						add.normal[(j * 3 * 2) + 5] = v3 + v3;
+						add.normal[j * 6] = p1;
+						add.normal[j * 6 + 1] = p2;
+						add.normal[j * 6 + 2] = p3;
+
+						vec v1(aux[0], aux[1], aux[2]);
+						vec v2(aux[3], aux[4], aux[5]);
+						vec v3(aux[6], aux[7], aux[8]);
+
+						vec norm = (v2 - v1).Cross(v3 - v1);
+						norm.Normalize();
+
+						add.normal[j * 6 + 3] = p1 + norm.x;
+						add.normal[j * 6 + 4] = p2 + norm.y;
+						add.normal[j * 6 + 5] = p3 + norm.z;
+							
 					}
 				}
 			}

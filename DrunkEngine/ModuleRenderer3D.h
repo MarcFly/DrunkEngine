@@ -37,6 +37,8 @@ public:
 	bool vsync;
 	bool wireframe;
 	bool gl_fill_and_gl_line;
+	bool render_normals;
+	float normal_length;
 };
 
 #endif
