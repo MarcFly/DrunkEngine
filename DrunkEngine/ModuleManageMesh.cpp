@@ -113,28 +113,15 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					
 						float aux[9];
 
-						//rand vertices
-						/*aux[0] = add.vertex[j * 3];
-						aux[1] = add.vertex[j * 3 + 1];
-						aux[2] = add.vertex[j * 3 + 2];
-												
-						aux[3] = add.vertex[j * 3 + 3];
-						aux[4] = add.vertex[j * 3 + 4];
-						aux[5] = add.vertex[j * 3 + 5];
-												
-						aux[6] = add.vertex[j * 3 + 6];
-						aux[7] = add.vertex[j * 3 + 7];
-						aux[8] = add.vertex[j * 3 + 8];*/
-
-						aux[0] = add.vertex[add.index[j * 3]];
-						aux[1] = add.vertex[add.index[j * 3] + 1];
-						aux[2] = add.vertex[add.index[j * 3] + 2];
-						aux[3] = add.vertex[add.index[(j * 3) + 1]];
-						aux[4] = add.vertex[add.index[(j * 3) + 1] + 1];
-						aux[5] = add.vertex[add.index[(j * 3) + 1] + 2];
-						aux[6] = add.vertex[add.index[(j * 3) + 2]];
-						aux[7] = add.vertex[add.index[(j * 3) + 2] + 1];
-						aux[8] = add.vertex[add.index[(j * 3) + 2] + 2];
+						aux[0] = add.vertex[add.index[j * 3] * 3];
+						aux[1] = add.vertex[(add.index[j * 3] * 3) + 1];
+						aux[2] = add.vertex[(add.index[j * 3] * 3) + 2];
+						aux[3] = add.vertex[(add.index[(j * 3) + 1] * 3)];
+						aux[4] = add.vertex[(add.index[(j * 3) + 1] * 3) + 1];
+						aux[5] = add.vertex[(add.index[(j * 3) + 1] * 3) + 2];
+						aux[6] = add.vertex[(add.index[(j * 3) + 2] * 3)];
+						aux[7] = add.vertex[(add.index[(j * 3) + 2] * 3) + 1];
+						aux[8] = add.vertex[(add.index[(j * 3) + 2] * 3) + 2];
 
 						float p1 = (aux[0] + aux[3] + aux[6]) / 3;
 						float p2 = (aux[1] + aux[4] + aux[7]) / 3;
