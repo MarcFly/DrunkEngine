@@ -56,7 +56,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			v_data add;
       
-      if(scene->mMeshes[i]->mColors[0] != nullptr)
+		if(scene->mMeshes[i]->mColors[0] != nullptr)
 			{
 				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
 				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
@@ -113,48 +113,48 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					
 						float aux[9];
 
-						if (j % 3 == 0)
-						{
-							aux[0] = add.vertex[j * 3];
-							aux[1] = add.vertex[j * 3 + 1];
-							aux[2] = add.vertex[j * 3 + 2];
-						}
-						if (j % 3 == 1)
-						{
-							aux[3] = add.vertex[j * 3];
-							aux[4] = add.vertex[j * 3 + 1];
-							aux[5] = add.vertex[j * 3 + 2];
+						//rand vertices
+						/*aux[0] = add.vertex[j * 3];
+						aux[1] = add.vertex[j * 3 + 1];
+						aux[2] = add.vertex[j * 3 + 2];
+												
+						aux[3] = add.vertex[j * 3 + 3];
+						aux[4] = add.vertex[j * 3 + 4];
+						aux[5] = add.vertex[j * 3 + 5];
+												
+						aux[6] = add.vertex[j * 3 + 6];
+						aux[7] = add.vertex[j * 3 + 7];
+						aux[8] = add.vertex[j * 3 + 8];*/
 
-						}
-						if (j % 3 == 2)
-						{
-							aux[6] = add.vertex[j * 3];
-							aux[7] = add.vertex[j * 3 + 1];
-							aux[8] = add.vertex[j * 3 + 2];
+						aux[0] = add.vertex[add.index[j * 3]];
+						aux[1] = add.vertex[add.index[j * 3] + 1];
+						aux[2] = add.vertex[add.index[j * 3] + 2];
+						aux[3] = add.vertex[add.index[(j * 3) + 1]];
+						aux[4] = add.vertex[add.index[(j * 3) + 1] + 1];
+						aux[5] = add.vertex[add.index[(j * 3) + 1] + 2];
+						aux[6] = add.vertex[add.index[(j * 3) + 2]];
+						aux[7] = add.vertex[add.index[(j * 3) + 2] + 1];
+						aux[8] = add.vertex[add.index[(j * 3) + 2] + 2];
 
-							float p1 = (aux[0] + aux[3] + aux[6]) / 3;
-							float p2 = (aux[1] + aux[4] + aux[7]) / 3;
-							float p3 = (aux[2] + aux[5] + aux[8]) / 3;
+						float p1 = (aux[0] + aux[3] + aux[6]) / 3;
+						float p2 = (aux[1] + aux[4] + aux[7]) / 3;
+						float p3 = (aux[2] + aux[5] + aux[8]) / 3;
 
-							add.normal[j - 2 + auxloop] = p1;
-							add.normal[j - 1 + auxloop] = p2;
-							add.normal[j + auxloop] = p3;
+						add.normal[j * 6] = p1;
+						add.normal[j * 6 + 1] = p2;
+						add.normal[j * 6 + 2] = p3;
 
-							vec v1(aux[0], aux[1], aux[2]);
-							vec v2(aux[3], aux[4], aux[5]);
-							vec v3(aux[6], aux[7], aux[8]);
+						vec v1(aux[0], aux[1], aux[2]);
+						vec v2(aux[3], aux[4], aux[5]);
+						vec v3(aux[6], aux[7], aux[8]);
 
-							vec norm = (v2 - v1).Cross(v3 - v1);
-							norm.Normalize();
+						vec norm = (v2 - v1).Cross(v3 - v1);
+						norm.Normalize();
 
-							add.normal[j + 1 + auxloop] = p1 + norm.x;
-							add.normal[j + 2 + auxloop] = p2 + norm.y;
-							add.normal[j + 3 + auxloop] = p3 + norm.z;
-
-							auxloop += 3;
+						add.normal[j * 6 + 3] = p1 + norm.x;
+						add.normal[j * 6 + 4] = p2 + norm.y;
+						add.normal[j * 6 + 5] = p3 + norm.z;
 							
-
-						}		
 					}
 				}
 			}
