@@ -1,8 +1,12 @@
 #include "ModuleManageMesh.h"
 #include "Application.h"
-//#include "ModuleRenderer3D.h"
 #include "ConsoleWindow.h"
 #include "SDL/include/SDL_opengl.h"
+#include "Assimp/include/cimport.h"
+#include "Assimp/include/postprocess.h"
+#include "Assimp/include/cfileio.h"
+
+#include "ModuleRenderer3D.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
@@ -170,8 +174,8 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 {
 	// Draw elements
 	{
-		
-		glColor3f(1, 1, 0);
+
+		//glColor3f(1, 1, 0);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -196,30 +200,11 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-		glColor3f(0, 1, 0);
-
-		//Draw normals (buffer)
-		//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
-		//glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
-		//glDrawArrays(GL_LINE, 0, mesh->num_normal);
-		//
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		// Draw Nornals
-		//glBegin(GL_LINES);
-		//glColor3f(1.0f, 1.0f, 1.0f);
-		//
-		//for (int i = 0; i < mesh->num_normal / 6; i++)
-		//{			
-		//	glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
-		//	glVertex3f(mesh->normal[i * 6 + 3], mesh->normal[i * 6 + 4], mesh->normal[i * 6 + 5]);
-		//}
-		//
-		//glEnd();
+		//glColor3f(0, 1, 0);
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
-		
+
 	}
 }
 
@@ -243,17 +228,17 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Normal Buffer
-	glGenBuffers(1, &mesh.id_normal);
+	/*glGenBuffers(1, &mesh.id_normal);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.id_normal);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * mesh.num_normal, mesh.normal, GL_STATIC_DRAW);
 
 	// **Unbind Buffer**
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
 	// Texture Coordinate Buffer
 	glGenBuffers(1, &mesh.id_tex_coords);
 	glBindBuffer(GL_TEXTURE_COORD_ARRAY, mesh.id_tex_coords);
-	glBufferData(GL_TEXTURE_COORD_ARRAY, sizeof(float) * mesh.num_tex_coords * 2, mesh.tex_coords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh.num_tex_coords * 2, mesh.tex_coords, GL_STATIC_DRAW);
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
@@ -271,23 +256,21 @@ bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
 
 void ModuleManageMesh::SetTexParams(mesh_data* mesh)
 {
-
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &mesh->id_tex);
-	glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
-
+	
 	// Texture Wrap
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	// Texture Filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	
+	glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
 
 	// **Unbind Buffer**
 	glBindTexture(GL_TEXTURE_2D, 0);
-
 }

@@ -154,13 +154,13 @@ update_status ModuleRenderer3D::Update(float dt)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	Render();
-
+	/*
 	if (!wireframe && gl_fill_and_gl_line)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
 		Render();
-	}
+	}*/
 
 	return UPDATE_CONTINUE;
 }
@@ -266,9 +266,7 @@ void ModuleRenderer3D::InitCheckTex()
 {
 	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
 		for (int j = 0; j < CHECKERS_WIDTH; j++) {
-			int c = 0;
-			if (j == 0 || j % 2 == 0)
-				c = 255;
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
 			checkTexture[i][j][0] = (GLubyte)c;
 			checkTexture[i][j][1] = (GLubyte)c;
 			checkTexture[i][j][2] = (GLubyte)c;

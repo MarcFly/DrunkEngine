@@ -3,9 +3,7 @@
 
 #include "Module.h"
 #include "GLEW/include/GL/glew.h"
-#include "Assimp/include/cimport.h"
-#include "Assimp/include/postprocess.h"
-#include "Assimp/include/cfileio.h"
+
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Assimp/include/scene.h"
