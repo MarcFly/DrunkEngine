@@ -28,7 +28,7 @@ bool ModuleRenderer3D::Init()
 	bool ret = true;
 	vsync = true;
 	wireframe = false;
-	gl_fill_and_gl_line = true;
+	faces = true;
 	render_normals = false;
 	normal_length = 1.0f;
 
@@ -160,14 +160,13 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::Update(float dt)
 {
 
-	if(wireframe)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else
+	if (faces)
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		Render(true);
+	}
 
-	Render(true);
-
-	if (!wireframe && gl_fill_and_gl_line)
+	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
@@ -334,7 +333,7 @@ bool ModuleRenderer3D::Load(JSON_Value * root_value)
 	color_material = json_object_dotget_boolean(json_object(root_value), "opengl.color_materials");
 	texture_2d = json_object_dotget_boolean(json_object(root_value), "opengl.texture2d");
 	wireframe = json_object_dotget_boolean(json_object(root_value), "opengl.wireframe");
-	gl_fill_and_gl_line = json_object_dotget_boolean(json_object(root_value), "opengl.faces&wireframe");
+	faces = json_object_dotget_boolean(json_object(root_value), "opengl.faces&wireframe");
 	render_normals = json_object_dotget_boolean(json_object(root_value), "opengl.normals");
 	normal_length = json_object_dotget_number(json_object(root_value), "opengl.normal_length");
 
@@ -356,7 +355,7 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 	json_object_dotset_boolean(root_obj, "opengl.color_materials", color_material);
 	json_object_dotset_boolean(root_obj, "opengl.texture2d", texture_2d);
 	json_object_dotset_boolean(root_obj, "opengl.wireframe", wireframe);
-	json_object_dotset_boolean(root_obj, "opengl.faces&wireframe", gl_fill_and_gl_line);
+	json_object_dotset_boolean(root_obj, "opengl.faces&wireframe", faces);
 	json_object_dotset_boolean(root_obj, "opengl.normals", render_normals);
 	json_object_dotset_number(root_obj, "opengl.normal_length", normal_length);
 

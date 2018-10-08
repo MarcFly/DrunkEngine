@@ -35,10 +35,10 @@ void OpenGLOptions::Draw()
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
-		ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe);
+		ImGui::Checkbox("Render Faces", &App->renderer3D->faces);
 		ImGui::SameLine();
 
-		ImGui::Checkbox("Faces + Wireframe", &App->renderer3D->gl_fill_and_gl_line);
+		ImGui::Checkbox("Render Wireframe", &App->renderer3D->wireframe);
 		ImGui::SameLine();
 
 		ImGui::Checkbox("Show Normals", &App->renderer3D->render_normals);

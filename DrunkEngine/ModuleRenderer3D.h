@@ -47,7 +47,7 @@ public:
 	bool color_material;
 	bool texture_2d;
 	bool wireframe;
-	bool gl_fill_and_gl_line;
+	bool faces;
 	bool render_normals;
 	float normal_length;
 };
