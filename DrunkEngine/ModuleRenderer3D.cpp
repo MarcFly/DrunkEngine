@@ -24,7 +24,9 @@ bool ModuleRenderer3D::Init()
 	bool ret = true;
 	vsync = true;
 	wireframe = false;
-	gl_fill_and_gl_line = true;
+	faces = true;
+	render_normals = false;
+	normal_length = 1.0f;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -47,6 +49,8 @@ bool ModuleRenderer3D::Init()
 		ret = false;
 	}
 	
+	Load(nullptr);
+
 	if(ret == true)
 	{
 		//Use Vsync
@@ -82,14 +86,20 @@ bool ModuleRenderer3D::Init()
 		//Check for error
 		ret = CheckGLError();
 		
+
 		glEnable(GL_BLEND);
 		glEnable(GL_ALPHA_TEST);
-		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
-		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
-		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
-		glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
-
-		glEnable(GL_TEXTURE_2D); // Texturing is performed in 2D, important for activetexture
+    
+		if (depth_test)
+			glEnable(GL_DEPTH_TEST); // Tests depth when rendering
+		if (cull_face)
+			glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
+		if (lighting)
+			glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
+		if (color_material)
+			glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
+		if(texture_2d)
+			glEnable(GL_TEXTURE_2D); // Texturing is performed in 2D, important for activetexture
 
 		// Something about lights
 		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -150,19 +160,19 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::Update(float dt)
 {
 
-	if(wireframe)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else
+	if (faces)
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		Render(true);
+	}
 
-	Render();
-	/*
-	if (!wireframe && gl_fill_and_gl_line)
+
+	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
 		Render();
-	}*/
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -186,8 +196,7 @@ bool ModuleRenderer3D::CleanUp()
 	return true;
 }
 
-
-void ModuleRenderer3D::Render()
+void ModuleRenderer3D::Render(bool mesh_color)
 {
 	// Render From primitive list
 	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
@@ -198,7 +207,34 @@ void ModuleRenderer3D::Render()
 
 	for (int i = 0; i < App->mesh_loader->Meshes.size(); i++)
 	{
+
 		App->mesh_loader->DrawMesh(&App->mesh_loader->Meshes[i]);	
+
+		// Draw elements
+		mesh_data* mesh = &App->mesh_loader->Meshes[i];
+		{
+
+			// Draw Normals
+			if (render_normals)
+			{
+				glBegin(GL_LINES);
+				glColor3f(0.0f, 1.0f, 0.0f);
+
+				for (int i = 0; i < mesh->num_normal / 6; i++)
+				{
+					glVertex3f(mesh->normal[i * 6], mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 2]);
+
+					vec norm(mesh->normal[i * 6 + 3] - mesh->normal[i * 6], mesh->normal[i * 6 + 4] - mesh->normal[i * 6 + 1], mesh->normal[i * 6 + 5] - mesh->normal[i * 6 + 2]);
+					norm = norm.Mul(normal_length);
+
+					glVertex3f(mesh->normal[i * 6] + norm.x, mesh->normal[i * 6 + 1] + norm.y, mesh->normal[i * 6 + 2] + norm.z);
+				}
+
+				glEnd();
+			}
+
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
 	}
 }
 
@@ -273,4 +309,48 @@ void ModuleRenderer3D::InitCheckTex()
 			checkTexture[i][j][3] = (GLubyte)255;
 		}
 	}
+}
+
+bool ModuleRenderer3D::Load(JSON_Value * root_value)
+{
+	bool ret = false;
+
+	root_value = json_parse_file("config_data.json");
+
+	depth_test = json_object_dotget_boolean(json_object(root_value), "opengl.depth_test");
+	cull_face = json_object_dotget_boolean(json_object(root_value), "opengl.cull_face");
+	lighting = json_object_dotget_boolean(json_object(root_value), "opengl.lighting");
+	color_material = json_object_dotget_boolean(json_object(root_value), "opengl.color_materials");
+	texture_2d = json_object_dotget_boolean(json_object(root_value), "opengl.texture2d");
+	wireframe = json_object_dotget_boolean(json_object(root_value), "opengl.wireframe");
+	faces = json_object_dotget_boolean(json_object(root_value), "opengl.faces&wireframe");
+	render_normals = json_object_dotget_boolean(json_object(root_value), "opengl.normals");
+	normal_length = json_object_dotget_number(json_object(root_value), "opengl.normal_length");
+
+	ret = true;
+	return ret;
+}
+
+bool ModuleRenderer3D::Save(JSON_Value * root_value)
+{
+	bool ret = false;
+
+
+	root_value = json_parse_file("config_data.json");
+	JSON_Object* root_obj = json_value_get_object(root_value);
+
+	json_object_dotset_boolean(root_obj, "opengl.depth_test", depth_test);
+	json_object_dotset_boolean(root_obj, "opengl.cull_face", cull_face);
+	json_object_dotset_boolean(root_obj, "opengl.lighting", lighting);
+	json_object_dotset_boolean(root_obj, "opengl.color_materials", color_material);
+	json_object_dotset_boolean(root_obj, "opengl.texture2d", texture_2d);
+	json_object_dotset_boolean(root_obj, "opengl.wireframe", wireframe);
+	json_object_dotset_boolean(root_obj, "opengl.faces&wireframe", faces);
+	json_object_dotset_boolean(root_obj, "opengl.normals", render_normals);
+	json_object_dotset_number(root_obj, "opengl.normal_length", normal_length);
+
+	json_serialize_to_file(root_value, "config_data.json");
+
+	ret = true;
+	return ret;
 }

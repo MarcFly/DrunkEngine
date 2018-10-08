@@ -13,12 +13,6 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_
 {
 	App = app;
 
-	fullscreen = App->window->GetFullscreen();
-	resizable = App->window->GetResizable();
-	borderless = App->window->GetBorderless();
-	full_desktop = App->window->GetFullDesktop();
-
-	brightness = App->window->GetBrightness();
 	max_fps = 60;
 }
 
@@ -82,37 +76,40 @@ void OptionsWindow::Draw()
 		}
 		if (ImGui::CollapsingHeader("Windows"))
 		{
+			int width;
+			int height;
+
 			SDL_GetWindowSize(App->window->window, &width, &height);
 
-			if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f))
-				App->window->SetBrightness(brightness);
+			if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0.0f, 1.0f))
+				App->window->SetBrightness(App->window->brightness);
 
-			if (ImGui::SliderInt("Width", &width, 720, 1920) && !fullscreen)
+			if (ImGui::SliderInt("Width", &width, 720, 1920) && !App->window->fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
 
-			if (ImGui::SliderInt("Height", &height, 480, 1080) && !fullscreen)
+			if (ImGui::SliderInt("Height", &height, 480, 1080) && !App->window->fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
 
 
 			ImGui::Text("Refresh rate: %d", 0);
 
-			if (ImGui::Checkbox("Fullscreen", &fullscreen))
+			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreen))
 			{
-				App->window->SetFullscreen(fullscreen);
+				App->window->SetFullscreen(App->window->fullscreen);
 				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
 				//SDL_SetWindowSize(App->window->window, width, height);
 
 			}
 			ImGui::SameLine();
-			if (ImGui::Checkbox("Resizable", &resizable))
-				App->window->SetResizable(resizable);
+			if (ImGui::Checkbox("Resizable", &App->window->resizable))
+				App->window->SetResizable(App->window->resizable);
 
-			if (ImGui::Checkbox("Borderless", &borderless))
-				App->window->SetBorderless(borderless);
+			if (ImGui::Checkbox("Borderless", &App->window->borderless))
+				App->window->SetBorderless(App->window->borderless);
 
 			ImGui::SameLine();
-			if (ImGui::Checkbox("Full Desktop", &full_desktop))
-				App->window->SetFullDesktop(full_desktop);
+			if (ImGui::Checkbox("Full Desktop", &App->window->full_desktop))
+				App->window->SetFullDesktop(App->window->full_desktop);
 
 			if (ImGui::Button("Save Changes"))
 				App->window->Save(nullptr);

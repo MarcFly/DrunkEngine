@@ -38,16 +38,31 @@ public:
 	void InitCheckTex();
 
 public:
+	bool Load(JSON_Value* root_value);
+	bool Save(JSON_Value* root_value);
+
+public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	mat3x3 NormalMatrix;
 	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 	bool vsync;
-	bool wireframe;
-	bool gl_fill_and_gl_line;
 
+	// Options
+	bool depth_test;
+	bool cull_face;
+	bool lighting;
+	bool color_material;
+	bool texture_2d;
+	bool wireframe;
+	bool faces;
+	bool render_normals;
+	float normal_length;
+
+  // Checker Texture
 	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
+  
 };
 
 #endif
