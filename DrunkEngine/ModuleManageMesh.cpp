@@ -184,13 +184,15 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 
 		// Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-		//glBindBuffer(GL_TEXTURE_COORD_ARRAY, mesh->id_tex_coords);
+		//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_tex_coords);
 		glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
 		
 		// Set pointers to arrays
-		glTexCoordPointer(2, GL_FLOAT, 0, mesh->tex_coords);
-		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		
 		
 
 		// Draw
