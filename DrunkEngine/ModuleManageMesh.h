@@ -9,6 +9,14 @@
 #include "Assimp/include/scene.h"
 #include "Color.h"
 
+struct obj_data;
+
+struct texture_data
+{
+	GLuint id_tex = 0;
+	GLuint width, height;
+};
+
 struct mesh_data
 {
 	//aiMesh* m = nullptr;
@@ -20,7 +28,7 @@ struct mesh_data
 	GLuint num_vertex = 0;
 	float* vertex = nullptr;
 
-	float mesh_color[4];
+	float mesh_color[8][4];
 
 	GLuint id_normal = 0;
 	GLuint num_normal = 0;
@@ -28,9 +36,22 @@ struct mesh_data
 
 	GLfloat* tex_coords = nullptr;
 
-	GLuint id_tex = 0;
+	GLuint tex_index = 0;
+
+	obj_data* parent = nullptr;
 
 };
+
+struct obj_data
+{
+	std::vector<mesh_data> meshes;
+
+	std::vector<float3> mat_colors;
+	std::vector<texture_data> textures;
+	GLuint id_tex = 0;
+};
+
+
 
 class ModuleManageMesh : public Module
 {
@@ -46,18 +67,18 @@ public:
 	bool LoadFBX(const char* file_path);
 
 	bool SetTexCoords(mesh_data* mesh, aiMesh* cpy_data);
-	bool SetColors(mesh_data* mesh, aiMesh* cpy_data);
-
+	void SetNormals(mesh_data& mesh, const int& ind_value);
+	void SetColors(mesh_data& mesh, aiMesh* cpy_data);
 	void GenBuffers(mesh_data& mesh);
+
+	void SetupTex(obj_data& mesh, bool has_texture = false, aiMaterial* material = nullptr);
+
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
-	void SetupTex(mesh_data& mesh);
 
 public:
 	//mesh_data test_mesh;
-	std::vector<mesh_data> Meshes;
+	std::vector<obj_data> Objects;
 
 };
-
-
 
 #endif
