@@ -158,11 +158,11 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 	if (cpy_data->HasTextureCoords(0))
 	{
 		mesh->tex_coords = new float[mesh->num_vertex * 2];
-		int j = 0;
+
 		for (int i = 0; i < mesh->num_vertex; i++)
 		{
-			mesh->tex_coords[j++] = cpy_data->mTextureCoords[0][i].x;
-			mesh->tex_coords[j++] = cpy_data->mTextureCoords[0][i].y;
+			mesh->tex_coords[i*2] = cpy_data->mTextureCoords[0][i].x;
+			mesh->tex_coords[i*2 + 1] = cpy_data->mTextureCoords[0][i].y;
 		}
 	}
 	else
@@ -189,7 +189,7 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 		glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
 		
 		// Set pointers to arrays
-		glTexCoordPointer(2, GL_FLOAT, 0, &mesh->tex_coords[0]);
+		glTexCoordPointer(2, GL_FLOAT, 0, mesh->tex_coords);
 		glVertexPointer(3, GL_FLOAT, 0, NULL);
 		
 
@@ -238,14 +238,6 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
-	// Texture Coordinate Buffer
-	//glGenBuffers(1, &mesh.id_tex_coords);
-	//glBindBuffer(GL_ARRAY_BUFFER, mesh.id_tex_coords);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh.num_tex_coords * 2, mesh.tex_coords, GL_STATIC_DRAW);
-	//
-	//// **Unbind Buffer**
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	// Texture 
 	
 }
@@ -270,13 +262,11 @@ void ModuleManageMesh::SetupTex(mesh_data& mesh)
 		}
 	}
 
-	// **Unbind Buffer**
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &mesh.id_tex);
-	
+	glBindTexture(GL_TEXTURE_2D, mesh.id_tex);
+
 	// Texture Wrap
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -285,8 +275,8 @@ void ModuleManageMesh::SetupTex(mesh_data& mesh)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
-	glBindTexture(GL_TEXTURE_2D, mesh.id_tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkTest);
 
-	
+	// **Unbind Buffer**
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
