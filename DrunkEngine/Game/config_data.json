@@ -6,8 +6,7 @@
       "z": 0.70710676908493042
     }
   },
-  "window": 
-  {
+  "window": {
     "size": {
       "height": 600,
       "width": 800
@@ -19,4 +18,16 @@
       "borderless": false,
       "full_desktop": false
     }
-  }}
+  },
+  "opengl": {
+    "depth_test": true,
+    "cull_face": true,
+    "lighting": true,
+    "color_materials": true,
+    "texture2d": true,
+    "wireframe": false,
+    "faces&wireframe": true,
+    "normals": false,
+    "normal_length": 1
+  }
+}

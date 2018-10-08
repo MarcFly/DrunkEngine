@@ -5,7 +5,6 @@
 OpenGLOptions::OpenGLOptions(Application* app) : Window("OpenGL Settings", SDL_SCANCODE_O)
 {
 	App = app;
-	depth_test = cull_face = lighting = color_material = texture_2d = true;
 }
 
 void OpenGLOptions::Draw()
@@ -17,22 +16,22 @@ void OpenGLOptions::Draw()
 		ImGui::Text("Tinker with the settings we are currently using...");
 		ImGui::Separator();
 
-		if (ImGui::Checkbox("Depth Testing", &depth_test))
+		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depth_test))
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Cull Faces", &cull_face))
+		if (ImGui::Checkbox("Cull Faces", &App->renderer3D->cull_face))
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Lighting", &lighting))
+		if (ImGui::Checkbox("Lighting", &App->renderer3D->lighting))
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Color Materials", &color_material))
+		if (ImGui::Checkbox("Color Materials", &App->renderer3D->color_material))
 			Check_Enable_Disable();
 
-		if (ImGui::Checkbox("Textures 2D", &texture_2d))
+		if (ImGui::Checkbox("Textures 2D", &App->renderer3D->texture_2d))
 			Check_Enable_Disable();
 		ImGui::SameLine();
 
@@ -45,6 +44,11 @@ void OpenGLOptions::Draw()
 		ImGui::Checkbox("Show Normals", &App->renderer3D->render_normals);
 
 		ImGui::SliderFloat("Normal Length", &App->renderer3D->normal_length, 0.2f, 300.0f);
+
+		ImGui::Separator();
+
+		if (ImGui::Button("Save Changes"))
+			App->renderer3D->Save(nullptr);
 	}
 	ImGui::End();
 }
@@ -52,29 +56,29 @@ void OpenGLOptions::Draw()
 void OpenGLOptions::Check_Enable_Disable()
 {
 
-		if (glIsEnabled(GL_DEPTH_TEST) && depth_test == false)
+		if (glIsEnabled(GL_DEPTH_TEST) && App->renderer3D->depth_test == false)
 			glDisable(GL_DEPTH_TEST);
-		else if (!glIsEnabled(GL_DEPTH_TEST) && depth_test == true)
+		else if (!glIsEnabled(GL_DEPTH_TEST) && App->renderer3D->depth_test == true)
 			glEnable(GL_DEPTH_TEST);
 
-		if (glIsEnabled(GL_CULL_FACE) && cull_face == false)
+		if (glIsEnabled(GL_CULL_FACE) && App->renderer3D->cull_face == false)
 			glDisable(GL_CULL_FACE);
-		else if (!glIsEnabled(GL_CULL_FACE) && cull_face == true)
+		else if (!glIsEnabled(GL_CULL_FACE) && App->renderer3D->cull_face == true)
 			glEnable(GL_CULL_FACE);
 
-		if (glIsEnabled(GL_LIGHTING) && lighting == false)
+		if (glIsEnabled(GL_LIGHTING) && App->renderer3D->lighting == false)
 			glDisable(GL_LIGHTING);
-		else if (!glIsEnabled(GL_LIGHTING) && lighting == true)
+		else if (!glIsEnabled(GL_LIGHTING) && App->renderer3D->lighting == true)
 			glEnable(GL_LIGHTING);
 
-		if (glIsEnabled(GL_COLOR_MATERIAL) && color_material == false)
+		if (glIsEnabled(GL_COLOR_MATERIAL) && App->renderer3D->color_material == false)
 			glDisable(GL_COLOR_MATERIAL);
-		else if (!glIsEnabled(GL_COLOR_MATERIAL) && color_material == true)
+		else if (!glIsEnabled(GL_COLOR_MATERIAL) && App->renderer3D->color_material == true)
 			glEnable(GL_COLOR_MATERIAL);
 
-		if (glIsEnabled(GL_TEXTURE_2D) && texture_2d == false)
+		if (glIsEnabled(GL_TEXTURE_2D) && App->renderer3D->texture_2d == false)
 			glDisable(GL_TEXTURE_2D);
-		else if (!glIsEnabled(GL_TEXTURE_2D) && texture_2d == true)
+		else if (!glIsEnabled(GL_TEXTURE_2D) && App->renderer3D->texture_2d == true)
 			glEnable(GL_TEXTURE_2D);
 
 }

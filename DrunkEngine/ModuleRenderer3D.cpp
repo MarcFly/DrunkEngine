@@ -53,6 +53,8 @@ bool ModuleRenderer3D::Init()
 		ret = false;
 	}
 	
+	Load(nullptr);
+
 	if(ret == true)
 	{
 		//Use Vsync
@@ -88,12 +90,16 @@ bool ModuleRenderer3D::Init()
 		ret = CheckGLError();
 		
 		//glEnable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST); // Tests depth when rendering
-		glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
-		glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
-		glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
-
-		glEnable(GL_TEXTURE_2D); // Texturing is performed in 2D, important for activetexture
+		if (depth_test)
+			glEnable(GL_DEPTH_TEST); // Tests depth when rendering
+		if (cull_face)
+			glEnable(GL_CULL_FACE); // If you want to see objects interior, turn off
+		if (lighting)
+			glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
+		if (color_material)
+			glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
+		if(texture_2d)
+			glEnable(GL_TEXTURE_2D); // Texturing is performed in 2D, important for activetexture
 
 		// Something about lights
 		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -189,7 +195,6 @@ bool ModuleRenderer3D::CleanUp()
 
 	return true;
 }
-
 
 void ModuleRenderer3D::Render(bool mesh_color)
 {
@@ -315,4 +320,48 @@ void ModuleRenderer3D::SwapWireframe(bool active)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+bool ModuleRenderer3D::Load(JSON_Value * root_value)
+{
+	bool ret = false;
+
+	root_value = json_parse_file("config_data.json");
+
+	depth_test = json_object_dotget_boolean(json_object(root_value), "opengl.depth_test");
+	cull_face = json_object_dotget_boolean(json_object(root_value), "opengl.cull_face");
+	lighting = json_object_dotget_boolean(json_object(root_value), "opengl.lighting");
+	color_material = json_object_dotget_boolean(json_object(root_value), "opengl.color_materials");
+	texture_2d = json_object_dotget_boolean(json_object(root_value), "opengl.texture2d");
+	wireframe = json_object_dotget_boolean(json_object(root_value), "opengl.wireframe");
+	gl_fill_and_gl_line = json_object_dotget_boolean(json_object(root_value), "opengl.faces&wireframe");
+	render_normals = json_object_dotget_boolean(json_object(root_value), "opengl.normals");
+	normal_length = json_object_dotget_number(json_object(root_value), "opengl.normal_length");
+
+	ret = true;
+	return ret;
+}
+
+bool ModuleRenderer3D::Save(JSON_Value * root_value)
+{
+	bool ret = false;
+
+
+	root_value = json_parse_file("config_data.json");
+	JSON_Object* root_obj = json_value_get_object(root_value);
+
+	json_object_dotset_boolean(root_obj, "opengl.depth_test", depth_test);
+	json_object_dotset_boolean(root_obj, "opengl.cull_face", cull_face);
+	json_object_dotset_boolean(root_obj, "opengl.lighting", lighting);
+	json_object_dotset_boolean(root_obj, "opengl.color_materials", color_material);
+	json_object_dotset_boolean(root_obj, "opengl.texture2d", texture_2d);
+	json_object_dotset_boolean(root_obj, "opengl.wireframe", wireframe);
+	json_object_dotset_boolean(root_obj, "opengl.faces&wireframe", gl_fill_and_gl_line);
+	json_object_dotset_boolean(root_obj, "opengl.normals", render_normals);
+	json_object_dotset_number(root_obj, "opengl.normal_length", normal_length);
+
+	json_serialize_to_file(root_value, "config_data.json");
+
+	ret = true;
+	return ret;
 }
