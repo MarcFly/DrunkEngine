@@ -9,6 +9,8 @@
 #include "Assimp/include/scene.h"
 #include "Color.h"
 
+struct obj_data;
+
 struct mesh_data
 {
 	//aiMesh* m = nullptr;
@@ -28,9 +30,18 @@ struct mesh_data
 
 	GLfloat* tex_coords = nullptr;
 
-	GLuint id_tex = 0;
+	obj_data* parent = nullptr;
 
 };
+
+struct obj_data
+{
+	std::vector<mesh_data> meshes;
+
+	GLuint id_tex = 0;
+};
+
+
 
 class ModuleManageMesh : public Module
 {
@@ -50,11 +61,11 @@ public:
 
 	void GenBuffers(mesh_data& mesh);
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
-	void SetupTex(mesh_data& mesh);
+	void SetupTex(obj_data& mesh);
 
 public:
 	//mesh_data test_mesh;
-	std::vector<mesh_data> Meshes;
+	std::vector<obj_data> Objects;
 
 };
 

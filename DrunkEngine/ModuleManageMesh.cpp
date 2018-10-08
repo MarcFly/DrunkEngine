@@ -54,6 +54,8 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	bool ret = true;
 
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
+	
+	obj_data add_obj;
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -148,12 +150,22 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			SetTexCoords(&add, scene->mMeshes[i]);
 
 			GenBuffers(add);
-      
-			SetupTex(add);
 
-			Meshes.push_back(add);
+			//add.parent = &add_obj;
+
+			add_obj.meshes.push_back(add);
 		}
 
+		SetupTex(add_obj);
+
+		Objects.push_back(add_obj);
+		
+		// Set Parenting
+		std::vector<obj_data>::iterator item = --Objects.end();
+		for (int k = 0; k < item->meshes.size(); k++)
+		{
+			item->meshes[k].parent = item._Ptr;
+		}
 		aiReleaseImport(scene);
 	}
 	else
@@ -173,11 +185,10 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 	if (cpy_data->HasTextureCoords(0))
 	{
 		mesh->tex_coords = new float[mesh->num_vertex * 2];
-
 		for (int i = 0; i < mesh->num_vertex; i++)
 		{
 			mesh->tex_coords[i*2] = cpy_data->mTextureCoords[0][i].x;
-			mesh->tex_coords[i*2 + 1] = cpy_data->mTextureCoords[0][i].y;
+			mesh->tex_coords[(i*2) + 1] = cpy_data->mTextureCoords[0][i].y;
 		}
 	}
 	else
@@ -194,24 +205,26 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 
 		glColor4f(1, 1, 1, 1);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
 		
-
+		
 		// Bind buffers
+		glEnableClientState(GL_VERTEX_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
 		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
 
 		if (use_texture)
 		{
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
+			glBindTexture(GL_TEXTURE_2D, mesh->parent->id_tex);
 			glTexCoordPointer(2, GL_FLOAT, 0, NULL);	// Set pointers to arrays
 		}
 		else
 			glColor3f(0, 0, 0);
 
+		
 		// Draw
 		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
 
@@ -248,16 +261,6 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// Normal Buffer
-	/*glGenBuffers(1, &mesh.id_normal);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.id_normal);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * mesh.num_normal, mesh.normal, GL_STATIC_DRAW);
-
-	// **Unbind Buffer**
-	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
-
-	// Texture 
 	
 }
 
@@ -268,12 +271,12 @@ bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
 	return ret;
 }
 
-void ModuleManageMesh::SetupTex(mesh_data& mesh)
+void ModuleManageMesh::SetupTex(obj_data& obj)
 {
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &mesh.id_tex);
-	glBindTexture(GL_TEXTURE_2D, mesh.id_tex);
+	glGenTextures(1, &obj.id_tex);
+	glBindTexture(GL_TEXTURE_2D, obj.id_tex);
 
 	// Texture Wrap
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
