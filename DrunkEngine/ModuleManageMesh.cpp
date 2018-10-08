@@ -1,6 +1,12 @@
 #include "ModuleManageMesh.h"
-
+#include "Application.h"
+#include "ConsoleWindow.h"
 #include "SDL/include/SDL_opengl.h"
+#include "Assimp/include/cimport.h"
+#include "Assimp/include/postprocess.h"
+#include "Assimp/include/cfileio.h"
+
+#include "ModuleRenderer3D.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
@@ -27,8 +33,8 @@ bool ModuleManageMesh::Start()
 	//LoadFBX("./glass cube.fbx");
 	//LoadFBX("./Dragon 2.5_fbx.fbx");
 	//LoadFBX("./Toilet.fbx");
-	//LoadFBX("./BakerHouse.fbx");
-	LoadFBX("./warrior.fbx");
+	LoadFBX("./BakerHouse.fbx");
+	//LoadFBX("./warrior.fbx");
 
 	return ret;
 }
@@ -54,9 +60,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
-			v_data add;
+			mesh_data add;
       
-		if(scene->mMeshes[i]->mColors[0] != nullptr)
+			if(scene->mMeshes[i]->mColors[0] != nullptr)
 			{
 				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
 				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
@@ -76,14 +82,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
 
-			// Properly Binding Buffer 1 TIME
-			glGenBuffers(1, &add.id_vertex);
-			glBindBuffer(GL_ARRAY_BUFFER, add.id_vertex);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * add.num_vertex * 3, add.vertex, GL_STATIC_DRAW);
-			
-			// **Unbind Buffer**
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 			PLOG("New mesh with %d vertices", add.num_vertex)
 
 			if (scene->mMeshes[i]->HasFaces())
@@ -91,7 +89,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
 				add.index = new GLuint[add.num_index];
 
-        add.num_normal = add.num_index * 2;
+				add.num_normal = add.num_index * 2;
 				add.normal = new float[add.num_normal];
         
 				float v1 = 0;
@@ -146,21 +144,13 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				}
 			}
 			PLOG("Said mesh starts with %d indices", add.num_index)
-			// Properly Generating the buffer for
-			glGenBuffers(1, &add.id_index);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, add.id_index);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * add.num_index, add.index, GL_STATIC_DRAW);
-			
-			// **Unbind Buffer**
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-			glGenBuffers(1, &add.id_normal);
-			glBindBuffer(GL_ARRAY_BUFFER, add.id_normal);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * add.num_normal, add.normal, GL_STATIC_DRAW);
+			SetTexCoords(&add, scene->mMeshes[i]);
 
-			// **Unbind Buffer**
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			GenBuffers(add);
       
+			SetupTex(add);
+
 			Meshes.push_back(add);
 		}
 
@@ -175,7 +165,124 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	return ret;
 }
 
-void ModuleManageMesh::DrawMesh(const v_data* mesh) 
+bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 {
+	bool ret = true;
 	
+	// Set TexCoordinates
+	if (cpy_data->HasTextureCoords(0))
+	{
+		mesh->tex_coords = new float[mesh->num_vertex * 2];
+
+		for (int i = 0; i < mesh->num_vertex; i++)
+		{
+			mesh->tex_coords[i*2] = cpy_data->mTextureCoords[0][i].x;
+			mesh->tex_coords[i*2 + 1] = cpy_data->mTextureCoords[0][i].y;
+		}
+	}
+	else
+		PLOG("No texture coordinates to be set");
+
+
+	return ret;
+}
+
+void ModuleManageMesh::DrawMesh(const mesh_data* mesh) 
+{
+	// Draw elements
+	{
+
+		glColor4f(1, 1, 1, 1);
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		// Bind buffers
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
+		//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_tex_coords);
+		glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
+		
+		// Set pointers to arrays
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		
+		
+
+		// Draw
+		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
+
+		// Unbind Buffers
+		glBindTexture(GL_TEXTURE_2D, 0);
+		//glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+		glColor4f(0, 1, 0,1);
+
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+
+	}
+}
+
+void ModuleManageMesh::GenBuffers(mesh_data& mesh)
+{
+
+	// Vertex Buffer
+	glGenBuffers(1, &mesh.id_vertex);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.id_vertex);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh.num_vertex * 3, mesh.vertex, GL_STATIC_DRAW);
+
+	// **Unbind Buffer**
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Index Buffer
+	glGenBuffers(1, &mesh.id_index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.id_index);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mesh.num_index, mesh.index, GL_STATIC_DRAW);
+
+	// **Unbind Buffer**
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// Normal Buffer
+	/*glGenBuffers(1, &mesh.id_normal);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.id_normal);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * mesh.num_normal, mesh.normal, GL_STATIC_DRAW);
+
+	// **Unbind Buffer**
+	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
+
+	// Texture 
+	
+}
+
+bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
+{
+	bool ret = true;
+
+	return ret;
+}
+
+void ModuleManageMesh::SetupTex(mesh_data& mesh)
+{
+	// Load Tex parameters and data to vram?
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &mesh.id_tex);
+	glBindTexture(GL_TEXTURE_2D, mesh.id_tex);
+
+	// Texture Wrap
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
+
+	// **Unbind Buffer**
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -5,9 +5,16 @@
 #include "Globals.h"
 #include "Light.h"
 
+#include "GLEW/include/GL/glew.h"
+#include "SDL/include/SDL_opengl.h"
+#include <gl/GL.h>
+#include <gl/GLU.h>
+
 #include "glmath/glmath.h"
 
 #define MAX_LIGHTS 8
+#define CHECKERS_HEIGHT 32
+#define CHECKERS_WIDTH 32
 
 class ModuleRenderer3D : public Module
 {
@@ -21,12 +28,14 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void Render(bool mesh_color);
+	void Render();
 	void OnResize(int width, int height);
 	void ChangeVsync();
 	bool CheckGLError();
 	void RenderGrid();
 	void SwapWireframe(bool active);
+
+	void InitCheckTex();
 
 public:
 	bool Load(JSON_Value* root_value);
@@ -50,6 +59,10 @@ public:
 	bool faces;
 	bool render_normals;
 	float normal_length;
+
+  // Checker Texture
+	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
+  
 };
 
 #endif

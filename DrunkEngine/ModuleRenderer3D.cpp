@@ -1,9 +1,5 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "GLEW/include/GL/glew.h"
-#include "SDL/include/SDL_opengl.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
 #include "PhysBody3D.h"
 #include "ModuleManageMesh.h"
 
@@ -15,7 +11,7 @@
 
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	
+	InitCheckTex();
 }
 
 // Destructor
@@ -78,18 +74,22 @@ bool ModuleRenderer3D::Init()
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
+		glShadeModel(GL_SMOOTH);
 		glClearDepth(1.0f);
 		
 		//Initialize clear color
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // This blend is for transparency, with primitives sorted from far to near, also to antialiased points
 		// There are different ways to optimize different effects, polygon optimization is SRC_ALPHA_SATURATE, GL_ONE for example, and disable PolygonSmooth
+		glDepthFunc(GL_LEQUAL);
 
 		//Check for error
 		ret = CheckGLError();
 		
-		//glEnable(GL_BLEND);
+
+		glEnable(GL_BLEND);
+		glEnable(GL_ALPHA_TEST);
+    
 		if (depth_test)
 			glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		if (cull_face)
@@ -166,11 +166,12 @@ update_status ModuleRenderer3D::Update(float dt)
 		Render(true);
 	}
 
+
 	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
-		Render(false);
+		Render();
 	}
 
 	return UPDATE_CONTINUE;
@@ -206,34 +207,12 @@ void ModuleRenderer3D::Render(bool mesh_color)
 
 	for (int i = 0; i < App->mesh_loader->Meshes.size(); i++)
 	{
+
+		App->mesh_loader->DrawMesh(&App->mesh_loader->Meshes[i]);	
+
 		// Draw elements
-		v_data* mesh = &App->mesh_loader->Meshes[i];
+		mesh_data* mesh = &App->mesh_loader->Meshes[i];
 		{
-			if (mesh_color)
-				glColor3f(mesh->mesh_color[0], mesh->mesh_color[1], mesh->mesh_color[2]);
-
-			else
-				glColor3f(0, 0, 0);
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-
-			// Render things in Element mode
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
-			glVertexPointer(3, GL_FLOAT, 0, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-			glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-			glColor3f(0, 1, 0);
-
-			//Draw normals (buffer)
-			/*glBindBuffer(GL_ARRAY_BUFFER, mesh->id_normal);
-			glVertexPointer(3, GL_FLOAT, 0, mesh->normal);
-			glDrawArrays(GL_LINE, 0, mesh->num_normal);
-			
-			glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
 			// Draw Normals
 			if (render_normals)
@@ -265,9 +244,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//ProjectionMatrix = temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);//temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	//glLoadMatrixf((float*)ProjectionMatrix.v);
 	glLoadMatrixf(&ProjectionMatrix);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -319,6 +296,19 @@ void ModuleRenderer3D::SwapWireframe(bool active)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void ModuleRenderer3D::InitCheckTex()
+{
+	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
+		for (int j = 0; j < CHECKERS_WIDTH; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkTexture[i][j][0] = (GLubyte)c;
+			checkTexture[i][j][1] = (GLubyte)c;
+			checkTexture[i][j][2] = (GLubyte)c;
+			checkTexture[i][j][3] = (GLubyte)255;
+		}
+	}
 }
 
 bool ModuleRenderer3D::Load(JSON_Value * root_value)

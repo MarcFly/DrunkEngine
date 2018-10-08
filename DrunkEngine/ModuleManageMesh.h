@@ -3,15 +3,13 @@
 
 #include "Module.h"
 #include "GLEW/include/GL/glew.h"
-#include "Assimp/include/cimport.h"
-#include "Assimp/include/postprocess.h"
-#include "Assimp/include/cfileio.h"
+
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Assimp/include/scene.h"
 #include "Color.h"
 
-struct v_data
+struct mesh_data
 {
 	//aiMesh* m = nullptr;
 	GLuint id_index = 0; // index in VRAM
@@ -28,6 +26,10 @@ struct v_data
 	GLuint num_normal = 0;
 	GLfloat* normal = nullptr;
 
+	GLfloat* tex_coords = nullptr;
+
+	GLuint id_tex = 0;
+
 };
 
 class ModuleManageMesh : public Module
@@ -43,11 +45,16 @@ public:
 
 	bool LoadFBX(const char* file_path);
 
-	void DrawMesh(const v_data* mesh);
+	bool SetTexCoords(mesh_data* mesh, aiMesh* cpy_data);
+	bool SetColors(mesh_data* mesh, aiMesh* cpy_data);
+
+	void GenBuffers(mesh_data& mesh);
+	void DrawMesh(const mesh_data* mesh);
+	void SetupTex(mesh_data& mesh);
 
 public:
-	//v_data test_mesh;
-	std::vector<v_data> Meshes;
+	//mesh_data test_mesh;
+	std::vector<mesh_data> Meshes;
 
 };
 
