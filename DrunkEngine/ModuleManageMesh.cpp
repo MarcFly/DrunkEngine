@@ -126,8 +126,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		for (int k = 0; k < item->meshes.size(); k++)
 			item->meshes[k].parent = item._Ptr;
 
-		aiReleaseImport(scene);
-
 		// Texture Setup
 		if (scene->HasMaterials())
 		{
@@ -139,7 +137,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		else
 			SetupTex(*item._Ptr);
 
-		
+		aiReleaseImport(scene);
 	}
 	else
 	{
@@ -175,7 +173,7 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 		{
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
-			glTexCoordPointer(2, GL_FLOAT, 0, NULL);	// Set pointers to arrays
+			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 		}
 		else
 			glColor3f(0, 0, 0);
@@ -186,7 +184,6 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 
 		// Unbind Buffers
 		glBindTexture(GL_TEXTURE_2D, 0);
-		//glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -204,7 +201,7 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* material)
 {
 	obj.textures.push_back(texture_data());
-	texture_data* item = obj.textures.end()._Ptr;
+	texture_data* item = (--obj.textures.end())._Ptr;
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &item->id_tex);
@@ -237,24 +234,26 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 
 			bool check = ilLoadImage(path.C_Str());
 
-			ILinfo Info;
-
 			if (check)
 			{	
+				ILinfo Info;
+
 				iluGetImageInfo(&Info);
 				if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
 					iluFlipImage();
 
 				check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+				item->width = Info.Width;
+				item->height = Info.Height;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
 			}
 			else
 			{
-				PLOG("Failed to load image from path %s", path.C_Str())
+				PLOG("Failed to load image from path %s", path.C_Str());
+				texErr == aiReturn_FAILURE;
 			}
-			item->width = Info.Width;
-			item->height = Info.Height;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-		
+			
 			ilDeleteImages(1, &id_Image);
 
 		}
