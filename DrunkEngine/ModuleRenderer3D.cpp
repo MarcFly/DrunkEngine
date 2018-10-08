@@ -163,9 +163,8 @@ update_status ModuleRenderer3D::Update(float dt)
 	if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		Render(true);
+		Render();
 	}
-
 
 	if (wireframe)
 	{
@@ -196,7 +195,7 @@ bool ModuleRenderer3D::CleanUp()
 	return true;
 }
 
-void ModuleRenderer3D::Render(bool mesh_color)
+void ModuleRenderer3D::Render()
 {
 	// Render From primitive list
 	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
