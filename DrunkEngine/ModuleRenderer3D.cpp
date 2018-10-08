@@ -270,7 +270,7 @@ void ModuleRenderer3D::InitCheckTex()
 			checkTexture[i][j][0] = (GLubyte)c;
 			checkTexture[i][j][1] = (GLubyte)c;
 			checkTexture[i][j][2] = (GLubyte)c;
-			checkTexture[i][j][3] = (GLubyte)c;
+			checkTexture[i][j][3] = (GLubyte)255;
 		}
 	}
 }

@@ -253,17 +253,6 @@ bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
 
 void ModuleManageMesh::SetupTex(mesh_data& mesh)
 {
-	GLubyte checkTest[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
-	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
-		for (int j = 0; j < CHECKERS_WIDTH; j++) {
-			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
-			checkTest[i][j][0] = (GLubyte)c;
-			checkTest[i][j][1] = (GLubyte)c;
-			checkTest[i][j][2] = (GLubyte)c;
-			checkTest[i][j][3] = (GLubyte)255;
-		}
-	}
-
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &mesh.id_tex);
@@ -277,7 +266,7 @@ void ModuleManageMesh::SetupTex(mesh_data& mesh)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkTest);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
 
 	// **Unbind Buffer**
 	glBindTexture(GL_TEXTURE_2D, 0);
