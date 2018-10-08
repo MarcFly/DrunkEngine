@@ -28,7 +28,7 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void Render();
+	void Render(bool use_texture);
 	void OnResize(int width, int height);
 	void ChangeVsync();
 	bool CheckGLError();

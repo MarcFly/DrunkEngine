@@ -163,14 +163,14 @@ update_status ModuleRenderer3D::Update(float dt)
 	if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		Render();
+		Render(true);
 	}
 
 	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
-		Render();
+		Render(false);
 	}
 
 	return UPDATE_CONTINUE;
@@ -195,7 +195,7 @@ bool ModuleRenderer3D::CleanUp()
 	return true;
 }
 
-void ModuleRenderer3D::Render()
+void ModuleRenderer3D::Render(bool use_texture)
 {
 	// Render From primitive list
 	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
@@ -207,7 +207,7 @@ void ModuleRenderer3D::Render()
 	for (int i = 0; i < App->mesh_loader->Meshes.size(); i++)
 	{
 
-		App->mesh_loader->DrawMesh(&App->mesh_loader->Meshes[i]);	
+		App->mesh_loader->DrawMesh(&App->mesh_loader->Meshes[i], use_texture);	
 
 		// Draw elements
 		mesh_data* mesh = &App->mesh_loader->Meshes[i];

@@ -49,7 +49,7 @@ public:
 	bool SetColors(mesh_data* mesh, aiMesh* cpy_data);
 
 	void GenBuffers(mesh_data& mesh);
-	void DrawMesh(const mesh_data* mesh);
+	void DrawMesh(const mesh_data* mesh, bool use_texture);
 	void SetupTex(mesh_data& mesh);
 
 public:

@@ -187,7 +187,7 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 	return ret;
 }
 
-void ModuleManageMesh::DrawMesh(const mesh_data* mesh) 
+void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture) 
 {
 	// Draw elements
 	{
@@ -195,20 +195,22 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 		glColor4f(1, 1, 1, 1);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		
 
 		// Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
 		glVertexPointer(3, GL_FLOAT, 0, NULL);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-		//glBindBuffer(GL_ARRAY_BUFFER, mesh->id_tex_coords);
-		glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
-		
-		// Set pointers to arrays
-		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-		
-		
+
+		if (use_texture)
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
+			glTexCoordPointer(2, GL_FLOAT, 0, NULL);	// Set pointers to arrays
+		}
+		else
+			glColor3f(0, 0, 0);
 
 		// Draw
 		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
@@ -220,7 +222,7 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-		glColor4f(0, 1, 0,1);
+		glColor4f(0, 1, 0, 1);
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
