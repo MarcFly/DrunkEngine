@@ -115,6 +115,14 @@
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ConsoleWindow.h" />
+    <ClInclude Include="DevIL\include\IL\devil_cpp_wrapper.hpp" />
+    <ClInclude Include="DevIL\include\IL\devil_internal_exports.h" />
+    <ClInclude Include="DevIL\include\IL\il.h" />
+    <ClInclude Include="DevIL\include\IL\ilu.h" />
+    <ClInclude Include="DevIL\include\IL\ilut.h" />
+    <ClInclude Include="DevIL\include\IL\ilut_config.h" />
+    <ClInclude Include="DevIL\include\IL\ilu_region.h" />
+    <ClInclude Include="DevIL\include\IL\il_wrap.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
     <ClInclude Include="GLEW\include\GL\glew.h" />
@@ -299,6 +307,12 @@
     <None Include="Assimp\include\vector3.inl" />
     <None Include="Assimp\libx86\assimp.dll" />
     <None Include="Assimp\libx86\assimp.exp" />
+    <None Include="DevIL\include\IL\config.h.win" />
+    <None Include="DevIL\include\IL\DevIL.i" />
+    <None Include="DevIL\include\IL\stamp-h.in" />
+    <None Include="DevIL\lib\x86\Release\DevIL.dll" />
+    <None Include="DevIL\lib\x86\Release\ILU.dll" />
+    <None Include="DevIL\lib\x86\Release\ILUT.dll" />
     <None Include="GLEW\lib\Release\Win32\glew32.dll" />
     <None Include="MGL\emscripten\library_system.js" />
     <None Include="MGL\Geometry\KDTree.inl" />
@@ -312,6 +326,9 @@
   <ItemGroup>
     <Library Include="Assimp\libx86\assimp.lib" />
     <Library Include="Assimp\libx86\zlibstatic.lib" />
+    <Library Include="DevIL\lib\x86\Release\DevIL.lib" />
+    <Library Include="DevIL\lib\x86\Release\ILU.lib" />
+    <Library Include="DevIL\lib\x86\Release\ILUT.lib" />
     <Library Include="GLEW\lib\Release\Win32\glew32.lib" />
     <Library Include="GLEW\lib\Release\Win32\glew32s.lib" />
   </ItemGroup>

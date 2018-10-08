@@ -5,10 +5,16 @@
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
+#include "DevIL/include/IL/il.h"
+#include "DevIL/include/IL/ilu.h"
+#include "DevIL/include/IL/ilut.h"
 
 #include "ModuleRenderer3D.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
+#pragma comment (lib, "DevIL/lib/x86/Release/DevIL.lib")
+#pragma comment (lib, "DevIL/lib/x86/Release/ILU.lib")
+#pragma comment (lib, "DevIL/lib/x86/Release/ILUT.lib")
 
 ModuleManageMesh::ModuleManageMesh(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -22,6 +28,11 @@ ModuleManageMesh::ModuleManageMesh(Application* app, bool start_enabled) : Modul
 bool ModuleManageMesh::Init()
 {
 	bool ret = true;
+
+	// DevIL initialization
+	ilInit();
+	iluInit();
+	ilutRenderer(ILUT_OPENGL);
 
 	return ret;
 }
@@ -64,20 +75,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			mesh_data add;
       
-			if(scene->mMeshes[i]->mColors[0] != nullptr)
-			{
-				add.mesh_color[0] = scene->mMeshes[i]->mColors[0]->r;
-				add.mesh_color[1] = scene->mMeshes[i]->mColors[0]->g;
-				add.mesh_color[2] = scene->mMeshes[i]->mColors[0]->b;
-				add.mesh_color[3] = scene->mMeshes[i]->mColors[0]->a;
-			}
-			else
-			{
-				add.mesh_color[0] = 1;
-				add.mesh_color[1] = 1;
-				add.mesh_color[2] = 1;
-				add.mesh_color[3] = 1;
-			}
+			SetColors(add, scene->mMeshes[i]);
       
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
@@ -93,12 +91,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 				add.num_normal = add.num_index * 2;
 				add.normal = new float[add.num_normal];
-        
-				float v1 = 0;
-				float v2 = 0;
-				float v3 = 0;
-				float aux[9];
-				int auxloop = 0;
 
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; j++)
 				{
@@ -111,36 +103,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					{
 						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
 					
-						float aux[9];
-
-						aux[0] = add.vertex[add.index[j * 3] * 3];
-						aux[1] = add.vertex[(add.index[j * 3] * 3) + 1];
-						aux[2] = add.vertex[(add.index[j * 3] * 3) + 2];
-						aux[3] = add.vertex[(add.index[(j * 3) + 1] * 3)];
-						aux[4] = add.vertex[(add.index[(j * 3) + 1] * 3) + 1];
-						aux[5] = add.vertex[(add.index[(j * 3) + 1] * 3) + 2];
-						aux[6] = add.vertex[(add.index[(j * 3) + 2] * 3)];
-						aux[7] = add.vertex[(add.index[(j * 3) + 2] * 3) + 1];
-						aux[8] = add.vertex[(add.index[(j * 3) + 2] * 3) + 2];
-
-						float p1 = (aux[0] + aux[3] + aux[6]) / 3;
-						float p2 = (aux[1] + aux[4] + aux[7]) / 3;
-						float p3 = (aux[2] + aux[5] + aux[8]) / 3;
-
-						add.normal[j * 6] = p1;
-						add.normal[j * 6 + 1] = p2;
-						add.normal[j * 6 + 2] = p3;
-
-						vec v1(aux[0], aux[1], aux[2]);
-						vec v2(aux[3], aux[4], aux[5]);
-						vec v3(aux[6], aux[7], aux[8]);
-
-						vec norm = (v2 - v1).Cross(v3 - v1);
-						norm.Normalize();
-
-						add.normal[j * 6 + 3] = p1 + norm.x;
-						add.normal[j * 6 + 4] = p2 + norm.y;
-						add.normal[j * 6 + 5] = p3 + norm.z;
+						SetNormals(add, j);
 							
 					}
 				}
@@ -149,54 +112,47 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 
-			GenBuffers(add);
+			//add.tex_index = scene->mMeshes[i]->mMaterialIndex;
 
-			//add.parent = &add_obj;
+			GenBuffers(add);
 
 			add_obj.meshes.push_back(add);
 		}
 
-		SetupTex(add_obj);
-
 		Objects.push_back(add_obj);
 		
-		// Set Parenting
+		// Set Parenting for later use
 		std::vector<obj_data>::iterator item = --Objects.end();
 		for (int k = 0; k < item->meshes.size(); k++)
-		{
 			item->meshes[k].parent = item._Ptr;
-		}
+
 		aiReleaseImport(scene);
+
+		// Texture Setup
+		if (scene->HasMaterials())
+		{
+			for (int i = 0; i < scene->mNumMaterials; i++)
+			{
+				SetupTex(*item._Ptr, true, scene->mMaterials[i]);
+			}
+		}
+		else
+			SetupTex(*item._Ptr);
+
+		
 	}
 	else
 	{
-		PLOG("Error loading scene %s", file_path);
+		PLOG("Error loading scene's meshes %s", file_path);
 		ret = false;
 	}
 
-	return ret;
-}
-
-bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
-{
-	bool ret = true;
-	
-	// Set TexCoordinates
-	if (cpy_data->HasTextureCoords(0))
-	{
-		mesh->tex_coords = new float[mesh->num_vertex * 2];
-		for (int i = 0; i < mesh->num_vertex; i++)
-		{
-			mesh->tex_coords[i*2] = cpy_data->mTextureCoords[0][i].x;
-			mesh->tex_coords[(i*2) + 1] = cpy_data->mTextureCoords[0][i].y;
-		}
-	}
-	else
-		PLOG("No texture coordinates to be set");
-
+	// Texture Setup
 
 	return ret;
 }
+
+
 
 void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture) 
 {
@@ -218,7 +174,7 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 		if (use_texture)
 		{
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glBindTexture(GL_TEXTURE_2D, mesh->parent->id_tex);
+			glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
 			glTexCoordPointer(2, GL_FLOAT, 0, NULL);	// Set pointers to arrays
 		}
 		else
@@ -243,6 +199,161 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 	}
 }
 
+//-SET OBJ DATA------------------------------------------------------------------------------------------
+
+void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* material)
+{
+	obj.textures.push_back(texture_data());
+	texture_data* item = obj.textures.end()._Ptr;
+	// Load Tex parameters and data to vram?
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &item->id_tex);
+	glBindTexture(GL_TEXTURE_2D, item->id_tex);
+
+	// Texture Wrap
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	
+	aiReturn texErr;
+
+	if (has_texture) // Load a proper texture
+	{
+		aiColor3D color;
+		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		obj.mat_colors.push_back(float3(color.r,color.g,color.b));
+		aiString path;
+		texErr = material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+
+		if (texErr == aiReturn_SUCCESS)
+		{
+			
+			ILuint id_Image;
+			ilGenImages(1, &id_Image);
+			ilBindImage(id_Image);
+
+			bool check = ilLoadImage(path.C_Str());
+
+			ILinfo Info;
+
+			if (check)
+			{	
+				iluGetImageInfo(&Info);
+				if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
+					iluFlipImage();
+
+				check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+			}
+			else
+			{
+				PLOG("Failed to load image from path %s", path.C_Str())
+			}
+			item->width = Info.Width;
+			item->height = Info.Height;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+		
+			ilDeleteImages(1, &id_Image);
+
+		}
+
+		
+	}
+	
+	if(texErr == aiReturn_FAILURE)// Load Checker texture
+	{
+		PLOG("Failed to load image: %s", iluErrorString(texErr));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
+	}
+	// **Unbind Buffer**
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+//-SET MESH DATA-----------------------------------------------------------------------------------------
+
+bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
+{
+	bool ret = true;
+
+	// Set TexCoordinates
+	if (cpy_data->HasTextureCoords(0))
+	{
+		mesh->tex_coords = new float[mesh->num_vertex * 2];
+		for (int i = 0; i < mesh->num_vertex; i++)
+		{
+			mesh->tex_coords[i * 2] = cpy_data->mTextureCoords[0][i].x;
+			mesh->tex_coords[(i * 2) + 1] = cpy_data->mTextureCoords[0][i].y;
+		}
+	}
+	else
+		PLOG("No texture coordinates to be set");
+
+
+	return ret;
+}
+
+void ModuleManageMesh::SetNormals(mesh_data& mesh, const int& ind_value)
+{
+	float aux[9];
+
+	aux[0] = mesh.vertex[mesh.index[ind_value * 3] * 3];
+	aux[1] = mesh.vertex[(mesh.index[ind_value * 3] * 3) + 1];
+	aux[2] = mesh.vertex[(mesh.index[ind_value * 3] * 3) + 2];
+	aux[3] = mesh.vertex[(mesh.index[(ind_value * 3) + 1] * 3)];
+	aux[4] = mesh.vertex[(mesh.index[(ind_value * 3) + 1] * 3) + 1];
+	aux[5] = mesh.vertex[(mesh.index[(ind_value * 3) + 1] * 3) + 2];
+	aux[6] = mesh.vertex[(mesh.index[(ind_value * 3) + 2] * 3)];
+	aux[7] = mesh.vertex[(mesh.index[(ind_value * 3) + 2] * 3) + 1];
+	aux[8] = mesh.vertex[(mesh.index[(ind_value * 3) + 2] * 3) + 2];
+
+	float p1 = (aux[0] + aux[3] + aux[6]) / 3;
+	float p2 = (aux[1] + aux[4] + aux[7]) / 3;
+	float p3 = (aux[2] + aux[5] + aux[8]) / 3;
+
+	mesh.normal[ind_value * 6] = p1;
+	mesh.normal[ind_value * 6 + 1] = p2;
+	mesh.normal[ind_value * 6 + 2] = p3;
+
+	vec v1(aux[0], aux[1], aux[2]);
+	vec v2(aux[3], aux[4], aux[5]);
+	vec v3(aux[6], aux[7], aux[8]);
+
+	vec norm = (v2 - v1).Cross(v3 - v1);
+	norm.Normalize();
+
+	mesh.normal[ind_value * 6 + 3] = p1 + norm.x;
+	mesh.normal[ind_value * 6 + 4] = p2 + norm.y;
+	mesh.normal[ind_value * 6 + 5] = p3 + norm.z;
+}
+
+
+void ModuleManageMesh::SetColors(mesh_data& mesh, aiMesh* cpy_data)
+{
+
+	// Color has maximum 8 channels
+	for (int i = 0; i < 8; i++)
+	{
+		if (cpy_data->mColors[0] != nullptr)
+		{
+			mesh.mesh_color[i][0] = cpy_data->mColors[i]->r;
+			mesh.mesh_color[i][1] = cpy_data->mColors[i]->g;
+			mesh.mesh_color[i][2] = cpy_data->mColors[i]->b;
+			mesh.mesh_color[i][3] = cpy_data->mColors[i]->a;
+		}
+		else
+		{
+			// Set color to white;
+			mesh.mesh_color[i][0] = 1;
+			mesh.mesh_color[i][1] = 1;
+			mesh.mesh_color[i][2] = 1;
+			mesh.mesh_color[i][3] = 1;
+		}
+	}
+
+}
+
 void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 {
 
@@ -261,33 +372,5 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
-}
 
-bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
-{
-	bool ret = true;
-
-	return ret;
-}
-
-void ModuleManageMesh::SetupTex(obj_data& obj)
-{
-	// Load Tex parameters and data to vram?
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &obj.id_tex);
-	glBindTexture(GL_TEXTURE_2D, obj.id_tex);
-
-	// Texture Wrap
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Texture Filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
-
-	// **Unbind Buffer**
-	glBindTexture(GL_TEXTURE_2D, 0);
 }

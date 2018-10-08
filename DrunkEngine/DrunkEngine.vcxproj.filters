@@ -97,6 +97,24 @@
     <Filter Include="Sources\Tools\Assimp\include\port\Android">
       <UniqueIdentifier>{1eeb0caa-ac0b-465c-9c55-e4e0664b0055}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\DevIL">
+      <UniqueIdentifier>{adfc3eea-6d74-4c91-9c30-4d7a9805643d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\DevIL\include">
+      <UniqueIdentifier>{82adc636-c249-4359-9d03-a7d385d129f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\DevIL\include\IL">
+      <UniqueIdentifier>{96280017-6b35-45f6-9edf-82d600734c04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\DevIL\lib">
+      <UniqueIdentifier>{d3fd2c9b-c8f6-4acb-b9e8-f24a3f809932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\DevIL\lib\x86">
+      <UniqueIdentifier>{33b0abe0-7e85-444b-8c6e-c965d8ca192a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\DevIL\lib\x86\Release">
+      <UniqueIdentifier>{e85b5cb6-3ef2-4c5e-ade6-1dd755229d94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -522,6 +540,30 @@
     <ClInclude Include="ConsoleWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
+    <ClInclude Include="DevIL\include\IL\devil_cpp_wrapper.hpp">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\devil_internal_exports.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\il.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\il_wrap.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\ilu.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\ilu_region.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\ilut.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\IL\ilut_config.h">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -793,6 +835,24 @@
     <None Include="Assimp\include\vector3.inl">
       <Filter>Sources\Tools\Assimp\include</Filter>
     </None>
+    <None Include="DevIL\lib\x86\Release\DevIL.dll">
+      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    </None>
+    <None Include="DevIL\lib\x86\Release\ILU.dll">
+      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    </None>
+    <None Include="DevIL\lib\x86\Release\ILUT.dll">
+      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    </None>
+    <None Include="DevIL\include\IL\config.h.win">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </None>
+    <None Include="DevIL\include\IL\DevIL.i">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </None>
+    <None Include="DevIL\include\IL\stamp-h.in">
+      <Filter>Sources\Tools\DevIL\include\IL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="GLEW\lib\Release\Win32\glew32.lib">
@@ -806,6 +866,15 @@
     </Library>
     <Library Include="Assimp\libx86\zlibstatic.lib">
       <Filter>Sources\Tools\Assimp\libx86</Filter>
+    </Library>
+    <Library Include="DevIL\lib\x86\Release\DevIL.lib">
+      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    </Library>
+    <Library Include="DevIL\lib\x86\Release\ILU.lib">
+      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    </Library>
+    <Library Include="DevIL\lib\x86\Release\ILUT.lib">
+      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
     </Library>
   </ItemGroup>
 </Project>
