@@ -169,10 +169,10 @@ void PCube::InnerRender() const
 
 	// From MGL to Cube with GL_Triangles
 	
-	glBegin(GL_TRIANGLES);
+	/*glBegin(GL_TRIANGLES);
 	{
 		
-
+		/*
 		// Face 1 ADC + ABD == 032 + 013
 		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
 		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
@@ -243,7 +243,7 @@ void PCube::InnerRender() const
 		
 
 	}
-
+	*/
 
 	
 	// Draw from array
@@ -279,7 +279,7 @@ void PCube::InnerRender() const
 	}
 	*/
 	// Draw from array, elementwise (quite the same fucking thing)
-/*
+
 	{
 		// Prep Order
 		std::vector<int> vert_order =
@@ -309,7 +309,7 @@ void PCube::InnerRender() const
 		glDrawElements(GL_TRIANGLES, vert_order.size(),GL_UNSIGNED_INT, NULL);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	*/
+	
 	glEnd();
 }
 

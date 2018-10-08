@@ -70,13 +70,14 @@ bool ModuleRenderer3D::Init()
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
+		glShadeModel(GL_SMOOTH);
 		glClearDepth(1.0f);
 		
 		//Initialize clear color
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // This blend is for transparency, with primitives sorted from far to near, also to antialiased points
 		// There are different ways to optimize different effects, polygon optimization is SRC_ALPHA_SATURATE, GL_ONE for example, and disable PolygonSmooth
+		glDepthFunc(GL_LEQUAL);
 
 		//Check for error
 		ret = CheckGLError();
@@ -206,9 +207,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//ProjectionMatrix = temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);//temp.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	//glLoadMatrixf((float*)ProjectionMatrix.v);
 	glLoadMatrixf(&ProjectionMatrix);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -270,7 +269,7 @@ void ModuleRenderer3D::InitCheckTex()
 			checkTexture[i][j][0] = (GLubyte)c;
 			checkTexture[i][j][1] = (GLubyte)c;
 			checkTexture[i][j][2] = (GLubyte)c;
-			checkTexture[i][j][3] = (GLubyte)255;
+			checkTexture[i][j][3] = (GLubyte)c;
 		}
 	}
 }

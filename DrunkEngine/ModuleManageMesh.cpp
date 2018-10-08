@@ -134,6 +134,8 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			GenBuffers(add);
       
+			SetupTex(add);
+
 			Meshes.push_back(add);
 		}
 
@@ -155,12 +157,12 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 	// Set TexCoordinates
 	if (cpy_data->HasTextureCoords(0))
 	{
-		mesh->num_tex_coords = mesh->num_vertex;
-		mesh->tex_coords = new float[mesh->num_tex_coords * 2];
-		for (int i = 0; i < mesh->num_tex_coords; i++)
+		mesh->tex_coords = new float[mesh->num_vertex * 2];
+		int j = 0;
+		for (int i = 0; i < mesh->num_vertex; i++)
 		{
 			mesh->tex_coords[i*2] = cpy_data->mTextureCoords[0][i].x;
-			mesh->tex_coords[i*2 + 1] = cpy_data->mTextureCoords[0][i].y;
+			mesh->tex_coords[1 + i*2] = cpy_data->mTextureCoords[0][i].y;
 		}
 	}
 	else
@@ -175,7 +177,7 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 	// Draw elements
 	{
 
-		//glColor3f(1, 1, 0);
+		glColor4f(1, 1, 1, 1);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -183,24 +185,24 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 		// Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-		glBindBuffer(GL_TEXTURE_COORD_ARRAY, mesh->id_tex_coords);
+		//glBindBuffer(GL_TEXTURE_COORD_ARRAY, mesh->id_tex_coords);
 		glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
 		
 		// Set pointers to arrays
 		glVertexPointer(3, GL_FLOAT, 0, NULL);
-		glTexCoordPointer(2, GL_FLOAT, 0, mesh->tex_coords);
+		glTexCoordPointer(2, GL_FLOAT, 0, &mesh->tex_coords[0]);
 
 		// Draw
 		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 		// Unbind Buffers
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
+		//glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-		//glColor3f(0, 1, 0);
+		glColor4f(0, 1, 0,1);
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
@@ -236,15 +238,15 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
 	// Texture Coordinate Buffer
-	glGenBuffers(1, &mesh.id_tex_coords);
-	glBindBuffer(GL_TEXTURE_COORD_ARRAY, mesh.id_tex_coords);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh.num_tex_coords * 2, mesh.tex_coords, GL_STATIC_DRAW);
-
-	// **Unbind Buffer**
-	glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
+	//glGenBuffers(1, &mesh.id_tex_coords);
+	//glBindBuffer(GL_ARRAY_BUFFER, mesh.id_tex_coords);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh.num_tex_coords * 2, mesh.tex_coords, GL_STATIC_DRAW);
+	//
+	//// **Unbind Buffer**
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Texture 
-	SetTexParams(&mesh);
+	
 }
 
 bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
@@ -254,11 +256,22 @@ bool ModuleManageMesh::SetColors(mesh_data* mesh, aiMesh* cpy_data)
 	return ret;
 }
 
-void ModuleManageMesh::SetTexParams(mesh_data* mesh)
+void ModuleManageMesh::SetupTex(mesh_data& mesh)
 {
+	GLubyte checkTest[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
+	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
+		for (int j = 0; j < CHECKERS_WIDTH; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkTest[i][j][0] = (GLubyte)c;
+			checkTest[i][j][1] = (GLubyte)c;
+			checkTest[i][j][2] = (GLubyte)c;
+			checkTest[i][j][3] = (GLubyte)c;
+		}
+	}
+
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &mesh->id_tex);
+	glGenTextures(1, &mesh.id_tex);
 	
 	// Texture Wrap
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -268,8 +281,8 @@ void ModuleManageMesh::SetTexParams(mesh_data* mesh)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
-	glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
+	glBindTexture(GL_TEXTURE_2D, mesh.id_tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, &checkTest[0][0][0]);
 
 	// **Unbind Buffer**
 	glBindTexture(GL_TEXTURE_2D, 0);

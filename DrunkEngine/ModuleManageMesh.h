@@ -26,8 +26,6 @@ struct mesh_data
 	GLuint num_normal = 0;
 	GLfloat* normal = nullptr;
 
-	GLuint id_tex_coords = 0;
-	GLuint num_tex_coords;
 	GLfloat* tex_coords = nullptr;
 
 	GLuint id_tex = 0;
@@ -52,7 +50,7 @@ public:
 
 	void GenBuffers(mesh_data& mesh);
 	void DrawMesh(const mesh_data* mesh);
-	void SetTexParams(mesh_data* mesh);
+	void SetupTex(mesh_data& mesh);
 
 public:
 	//mesh_data test_mesh;
