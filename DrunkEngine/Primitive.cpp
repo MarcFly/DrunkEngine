@@ -168,27 +168,43 @@ void PCube::InnerRender() const
 	*/	
 
 	// From MGL to Cube with GL_Triangles
-	
-	/*glBegin(GL_TRIANGLES);
+	const int CHECKERS_WIDTH_2 = 32;
+	const int CHECKERS_HEIGHT_2 = 32;
+
+	GLubyte checkImage[CHECKERS_HEIGHT_2][CHECKERS_WIDTH_2][4];
+	for (int i = 0; i < CHECKERS_HEIGHT_2; i++) {
+		for (int j = 0; j < CHECKERS_WIDTH_2; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkImage[i][j][0] = (GLubyte)c;
+			checkImage[i][j][1] = (GLubyte)c;
+			checkImage[i][j][2] = (GLubyte)c;
+			checkImage[i][j][3] = (GLubyte)255;
+		}
+	}
+
+	uint ImageName = 0;
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &ImageName);
+	glBindTexture(GL_TEXTURE_2D, ImageName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH_2, CHECKERS_HEIGHT_2,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
+
+	glBegin(GL_TRIANGLES);
 	{
 		
-		/*
-		// Face 1 ADC + ABD == 032 + 013
-		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
-		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
-		glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(2).y, MathBody->CornerPoint(2).z);
-
-		glTexCoord2f(0.f, 0.f);
-		glTexCoord2f(1.f, 1.f);
-		glTexCoord2f(0.f, 1.f);
-
-		glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
-		glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
-		glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
 		
-		glTexCoord2f(0.f, 0.f);
-		glTexCoord2f(1.f, 0.f);
-		glTexCoord2f(1.f, 1.f);
+		// Face 1 ADC + ABD == 032 + 013
+		glTexCoord2f(0.f, 0.f); glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glTexCoord2f(1.f, 1.f); glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
+		glTexCoord2f(0.f, 1.f); glVertex3f(MathBody->CornerPoint(2).x, MathBody->CornerPoint(2).y, MathBody->CornerPoint(2).z);
+
+		glTexCoord2f(0.f, 0.f); glVertex3f(MathBody->CornerPoint(0).x, MathBody->CornerPoint(0).y, MathBody->CornerPoint(0).z);
+		glTexCoord2f(1.f, 0.f); glVertex3f(MathBody->CornerPoint(1).x, MathBody->CornerPoint(1).y, MathBody->CornerPoint(1).z);
+		glTexCoord2f(1.f, 1.f); glVertex3f(MathBody->CornerPoint(3).x, MathBody->CornerPoint(3).y, MathBody->CornerPoint(3).z);
 
 		// Face 2 BFH + BHD == 157 + 173
 
@@ -243,7 +259,7 @@ void PCube::InnerRender() const
 		
 
 	}
-	*/
+	
 
 	
 	// Draw from array
@@ -279,7 +295,7 @@ void PCube::InnerRender() const
 	}
 	*/
 	// Draw from array, elementwise (quite the same fucking thing)
-
+	/*
 	{
 		// Prep Order
 		std::vector<int> vert_order =
@@ -308,7 +324,7 @@ void PCube::InnerRender() const
 		glVertexPointer(3, GL_FLOAT, 0, &vert_array[0]);
 		glDrawElements(GL_TRIANGLES, vert_order.size(),GL_UNSIGNED_INT, NULL);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
+	}*/
 	
 	glEnd();
 }

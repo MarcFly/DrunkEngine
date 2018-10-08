@@ -161,8 +161,8 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 		int j = 0;
 		for (int i = 0; i < mesh->num_vertex; i++)
 		{
-			mesh->tex_coords[i*2] = cpy_data->mTextureCoords[0][i].x;
-			mesh->tex_coords[1 + i*2] = cpy_data->mTextureCoords[0][i].y;
+			mesh->tex_coords[j++] = cpy_data->mTextureCoords[0][i].x;
+			mesh->tex_coords[j++] = cpy_data->mTextureCoords[0][i].y;
 		}
 	}
 	else
@@ -189,8 +189,9 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh)
 		glBindTexture(GL_TEXTURE_2D, mesh->id_tex);
 		
 		// Set pointers to arrays
-		glVertexPointer(3, GL_FLOAT, 0, NULL);
 		glTexCoordPointer(2, GL_FLOAT, 0, &mesh->tex_coords[0]);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		
 
 		// Draw
 		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
@@ -265,9 +266,12 @@ void ModuleManageMesh::SetupTex(mesh_data& mesh)
 			checkTest[i][j][0] = (GLubyte)c;
 			checkTest[i][j][1] = (GLubyte)c;
 			checkTest[i][j][2] = (GLubyte)c;
-			checkTest[i][j][3] = (GLubyte)c;
+			checkTest[i][j][3] = (GLubyte)255;
 		}
 	}
+
+	// **Unbind Buffer**
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -282,8 +286,7 @@ void ModuleManageMesh::SetupTex(mesh_data& mesh)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
 	glBindTexture(GL_TEXTURE_2D, mesh.id_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, &checkTest[0][0][0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_HEIGHT, CHECKERS_WIDTH, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkTest);
 
-	// **Unbind Buffer**
-	glBindTexture(GL_TEXTURE_2D, 0);
+	
 }
