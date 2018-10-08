@@ -42,13 +42,6 @@ public:
 	bool full_desktop;
 	float brightness;
 
-public:
-
-	bool GetFullscreen() const		{ return fullscreen; }
-	bool GetResizable() const		{ return resizable; }
-	bool GetBorderless() const		{ return borderless; }
-	bool GetFullDesktop() const		{ return full_desktop; }
-	float GetBrightness() const		{ return brightness; }
 };
 
 #endif // __ModuleWindow_H__

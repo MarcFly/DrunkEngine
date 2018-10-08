@@ -15,15 +15,6 @@ public:
 
 public:
 
-	int width;
-	int height;
-
-	float brightness;
-	bool fullscreen;
-	bool resizable;
-	bool borderless;
-	bool full_desktop;
-
 	float fps;
 	float max_fps;
 
