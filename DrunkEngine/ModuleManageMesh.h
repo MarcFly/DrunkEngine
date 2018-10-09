@@ -32,14 +32,13 @@ struct mesh_data
 
 	GLuint id_uvs = 0;
 	GLuint num_uvs = 0;
+	GLfloat* tex_coords = nullptr;
 
-	float mesh_color[8][4];
+	//float mesh_color[8][4];
 
 	GLuint id_normal = 0;
 	GLuint num_normal = 0;
-	GLfloat* normal = nullptr;
-
-	GLfloat* tex_coords = nullptr;
+	GLfloat* normal = nullptr;	
 
 	GLuint tex_index = 0;
 
@@ -53,9 +52,8 @@ struct obj_data
 
 	std::vector<mesh_data> meshes;
 
-	std::vector<float3> mat_colors;
+	std::vector<Color> mat_colors;
 	std::vector<texture_data> textures;
-	GLuint id_tex = 0;
 };
 
 class ModuleManageMesh : public Module
@@ -73,10 +71,12 @@ public:
 
 	bool SetTexCoords(mesh_data* mesh, aiMesh* cpy_data);
 	void SetNormals(mesh_data& mesh, const int& ind_value);
-	void SetColors(mesh_data& mesh, aiMesh* cpy_data);
 	void GenBuffers(mesh_data& mesh);
 
 	void SetupTex(obj_data& mesh, bool has_texture = false, aiMaterial* material = nullptr);
+	bool LoadTextCurrentObj(const char* path, obj_data* curr_obj);
+
+	void DestroyObject(const int& index);
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 

@@ -66,12 +66,15 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 {
 	bool ret = true;
 
+	if (Objects.size() > 0)
+		DestroyObject(0);
+
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	
 	obj_data add_obj;
 	std::string aux = file_path;
 	
-	add_obj.name = aux.substr(aux.find_last_of("\\") + 3);
+	add_obj.name = aux.substr(aux.find_last_of("\\") + 1);
 
 
 	if (scene != nullptr && scene->HasMeshes())
@@ -83,8 +86,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			mesh_data add;
-      
-			SetColors(add, scene->mMeshes[i]);
       
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
@@ -133,12 +134,19 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			add_obj.meshes.push_back(add);
 		}
 
+
+		if (Objects.size() > 0)
+		{
+			Objects.insert(Objects.begin(), add_obj);
+			Objects.pop_back();
+		}
+		else
+			Objects.push_back(add_obj);
+
 		App->camera->Move(vec3(vertex_aux, vertex_aux, vertex_aux));
 		App->camera->LookAt(vec3(0.0f, 0.0f, 0.0f));
 		App->camera->mesh_multiplier = vertex_aux / 2;
 
-		Objects.push_back(add_obj);
-		
 		// ReSet all Parenting for later use
 		for (int j = 0; j < Objects.size(); j++)
 			for (int k = 0; k < Objects[j].meshes.size(); k++)
@@ -154,12 +162,12 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			}
 		}
 
-		if (item->textures.size() == 0) {
+		/*if (item->textures.size() == 0) {
 			SetupTex(*item._Ptr);
 			for (int i = 0; i < item->meshes.size(); i++)
 				if(item->meshes[i].tex_index > item->textures.size() - 1)
 					item->meshes[i].tex_index = 0;
-		}
+		}*/
 
 		aiReleaseImport(scene);
 	}
@@ -183,8 +191,6 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 
 		glColor4f(1, 1, 1, 1);
 
-		
-		
 		// Bind buffers
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
@@ -195,16 +201,26 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 
 		if (use_texture)
 		{
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			int test = mesh->parent->textures.size() - 1;
+			if(mesh->parent->textures.size() > 0 && mesh->tex_index <= (mesh->parent->textures.size() - 1))
+			{ 
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_uvs);
-			glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+				glBindBuffer(GL_ARRAY_BUFFER, mesh->id_uvs);
+				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-			glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
-
+				glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
+			}
+			else
+			{
+				Color c = mesh->parent->mat_colors[mesh->tex_index];
+				glColor4f(c.r, c.g, c.b, c.a);
+			}
 		}
 		else
-			glColor3f(0, 0, 0);
+		{
+			glColor4f(1,1,1,1);
+		}
 
 		
 		// Draw
@@ -249,7 +265,7 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 	{
 		aiColor3D color;
 		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		obj.mat_colors.push_back(float3(color.r,color.g,color.b));
+		obj.mat_colors.push_back(Color(color.r,color.g,color.b,1));
 		aiString path;
 		texErr = material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
@@ -263,7 +279,7 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 			bool check = ilLoadImage(path.C_Str());
 
 			if (check)
-			{	
+			{
 				ILinfo Info;
 
 				iluGetImageInfo(&Info);
@@ -278,27 +294,84 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 			}
 			else
 			{
-				PLOG("Failed to load image from path %s", path.C_Str());
+				PLOG("Failed to load image from path %s\n", path.C_Str());
 				obj.textures.pop_back();
 			}
-			
+
 			ilDeleteImages(1, &id_Image);
 
 		}
 		else
 		{
-			PLOG("Failed to load image from path %s", path.C_Str());
+			PLOG("Failed to load image from path %s\n", path.C_Str());
 			obj.textures.pop_back();
 		}
 		
 	}
-	else // Load Checker texture
-	{
-		PLOG("No Texture to Load, generating Checker");
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
-	}
 	// **Unbind Buffer**
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
+{
+	bool ret = true;
+
+	curr_obj->textures.push_back(texture_data());
+	texture_data* item = (--curr_obj->textures.end())._Ptr;
+
+	// Load Tex parameters and data to vram?
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &item->id_tex);
+	glBindTexture(GL_TEXTURE_2D, item->id_tex);
+
+	// Texture Wrap
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	ILuint id_Image;
+	ilGenImages(1, &id_Image);
+	ilBindImage(id_Image);
+
+	bool check = ilLoadImage(path);
+
+	if (check)
+	{
+		ILinfo Info;
+
+		iluGetImageInfo(&Info);
+		if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
+			iluFlipImage();
+
+		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+		item->width = Info.Width;
+		item->height = Info.Height;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+		
+		for (int i = 0; i < curr_obj->meshes.size(); i++)
+		{
+			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
+		}
+	}
+	else
+	{
+		PLOG("Failed to load image from path %s", path);
+		curr_obj->textures.pop_back();
+		//glDeleteTextures(1, &item->id_tex);
+		ret = false;
+	}
+
+	
+
+	ilDeleteImages(1, &id_Image);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return ret;
 }
 
 //-SET MESH DATA-----------------------------------------------------------------------------------------
@@ -354,32 +427,6 @@ void ModuleManageMesh::SetNormals(mesh_data& mesh, const int& ind_value)
 	mesh.normal[ind_value * 6 + 5] = p3 + norm.z;
 }
 
-
-void ModuleManageMesh::SetColors(mesh_data& mesh, aiMesh* cpy_data)
-{
-
-	// Color has maximum 8 channels
-	for (int i = 0; i < 8; i++)
-	{
-		if (cpy_data->mColors[0] != nullptr)
-		{
-			mesh.mesh_color[i][0] = cpy_data->mColors[i]->r;
-			mesh.mesh_color[i][1] = cpy_data->mColors[i]->g;
-			mesh.mesh_color[i][2] = cpy_data->mColors[i]->b;
-			mesh.mesh_color[i][3] = cpy_data->mColors[i]->a;
-		}
-		else
-		{
-			// Set color to white;
-			mesh.mesh_color[i][0] = 1;
-			mesh.mesh_color[i][1] = 1;
-			mesh.mesh_color[i][2] = 1;
-			mesh.mesh_color[i][3] = 1;
-		}
-	}
-
-}
-
 void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 {
 
@@ -413,4 +460,30 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 int ModuleManageMesh::GetDevILVer()
 {
 	return IL_VERSION;
+}
+
+void ModuleManageMesh::DestroyObject(const int& index)
+{
+	for (int i = 0; i < Objects[index].meshes.size(); i++) {
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_index);
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_normal);
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_uvs);
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_vertex);
+
+		delete Objects[index].meshes[i].index;
+		delete Objects[index].meshes[i].normal;
+		delete Objects[index].meshes[i].tex_coords;
+		delete Objects[index].meshes[i].vertex;
+	}
+	Objects[index].meshes.clear();
+
+	for (int i = 0; i < Objects[index].textures.size(); i++)
+	{
+		glDeleteTextures(1, &Objects[index].textures[i].id_tex);
+	}
+	Objects[index].textures.clear();
+
+	Objects[index].mat_colors.clear();
+
+	Objects.erase(Objects.begin(), Objects.begin());
 }
