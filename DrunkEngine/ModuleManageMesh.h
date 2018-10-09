@@ -76,8 +76,8 @@ public:
 	void GenBuffers(mesh_data& mesh);
 
 	void SetupTex(obj_data& mesh, bool has_texture = false, aiMaterial* material = nullptr);
-
 	bool LoadTextCurrentObj(const char* path, obj_data* curr_obj);
+	void DestroyTextureBuffer(GLuint* id);
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 

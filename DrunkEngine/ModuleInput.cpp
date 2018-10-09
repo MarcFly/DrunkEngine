@@ -137,7 +137,7 @@ update_status ModuleInput::PreUpdate(float dt)
 				else if (App->mesh_loader->Objects.size() > 0) // In case we have no objects
 				{
 					if (extension == std::string(".png") || extension == std::string(".PNG"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
+						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[App->mesh_loader->Objects.size() -1]);
 					else if (extension == std::string(".bmp") || extension == std::string(".BMP"))
 						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
 					else if (extension == std::string(".jpg") || extension == std::string(".JPG"))

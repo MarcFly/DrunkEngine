@@ -80,8 +80,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			mesh_data add;
       
-			//SetColors(add, scene->mMeshes[i]);
-      
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
 
@@ -287,11 +285,6 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 		}
 		
 	}
-	else // Load Checker texture
-	{
-		PLOG("No Texture to Load, generating Checker");
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
-	}
 	// **Unbind Buffer**
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -302,6 +295,19 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 
 	curr_obj->textures.push_back(texture_data());
 	texture_data* item = (--curr_obj->textures.end())._Ptr;
+
+	// Load Tex parameters and data to vram?
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &item->id_tex);
+	glBindTexture(GL_TEXTURE_2D, item->id_tex);
+
+	// Texture Wrap
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	ILuint id_Image;
 	ilGenImages(1, &id_Image);
@@ -322,15 +328,25 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 		item->width = Info.Width;
 		item->height = Info.Height;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+		
+		for (int i = 0; i < curr_obj->meshes.size(); i++)
+		{
+			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
+		}
 	}
 	else
 	{
 		PLOG("Failed to load image from path %s", path);
 		curr_obj->textures.pop_back();
+		//glDeleteTextures(1, &item->id_tex);
 		ret = false;
 	}
 
+	
+
 	ilDeleteImages(1, &id_Image);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return ret;
 }
@@ -388,32 +404,6 @@ void ModuleManageMesh::SetNormals(mesh_data& mesh, const int& ind_value)
 	mesh.normal[ind_value * 6 + 5] = p3 + norm.z;
 }
 
-/*
-void ModuleManageMesh::SetColors(mesh_data& mesh, aiMesh* cpy_data)
-{
-
-	// Color has maximum 8 channels
-	for (int i = 0; i < 8; i++)
-	{
-		if (cpy_data->mColors[0] != nullptr)
-		{
-			mesh.mesh_color[i].r = cpy_data->mColors[i]->r;
-			mesh.mesh_color[i][1] = cpy_data->mColors[i]->g;
-			mesh.mesh_color[i][2] = cpy_data->mColors[i]->b;
-			mesh.mesh_color[i][3] = cpy_data->mColors[i]->a;
-		}
-		else
-		{
-			// Set color to white;
-			mesh.mesh_color[i][0] = 1;
-			mesh.mesh_color[i][1] = 1;
-			mesh.mesh_color[i][2] = 1;
-			mesh.mesh_color[i][3] = 1;
-		}
-	}
-
-}*/
-
 void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 {
 
@@ -447,4 +437,11 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 int ModuleManageMesh::GetDevILVer()
 {
 	return IL_VERSION;
+}
+
+void ModuleManageMesh::DestroyTextureBuffer(GLuint* id)
+{
+	//glBindTexture(GL_TEXTURE_2D, *id);
+	glDeleteTextures(1, id);
+
 }
