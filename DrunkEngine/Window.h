@@ -19,6 +19,8 @@ public:
 	SDL_Scancode GetShortCut() const;
 	virtual void Draw() = 0;
 
+	void SetInactive() { active = false; }
+
 public:
 	bool active = false;
 	Application* App;
