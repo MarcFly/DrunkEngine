@@ -131,7 +131,22 @@ update_status ModuleInput::PreUpdate(float dt)
 					dropped_filedir,
 					App->window->window);
 
-				App->mesh_loader->LoadFBX(dropped_filedir);
+				std::string extension = strchr(dropped_filedir, '.');
+				if (extension == std::string(".fbx") || extension == std::string(".FBX"))
+					App->mesh_loader->LoadFBX(dropped_filedir);
+				else if (App->mesh_loader->Objects.size() > 0) // In case we have no objects
+				{
+					if (extension == std::string(".png") || extension == std::string(".PNG"))
+						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
+					else if (extension == std::string(".bmp") || extension == std::string(".BMP"))
+						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
+					else if (extension == std::string(".jpg") || extension == std::string(".JPG"))
+						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
+					else if (extension == std::string(".dds") || extension == std::string(".DDS"))
+						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
+				}
+				else
+					PLOG("File format not recognized!\n");
 
 				SDL_free(dropped_filedir);
 				break;
