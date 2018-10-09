@@ -33,6 +33,8 @@ public:
 	vec3 X, Y, Z, Position, Reference;
 	Color background;
 
+	float mesh_multiplier;
+
 private:
 
 	float4x4 ViewMatrix, ViewMatrixInverse;
