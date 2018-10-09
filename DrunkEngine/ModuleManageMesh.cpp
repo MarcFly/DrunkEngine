@@ -9,6 +9,7 @@
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
 
+
 #include "ModuleRenderer3D.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
@@ -22,7 +23,6 @@ ModuleManageMesh::ModuleManageMesh(Application* app, bool start_enabled) : Modul
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
 	aiAttachLogStream(&stream);
-
 }
 
 bool ModuleManageMesh::Init()
@@ -394,4 +394,10 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+// -----------------------
+int ModuleManageMesh::GetDevILVer()
+{
+	return IL_VERSION;
 }

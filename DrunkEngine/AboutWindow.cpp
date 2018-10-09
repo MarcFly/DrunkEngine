@@ -1,10 +1,13 @@
 #include "AboutWindow.h"
 #include "GLEW/include/GL/glew.h"
 #include <gl/GL.h>
+#include "ModuleManageMesh.h"
+
 
 AboutWindow::AboutWindow(Application* app) : Window("About...", SDL_SCANCODE_I)
 {
 	App = app;
+
 }
 
 AboutWindow::~AboutWindow()
@@ -18,7 +21,16 @@ void AboutWindow::Draw()
 		ImGui::Text("DrunkEngine (2018).");
 		ImGui::Separator();
 		ImGui::TextWrapped("\nThis engine has been made as a project for a 3rd course subject on videogame development.\n\n");
-		ImGui::Text("Authors: Andreu Sacasas\n         Marc Torres\n\n");
+		ImGui::Text("AUTHORS: ");
+		ImGui::SameLine();
+		ImGui::TextColored(AndreuColor,"Andreu Sacasas   ");
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/Andreu997", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(MarcColor, "Marc Torres");
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/MarcFly", NULL, NULL, SW_SHOWNORMAL);
+
 		ImGui::Separator();
 
 		// Get Library Versions
@@ -27,8 +39,52 @@ void AboutWindow::Draw()
 		int major, minor;
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
-		ImGui::Text("\nLibraries used: OpenGL (%d.%d)\n				SDL    (%d.%d.%d)\n				ImGui  (%.2f)\n				Bullet (%.2f)\n				GLEW (%d.%d.%d)\n\n", major, minor, sdl_ver.major, sdl_ver.minor, sdl_ver.patch, IMGUI_VERSION_NUM / 10000.0f, btGetVersion() / 100.0f, GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
-		
+	
+		ImGui::Text("LIBRARIES USED:");
+		ImGui::TextColored(HyperlinkColor,"OpenGL (%d.%d) ", major, minor);
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://www.opengl.org/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "SDL (%d.%d.%d) ", sdl_ver.major, sdl_ver.minor, sdl_ver.patch);
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://www.libsdl.org/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "ImGui  (%.2f) ", IMGUI_VERSION_NUM / 10000.0f);
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "Bullet (%.2f) ", btGetVersion() / 100.0f);
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/bulletphysics", NULL, NULL, SW_SHOWNORMAL);
+
+		ImGui::TextColored(HyperlinkColor, "GLEW(%d.%d.%d ", GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "http://glew.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%D) ", App->mesh_loader->GetDevILVer()/100, App->mesh_loader->GetDevILVer() / 10 - 10*(App->mesh_loader->GetDevILVer() / 100), App->mesh_loader->GetDevILVer() - 10 * (App->mesh_loader->GetDevILVer() /10));
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "http://openil.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", App->mesh_loader->GetAssimpMajorVer(), App->mesh_loader->GetAssimpMinorVer(), App->mesh_loader->GetAssimpVersionRevision());
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "http://www.assimp.org/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "MathGeoLib ");
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/juj/MathGeoLib", NULL, NULL, SW_SHOWNORMAL);
+
+		ImGui::TextColored(HyperlinkColor, "GLMATH ");
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "http://glmath.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "PCG_RNG ");
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "http://www.pcg-random.org/", NULL, NULL, SW_SHOWNORMAL);
+		ImGui::SameLine();
+		ImGui::TextColored(HyperlinkColor, "Parson" );
+		if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/kgabis/parson", NULL, NULL, SW_SHOWNORMAL);
+
 		ImGui::Separator();
 
 		ImGui::TextWrapped("\nMIT License\n\nCopyright(c) 2018 Marc Torres Jimenez & Andreu Sacasas Velazquez\n\n"
