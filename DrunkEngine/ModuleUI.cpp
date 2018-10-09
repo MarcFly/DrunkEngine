@@ -104,11 +104,15 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();
 
+			if (ImGui::MenuItem("OpenGL Settings"))
+				opengl_win->SwitchActive();
+
 			if (ImGui::MenuItem("Console"))
 				console_win->SwitchActive();
 
-			if (ImGui::MenuItem("Random Generator"))
-				random_win->SwitchActive();
+			if (ImGui::MenuItem("Download Latest"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
+
 
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
@@ -125,8 +129,7 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Documentation"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
 
-			if (ImGui::MenuItem("Download Latest"))
-				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
+			
 
 			if (ImGui::MenuItem("Report a Bug"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/issues", NULL, NULL, SW_SHOWNORMAL);
@@ -137,19 +140,27 @@ bool ModuleUI::MainMenu()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Render"))
+		if (ImGui::BeginMenu("Tools"))
 		{
+			if (ImGui::MenuItem("Random Generator"))
+				random_win->SwitchActive();
+
 			if (ImGui::MenuItem("Test Objects"))
 				geometry_win->SwitchActive();
-			
-			if (ImGui::MenuItem("OpenGL Settings"))
-				opengl_win->SwitchActive();
 
-			if (ImGui::MenuItem("Transform Geometry"))
+			if (ImGui::MenuItem("Transform Meshes"))
 				geo_transform_win->SwitchActive();
+
+			if (ImGui::MenuItem("Hide All")) {
+				for (int i = 0; i < windows.size(); i++)
+					windows[i]->SetInactive();
+
+				show_demo_window = false;
+			}
 
 			ImGui::EndMenu();
 		}
+		
 	}
 	ImGui::EndMainMenuBar();
 

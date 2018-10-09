@@ -8,7 +8,7 @@
 #include <gl/GLU.h>
 #include "Assimp/include/scene.h"
 #include "Color.h"
-
+#include "Assimp/include/version.h"
 struct obj_data;
 
 struct texture_data
@@ -86,6 +86,12 @@ public:
 
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }
+
+	int GetDevILVer();
+
+	int GetAssimpMajorVer() { return aiGetVersionMajor(); };
+	int GetAssimpMinorVer() { return aiGetVersionMinor(); };
+	int GetAssimpVersionRevision() { return aiGetVersionRevision(); };
 
 };
 
