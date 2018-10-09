@@ -61,20 +61,11 @@
     <Filter Include="Sources\Tools\GLEW">
       <UniqueIdentifier>{7d3c9532-e63a-4d46-afc1-ea213e673fa8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Tools\GLEW\lib">
-      <UniqueIdentifier>{49e68988-9d26-4bd4-a9de-f87caa5b6e50}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Tools\GLEW\include">
       <UniqueIdentifier>{9c95f6f8-1c11-4b44-a520-9a14ec393bd0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Tools\GLEW\include\GL">
       <UniqueIdentifier>{1900137a-542c-43f7-9742-4fe9083dba3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Tools\GLEW\lib\Release">
-      <UniqueIdentifier>{da8a6bf6-efd3-4b52-a054-4354f90d39cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Tools\GLEW\lib\Release\Win32">
-      <UniqueIdentifier>{f1254f7b-3cce-4fc5-a13e-856f64938aa4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Tools\glmath">
       <UniqueIdentifier>{cba521c0-af3e-42ac-83b7-d1ee628c678c}</UniqueIdentifier>
@@ -106,14 +97,26 @@
     <Filter Include="Sources\Tools\DevIL\include\IL">
       <UniqueIdentifier>{96280017-6b35-45f6-9edf-82d600734c04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Tools\DevIL\lib">
-      <UniqueIdentifier>{d3fd2c9b-c8f6-4acb-b9e8-f24a3f809932}</UniqueIdentifier>
+    <Filter Include="Sources\Tools\DevIL\libx86">
+      <UniqueIdentifier>{368c763d-6a7c-4433-b522-3e708d966f8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Tools\DevIL\lib\x86">
-      <UniqueIdentifier>{33b0abe0-7e85-444b-8c6e-c965d8ca192a}</UniqueIdentifier>
+    <Filter Include="Sources\Tools\DevIL\libx86\Release">
+      <UniqueIdentifier>{1312f79c-57ac-4e49-802b-00f56b61225b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Tools\DevIL\lib\x86\Release">
-      <UniqueIdentifier>{e85b5cb6-3ef2-4c5e-ade6-1dd755229d94}</UniqueIdentifier>
+    <Filter Include="Sources\Tools\DevIL\libx86\unicode">
+      <UniqueIdentifier>{363bb263-2a8c-4510-b8ce-2185e0132940}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\DevIL\libx86\unicode\Release">
+      <UniqueIdentifier>{0bef6a01-7924-419c-b6dc-c0937067da8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\libx86">
+      <UniqueIdentifier>{ca64d90b-0dae-4c98-8cce-1515d5b40cb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\libx86\Release">
+      <UniqueIdentifier>{75035279-ae38-4a09-8190-d1e9a13ae85d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\GLEW\libx86\Release\Win32">
+      <UniqueIdentifier>{bc58903d-a9f8-4d80-ad30-37c74a7aa548}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -808,9 +811,6 @@
     <None Include="MGL\emscripten\library_system.js">
       <Filter>Sources\Tools\MathGeoLib\emscriptem</Filter>
     </None>
-    <None Include="GLEW\lib\Release\Win32\glew32.dll">
-      <Filter>Sources\Tools\GLEW\lib\Release\Win32</Filter>
-    </None>
     <None Include="Assimp\libx86\assimp.dll">
       <Filter>Sources\Tools\Assimp\libx86</Filter>
     </None>
@@ -841,15 +841,6 @@
     <None Include="Assimp\include\vector3.inl">
       <Filter>Sources\Tools\Assimp\include</Filter>
     </None>
-    <None Include="DevIL\lib\x86\Release\DevIL.dll">
-      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
-    </None>
-    <None Include="DevIL\lib\x86\Release\ILU.dll">
-      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
-    </None>
-    <None Include="DevIL\lib\x86\Release\ILUT.dll">
-      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
-    </None>
     <None Include="DevIL\include\IL\config.h.win">
       <Filter>Sources\Tools\DevIL\include\IL</Filter>
     </None>
@@ -859,28 +850,58 @@
     <None Include="DevIL\include\IL\stamp-h.in">
       <Filter>Sources\Tools\DevIL\include\IL</Filter>
     </None>
+    <None Include="DevIL\libx86\Release\DevIL.dll">
+      <Filter>Sources\Tools\DevIL\libx86\Release</Filter>
+    </None>
+    <None Include="DevIL\libx86\Release\ILU.dll">
+      <Filter>Sources\Tools\DevIL\libx86\Release</Filter>
+    </None>
+    <None Include="DevIL\libx86\Release\ILUT.dll">
+      <Filter>Sources\Tools\DevIL\libx86\Release</Filter>
+    </None>
+    <None Include="DevIL\libx86\unicode\Release\DevIL.dll">
+      <Filter>Sources\Tools\DevIL\libx86\unicode\Release</Filter>
+    </None>
+    <None Include="DevIL\libx86\unicode\Release\ILU.dll">
+      <Filter>Sources\Tools\DevIL\libx86\unicode\Release</Filter>
+    </None>
+    <None Include="DevIL\libx86\unicode\Release\ILUT.dll">
+      <Filter>Sources\Tools\DevIL\libx86\unicode\Release</Filter>
+    </None>
+    <None Include="GLEW\libx86\Release\Win32\glew32.dll">
+      <Filter>Sources\Tools\GLEW\libx86\Release\Win32</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="GLEW\lib\Release\Win32\glew32.lib">
-      <Filter>Sources\Tools\GLEW\lib\Release\Win32</Filter>
-    </Library>
-    <Library Include="GLEW\lib\Release\Win32\glew32s.lib">
-      <Filter>Sources\Tools\GLEW\lib\Release\Win32</Filter>
-    </Library>
     <Library Include="Assimp\libx86\assimp.lib">
       <Filter>Sources\Tools\Assimp\libx86</Filter>
     </Library>
     <Library Include="Assimp\libx86\zlibstatic.lib">
       <Filter>Sources\Tools\Assimp\libx86</Filter>
     </Library>
-    <Library Include="DevIL\lib\x86\Release\DevIL.lib">
-      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    <Library Include="DevIL\libx86\Release\DevIL.lib">
+      <Filter>Sources\Tools\DevIL\libx86\Release</Filter>
     </Library>
-    <Library Include="DevIL\lib\x86\Release\ILU.lib">
-      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    <Library Include="DevIL\libx86\Release\ILU.lib">
+      <Filter>Sources\Tools\DevIL\libx86\Release</Filter>
     </Library>
-    <Library Include="DevIL\lib\x86\Release\ILUT.lib">
-      <Filter>Sources\Tools\DevIL\lib\x86\Release</Filter>
+    <Library Include="DevIL\libx86\Release\ILUT.lib">
+      <Filter>Sources\Tools\DevIL\libx86\Release</Filter>
+    </Library>
+    <Library Include="DevIL\libx86\unicode\Release\DevIL.lib">
+      <Filter>Sources\Tools\DevIL\libx86\unicode\Release</Filter>
+    </Library>
+    <Library Include="DevIL\libx86\unicode\Release\ILU.lib">
+      <Filter>Sources\Tools\DevIL\libx86\unicode\Release</Filter>
+    </Library>
+    <Library Include="DevIL\libx86\unicode\Release\ILUT.lib">
+      <Filter>Sources\Tools\DevIL\libx86\unicode\Release</Filter>
+    </Library>
+    <Library Include="GLEW\libx86\Release\Win32\glew32.lib">
+      <Filter>Sources\Tools\GLEW\libx86\Release\Win32</Filter>
+    </Library>
+    <Library Include="GLEW\libx86\Release\Win32\glew32s.lib">
+      <Filter>Sources\Tools\GLEW\libx86\Release\Win32</Filter>
     </Library>
   </ItemGroup>
 </Project>

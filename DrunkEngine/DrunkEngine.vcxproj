@@ -312,10 +312,13 @@
     <None Include="DevIL\include\IL\config.h.win" />
     <None Include="DevIL\include\IL\DevIL.i" />
     <None Include="DevIL\include\IL\stamp-h.in" />
-    <None Include="DevIL\lib\x86\Release\DevIL.dll" />
-    <None Include="DevIL\lib\x86\Release\ILU.dll" />
-    <None Include="DevIL\lib\x86\Release\ILUT.dll" />
-    <None Include="GLEW\lib\Release\Win32\glew32.dll" />
+    <None Include="DevIL\libx86\Release\DevIL.dll" />
+    <None Include="DevIL\libx86\Release\ILU.dll" />
+    <None Include="DevIL\libx86\Release\ILUT.dll" />
+    <None Include="DevIL\libx86\unicode\Release\DevIL.dll" />
+    <None Include="DevIL\libx86\unicode\Release\ILU.dll" />
+    <None Include="DevIL\libx86\unicode\Release\ILUT.dll" />
+    <None Include="GLEW\libx86\Release\Win32\glew32.dll" />
     <None Include="MGL\emscripten\library_system.js" />
     <None Include="MGL\Geometry\KDTree.inl" />
     <None Include="MGL\Geometry\QuadTree.inl" />
@@ -328,11 +331,14 @@
   <ItemGroup>
     <Library Include="Assimp\libx86\assimp.lib" />
     <Library Include="Assimp\libx86\zlibstatic.lib" />
-    <Library Include="DevIL\lib\x86\Release\DevIL.lib" />
-    <Library Include="DevIL\lib\x86\Release\ILU.lib" />
-    <Library Include="DevIL\lib\x86\Release\ILUT.lib" />
-    <Library Include="GLEW\lib\Release\Win32\glew32.lib" />
-    <Library Include="GLEW\lib\Release\Win32\glew32s.lib" />
+    <Library Include="DevIL\libx86\Release\DevIL.lib" />
+    <Library Include="DevIL\libx86\Release\ILU.lib" />
+    <Library Include="DevIL\libx86\Release\ILUT.lib" />
+    <Library Include="DevIL\libx86\unicode\Release\DevIL.lib" />
+    <Library Include="DevIL\libx86\unicode\Release\ILU.lib" />
+    <Library Include="DevIL\libx86\unicode\Release\ILUT.lib" />
+    <Library Include="GLEW\libx86\Release\Win32\glew32.lib" />
+    <Library Include="GLEW\libx86\Release\Win32\glew32s.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
