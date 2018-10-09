@@ -65,6 +65,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 {
 	bool ret = true;
 
+	if (Objects.size() > 0)
+		DestroyObject(0);
+
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	
 	obj_data add_obj;
@@ -122,8 +125,13 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			add_obj.meshes.push_back(add);
 		}
 
-		Objects.push_back(add_obj);
-		
+		if (Objects.size() > 0)
+		{
+			Objects.insert(Objects.begin(), add_obj);
+			Objects.pop_back();
+		}
+		else
+			Objects.push_back(add_obj);
 		// ReSet all Parenting for later use
 		for (int j = 0; j < Objects.size(); j++)
 			for (int k = 0; k < Objects[j].meshes.size(); k++)
@@ -439,9 +447,28 @@ int ModuleManageMesh::GetDevILVer()
 	return IL_VERSION;
 }
 
-void ModuleManageMesh::DestroyTextureBuffer(GLuint* id)
+void ModuleManageMesh::DestroyObject(const int& index)
 {
-	//glBindTexture(GL_TEXTURE_2D, *id);
-	glDeleteTextures(1, id);
+	for (int i = 0; i < Objects[index].meshes.size(); i++) {
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_index);
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_normal);
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_uvs);
+		glDeleteBuffers(1, &Objects[index].meshes[i].id_vertex);
 
+		delete Objects[index].meshes[i].index;
+		delete Objects[index].meshes[i].normal;
+		delete Objects[index].meshes[i].tex_coords;
+		delete Objects[index].meshes[i].vertex;
+	}
+	Objects[index].meshes.clear();
+
+	for (int i = 0; i < Objects[index].textures.size(); i++)
+	{
+		glDeleteTextures(1, &Objects[index].textures[i].id_tex);
+	}
+	Objects[index].textures.clear();
+
+	Objects[index].mat_colors.clear();
+
+	Objects.erase(Objects.begin(), Objects.begin());
 }
