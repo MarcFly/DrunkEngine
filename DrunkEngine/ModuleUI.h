@@ -16,6 +16,7 @@ class RandomGenWindow;
 class GEOMWindow;
 class OpenGLOptions;
 class ConsoleWindow;
+class GeoTransformWindow;
 
 class ModuleUI : public Module
 {
@@ -39,6 +40,7 @@ public:
 	GEOMWindow* geometry_win = nullptr;
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
+	GeoTransformWindow* geo_transform_win = nullptr;
 
 private:
 	bool show_demo_window;

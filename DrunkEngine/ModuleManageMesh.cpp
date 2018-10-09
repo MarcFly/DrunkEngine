@@ -67,6 +67,10 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	
 	obj_data add_obj;
+	std::string aux = file_path;
+	
+	add_obj.name = aux.substr(aux.find_last_of("\\") + 3);
+
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -108,7 +112,11 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					}
 				}
 			}
-			PLOG("Said mesh starts with %d indices", add.num_index)
+			PLOG("Said mesh starts with %d indices", add.num_index);
+
+
+			
+
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 

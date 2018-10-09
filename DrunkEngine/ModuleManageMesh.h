@@ -19,6 +19,8 @@ struct texture_data
 
 struct mesh_data
 {
+	std::string name;
+
 	//aiMesh* m = nullptr;
 	GLuint id_index = 0; // index in VRAM
 	GLuint num_index = 0;
@@ -44,14 +46,14 @@ struct mesh_data
 
 struct obj_data
 {
+	std::string name;
+
 	std::vector<mesh_data> meshes;
 
 	std::vector<float3> mat_colors;
 	std::vector<texture_data> textures;
 	GLuint id_tex = 0;
 };
-
-
 
 class ModuleManageMesh : public Module
 {
@@ -78,6 +80,9 @@ public:
 public:
 	//mesh_data test_mesh;
 	std::vector<obj_data> Objects;
+
+public:
+	std::vector<obj_data> getObjects() const { return Objects; }
 
 };
 
