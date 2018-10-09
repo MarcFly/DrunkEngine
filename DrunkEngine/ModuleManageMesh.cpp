@@ -180,8 +180,12 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 		if (use_texture)
 		{
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->id_uvs);
+			glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+
 			glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
-			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
 		}
 		else
 			glColor3f(0, 0, 0);
@@ -285,7 +289,7 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 	bool ret = true;
 
 	// Set TexCoordinates
-	if (cpy_data->HasTextureCoords(0))
+	/*if (cpy_data->HasTextureCoords(0))
 	{
 		mesh->tex_coords = new float[mesh->num_vertex * 2];
 		for (int i = 0; i < mesh->num_vertex; i++)
@@ -295,8 +299,16 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 		}
 	}
 	else
-		PLOG("No texture coordinates to be set");
+		PLOG("No texture coordinates to be set");*/
 
+	if (cpy_data->HasTextureCoords(0))
+	{
+		mesh->num_uvs = mesh->num_vertex;
+		mesh->tex_coords = new float[mesh->num_uvs * 3];
+		memcpy(mesh->tex_coords, cpy_data->mTextureCoords[0], mesh->num_uvs * sizeof(float) * 3);
+	}
+	else
+		PLOG("No texture coordinates to be set");
 
 	return ret;
 }
@@ -379,5 +391,11 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+
+	glGenBuffers(1, (GLuint*) &(mesh.id_uvs));
+	glBindBuffer(GL_ARRAY_BUFFER, (GLuint)mesh.id_uvs);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * mesh.num_uvs * 3, mesh.tex_coords, GL_STATIC_DRAW);
 
 }

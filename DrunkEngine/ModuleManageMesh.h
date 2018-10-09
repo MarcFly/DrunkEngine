@@ -30,6 +30,9 @@ struct mesh_data
 	GLuint num_vertex = 0;
 	float* vertex = nullptr;
 
+	GLuint id_uvs = 0;
+	GLuint num_uvs = 0;
+
 	float mesh_color[8][4];
 
 	GLuint id_normal = 0;
