@@ -3,16 +3,17 @@
 #include "ModuleWindow.h"
 #include "OptionsWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleInput.h"
 #include "Imgui/imgui.h"
 #include <gl/GL.h>
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
 
-OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_O)
+OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_UNKNOWN)
 {
 	App = app;
-
+	key_repeated = false;
 	max_fps = 60;
 }
 
@@ -198,12 +199,67 @@ void OptionsWindow::Draw()
 		}
 		if (ImGui::CollapsingHeader("Input"))
 		{
+			ImGui::Text("Camera Controls:");
+			
+			
+			if (key_repeated == true)
+			{
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Key already in use!");
+				if (repeated_key_time.Read() > 3000)
+					key_repeated = false;
+			}
 
+			ImGui::Separator();
 
+			ImGui::Text("Move Forward ");
+			std::string move_forward = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MOVE_FORWARD]));
+			ImGui::SameLine();
+			if (ImGui::Button(move_forward.c_str()))
+				input_change = MOVE_FORWARD;
 
+			if (input_change == MOVE_FORWARD)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");	
+				key_repeated = false;
+			}
 
-
+			if (input_change != NULL_CONTROL)
+				CheckInputChange();
 		}
 	}
 	ImGui::End();
 }
+
+void OptionsWindow::CheckInputChange()
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
+	{
+		if (ImGui::IsKeyPressed(i))
+		{
+			for (int j = 0; j < NULL_CONTROL; j++)
+			{
+				if (i == App->input->controls[j])
+				{
+					key_repeated = true;
+					repeated_key_time.Start();
+					input_change = NULL_CONTROL;
+					break;
+				}
+			}
+
+			if (key_repeated)
+				break;
+
+			if (input_change == MOVE_FORWARD)
+				App->input->controls[MOVE_FORWARD] = i;
+
+			input_change = NULL_CONTROL;
+		}
+	}
+}
+
+
