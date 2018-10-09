@@ -27,28 +27,33 @@ void GeoTransformWindow::Draw()
 
 		std::vector<obj_data> objects = App->mesh_loader->getObjects();
 
-		for (int i = 0; i < objects.size(); i++)
+		if (objects.size() > 0)
 		{
-			char label[128];
-			sprintf(label, "%s", objects[i].name.c_str());
-			if (ImGui::Selectable(label, selected == i))
-				selected = i;
+			for (int i = 0; i < objects.size(); i++)
+			{
+				char label[128];
+				sprintf(label, "%s", objects[i].name.c_str());
+				if (ImGui::Selectable(label, selected == i))
+					selected = i;
+			}
 		}
-
 		ImGui::EndChild();
 		ImGui::SameLine();
 
 		// right
 		ImGui::BeginGroup();
 		{
-			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+			if (objects.size() > 0)
 			{
-				ImGui::Text("%s", objects[selected].name.c_str());
-				ImGui::Separator();
+				ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+				{
+					ImGui::Text("%s", objects[selected].name.c_str());
+					ImGui::Separator();
+
+				}
+				ImGui::EndChild();
 
 			}
-			ImGui::EndChild();
-
 			if (ImGui::Button("Select")) {}
 			ImGui::SameLine();
 			if (ImGui::Button("Save")) {}
