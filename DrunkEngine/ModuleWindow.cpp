@@ -101,7 +101,6 @@ void ModuleWindow::SetTitle(const char* title)
 
 void ModuleWindow::SetFullscreen(bool fullscreen)
 {
-	this->fullscreen = fullscreen;
 	if(fullscreen)
 		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
 	else
@@ -110,19 +109,16 @@ void ModuleWindow::SetFullscreen(bool fullscreen)
 
 void ModuleWindow::SetResizable(bool resizable)
 {
-	this->resizable = resizable;
 	SDL_SetWindowResizable(this->window, (SDL_bool)this->resizable);
 }
 
 void ModuleWindow::SetBorderless(bool borderless)
 {
-	this->borderless = borderless;
 	SDL_SetWindowBordered(App->window->window, (SDL_bool)!this->borderless);
 }
 
 void ModuleWindow::SetFullDesktop(bool full_desktop)
 {
-	this->full_desktop = full_desktop;
 	if (full_desktop)
 		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	else
@@ -131,7 +127,6 @@ void ModuleWindow::SetFullDesktop(bool full_desktop)
 
 void ModuleWindow::SetBrightness(float brightness)
 {
-	this->brightness = brightness;
 	SDL_SetWindowBrightness(this->window, this->brightness);
 }
 
@@ -142,19 +137,19 @@ bool ModuleWindow::Load(JSON_Value* root_value)
 	root_value = json_parse_file("config_data.json");
 	SDL_SetWindowSize(window, json_object_dotget_number(json_object(root_value), "window.size.width"), json_object_dotget_number(json_object(root_value), "window.size.height"));
 
-	bool fullscreen = json_object_dotget_boolean(json_object(root_value), "window.options.fullscreen");
+	fullscreen = json_object_dotget_boolean(json_object(root_value), "window.options.fullscreen");
 	SetFullscreen(fullscreen);
 
-	bool resizable = json_object_dotget_boolean(json_object(root_value), "window.options.resizable");
+	resizable = json_object_dotget_boolean(json_object(root_value), "window.options.resizable");
 	SetResizable(resizable);
 
-	bool borderless = json_object_dotget_boolean(json_object(root_value), "window.options.borderless");
+	borderless = json_object_dotget_boolean(json_object(root_value), "window.options.borderless");
 	SetBorderless(borderless);
 
-	bool full_desktop = json_object_dotget_boolean(json_object(root_value), "window.options.full_desktop");
+	full_desktop = json_object_dotget_boolean(json_object(root_value), "window.options.full_desktop");
 	SetFullDesktop(full_desktop);
 
-	float brightness = json_object_dotget_number(json_object(root_value), "window.options.brightness");
+	brightness = json_object_dotget_number(json_object(root_value), "window.options.brightness");
 	SetBrightness(brightness);
 
 	ret = true;
