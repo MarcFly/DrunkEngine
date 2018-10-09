@@ -102,7 +102,10 @@ void ModuleWindow::SetTitle(const char* title)
 void ModuleWindow::SetFullscreen(bool fullscreen)
 {
 	this->fullscreen = fullscreen;
-	SDL_SetWindowFullscreen(this->window, this->fullscreen);
+	if(fullscreen)
+		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
+	else
+		SDL_SetWindowFullscreen(this->window, 0);
 }
 
 void ModuleWindow::SetResizable(bool resizable)
@@ -120,6 +123,10 @@ void ModuleWindow::SetBorderless(bool borderless)
 void ModuleWindow::SetFullDesktop(bool full_desktop)
 {
 	this->full_desktop = full_desktop;
+	if (full_desktop)
+		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	else
+		SDL_SetWindowFullscreen(this->window, 0);
 }
 
 void ModuleWindow::SetBrightness(float brightness)
