@@ -44,8 +44,9 @@ bool ModuleManageMesh::Start()
 	//LoadFBX("./glass cube.fbx");
 	//LoadFBX("./Dragon 2.5_fbx.fbx");
 	//LoadFBX("./Toilet.fbx");
-	LoadFBX("./BakerHouse.fbx");
+	//LoadFBX("./BakerHouse.fbx");
 	//LoadFBX("./warrior.fbx");
+	//LoadFBX("./KSR-29 sniper rifle new_fbx_7.4_binary.fbx");
 
 	return ret;
 }
@@ -114,13 +115,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			}
 			PLOG("Said mesh starts with %d indices", add.num_index);
 
-
-			
-
-
 			SetTexCoords(&add, scene->mMeshes[i]);
 
-			//add.tex_index = scene->mMeshes[i]->mMaterialIndex;
+			add.tex_index = scene->mMeshes[i]->mMaterialIndex;
 
 			GenBuffers(add);
 
@@ -129,12 +126,13 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 		Objects.push_back(add_obj);
 		
-		// Set Parenting for later use
-		std::vector<obj_data>::iterator item = --Objects.end();
-		for (int k = 0; k < item->meshes.size(); k++)
-			item->meshes[k].parent = item._Ptr;
+		// ReSet all Parenting for later use
+		for (int j = 0; j < Objects.size(); j++)
+			for (int k = 0; k < Objects[j].meshes.size(); k++)
+				Objects[j].meshes[k].parent = &Objects[j];
 
 		// Texture Setup
+		std::vector<obj_data>::iterator item = --Objects.end();
 		if (scene->HasMaterials())
 		{
 			for (int i = 0; i < scene->mNumMaterials; i++)
@@ -142,8 +140,13 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				SetupTex(*item._Ptr, true, scene->mMaterials[i]);
 			}
 		}
-		else
+
+		if (item->textures.size() == 0) {
 			SetupTex(*item._Ptr);
+			for (int i = 0; i < item->meshes.size(); i++)
+				if(item->meshes[i].tex_index > item->textures.size() - 1)
+					item->meshes[i].tex_index = 0;
+		}
 
 		aiReleaseImport(scene);
 	}
@@ -263,19 +266,22 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 			else
 			{
 				PLOG("Failed to load image from path %s", path.C_Str());
-				texErr == aiReturn_FAILURE;
+				obj.textures.pop_back();
 			}
 			
 			ilDeleteImages(1, &id_Image);
 
 		}
-
+		else
+		{
+			PLOG("Failed to load image from path %s", path.C_Str());
+			obj.textures.pop_back();
+		}
 		
 	}
-	
-	if(texErr == aiReturn_FAILURE)// Load Checker texture
+	else // Load Checker texture
 	{
-		PLOG("Failed to load image: %s", iluErrorString(texErr));
+		PLOG("No Texture to Load, generating Checker");
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, App->renderer3D->checkTexture);
 	}
 	// **Unbind Buffer**
@@ -289,18 +295,6 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 	bool ret = true;
 
 	// Set TexCoordinates
-	/*if (cpy_data->HasTextureCoords(0))
-	{
-		mesh->tex_coords = new float[mesh->num_vertex * 2];
-		for (int i = 0; i < mesh->num_vertex; i++)
-		{
-			mesh->tex_coords[i * 2] = cpy_data->mTextureCoords[0][i].x;
-			mesh->tex_coords[(i * 2) + 1] = cpy_data->mTextureCoords[0][i].y;
-		}
-	}
-	else
-		PLOG("No texture coordinates to be set");*/
-
 	if (cpy_data->HasTextureCoords(0))
 	{
 		mesh->num_uvs = mesh->num_vertex;
@@ -393,9 +387,11 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
-
+	// Texture Coordinates / UVs Buffer
 	glGenBuffers(1, (GLuint*) &(mesh.id_uvs));
 	glBindBuffer(GL_ARRAY_BUFFER, (GLuint)mesh.id_uvs);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * mesh.num_uvs * 3, mesh.tex_coords, GL_STATIC_DRAW);
 
+	// **Unbind Buffer**
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
