@@ -3,7 +3,7 @@
 #include <time.h>
 
 
-RandomGenWindow::RandomGenWindow() : Window("Random Generator", SDL_SCANCODE_G)
+RandomGenWindow::RandomGenWindow() : Window("Random Generator", SDL_SCANCODE_UNKNOWN)
 {
 	min_num = -500;
 	max_num = 500;

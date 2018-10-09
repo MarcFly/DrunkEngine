@@ -2,7 +2,7 @@
 #include "GLEW/include/GL/glew.h"
 #include <gl/GL.h>
 
-OpenGLOptions::OpenGLOptions(Application* app) : Window("OpenGL Settings", SDL_SCANCODE_O)
+OpenGLOptions::OpenGLOptions(Application* app) : Window("OpenGL Settings", SDL_SCANCODE_UNKNOWN)
 {
 	App = app;
 }
