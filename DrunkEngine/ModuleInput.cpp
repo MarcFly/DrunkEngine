@@ -31,6 +31,9 @@ bool ModuleInput::Init()
 		ret = false;
 	}
 
+	//DefaultControls();
+	Load(nullptr);
+
 	quit = false;
 
 	return ret;
@@ -168,4 +171,46 @@ bool ModuleInput::CleanUp()
 	PLOG("Quitting SDL input event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
+}
+
+bool ModuleInput::Load(JSON_Value * root_value)
+{
+	bool ret = false;
+
+	root_value = json_parse_file("config_data.json");
+
+	controls[MOVE_FORWARD] = json_object_dotget_number(json_object(root_value), "controls.move_forward");
+	controls[MOVE_BACK] = json_object_dotget_number(json_object(root_value), "controls.move_back");
+	controls[MOVE_LEFT] = json_object_dotget_number(json_object(root_value), "controls.move_left");
+	controls[MOVE_RIGHT] = json_object_dotget_number(json_object(root_value), "controls.move_right");
+	controls[FOCUS_CAMERA] = json_object_dotget_number(json_object(root_value), "controls.focus_camera");
+	controls[ORBIT_CAMERA] = json_object_dotget_number(json_object(root_value), "controls.orbit_camera");
+	controls[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
+	controls[MESH_MENU] = json_object_dotget_number(json_object(root_value), "controls.mesh_menu");
+
+	ret = true;
+	return ret;
+}
+
+bool ModuleInput::Save(JSON_Value * root_value)
+{
+	bool ret = false;
+
+
+	root_value = json_parse_file("config_data.json");
+	JSON_Object* root_obj = json_value_get_object(root_value);
+
+	json_object_dotset_number(root_obj, "controls.move_forward", controls[MOVE_FORWARD]);
+	json_object_dotset_number(root_obj, "controls.move_back", controls[MOVE_BACK]);
+	json_object_dotset_number(root_obj, "controls.move_left", controls[MOVE_LEFT]);
+	json_object_dotset_number(root_obj, "controls.move_right", controls[MOVE_RIGHT]);
+	json_object_dotset_number(root_obj, "controls.focus_camera", controls[FOCUS_CAMERA]);
+	json_object_dotset_number(root_obj, "controls.orbit_camera", controls[ORBIT_CAMERA]);
+	json_object_dotset_number(root_obj, "controls.options_menu", controls[OPTIONS_MENU]);
+	json_object_dotset_number(root_obj, "controls.mesh_menu", controls[MESH_MENU]);
+
+	json_serialize_to_file(root_value, "config_data.json");
+
+	ret = true;
+	return ret;
 }

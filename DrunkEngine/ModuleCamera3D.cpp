@@ -56,20 +56,20 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * mesh_multiplier;
 
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) newPos -= Z * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) newPos += Z * speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) newPos -= X * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) newPos += X * speed;
 
 	if (App->input->GetMouseZ() < 0) newPos += Z * speed * MOUSE_WHEEL_SPEED;
 	if (App->input->GetMouseZ() > 0) newPos -= Z * speed * MOUSE_WHEEL_SPEED;
 
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) LookAt(vec3(0.0f, 0.0f, 0.0f));
+	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN) LookAt(vec3(0.0f, 0.0f, 0.0f));
 
 	Position += newPos;
 
-	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT)
 		Reference = vec3(0.0f, 0.0f, 0.0f);
 	else
 	{

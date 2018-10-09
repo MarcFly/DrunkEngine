@@ -196,6 +196,14 @@ void OptionsWindow::Draw()
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", available / 1024.0f);
 
 		}
+		if (ImGui::CollapsingHeader("Input"))
+		{
+
+
+
+
+
+		}
 	}
 	ImGui::End();
 }
