@@ -110,32 +110,8 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Console"))
 				console_win->SwitchActive();
 
-			if (ImGui::MenuItem("Download Latest"))
-				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
-
-
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Help"))
-		{
-			if (ImGui::MenuItem("Examples"))
-				show_demo_window = !show_demo_window;
-
-
-			if (ImGui::MenuItem("Documentation"))
-				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
-
-			
-
-			if (ImGui::MenuItem("Report a Bug"))
-				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/issues", NULL, NULL, SW_SHOWNORMAL);
-						
-			if (ImGui::MenuItem("About..."))
-				about_win->SwitchActive();
 
 			ImGui::EndMenu();
 		}
@@ -160,6 +136,28 @@ bool ModuleUI::MainMenu()
 
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("Examples"))
+				show_demo_window = !show_demo_window;
+
+			if (ImGui::MenuItem("Download Latest"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
+
+			if (ImGui::MenuItem("Documentation"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
+
+			if (ImGui::MenuItem("Report a Bug"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/issues", NULL, NULL, SW_SHOWNORMAL);
+						
+			if (ImGui::MenuItem("About..."))
+				about_win->SwitchActive();
+
+			ImGui::EndMenu();
+		}
+
+		
 		
 	}
 	ImGui::EndMainMenuBar();
