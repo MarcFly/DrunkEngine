@@ -30,6 +30,9 @@ bool ModuleCamera3D::Start()
 	bool ret = true;
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
+	LookAt(vec3(0.0f, 0.0f, 0.0f));
+
+	mesh_multiplier = 1;
 
 	return ret;
 }
@@ -49,9 +52,9 @@ update_status ModuleCamera3D::Update(float dt)
 	// Now we can make this movememnt frame rate independant!
 
 	vec3 newPos(0, 0, 0);
-	float speed = MOV_SPEED * dt;
+	float speed = MOV_SPEED * dt * mesh_multiplier;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		speed = MOV_SPEED * 2 * dt;
+		speed = MOV_SPEED * 2 * dt * mesh_multiplier;
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;

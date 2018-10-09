@@ -1,6 +1,7 @@
 #include "ModuleManageMesh.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
+#include "ModuleCamera3D.h"
 #include "SDL/include/SDL_opengl.h"
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
@@ -78,6 +79,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
+
+		float vertex_aux = 0.f;
+
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
@@ -109,9 +113,14 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					{
 						memcpy(&add.index[j*3], scene->mMeshes[i]->mFaces[j].mIndices, 3*sizeof(GLuint));
 					
-						SetNormals(add, j);
-							
+						SetNormals(add, j);						
 					}
+				}			
+
+				for (uint j = 0; j < scene->mMeshes[i]->mNumVertices * 3; j++)
+				{
+					if (vertex_aux < abs(add.vertex[j]))
+						vertex_aux = abs(add.vertex[j]);
 				}
 			}
 			PLOG("Said mesh starts with %d indices", add.num_index);
@@ -125,6 +134,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			add_obj.meshes.push_back(add);
 		}
 
+
 		if (Objects.size() > 0)
 		{
 			Objects.insert(Objects.begin(), add_obj);
@@ -132,6 +142,11 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		}
 		else
 			Objects.push_back(add_obj);
+
+		App->camera->Move(vec3(vertex_aux, vertex_aux, vertex_aux));
+		App->camera->LookAt(vec3(0.0f, 0.0f, 0.0f));
+		App->camera->mesh_multiplier = vertex_aux / 2;
+
 		// ReSet all Parenting for later use
 		for (int j = 0; j < Objects.size(); j++)
 			for (int k = 0; k < Objects[j].meshes.size(); k++)

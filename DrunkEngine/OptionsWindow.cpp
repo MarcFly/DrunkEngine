@@ -95,9 +95,9 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreen))
 			{
+				//SDL_SetWindowSize(App->window->window, width, height);
 				App->window->SetFullscreen(App->window->fullscreen);
 				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
-				//SDL_SetWindowSize(App->window->window, width, height);
 
 			}
 			ImGui::SameLine();
