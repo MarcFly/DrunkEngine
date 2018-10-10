@@ -6,6 +6,8 @@
 #include "ModuleInput.h"
 #include "Imgui/imgui.h"
 #include <gl/GL.h>
+#include "ModuleManageMesh.h"
+
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -154,6 +156,23 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->renderer3D->Save(nullptr);
+		}
+
+		if (ImGui::CollapsingHeader("Texture Parameters"))
+		{
+			ImGui::TextWrapped("In order to perform changes, drop a new texture (or the same one again)!");
+			ImGui::Separator();
+
+			const char* wrap_types[] = { "CLAMP TO EDGE", "CLAMP TO BORDER", "MIRRORED REPEAT", "REPEAT", "MIRROR CLAMP" };
+			ImGui::Combo("Texture Wrap S", &App->mesh_loader->curr_tws, wrap_types, IM_ARRAYSIZE(wrap_types));
+			ImGui::Combo("Texture Wrap T", &App->mesh_loader->curr_twt, wrap_types, IM_ARRAYSIZE(wrap_types));
+			
+			ImGui::Separator();
+			
+			const char* tex_f[] = { "NEAREST","LINEAR"/*,"NEAREST MIPMAP NEAREST", "LINEAR MIPMAP NEAREST", "NEAREST MIPMAP LINEAR", "LINEAR MIPMAP LINEAR"*/ };
+			ImGui::Combo("Texture Min Filter", &App->mesh_loader->curr_tminf, tex_f, IM_ARRAYSIZE(tex_f));
+			ImGui::Combo("Texture Mag Filter", &App->mesh_loader->curr_tmagf, tex_f, IM_ARRAYSIZE(tex_f));
+
 		}
 
 		if (ImGui::CollapsingHeader("Input"))

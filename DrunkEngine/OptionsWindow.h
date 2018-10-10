@@ -30,6 +30,7 @@ public:
 
 	int input_change;
 	bool key_repeated;
+
 };
 
 #endif

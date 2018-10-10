@@ -9,6 +9,41 @@
 #include "Assimp/include/scene.h"
 #include "Color.h"
 #include "Assimp/include/version.h"
+
+enum TexParams {
+	Err = 0,
+
+	TP_TEXTURE_COMPARE_MODE,
+	TP_COMPARE_REF,
+	TP_NONE,
+
+	TP_TEXTURE_LOD_BIAS,
+
+	TP_TEXTURE_FILTERS, // Filters start here, mag and min types
+	TP_NEAREST,
+	TP_LINEAR,
+	TP_NEAREST_MIPMAP_NEAREST,
+	TP_LINEAR_MIPMAP_NEAREST,
+	TP_NEAREST_MIPMAP_LINEAR,
+	TP_LINEAR_MIPMAP_LINEAR,
+
+	TP_TEXTURE_MIN_LOD,
+	TP_TEXTURE_MAX_LOD,
+	TP_TEXTURE_MAX_LEVEL,
+
+	// Wraps
+	TP_TEXTURE_WRAP, // Wraps start here
+
+	// Wrap Modes
+	TP_CLAMP_TO_EDGE,	// coordinades clamped to range based on texture size
+	TP_CLAMP_TO_BORDER,	// similar to edge but in borders data is set by border color
+	TP_MIRRORED_REPEAT,	// coordinates set to the fractional part if goes beyond 1, so 1.1 = 1/1.1
+	TP_REPEAT,			// Integer of coordinates ignored, creatign repetition pattern after 1.0, 1.1 = 0.1
+	TP_MIRROR_CLAMP_TO_EDGE,	// repeat for 1 more int (until 2) then clamps to edge
+
+
+};
+
 struct obj_data;
 
 struct texture_data
@@ -33,8 +68,6 @@ struct mesh_data
 	GLuint id_uvs = 0;
 	GLuint num_uvs = 0;
 	GLfloat* tex_coords = nullptr;
-
-	//float mesh_color[8][4];
 
 	GLuint id_normal = 0;
 	GLuint num_normal = 0;
@@ -73,16 +106,21 @@ public:
 	void SetNormals(mesh_data& mesh, const int& ind_value);
 	void GenBuffers(mesh_data& mesh);
 
-	void SetupTex(obj_data& mesh, bool has_texture = false, aiMaterial* material = nullptr);
+	void SetupMat(obj_data& mesh, aiMaterial* material = nullptr);
 	bool LoadTextCurrentObj(const char* path, obj_data* curr_obj);
-
 	void DestroyObject(const int& index);
+
+	void GenTexParams(texture_data* tex);
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 
 public:
-	//mesh_data test_mesh;
 	std::vector<obj_data> Objects;
+	int curr_tws = 0;
+	int curr_twt = 0;
+
+	int curr_tmagf = 0;
+	int curr_tminf = 0;
 
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }
