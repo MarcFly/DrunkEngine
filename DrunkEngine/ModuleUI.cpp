@@ -121,8 +121,8 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Random Generator"))
 				random_win->SwitchActive();
 
-			if (ImGui::MenuItem("Test Objects"))
-				geometry_win->SwitchActive();
+			/*if (ImGui::MenuItem("Test Objects"))
+				geometry_win->SwitchActive();*/
 
 			if (ImGui::MenuItem("Transform Meshes"))
 				geo_transform_win->SwitchActive();			
