@@ -118,6 +118,15 @@
     <Filter Include="Sources\Tools\GLEW\libx86\Release\Win32">
       <UniqueIdentifier>{bc58903d-a9f8-4d80-ad30-37c74a7aa548}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GameObject">
+      <UniqueIdentifier>{e62cf581-991b-4584-9238-f60d45800ed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GameObject\ComponentMesh">
+      <UniqueIdentifier>{4ccf75f6-65ff-434b-b5ce-b48ec293fa32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GameObject\ComponentMaterial">
+      <UniqueIdentifier>{bbc28f04-7d9b-4a71-974c-2a43491c6999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">

@@ -257,53 +257,7 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 	glGenTextures(1, &item->id_tex);
 	glBindTexture(GL_TEXTURE_2D, item->id_tex);
 
-	uint tws, twt, tmagf, tminf;
-
-	//GenTexParams(item);
-	switch (curr_tws) {
-		case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_EDGE;	break;
-		case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_BORDER;	break;
-		case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): tws = GL_MIRRORED_REPEAT; break;
-		case (TP_REPEAT - TP_TEXTURE_WRAP - 1):	tws = GL_REPEAT; break;
-		case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_MIRROR_CLAMP_TO_EDGE; break;
-		default: PLOG("Unsuccessful initialization");
-	}
-
-	switch (curr_twt) {
-		case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_EDGE; break;
-		case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_BORDER; break;
-		case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_MIRRORED_REPEAT; break;
-		case (TP_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_REPEAT; break;
-		case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_MIRROR_CLAMP_TO_EDGE; break;
-		default: PLOG("Unsuccessful initialization");
-	}
-
-	// Texture Filter
-	switch (curr_tmagf) {
-		case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR; break;
-		case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST; break;
-		case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_NEAREST; break;
-		case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_NEAREST; break;
-		case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_LINEAR; break;
-		case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_LINEAR; break;
-		default: PLOG("Unsuccessful initialization");
-	}
-
-	switch (curr_tminf) {
-		case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR; break;
-		case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST; break;
-		case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_NEAREST; break;
-		case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_NEAREST; break;
-		case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_LINEAR; break;
-		case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
-		default: PLOG("Unsuccessful initialization");
-	}
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
-
-	// Texture Filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
+	GenTexParams();
 
 	ILuint id_Image;
 	ilGenImages(1, &id_Image);
@@ -447,6 +401,11 @@ void ModuleManageMesh::DestroyObject(const int& index)
 		delete Objects[index].meshes[i].normal;
 		delete Objects[index].meshes[i].tex_coords;
 		delete Objects[index].meshes[i].vertex;
+
+		if (Objects[index].mathbody != nullptr) {
+			Objects[index].mathbody->DelMathBody();
+			delete Objects[index].mathbody;
+		}
 	}
 	Objects[index].meshes.clear();
 
@@ -461,75 +420,81 @@ void ModuleManageMesh::DestroyObject(const int& index)
 	Objects.erase(Objects.begin(), Objects.begin());
 }
 
-void ModuleManageMesh::GenTexParams(texture_data* tex)
+void ModuleManageMesh::GenTexParams()
 {
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &tex->id_tex);
-	glBindTexture(GL_TEXTURE_2D, tex->id_tex);
+	uint tws, twt, tmagf, tminf;
 
-	// Texture Wrap
-	if (curr_tws == TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	
-	if (curr_twt == TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	if(curr_tmagf == TP_NEAREST - TP_TEXTURE_FILTERS - 1)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	if (curr_tminf == TP_NEAREST - TP_TEXTURE_FILTERS - 1)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	/*switch (curr_tws) {
-		case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1):
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			break;
-
-		case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1):
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			break;
-		
-		case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1):
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-			break;
-		case (TP_REPEAT - TP_TEXTURE_WRAP - 1):
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			break;
-		case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1):
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRROR_CLAMP_TO_EDGE);
-			break;
-		default:
-			PLOG("Unsuccessful initialization");
+	switch (curr_tws) {
+	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_EDGE;	break;
+	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_BORDER;	break;
+	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): tws = GL_MIRRORED_REPEAT; break;
+	case (TP_REPEAT - TP_TEXTURE_WRAP - 1):	tws = GL_REPEAT; break;
+	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_MIRROR_CLAMP_TO_EDGE; break;
+	default: PLOG("Unsuccessful initialization");
 	}
 
 	switch (curr_twt) {
-	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); break;
-	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); break;
-	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT); break;
-	case (TP_REPEAT - TP_TEXTURE_WRAP - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); break;
-	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRROR_CLAMP_TO_EDGE); break;
-	default:
-		PLOG("Unsuccessful initialization");
+	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_EDGE; break;
+	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_BORDER; break;
+	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_MIRRORED_REPEAT; break;
+	case (TP_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_REPEAT; break;
+	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_MIRROR_CLAMP_TO_EDGE; break;
+	default: PLOG("Unsuccessful initialization");
 	}
 
 	// Texture Filter
 	switch (curr_tmagf) {
-	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); break;
-	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); break;
-	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST); break;
-	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST); break;
-	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_LINEAR); break;
-	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR); break;
-	default:
-		PLOG("Unsuccessful initialization");
+	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR; break;
+	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_NEAREST; break;
+	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_LINEAR; break;
+	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_LINEAR; break;
+	default: PLOG("Unsuccessful initialization");
 	}
+
 	switch (curr_tminf) {
-	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); break;
-	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); break;
-	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST); break;
-	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST); break;
-	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_LINEAR); break;
-	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR); break;
-	default:
-		PLOG("Unsuccessful initialization");
-	}*/
+	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR; break;
+	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_NEAREST; break;
+	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_LINEAR; break;
+	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
+	default: PLOG("Unsuccessful initialization");
+	}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
+}
+
+// CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------
+
+bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
+{
+	bool ret = true;
+
+	obj_data add_obj;
+
+	PCube* new_cube = new PCube(cube);
+
+	new_cube->MathBody = new AABB(Sphere(center, cube.size.x/2.0f));
+
+	mesh_data mcube;
+	mcube.num_vertex = new_cube->MathBody->NumVertices();
+	mcube.vertex = new float[mcube.num_vertex*3];
+	memcpy(mcube.vertex, &new_cube->MathBody->CornerPoint(0), 3 * sizeof(float)*mcube.num_vertex);
+
+	if (Objects.size() > 0)
+	{
+		DestroyObject(0);
+		Objects.insert(Objects.begin(), add_obj);
+		Objects.pop_back();
+	}
+	else
+		Objects.push_back(add_obj);
+
+	return ret;
 }

@@ -5,6 +5,7 @@
 #include <gl/GLU.h>
 #include "Primitive.h"
 #include "SDL/include/SDL_opengl.h"
+#include "Application.h"
 
 //using namespace math;
 
@@ -683,3 +684,4 @@ bool PCylinder::Intersects(Primitive* mbody2)
 
 	return false;
 }
+
