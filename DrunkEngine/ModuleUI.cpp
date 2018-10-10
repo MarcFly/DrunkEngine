@@ -13,7 +13,6 @@
 #include "AboutWindow.h"
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
-#include "OpenGLOptions.h"
 #include "ConsoleWindow.h"
 #include "GeoTransformWindow.h"
 
@@ -46,7 +45,6 @@ bool ModuleUI::Init()
 	windows.push_back(about_win = new AboutWindow(App));
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow(App));
-	windows.push_back(opengl_win = new OpenGLOptions(App));
 	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(geo_transform_win = new GeoTransformWindow(App));
 
@@ -105,9 +103,6 @@ bool ModuleUI::MainMenu()
 		{
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();
-
-			if (ImGui::MenuItem("OpenGL Settings"))
-				opengl_win->SwitchActive();
 
 			if (ImGui::MenuItem("Console"))
 				console_win->SwitchActive();

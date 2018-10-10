@@ -197,7 +197,6 @@
     <ClInclude Include="MGL\Math\TransformOps.h" />
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
-    <ClInclude Include="OpenGLOptions.h" />
     <ClInclude Include="OptionsWindow.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -272,7 +271,6 @@
     <ClCompile Include="MGL\SysInfo\SystemInfo.cpp" />
     <ClCompile Include="MGL\Time\Clock.cpp" />
     <ClCompile Include="ModuleManageMesh.cpp" />
-    <ClCompile Include="OpenGLOptions.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />

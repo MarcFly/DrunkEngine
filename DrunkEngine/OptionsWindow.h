@@ -13,6 +13,8 @@ public:
 
 	void Draw() override;
 
+	void CheckEnableDisableOpenGL();
+
 	void CheckInputChange();
 
 public:
