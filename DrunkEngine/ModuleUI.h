@@ -9,6 +9,8 @@
 // Module for IMGUI use and implementation
 // Includes for imgui when necessary...
 
+#define NUM_WINDOWS 7
+
 class Window;
 class OptionsWindow;
 class AboutWindow;
@@ -31,9 +33,12 @@ public:
 	bool CleanUp();
 
 	bool MainMenu();
+
+	void ShowHideWindows();
 	//void AddLog();
 
 public:
+	//NUM WINDOWS == 7
 	OptionsWindow* options_win = nullptr;
 	AboutWindow* about_win = nullptr;
 	RandomGenWindow* random_win = nullptr;
@@ -44,8 +49,9 @@ public:
 
 private:
 	bool show_demo_window;
-
 	std::vector<Window *> windows;
+
+	bool active_windows[NUM_WINDOWS]; //UPDATE WITH NUM WINDOWS
 
 public:
 

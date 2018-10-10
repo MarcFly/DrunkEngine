@@ -50,6 +50,9 @@ bool ModuleUI::Init()
 
 	App->input->UpdateShortcuts();
 
+	for (int i = 0; i < NUM_WINDOWS; i++)
+		active_windows[i] = false;
+
 	return ret;
 }
 
@@ -122,14 +125,10 @@ bool ModuleUI::MainMenu()
 				geometry_win->SwitchActive();
 
 			if (ImGui::MenuItem("Transform Meshes"))
-				geo_transform_win->SwitchActive();
+				geo_transform_win->SwitchActive();			
 
-			if (ImGui::MenuItem("Hide All")) {
-				for (int i = 0; i < windows.size(); i++)
-					windows[i]->SetInactive();
-
-				show_demo_window = false;
-			}
+			if (ImGui::MenuItem("Show/Hide Windows"))
+				ShowHideWindows();
 
 			ImGui::EndMenu();
 		}
@@ -163,4 +162,38 @@ bool ModuleUI::MainMenu()
 		ImGui::ShowDemoWindow(&show_demo_window);
 
 	return ret;
+}
+
+void ModuleUI::ShowHideWindows()
+{
+	bool show_windows = true;
+
+	for (int i = 0; i < windows.size(); i++)
+	{
+		if (windows[i]->active == true)
+		{
+			for (int j = 0; j < windows.size(); j++)
+				active_windows[j] = false;
+
+			show_windows = false;
+		}
+	}
+
+	for (int i = 0; i < windows.size(); i++)
+	{
+		if (!show_windows && windows[i]->active == true)
+		{
+			active_windows[i] = true;
+			windows[i]->SetInactive();
+		}
+
+		else if (show_windows && active_windows[i] == true)
+		{
+			windows[i]->SwitchActive();
+			active_windows[i] = false;
+		}
+
+	}
+
+	show_demo_window = false;
 }
