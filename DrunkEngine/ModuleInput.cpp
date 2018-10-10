@@ -182,10 +182,10 @@ bool ModuleInput::CleanUp()
 
 void ModuleInput::UpdateShortcuts()
 {
-	if (App->ui->options_win != nullptr)
-		App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
-	if (App->ui->geometry_win != nullptr)
-		App->ui->geometry_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
+	App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
+	App->ui->console_win->SetShortCut((SDL_Scancode)controls[CONSOLE_MENU]);
+	App->ui->geometry_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
+	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
 }
 
 bool ModuleInput::Load(JSON_Value * root_value)
@@ -193,7 +193,7 @@ bool ModuleInput::Load(JSON_Value * root_value)
 	bool ret = false;
 
 	root_value = json_parse_file("config_data.json");
-
+	
 	//Camera controls
 	controls[MOVE_FORWARD] = json_object_dotget_number(json_object(root_value), "controls.move_forward");
 	controls[MOVE_BACK] = json_object_dotget_number(json_object(root_value), "controls.move_back");
@@ -204,7 +204,9 @@ bool ModuleInput::Load(JSON_Value * root_value)
 
 	//Menu Shortcuts
 	controls[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
+	controls[CONSOLE_MENU] = json_object_dotget_number(json_object(root_value), "controls.console_menu");
 	controls[MESH_MENU] = json_object_dotget_number(json_object(root_value), "controls.mesh_menu");
+	controls[ABOUT_MENU] = json_object_dotget_number(json_object(root_value), "controls.about_menu");
 
 	ret = true;
 	return ret;

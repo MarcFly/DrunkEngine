@@ -324,6 +324,21 @@ void OptionsWindow::Draw()
 				key_repeated = false;
 			}
 
+			//Console Window
+			ImGui::Text("Console Window");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[CONSOLE_MENU]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = CONSOLE_MENU;
+
+			if (input_change == CONSOLE_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
 			//Loaded Models Window
 			ImGui::Text("Loaded Models");
 			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MESH_MENU]));
@@ -333,6 +348,21 @@ void OptionsWindow::Draw()
 				input_change = MESH_MENU;
 
 			if (input_change == MESH_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//About Window
+			ImGui::Text("Engine Info");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[ABOUT_MENU]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = ABOUT_MENU;
+
+			if (input_change == ABOUT_MENU)
 			{
 				ImGui::SameLine();
 				ImGui::Text("Select new Key");
@@ -395,8 +425,14 @@ void OptionsWindow::CheckInputChange()
 			else if (input_change == OPTIONS_MENU)
 				App->input->controls[OPTIONS_MENU] = i;
 
+			else if (input_change == CONSOLE_MENU)
+				App->input->controls[CONSOLE_MENU] = i;
+
 			else if (input_change == MESH_MENU)
 				App->input->controls[MESH_MENU] = i;
+
+			else if (input_change == ABOUT_MENU)
+				App->input->controls[ABOUT_MENU] = i;
 
 			App->input->UpdateShortcuts();
 
