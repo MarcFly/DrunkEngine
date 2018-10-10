@@ -1,16 +1,16 @@
-#include "GeoTransformWindow.h"
+#include "GeoPropertiesWindow.h"
 #include "ModuleManageMesh.h"
 
-GeoTransformWindow::GeoTransformWindow(Application * app) : Window("Transform objects")
+GeoPropertiesWindow::GeoPropertiesWindow(Application * app) : Window("Object Properties")
 {
 	App = app;
 }
 
-GeoTransformWindow::~GeoTransformWindow()
+GeoPropertiesWindow::~GeoPropertiesWindow()
 {
 }
 
-void GeoTransformWindow::Draw()
+void GeoPropertiesWindow::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
