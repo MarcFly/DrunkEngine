@@ -42,12 +42,7 @@ bool ModuleManageMesh::Start()
 {
 	bool ret = true;
 
-	//LoadFBX("./glass cube.fbx");
-	//LoadFBX("./Dragon 2.5_fbx.fbx");
-	//LoadFBX("./Toilet.fbx");
-	//LoadFBX("./BakerHouse.fbx");
-	//LoadFBX("./warrior.fbx");
-	//LoadFBX("./KSR-29 sniper rifle new_fbx_7.4_binary.fbx");
+	LoadFBX("./BakerHouse.fbx");
 
 	return ret;
 }
@@ -65,9 +60,6 @@ bool ModuleManageMesh::CleanUp()
 bool ModuleManageMesh::LoadFBX(const char* file_path)
 {
 	bool ret = true;
-
-	if (Objects.size() > 0)
-		DestroyObject(0);
 
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	
@@ -137,6 +129,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 		if (Objects.size() > 0)
 		{
+			DestroyObject(0);
 			Objects.insert(Objects.begin(), add_obj);
 			Objects.pop_back();
 		}
@@ -145,7 +138,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 		App->camera->Move(vec3(vertex_aux, vertex_aux, vertex_aux));
 		App->camera->LookAt(vec3(0.0f, 0.0f, 0.0f));
-		App->camera->mesh_multiplier = vertex_aux / 2;
+		App->camera->mesh_multiplier = vertex_aux / 4;
 
 		// ReSet all Parenting for later use
 		for (int j = 0; j < Objects.size(); j++)
@@ -305,6 +298,7 @@ void ModuleManageMesh::SetupTex(obj_data& obj, bool has_texture, aiMaterial* mat
 		{
 			PLOG("Failed to load image from path %s\n", path.C_Str());
 			obj.textures.pop_back();
+			glDeleteTextures(1, &item->id_tex);
 		}
 		
 	}
@@ -361,7 +355,7 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 	{
 		PLOG("Failed to load image from path %s", path);
 		curr_obj->textures.pop_back();
-		//glDeleteTextures(1, &item->id_tex);
+		glDeleteTextures(1, &item->id_tex);
 		ret = false;
 	}
 
@@ -466,7 +460,7 @@ void ModuleManageMesh::DestroyObject(const int& index)
 {
 	for (int i = 0; i < Objects[index].meshes.size(); i++) {
 		glDeleteBuffers(1, &Objects[index].meshes[i].id_index);
-		glDeleteBuffers(1, &Objects[index].meshes[i].id_normal);
+		//glDeleteBuffers(GL_ARRAY_BUFFER, &Objects[index].meshes[i].id_normal);
 		glDeleteBuffers(1, &Objects[index].meshes[i].id_uvs);
 		glDeleteBuffers(1, &Objects[index].meshes[i].id_vertex);
 

@@ -34,8 +34,6 @@ struct mesh_data
 	GLuint num_uvs = 0;
 	GLfloat* tex_coords = nullptr;
 
-	//float mesh_color[8][4];
-
 	GLuint id_normal = 0;
 	GLuint num_normal = 0;
 	GLfloat* normal = nullptr;	
@@ -81,7 +79,6 @@ public:
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 
 public:
-	//mesh_data test_mesh;
 	std::vector<obj_data> Objects;
 
 public:
