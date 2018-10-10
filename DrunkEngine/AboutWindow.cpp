@@ -4,7 +4,7 @@
 #include "ModuleManageMesh.h"
 
 
-AboutWindow::AboutWindow(Application* app) : Window("About...", SDL_SCANCODE_I)
+AboutWindow::AboutWindow(Application* app) : Window("About...")
 {
 	App = app;
 
@@ -24,10 +24,15 @@ void AboutWindow::Draw()
 		ImGui::Text("AUTHORS: ");
 		ImGui::SameLine();
 		ImGui::TextColored(AndreuColor,"Andreu Sacasas   ");
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to Github");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/Andreu997", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(MarcColor, "Marc Torres");
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to Github");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/MarcFly", NULL, NULL, SW_SHOWNORMAL);
 
@@ -42,46 +47,76 @@ void AboutWindow::Draw()
 	
 		ImGui::Text("LIBRARIES USED:");
 		ImGui::TextColored(HyperlinkColor,"OpenGL (%d.%d) ", major, minor);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://www.opengl.org/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "SDL (%d.%d.%d) ", sdl_ver.major, sdl_ver.minor, sdl_ver.patch);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://www.libsdl.org/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "ImGui  (%.2f) ", IMGUI_VERSION_NUM / 10000.0f);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "Bullet (%.2f) ", btGetVersion() / 100.0f);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/bulletphysics", NULL, NULL, SW_SHOWNORMAL);
 
 		ImGui::TextColored(HyperlinkColor, "GLEW(%d.%d.%d ", GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "http://glew.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%D) ", App->mesh_loader->GetDevILVer()/100, App->mesh_loader->GetDevILVer() / 10 - 10*(App->mesh_loader->GetDevILVer() / 100), App->mesh_loader->GetDevILVer() - 10 * (App->mesh_loader->GetDevILVer() /10));
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "http://openil.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", App->mesh_loader->GetAssimpMajorVer(), App->mesh_loader->GetAssimpMinorVer(), App->mesh_loader->GetAssimpVersionRevision());
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "http://www.assimp.org/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "MathGeoLib ");
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/juj/MathGeoLib", NULL, NULL, SW_SHOWNORMAL);
 
 		ImGui::TextColored(HyperlinkColor, "GLMATH ");
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "http://glmath.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "PCG_RNG ");
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "http://www.pcg-random.org/", NULL, NULL, SW_SHOWNORMAL);
+		
 		ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "Parson" );
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/kgabis/parson", NULL, NULL, SW_SHOWNORMAL);
 

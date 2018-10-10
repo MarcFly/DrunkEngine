@@ -14,6 +14,21 @@ enum KEY_STATE
 	KEY_UP
 };
 
+enum Controls {
+
+	MOVE_FORWARD,
+	MOVE_BACK,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	FOCUS_CAMERA,
+	ORBIT_CAMERA,
+	OPTIONS_MENU,
+	CONSOLE_MENU,
+	MESH_MENU,
+	ABOUT_MENU,
+	NULL_CONTROL
+};
+
 class ModuleInput : public Module
 {
 public:
@@ -65,6 +80,11 @@ public:
 		quit = true;
 	}
 
+	void UpdateShortcuts();
+
+	bool Load(JSON_Value* root_value);
+	bool Save(JSON_Value* root_value);
+
 private:
 	KEY_STATE* keyboard;
 	KEY_STATE mouse_buttons[MAX_MOUSE_BUTTONS];
@@ -76,6 +96,9 @@ private:
 	//int mouse_z_motion;
 
 public:
+
+	int controls[NULL_CONTROL];
+
 	bool quit;
 };
 

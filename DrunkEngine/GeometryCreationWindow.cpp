@@ -1,7 +1,7 @@
 #include "GeometryCreationWindow.h"
 #include "ModulePhysics3D.h"
 
-GEOMWindow::GEOMWindow(Application* app) : Window("Create Objects", SDL_SCANCODE_H)
+GEOMWindow::GEOMWindow(Application* app) : Window("Create Objects")
 {
 	App = app;
 }

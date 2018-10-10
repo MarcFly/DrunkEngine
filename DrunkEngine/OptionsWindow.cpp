@@ -3,16 +3,17 @@
 #include "ModuleWindow.h"
 #include "OptionsWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleInput.h"
 #include "Imgui/imgui.h"
 #include <gl/GL.h>
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
 
-OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_O)
+OptionsWindow::OptionsWindow(Application* app) : Window("Options")
 {
 	App = app;
-
+	key_repeated = false;
 	max_fps = 60;
 }
 
@@ -196,6 +197,248 @@ void OptionsWindow::Draw()
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", available / 1024.0f);
 
 		}
+		if (ImGui::CollapsingHeader("Input"))
+		{
+			ImGui::Text("Camera Controls:");
+			
+			//Key Repeated Warning
+			if (key_repeated == true)
+			{
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Key already in use!");
+				if (repeated_key_time.Read() > 3000)
+					key_repeated = false;
+			}
+
+			ImGui::Separator();
+
+			std::string aux;
+
+			//Move Forward
+			ImGui::Text("Move Forward");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MOVE_FORWARD]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = MOVE_FORWARD;
+
+			if (input_change == MOVE_FORWARD)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");	
+				key_repeated = false;
+			}
+
+			//Move Back
+			ImGui::Text("Move Back");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MOVE_BACK]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = MOVE_BACK;
+
+			if (input_change == MOVE_BACK)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Move Left
+			ImGui::Text("Move Left");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MOVE_LEFT]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = MOVE_LEFT;
+
+			if (input_change == MOVE_LEFT)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Move Right
+			ImGui::Text("Move Right");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MOVE_RIGHT]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = MOVE_RIGHT;
+
+			if (input_change == MOVE_RIGHT)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Focus Camera
+			ImGui::Text("Focus Camera");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[FOCUS_CAMERA]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = FOCUS_CAMERA;
+
+			if (input_change == FOCUS_CAMERA)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Orbit Camera
+			ImGui::Text("Orbit Camera");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[ORBIT_CAMERA]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = ORBIT_CAMERA;
+
+			if (input_change == ORBIT_CAMERA)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//MENU SHORTCUTS
+			ImGui::Separator();
+			ImGui::Text("Menu Shortcuts:");
+			ImGui::Separator();
+
+			//Options Window
+			ImGui::Text("Options Menu");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[OPTIONS_MENU]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = OPTIONS_MENU;
+
+			if (input_change == OPTIONS_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Console Window
+			ImGui::Text("Console Window");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[CONSOLE_MENU]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = CONSOLE_MENU;
+
+			if (input_change == CONSOLE_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Loaded Models Window
+			ImGui::Text("Loaded Models");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MESH_MENU]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = MESH_MENU;
+
+			if (input_change == MESH_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//About Window
+			ImGui::Text("Engine Info");
+			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[ABOUT_MENU]));
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = ABOUT_MENU;
+
+			if (input_change == ABOUT_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//Check New Key
+			if (input_change != NULL_CONTROL)
+				CheckInputChange();
+
+			ImGui::Separator();
+
+			if (ImGui::Button("Save Changes"))
+				App->input->Save(nullptr);
+		}
 	}
 	ImGui::End();
 }
+
+void OptionsWindow::CheckInputChange()
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
+	{
+		if (ImGui::IsKeyPressed(i))
+		{
+			for (int j = 0; j < NULL_CONTROL; j++)
+			{
+				if (i == App->input->controls[j])
+				{
+					key_repeated = true;
+					repeated_key_time.Start();
+					input_change = NULL_CONTROL;
+					break;
+				}
+			}
+
+			if (key_repeated)
+				break;
+
+			if (input_change == MOVE_FORWARD)
+				App->input->controls[MOVE_FORWARD] = i;
+
+			else if (input_change == MOVE_BACK)
+				App->input->controls[MOVE_BACK] = i;
+
+			else if (input_change == MOVE_LEFT)
+				App->input->controls[MOVE_LEFT] = i;
+
+			else if (input_change == MOVE_RIGHT)
+				App->input->controls[MOVE_RIGHT] = i;
+
+			else if (input_change == FOCUS_CAMERA)
+				App->input->controls[FOCUS_CAMERA] = i;
+
+			else if (input_change == ORBIT_CAMERA)
+				App->input->controls[ORBIT_CAMERA] = i;
+
+			else if (input_change == OPTIONS_MENU)
+				App->input->controls[OPTIONS_MENU] = i;
+
+			else if (input_change == CONSOLE_MENU)
+				App->input->controls[CONSOLE_MENU] = i;
+
+			else if (input_change == MESH_MENU)
+				App->input->controls[MESH_MENU] = i;
+
+			else if (input_change == ABOUT_MENU)
+				App->input->controls[ABOUT_MENU] = i;
+
+			App->input->UpdateShortcuts();
+
+			input_change = NULL_CONTROL;
+		}
+	}
+}
+
+

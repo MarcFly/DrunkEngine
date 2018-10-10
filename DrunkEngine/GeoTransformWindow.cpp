@@ -1,7 +1,7 @@
 #include "GeoTransformWindow.h"
 #include "ModuleManageMesh.h"
 
-GeoTransformWindow::GeoTransformWindow(Application * app) : Window("Transform objects", SDL_SCANCODE_UNKNOWN)
+GeoTransformWindow::GeoTransformWindow(Application * app) : Window("Transform objects")
 {
 	App = app;
 }

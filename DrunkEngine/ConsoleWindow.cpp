@@ -1,6 +1,6 @@
 #include "ConsoleWindow.h"
 
-ConsoleWindow::ConsoleWindow() : Window("Console", SDL_SCANCODE_UNKNOWN)
+ConsoleWindow::ConsoleWindow() : Window("Console")
 {
 	ClearLog();
 	memset(InputBuf, 0, sizeof(InputBuf));
