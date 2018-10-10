@@ -188,6 +188,23 @@ void ModuleInput::UpdateShortcuts()
 	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
 }
 
+void ModuleInput::SetDefaultControls()
+{
+	//Camera controls
+	controls[MOVE_FORWARD] = SDL_SCANCODE_W;
+	controls[MOVE_BACK] = SDL_SCANCODE_S;
+	controls[MOVE_LEFT] = SDL_SCANCODE_A;
+	controls[MOVE_RIGHT] = SDL_SCANCODE_D;
+	controls[FOCUS_CAMERA] = SDL_SCANCODE_F;
+	controls[ORBIT_CAMERA] = SDL_SCANCODE_LALT;
+
+	//Menu Shortcuts
+	controls[OPTIONS_MENU] = SDL_SCANCODE_O;
+	controls[CONSOLE_MENU] = SDL_SCANCODE_C;
+	controls[MESH_MENU] = SDL_SCANCODE_M;
+	controls[ABOUT_MENU] = SDL_SCANCODE_I;
+}
+
 bool ModuleInput::Load(JSON_Value * root_value)
 {
 	bool ret = false;

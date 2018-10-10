@@ -377,6 +377,10 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->input->Save(nullptr);
+
+			ImGui::SameLine();
+			if (ImGui::Button("Reset to Default"))
+				App->input->SetDefaultControls();
 		}
 	}
 	ImGui::End();
