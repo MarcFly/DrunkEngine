@@ -164,14 +164,17 @@ update_status ModulePhysics3D::PostUpdate(float dt)
 // Called before quitting
 bool ModulePhysics3D::CleanUp()
 {
-	PLOG("Destroying 3D Physics simulation");
+	PLOG("Destroying 3D Physics simulation!!!!");
 
-	// Remove from the world all collision bodies
+	PLOG("Deleting Collision Objects");
+
 	for(int i = world->getNumCollisionObjects() - 1; i >= 0; i--)
 	{
 		btCollisionObject* obj = world->getCollisionObjectArray()[i];
 		world->removeCollisionObject(obj);
 	}
+
+	PLOG("Deleting Constraints");
 
 	for(std::list<btTypedConstraint*>::iterator item = constraints.begin(); item != constraints.end(); item++)
 	{
@@ -181,20 +184,31 @@ bool ModulePhysics3D::CleanUp()
 	
 	constraints.clear();
 
+	PLOG("Deleting Motions");
+
 	for(std::list<btDefaultMotionState*>::iterator item = motions.begin(); item != motions.end(); item++)
 		delete item._Ptr->_Myval;
 
 	motions.clear();
+
+	PLOG("Deleting Shapes");
 
 	for(std::list<btCollisionShape*>::iterator item = shapes.begin(); item != shapes.end(); item++)
 		delete item._Ptr->_Myval;
 
 	shapes.clear();
 
-	for(std::list<PhysBody3D*>::iterator item = bodies.begin(); item != bodies.end(); item++)
+	PLOG("Deleting PhysBodies and their respective MathBodies");
+
+	for (std::list<PhysBody3D*>::iterator item = bodies.begin(); item != bodies.end(); item++) {
+		item._Ptr->_Myval->mbody->DelMathBody();
+		delete item._Ptr->_Myval->mbody;
 		delete item._Ptr->_Myval;
+	}
 
 	bodies.clear();
+
+	PLOG("DELETING WORLD!!!");
 
 	delete world;
 	

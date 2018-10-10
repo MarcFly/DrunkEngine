@@ -176,6 +176,9 @@ update_status ModuleInput::PreUpdate(float dt)
 bool ModuleInput::CleanUp()
 {
 	PLOG("Quitting SDL input event subsystem");
+
+	delete keyboard;
+
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }

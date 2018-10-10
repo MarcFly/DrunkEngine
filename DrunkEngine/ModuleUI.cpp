@@ -87,7 +87,16 @@ update_status ModuleUI::PostUpdate(float dt)
 
 bool ModuleUI::CleanUp()
 {
-	PLOG("Cleaning UP IMGUI Module")
+	PLOG("Cleaning UP IMGUI Module");
+
+	for (int i = 0; i < windows.size(); i++)
+	{
+		windows[i]->CleanUp();
+		delete windows[i];
+	}
+	windows.clear();
+
+
 	bool ret = true;
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -121,8 +130,8 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Random Generator"))
 				random_win->SwitchActive();
 
-			/*if (ImGui::MenuItem("Test Objects"))
-				geometry_win->SwitchActive();*/
+			if (ImGui::MenuItem("Test Objects"))
+				geometry_win->SwitchActive();
 
 			if (ImGui::MenuItem("Transform Meshes"))
 				geo_transform_win->SwitchActive();			

@@ -42,6 +42,21 @@ private:
 		return console->TextEditCallback(data);
 	}
 	int TextEditCallback(ImGuiInputTextCallbackData* data);
+
+	bool CleanUp()
+	{
+		bool ret = true;
+
+		PLOG("Deleting Console Log");
+
+		Items.clear();
+
+		History.clear();
+
+		Commands.clear();
+
+		return ret;
+	}
 };
 
 #endif

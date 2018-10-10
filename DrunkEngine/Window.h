@@ -17,11 +17,13 @@ public:
 	std::string GetName() const;
 
 	SDL_Scancode GetShortCut() const;
-	void SetShortCut(SDL_Scancode shortcut) { this->shortcut = shortcut; }
+	void SetShortCut(SDL_Scancode shortcut) { this->shortcut = shortcut; };
 
 	virtual void Draw() = 0;
 
-	void SetInactive() { active = false; }
+	void SetInactive() { active = false; };
+
+	virtual bool CleanUp() { return true; };
 
 public:
 	bool active = false;

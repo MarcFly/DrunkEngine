@@ -51,6 +51,13 @@ bool ModuleManageMesh::CleanUp()
 {
 	bool ret = false;
 
+	PLOG("Destroying all objects");
+
+	for (int i = 0; i < Objects.size(); i++)
+		DestroyObject(i);
+
+	Objects.clear();
+
 	// detach log streamW
 	aiDetachAllLogStreams();
 

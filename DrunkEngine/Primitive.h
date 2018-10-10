@@ -33,6 +33,8 @@ public:
 
 	virtual bool Intersects(Primitive* mbody2) { return false;};
 
+	virtual void DelMathBody() {};
+
 public:
 	
 	Color color;
@@ -53,6 +55,8 @@ public :
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
+	void DelMathBody() { delete MathBody; };
+
 public:
 	vec size;
 	AABB* MathBody;
@@ -67,6 +71,8 @@ public:
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
+	void DelMathBody() { delete MathBody; };
+
 public:
 	float radius;
 	Sphere* MathBody;
@@ -80,6 +86,8 @@ public:
 	PCylinder(float radius, float height);
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
+
+	void DelMathBody() { delete MathBody; };
 
 public:
 	float radius;
@@ -96,6 +104,8 @@ public:
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
+	void DelMathBody() { delete MathBody; };
+
 public:
 	vec origin;
 	vec destination;
@@ -110,6 +120,8 @@ public:
 	PPlane(float x, float y, float z, float d);
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
+
+	void DelMathBody() { delete MathBody; };
 
 public:
 	vec normal;
