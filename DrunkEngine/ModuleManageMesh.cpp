@@ -143,9 +143,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		else
 			Objects.push_back(add_obj);
 
-		App->camera->Move(vec3(vertex_aux, vertex_aux, vertex_aux));
+		App->camera->Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
 		App->camera->LookAt(vec3(0.0f, 0.0f, 0.0f));
-		App->camera->mesh_multiplier = vertex_aux / 2;
+		App->camera->mesh_multiplier = vertex_aux / 4;
 
 		// ReSet all Parenting for later use
 		for (int j = 0; j < Objects.size(); j++)

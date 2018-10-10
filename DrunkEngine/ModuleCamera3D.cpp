@@ -169,6 +169,14 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 }
 
 // -----------------------------------------------------------------
+void ModuleCamera3D::Transport(const vec3 &Movement)
+{
+	Position = Movement;
+
+	CalculateViewMatrix();
+}
+
+// -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
 	return (float*)ViewMatrix.v;
