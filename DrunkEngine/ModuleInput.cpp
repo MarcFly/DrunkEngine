@@ -3,6 +3,13 @@
 #include "ModuleUI.h"
 #include "ModuleManageMesh.h"
 
+#include "OptionsWindow.h"
+#include "AboutWindow.h"
+#include "RandomGenWindow.h"
+#include "GeometryCreationWindow.h"
+#include "ConsoleWindow.h"
+#include "GeoTransformWindow.h"
+
 #define MAX_KEYS 300
 
 ModuleInput::ModuleInput(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -173,18 +180,29 @@ bool ModuleInput::CleanUp()
 	return true;
 }
 
+void ModuleInput::UpdateShortcuts()
+{
+	if (App->ui->options_win != nullptr)
+		App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
+	if (App->ui->geometry_win != nullptr)
+		App->ui->geometry_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
+}
+
 bool ModuleInput::Load(JSON_Value * root_value)
 {
 	bool ret = false;
 
 	root_value = json_parse_file("config_data.json");
 
+	//Camera controls
 	controls[MOVE_FORWARD] = json_object_dotget_number(json_object(root_value), "controls.move_forward");
 	controls[MOVE_BACK] = json_object_dotget_number(json_object(root_value), "controls.move_back");
 	controls[MOVE_LEFT] = json_object_dotget_number(json_object(root_value), "controls.move_left");
 	controls[MOVE_RIGHT] = json_object_dotget_number(json_object(root_value), "controls.move_right");
 	controls[FOCUS_CAMERA] = json_object_dotget_number(json_object(root_value), "controls.focus_camera");
 	controls[ORBIT_CAMERA] = json_object_dotget_number(json_object(root_value), "controls.orbit_camera");
+
+	//Menu Shortcuts
 	controls[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
 	controls[MESH_MENU] = json_object_dotget_number(json_object(root_value), "controls.mesh_menu");
 

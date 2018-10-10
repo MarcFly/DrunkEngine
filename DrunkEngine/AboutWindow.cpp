@@ -4,7 +4,7 @@
 #include "ModuleManageMesh.h"
 
 
-AboutWindow::AboutWindow(Application* app) : Window("About...", SDL_SCANCODE_UNKNOWN)
+AboutWindow::AboutWindow(Application* app) : Window("About...")
 {
 	App = app;
 

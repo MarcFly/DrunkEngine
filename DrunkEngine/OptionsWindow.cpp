@@ -10,7 +10,7 @@
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
 
-OptionsWindow::OptionsWindow(Application* app) : Window("Options", SDL_SCANCODE_UNKNOWN)
+OptionsWindow::OptionsWindow(Application* app) : Window("Options")
 {
 	App = app;
 	key_repeated = false;
@@ -397,6 +397,8 @@ void OptionsWindow::CheckInputChange()
 
 			else if (input_change == MESH_MENU)
 				App->input->controls[MESH_MENU] = i;
+
+			App->input->UpdateShortcuts();
 
 			input_change = NULL_CONTROL;
 		}

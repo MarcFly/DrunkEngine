@@ -9,7 +9,7 @@
 class Window
 {
 public:
-	Window(const char* name, SDL_Scancode shortcut);
+	Window(const char* name);
 	virtual ~Window();
 
 	void SwitchActive();
@@ -17,6 +17,8 @@ public:
 	std::string GetName() const;
 
 	SDL_Scancode GetShortCut() const;
+	void SetShortCut(SDL_Scancode shortcut) { this->shortcut = shortcut; }
+
 	virtual void Draw() = 0;
 
 	void SetInactive() { active = false; }

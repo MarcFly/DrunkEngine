@@ -78,6 +78,8 @@ public:
 		quit = true;
 	}
 
+	void UpdateShortcuts();
+
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 

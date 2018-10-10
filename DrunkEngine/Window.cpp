@@ -1,9 +1,8 @@
 #include "Window.h"
 
-Window::Window(const char * name, SDL_Scancode shortcut)
+Window::Window(const char * name)
 {
 	this->name = name;
-	this->shortcut = shortcut;
 }
 
 Window::~Window()

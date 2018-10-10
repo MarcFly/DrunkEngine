@@ -50,6 +50,8 @@ bool ModuleUI::Init()
 	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(geo_transform_win = new GeoTransformWindow(App));
 
+	App->input->UpdateShortcuts();
+
 	return ret;
 }
 
