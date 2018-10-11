@@ -35,7 +35,7 @@ void GeoPropertiesWindow::Draw()
 			for (int i = 0; i < objects.size(); i++)
 			{
 				char label[128];
-				sprintf(label, "%s", objects[i].name.c_str());
+				sprintf(label, "%s (%d meshes)", objects[i].name.c_str(), objects[i].meshes.size());
 				if (ImGui::Selectable(label, selected == i))
 				{
 					selected = i;
@@ -61,9 +61,12 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Object Transform"))
 					{
-						ImGui::Text("Transform Position: x:%d y:%d z:%d", objects[selected].transform_position.x, objects[selected].transform_position.y, objects[selected].transform_position.z);
-							ImGui::Text("Transform Rotate: x:%d y:%d z:%d w:%d", objects[selected].transform_rotate.x, objects[selected].transform_rotate.y, objects[selected].transform_rotate.z, objects[selected].transform_rotate.w);
-							ImGui::Text("Transform Scale: x:%d y:%d z:%d", objects[selected].transform_scale.x, objects[selected].transform_scale.y, objects[selected].transform_scale.z);
+						for (int i = 0; i < objects[selected].meshes.size(); i++)
+						{
+							ImGui::Text("Transform Position mesh %d: x:%.03f y:%.03f z:%.03f", i + 1, objects[selected].meshes[i].transform_position.x, objects[selected].meshes[i].transform_position.y, objects[selected].meshes[i].transform_position.z);
+							ImGui::Text("Transform Scale mesh %d: x:%.03f y:%.03f z:%.03f", i + 1, objects[selected].meshes[i].transform_scale.x, objects[selected].meshes[i].transform_scale.y, objects[selected].meshes[i].transform_scale.z);
+							ImGui::Text("Transform Rotation mesh %d: x:%.03f y:%.03f z:%.03f w:%.03f \n\n", i + 1, RadToDeg(objects[selected].meshes[i].transform_rotate.x), RadToDeg(objects[selected].meshes[i].transform_rotate.y), RadToDeg(objects[selected].meshes[i].transform_rotate.z), RadToDeg(objects[selected].meshes[i].transform_rotate.w));
+						}
 					}
 
 					if (ImGui::CollapsingHeader("Mesh Properties"))

@@ -81,6 +81,10 @@ struct mesh_data
 
 	obj_data* parent = nullptr;
 
+	aiVector3D transform_position;
+	aiVector3D transform_scale;
+	aiQuaternion transform_rotate;
+
 };
 
 struct obj_data

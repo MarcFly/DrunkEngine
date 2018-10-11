@@ -89,13 +89,13 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	{
 		float vertex_aux = 0.f;
 
-		scene->mRootNode->mTransformation.Decompose(add_obj.transform_scale, add_obj.transform_rotate, add_obj.transform_position);
-		
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			mesh_data add;
       
+			scene->mRootNode->mChildren[i]->mTransformation.Decompose(add.transform_scale, add.transform_rotate, add.transform_position);
+
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
 			add.num_faces = scene->mMeshes[i]->mNumFaces;
