@@ -6,6 +6,7 @@ GeoPropertiesWindow::GeoPropertiesWindow(Application * app) : Window("Object Pro
 	App = app;
 	num_vertex = 0;
 	num_faces = 0;
+	check_info = false;
 }
 
 GeoPropertiesWindow::~GeoPropertiesWindow()
@@ -18,7 +19,6 @@ void GeoPropertiesWindow::Draw()
 	{
 		// left
 		static int selected = 0;
-		static bool check_info = true;
 
 		ImGui::BeginChild("left pane", ImVec2(250, 0), true);
 		//for (int i = 0; i < 2; i++)
@@ -68,7 +68,7 @@ void GeoPropertiesWindow::Draw()
 					}
 
 					if (ImGui::CollapsingHeader("Mesh Properties"))
-					{		
+					{	
 						if (check_info)
 						{
 							for (int i = 0; i < objects[selected].meshes.size(); i++)
@@ -78,7 +78,6 @@ void GeoPropertiesWindow::Draw()
 							}
 							check_info = false;
 						}
-
 						ImGui::Text("Num. Vertices: %d", num_vertex);
 						ImGui::Text("Num. Faces: %d", num_faces);
 					}
@@ -98,4 +97,11 @@ void GeoPropertiesWindow::Draw()
 		ImGui::EndGroup();
 	}
 	ImGui::End();
+}
+
+void GeoPropertiesWindow::CheckMeshInfo()
+{
+	check_info = true;
+	num_vertex = 0;
+	num_faces = 0;
 }

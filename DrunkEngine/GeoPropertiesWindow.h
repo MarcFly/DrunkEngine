@@ -11,11 +11,13 @@ public:
 
 	void Draw() override;
 
-	//void UpdateMeshInfo();
+	void CheckMeshInfo();
 
 public:
 	int num_vertex;
 	int num_faces;
+
+	bool check_info;
 	
 };
 
