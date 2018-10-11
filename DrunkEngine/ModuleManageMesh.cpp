@@ -302,6 +302,16 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 
 	bool check = ilLoadImage(path);
 
+	if (!check)
+	{
+		std::string new_file_path = path;
+		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+
+		new_file_path = tex_folder + new_file_path;
+
+		check = ilLoadImage(new_file_path.c_str());
+	}
+
 	if (check)
 	{
 		ILinfo Info;
