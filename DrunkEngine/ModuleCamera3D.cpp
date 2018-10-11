@@ -197,7 +197,6 @@ bool ModuleCamera3D::Load(JSON_Value* root_value)
 	bool ret = false;
 
 	root_value = json_parse_file("config_data.json");
-	//SDL_SetWindowSize(window, json_object_dotget_number(json_object(root_value), "window.size.width"), json_object_dotget_number(json_object(root_value), "window.size.height"));
 	Look({ (float)json_object_dotget_number(json_object(root_value), "camera.pos.x") ,(float)json_object_dotget_number(json_object(root_value), "camera.pos.y") ,(float)json_object_dotget_number(json_object(root_value), "camera.pos.z") }, { 0,0,0 });
 
 	ret = true;
@@ -208,13 +207,9 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 {
 	bool ret = false;
 
-	//JSON_Value* window_value = root_value;
-	//JSON_Value *schema = json_parse_string("{\"width\:\"\"height\":\"\"}");
 	root_value = json_parse_file("config_data.json");
-	//root_value = json_value_init_object();
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
-	//SDL_GetWindowSize(window, &width, &height);
 	json_object_dotset_number(root_obj, "camera.pos.x", X.x);
 	json_object_dotset_number(root_obj, "camera.pos.y", X.x);
 	json_object_dotset_number(root_obj, "camera.pos.z", X.x);
@@ -223,4 +218,21 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 
 	ret = true;
 	return ret;
+}
+
+void ModuleCamera3D::SetToObj(obj_data* obj)
+{
+	float vertex_aux = 0.f;
+	
+	for (int i = 0; i < obj->meshes.size() - 1; i++) {
+		for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
+		{
+			if (vertex_aux < abs(obj->meshes[i].vertex[j]))
+				vertex_aux = abs(obj->meshes[i].vertex[j]);
+		}
+	}
+
+	Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
+	LookAt(vec3(0.0f, 0.0f, 0.0f));
+	mesh_multiplier = vertex_aux / 4;
 }

@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
+#include "ModuleManageMesh.h"
 
 #include "glmath/glmath.h"
 
@@ -20,6 +21,8 @@ public:
 	void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
 	void Transport(const vec3 &Movement);
+
+	void SetToObj(obj_data* obj);
 
 	float* GetViewMatrix();
 

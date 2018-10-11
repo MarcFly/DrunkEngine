@@ -95,8 +95,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	if (scene != nullptr && scene->HasMeshes())
 	{
 
-		float vertex_aux = 0.f;
-
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
@@ -107,8 +105,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			add.num_faces = scene->mMeshes[i]->mNumFaces;
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
-
-			App->ui->console_win->AddLog("New mesh with %d vertices", add.num_vertex);
 
 			if (scene->mMeshes[i]->HasFaces())
 			{
@@ -132,14 +128,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						SetNormals(add, j);						
 					}
 				}			
-
-				for (uint j = 0; j < scene->mMeshes[i]->mNumVertices * 3; j++)
-				{
-					if (vertex_aux < abs(add.vertex[j]))
-						vertex_aux = abs(add.vertex[j]);
-				}
 			}
-			App->ui->console_win->AddLog("Said mesh starts with %d indices", add.num_index);
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 
@@ -147,11 +136,28 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			GenBuffers(add);
 
+			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces", add.num_vertex, add.num_index, add.num_faces);
+
 			add_obj.meshes.push_back(add);
 
 			App->ui->geo_properties_win->CheckMeshInfo();
 		}
 
+		// Texture Setup
+		if (scene->HasMaterials())
+		{
+			for (int i = 0; i < scene->mNumMaterials; i++)
+			{
+				SetupMat(add_obj, scene->mMaterials[i]);
+				aiString path;
+				aiReturn err = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+				LoadTextCurrentObj(path.C_Str(), &add_obj);
+			}
+		}
+
+		App->camera->SetToObj(&add_obj);
+
+		App->ui->console_win->AddLog("New Object with %d meshes, %d texture/s, %d color/s", add_obj.meshes.size(), add_obj.textures.size(), add_obj.mat_colors.size());
 
 		if (Objects.size() > 0)
 		{
@@ -161,26 +167,11 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		}
 		else
 			Objects.push_back(add_obj);
-
-		App->camera->Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
-		App->camera->LookAt(vec3(0.0f, 0.0f, 0.0f));
-		App->camera->mesh_multiplier = vertex_aux / 4;
-
+		
 		// ReSet all Parenting for later use
 		SetParents();
 
-		// Texture Setup
-		std::vector<obj_data>::iterator item = --Objects.end();
-		if (scene->HasMaterials())
-		{
-			for (int i = 0; i < scene->mNumMaterials; i++)
-			{
-				SetupMat(*item._Ptr, scene->mMaterials[i]);
-				aiString path;
-				aiReturn err = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-				LoadTextCurrentObj(path.C_Str(), item._Ptr);
-			}
-		}
+		
 
 		aiReleaseImport(scene);
 	}
