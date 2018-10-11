@@ -83,10 +83,18 @@ bool ModuleWindow::CleanUp()
 {
 	PLOG("Destroying SDL window and quitting all SDL systems");
 
+	// Destroy Surface
+	if (screen_surface != NULL)
+	{
+		SDL_FreeSurface(screen_surface);
+		screen_surface = NULL;
+	}
+
 	//Destroy window
 	if(window != NULL)
 	{
 		SDL_DestroyWindow(window);
+		window = NULL;
 	}
 
 	//Quit SDL subsystems
@@ -140,6 +148,8 @@ void ModuleWindow::SetBrightness(float brightness)
 	SDL_SetWindowBrightness(this->window, this->brightness);
 }
 
+
+// SAVE & LOAD ----------------------------------------------------------------------------------------
 bool ModuleWindow::Load(JSON_Value* root_value)
 {
 	bool ret = false;

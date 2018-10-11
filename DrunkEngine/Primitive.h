@@ -26,12 +26,15 @@ public:
 
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
+
 	void			SetPos(float x, float y, float z);
 	void			SetRotation(float angle, const vec &u);
 	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
 
 	virtual bool Intersects(Primitive* mbody2) { return false;};
+
+	virtual void DelMathBody() {};
 
 public:
 	
@@ -53,6 +56,8 @@ public :
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
+	void DelMathBody() { delete MathBody; };
+
 public:
 	vec size;
 	AABB* MathBody;
@@ -67,6 +72,8 @@ public:
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
+	void DelMathBody() { delete MathBody; };
+
 public:
 	float radius;
 	Sphere* MathBody;
@@ -80,6 +87,8 @@ public:
 	PCylinder(float radius, float height);
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
+
+	void DelMathBody() { delete MathBody; };
 
 public:
 	float radius;
@@ -96,6 +105,8 @@ public:
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
 
+	void DelMathBody() { delete MathBody; };
+
 public:
 	vec origin;
 	vec destination;
@@ -110,6 +121,8 @@ public:
 	PPlane(float x, float y, float z, float d);
 	void InnerRender() const;
 	bool Intersects(Primitive* mbody2);
+
+	void DelMathBody() { delete MathBody; };
 
 public:
 	vec normal;

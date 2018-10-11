@@ -59,59 +59,47 @@ private:
 	std::list<btTypedConstraint*> constraints;
 
 	// Math Objects list, I don't know how to make a "MathObj" list
-	std::list<Sphere*> spheres;
-	std::list<Capsule*> capsules;
-	std::list<AABB*> cubes;
-	std::list<OBB*> obbs;
-	std::list<Plane*> planes;
-	std::list<Ray*> rays;
-	std::list<Triangle*> tris;
-
-	std::list<Cylinder*> cylinders;
-	std::list<Frustum*> frustums;
-	std::list<LineSegment*> segments;
-	std::list<btConvexHullShape*> convex_hull_shapes;
-	std::list<TriangleMesh*> tri_meshes;
+	
 
 public:
 	// Create the MathObjs
 	Sphere* AddSphereMath(const vec& center, const float& radius)
 	{
 		Sphere* add = new Sphere(center,radius); 
-		spheres.push_back(add);
+		
 		return add;
 	}
 	void AddCapsuleMath(const LineSegment& axis_segment, const float& radius) 
 	{
 		Capsule* add = new Capsule(axis_segment, radius);
-		capsules.push_back(add);
+		
 	}
 	AABB* AddAABBMath(const vec& min_point, const vec& max_point)
 	{
 		AABB* add = new AABB(min_point,max_point);
-		cubes.push_back(add);
+		
 		return add;
 	}
 	AABB* AddAABBMath(const vec& center, const float& radius)
 	{
 		AABB* add = new AABB(Sphere(center, radius));
-		cubes.push_back(add);
+		
 		return add;
 	}
 	void AddPlaneMath(const vec& point, const vec& normal)
 	{
 		Plane* add = new Plane(point, normal);
-		planes.push_back(add);
+	
 	}
 	void AddRayMath(const vec& start_pos, const vec& dir)
 	{
 		Ray* add = new Ray(start_pos, dir);
-		rays.push_back(add);
+	
 	}
 	void AddTriMath(const vec& a, const vec& b, const vec& c)
 	{
 		Triangle* add = new Triangle(a,b,c);
-		tris.push_back(add);
+		
 	}
 };
 

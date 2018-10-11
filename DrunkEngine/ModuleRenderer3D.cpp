@@ -198,11 +198,11 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::Render(bool use_texture)
 {
 	// Render From primitive list
-	std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
+	/*std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
 	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
 		item_render._Ptr->_Myval->mbody->InnerRender();
 		item_render++;
-	}
+	}*/
 
 	for (int i = 0; i < App->mesh_loader->Objects.size(); i++)
 	{

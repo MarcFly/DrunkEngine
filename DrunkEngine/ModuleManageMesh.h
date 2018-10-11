@@ -9,6 +9,7 @@
 #include "Assimp/include/scene.h"
 #include "Color.h"
 #include "Assimp/include/version.h"
+#include "Primitive.h"
 
 enum TexParams {
 	Err = 0,
@@ -89,6 +90,8 @@ struct obj_data
 
 	std::vector<Color> mat_colors;
 	std::vector<texture_data> textures;
+
+	Primitive* mathbody = nullptr; // In case we create a premade object // Temporary solution
 };
 
 class ModuleManageMesh : public Module
@@ -104,6 +107,10 @@ public:
 
 	bool LoadFBX(const char* file_path);
 
+	bool CreatePrimitiveObject(const vec& center, PCube& sphere);
+	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
+	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
+
 	bool SetTexCoords(mesh_data* mesh, aiMesh* cpy_data);
 	void SetNormals(mesh_data& mesh, const int& ind_value);
 	void GenBuffers(mesh_data& mesh);
@@ -112,7 +119,7 @@ public:
 	bool LoadTextCurrentObj(const char* path, obj_data* curr_obj);
 	void DestroyObject(const int& index);
 
-	void GenTexParams(texture_data* tex);
+	void GenTexParams();
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 
@@ -124,6 +131,8 @@ public:
 	int curr_tmagf = 0;
 	int curr_tminf = 0;
 
+	std::string tex_folder;
+
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }
 
@@ -133,6 +142,12 @@ public:
 	int GetAssimpMinorVer() { return aiGetVersionMinor(); };
 	int GetAssimpVersionRevision() { return aiGetVersionRevision(); };
 
+	void SetParents() 
+	{
+		for (int j = 0; j < Objects.size(); j++)
+			for (int k = 0; k < Objects[j].meshes.size(); k++)
+				Objects[j].meshes[k].parent = &Objects[j];
+	}
 };
 
 #endif
