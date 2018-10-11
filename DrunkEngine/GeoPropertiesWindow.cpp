@@ -1,5 +1,4 @@
 #include "GeoPropertiesWindow.h"
-#include "ModuleManageMesh.h"
 
 GeoPropertiesWindow::GeoPropertiesWindow(Application * app) : Window("Object Properties")
 {
@@ -84,6 +83,17 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
 					{
+
+						ImGui::Separator();
+						if (check_info && objects[selected].textures.size() > 0)
+						{
+							ImGui::Image(ImTextureID(objects[selected].textures[objects[selected].textures.size() - 1].id_tex), show_size);
+
+							ImGui::TextWrapped("Texture File: %s",objects[selected].textures[objects[selected].textures.size() - 1].filename.c_str());
+							ImGui::Text("Size: %d x %d", objects[selected].textures[objects[selected].textures.size() - 1].width, objects[selected].textures[objects[selected].textures.size() - 1].height);
+
+						}
+							
 
 					}
 				}

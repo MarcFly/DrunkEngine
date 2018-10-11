@@ -248,6 +248,14 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 	curr_obj->textures.push_back(texture_data());
 	texture_data* item = (--curr_obj->textures.end())._Ptr;
 
+	if (strrchr(path, '\\') != nullptr)
+	{
+		item->filename = strrchr(path, '\\');
+		item->filename.substr(item->filename.find_first_of("\\")+3);
+	}
+	else
+		item->filename = path;
+
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &item->id_tex);
@@ -293,6 +301,8 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 	ilDeleteImages(1, &id_Image);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	App->ui->geo_properties_win->CheckMeshInfo();
 
 	return ret;
 }

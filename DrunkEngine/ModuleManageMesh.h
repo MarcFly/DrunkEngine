@@ -51,6 +51,7 @@ struct texture_data
 {
 	GLuint id_tex = 0;
 	GLuint width, height;
+	std::string filename;
 };
 
 struct mesh_data
