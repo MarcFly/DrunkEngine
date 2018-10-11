@@ -39,10 +39,10 @@ void OptionsWindow::Draw()
 			ImGui::Checkbox("Vsync", &App->renderer3D->vsync);
 			App->renderer3D->ChangeVsync();
 
-			if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
+			/*if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
 			{
 				App->Cap_FPS(max_fps);
-			}
+			}*/
 
 			char title[20];
 			if (frame_read_time.Read() >= 200) {
@@ -60,8 +60,6 @@ void OptionsWindow::Draw()
 				frame_read_time.Start();
 			}
 			sprintf_s(title, 20, "Framerate %.2f", fps_history[fps_history.size() - 1]);
-
-			//ImGui::PlotHistogram(
 
 			ImGui::PlotHistogram("##framerate", &fps_history[0], fps_h_size, 0, title, 0.0f, (max_fps + 1) * 1.25f, ImVec2(310, 100));
 
