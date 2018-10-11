@@ -7,7 +7,7 @@
 #include "Imgui/imgui.h"
 #include <gl/GL.h>
 #include "ModuleManageMesh.h"
-
+#include "ConsoleWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -17,6 +17,8 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options")
 	App = app;
 	key_repeated = false;
 	max_fps = 60;
+
+	App->ui->console_win->AddLog("Created Options Window-----------------");
 }
 
 OptionsWindow::~OptionsWindow()

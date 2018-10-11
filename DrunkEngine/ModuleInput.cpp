@@ -156,7 +156,7 @@ update_status ModuleInput::PreUpdate(float dt)
 						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
 				}
 				else
-					PLOG("File format not recognized!\n");
+					App->ui->console_win->AddLog("File format not recognized!\n");
 
 				SDL_free(dropped_filedir);
 				break;
@@ -175,7 +175,7 @@ update_status ModuleInput::PreUpdate(float dt)
 // Called before quitting
 bool ModuleInput::CleanUp()
 {
-	PLOG("Quitting SDL input event subsystem");
+	App->ui->console_win->AddLog("Quitting SDL input event subsystem");
 
 	delete keyboard;
 

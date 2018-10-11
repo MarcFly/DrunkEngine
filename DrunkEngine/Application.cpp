@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "ConsoleWindow.h"
 
 Application::Application()
 {
@@ -51,7 +52,8 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	PLOG("Application Start --------------");
+	ui->console_win->AddLog("Application Start --------------");
+
 	item = list_modules.begin();
 
 	while(item != list_modules.end() && ret == true)
@@ -162,8 +164,9 @@ void Application::Frame_Metrics()
 {
 	//dt
 
-	if (dt > 0 && fps_cap > 0 && (dt < 1.0f / (float)fps_cap))
-		true;//SDL_Delay(1000*((1.0f / (float)fps_cap) - dt));
+	// Very badly constructed delay in order to cap fps
+	/*if (dt > 0 && fps_cap > 0 && (dt < 1.0f / (float)fps_cap))
+		SDL_Delay(1000*((1.0f / (float)fps_cap) - dt));*/
 
 	dt = (float)ms_timer.Read() / 1000.0f;
 

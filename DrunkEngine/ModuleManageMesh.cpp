@@ -101,7 +101,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
 
-			PLOG("New mesh with %d vertices", add.num_vertex)
+			App->ui->console_win->AddLog("New mesh with %d vertices", add.num_vertex);
 
 			if (scene->mMeshes[i]->HasFaces())
 			{
@@ -115,7 +115,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				{
 					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
 					{
-						PLOG("WARNING, geometry face with != 3 indices!");
+						App->ui->console_win->AddLog("WARNING, geometry face with != 3 indices!");
 						ret = false; //if we want to stop load
 					}
 					else
@@ -132,7 +132,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						vertex_aux = abs(add.vertex[j]);
 				}
 			}
-			PLOG("Said mesh starts with %d indices", add.num_index);
+			App->ui->console_win->AddLog("Said mesh starts with %d indices", add.num_index);
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 
@@ -179,7 +179,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	}
 	else
 	{
-		PLOG("Error loading scene's meshes %s", file_path);
+		App->ui->console_win->AddLog("Error loading scene's meshes %s", file_path);
 		ret = false;
 	}
 
@@ -341,7 +341,7 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 	}
 	else
 	{
-		PLOG("Failed to load image from path %s", path);
+		App->ui->console_win->AddLog("Failed to load image from path %s", path);
 		curr_obj->textures.pop_back();
 		glDeleteTextures(1, &item->id_tex);
 		ret = false;
@@ -372,7 +372,7 @@ bool ModuleManageMesh::SetTexCoords(mesh_data* mesh, aiMesh* cpy_data)
 		memcpy(mesh->tex_coords, cpy_data->mTextureCoords[0], mesh->num_uvs * sizeof(float) * 3);
 	}
 	else
-		PLOG("No texture coordinates to be set");
+		App->ui->console_win->AddLog("No texture coordinates to be set");
 
 	return ret;
 }
@@ -487,7 +487,7 @@ void ModuleManageMesh::GenTexParams()
 	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): tws = GL_MIRRORED_REPEAT; break;
 	case (TP_REPEAT - TP_TEXTURE_WRAP - 1):	tws = GL_REPEAT; break;
 	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_MIRROR_CLAMP_TO_EDGE; break;
-	default: PLOG("Unsuccessful initialization");
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
 	}
 
 	switch (curr_twt) {
@@ -496,7 +496,7 @@ void ModuleManageMesh::GenTexParams()
 	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_MIRRORED_REPEAT; break;
 	case (TP_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_REPEAT; break;
 	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_MIRROR_CLAMP_TO_EDGE; break;
-	default: PLOG("Unsuccessful initialization");
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
 	}
 
 	// Texture Filter
@@ -507,7 +507,7 @@ void ModuleManageMesh::GenTexParams()
 	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_NEAREST; break;
 	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_LINEAR; break;
 	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_LINEAR; break;
-	default: PLOG("Unsuccessful initialization");
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
 	}
 
 	switch (curr_tminf) {
@@ -517,7 +517,7 @@ void ModuleManageMesh::GenTexParams()
 	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_NEAREST; break;
 	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_LINEAR; break;
 	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
-	default: PLOG("Unsuccessful initialization");
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
 	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
