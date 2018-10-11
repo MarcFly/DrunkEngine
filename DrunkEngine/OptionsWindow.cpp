@@ -91,10 +91,10 @@ void OptionsWindow::Draw()
 			if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0.0f, 1.0f))
 				App->window->SetBrightness(App->window->brightness);
 
-			if (ImGui::SliderInt("Width", &width, 720, 1920) && !App->window->fullscreen)
+			if (ImGui::SliderInt("Width", &width, 400, App->window->screen_size_w - 1) && !App->window->fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
 
-			if (ImGui::SliderInt("Height", &height, 480, 1080) && !App->window->fullscreen)
+			if (ImGui::SliderInt("Height", &height, 400, App->window->screen_size_h - 1) && !App->window->fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
 
 

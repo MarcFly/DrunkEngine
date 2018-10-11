@@ -3,8 +3,8 @@
 GeoPropertiesWindow::GeoPropertiesWindow(Application * app) : Window("Object Properties")
 {
 	App = app;
-	num_vertex = 0;
-	num_faces = 0;
+	total_num_vertex = 0;
+	total_num_faces = 0;
 	check_info = false;
 }
 
@@ -41,8 +41,8 @@ void GeoPropertiesWindow::Draw()
 					selected = i;
 					check_info = true;
 
-					num_vertex = 0;
-					num_faces = 0;
+					total_num_vertex = 0;
+					total_num_faces = 0;
 				}
 			}
 		}
@@ -75,13 +75,13 @@ void GeoPropertiesWindow::Draw()
 						{
 							for (int i = 0; i < objects[selected].meshes.size(); i++)
 							{
-								num_vertex += objects[selected].meshes[i].num_vertex;
-								num_faces += objects[selected].meshes[i].num_faces;
+								total_num_vertex += objects[selected].meshes[i].num_vertex;
+								total_num_faces += objects[selected].meshes[i].num_faces;
 							}
 							check_info = false;
 						}
-						ImGui::Text("Num. Vertices: %d", num_vertex);
-						ImGui::Text("Num. Faces: %d", num_faces);
+						ImGui::Text("Total Num. Vertices: %d", total_num_vertex);
+						ImGui::Text("Total Num. Faces: %d", total_num_faces);
 					}
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
@@ -119,6 +119,6 @@ void GeoPropertiesWindow::Draw()
 void GeoPropertiesWindow::CheckMeshInfo()
 {
 	check_info = true;
-	num_vertex = 0;
-	num_faces = 0;
+	total_num_vertex = 0;
+	total_num_faces = 0;
 }

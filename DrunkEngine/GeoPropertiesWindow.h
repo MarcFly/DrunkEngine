@@ -15,8 +15,8 @@ public:
 	void CheckMeshInfo();
 
 public:
-	int num_vertex;
-	int num_faces;
+	int total_num_vertex;
+	int total_num_faces;
 
 	std::string tex_name;
 
