@@ -129,6 +129,8 @@ public:
 	int curr_tmagf = 0;
 	int curr_tminf = 0;
 
+	std::string tex_folder;
+
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }
 
@@ -138,6 +140,12 @@ public:
 	int GetAssimpMinorVer() { return aiGetVersionMinor(); };
 	int GetAssimpVersionRevision() { return aiGetVersionRevision(); };
 
+	void SetParents() 
+	{
+		for (int j = 0; j < Objects.size(); j++)
+			for (int k = 0; k < Objects[j].meshes.size(); k++)
+				Objects[j].meshes[k].parent = &Objects[j];
+	}
 };
 
 #endif

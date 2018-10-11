@@ -8,7 +8,6 @@
 #include "Assimp/include/cfileio.h"
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
-#include "DevIL/include/IL/ilut.h"
 
 
 #include "ModuleRenderer3D.h"
@@ -16,7 +15,6 @@
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/Release/ILU.lib")
-#pragma comment (lib, "DevIL/libx86/Release/ILUT.lib")
 
 ModuleManageMesh::ModuleManageMesh(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -33,7 +31,6 @@ bool ModuleManageMesh::Init()
 	// DevIL initialization
 	ilInit();
 	iluInit();
-	ilutRenderer(ILUT_OPENGL);
 
 	return ret;
 }
@@ -148,9 +145,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		App->camera->mesh_multiplier = vertex_aux / 4;
 
 		// ReSet all Parenting for later use
-		for (int j = 0; j < Objects.size(); j++)
-			for (int k = 0; k < Objects[j].meshes.size(); k++)
-				Objects[j].meshes[k].parent = &Objects[j];
+		SetParents();
 
 		// Texture Setup
 		std::vector<obj_data>::iterator item = --Objects.end();
@@ -193,8 +188,11 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
 
+		glColor4f(1, 1, 1, 1);
+
 		if (use_texture)
 		{
+			if(mesh->parent->textures.size() > 0 && mesh)
 			int test = mesh->parent->textures.size() - 1;
 			if(mesh->parent->textures.size() > 0 && mesh->tex_index <= (mesh->parent->textures.size() - 1))
 			{ 
@@ -205,17 +203,12 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 
 				glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
 			}
-			else
+			else if (mesh->parent->mat_colors.size() > 0)
 			{
 				Color c = mesh->parent->mat_colors[mesh->tex_index];
 				glColor4f(c.r, c.g, c.b, c.a);
 			}
 		}
-		else
-		{
-			glColor4f(1,1,1,1);
-		}
-
 		
 		// Draw
 		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
@@ -487,6 +480,50 @@ bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 	mcube.vertex = new float[mcube.num_vertex*3];
 	memcpy(mcube.vertex, &new_cube->MathBody->CornerPoint(0), 3 * sizeof(float)*mcube.num_vertex);
 
+	std::vector<int> vert_order =
+	{	0,3,2,	0,1,3,
+		1,5,7,	1,7,3,
+		5,4,7,	4,6,7,
+		4,0,2,	4,2,6,
+		2,3,7,	2,7,6,
+		0,4,5,	0,5,1
+	};
+
+	mcube.num_index = new_cube->MathBody->NumFaces() * 3;
+	mcube.index = new GLuint[mcube.num_index];
+	memcpy(mcube.index, &vert_order[0], 3 * sizeof(GLuint)*mcube.num_vertex);
+
+	mcube.num_normal = mcube.num_index * 2;
+	mcube.normal = new float[mcube.num_normal];
+
+	for (int i = 0; i < mcube.num_index / 3; i++)
+		SetNormals(mcube, i);
+
+	std::vector<float> tex_coords =
+	{
+		0,0,0,	1,1,0,	0,1,0,
+		0,0,0,	1,0,0,	1,1,0,
+		0,0,0,	1,0,0,	1,1,0,
+		0,0,0,	1,1,0,	0,1,0,
+		0,0,0,	1,0,0,	0,1,0,
+		1,0,0,	1,1,0,	0,1,0,
+		0,0,0,	1,0,0,	1,1,0,
+		0,0,0,	1,1,0,	0,1,0,
+		0,0,0,	1,0,0,	1,1,0,
+		0,0,0,	1,1,0,	0,1,0,
+		0,0,0,	0,1,0,	1,1,0,
+		0,0,0,	0,1,0,	1,1,0
+
+	};
+
+	mcube.num_uvs = tex_coords.size();
+	mcube.tex_coords = new float[mcube.num_uvs];
+	memcpy(mcube.tex_coords, &tex_coords[0], sizeof(float)*mcube.num_uvs);
+
+	GenBuffers(mcube);
+
+	add_obj.meshes.push_back(mcube);
+
 	if (Objects.size() > 0)
 	{
 		DestroyObject(0);
@@ -495,6 +532,8 @@ bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 	}
 	else
 		Objects.push_back(add_obj);
+
+	SetParents();
 
 	return ret;
 }
