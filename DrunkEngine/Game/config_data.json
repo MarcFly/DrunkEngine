@@ -25,7 +25,7 @@
     "lighting": true,
     "color_materials": true,
     "texture2d": true,
-    "wireframe": true,
+    "wireframe": false,
     "faces&wireframe": true,
     "normals": false,
     "normal_length": 1
@@ -43,7 +43,7 @@
     "about_menu": 12
   },
   "manage_mesh": {
-    "scenes_path": "Test Models and Textures/",
-    "textures_path": "Test Models and Textures/"
+    "scenes_path": "Test Models and Textures\/",
+    "textures_path": "Test Models and Textures\/"
   }
 }

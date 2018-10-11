@@ -90,11 +90,11 @@ void GeoPropertiesWindow::Draw()
 							ImGui::Image(ImTextureID(objects[selected].textures[objects[selected].textures.size() - 1].id_tex), show_size);
 							
 							std::string aux = objects[selected].textures[objects[selected].textures.size() - 1].filename.c_str();
+							
+							if (strrchr(aux.c_str(), '\\') != nullptr)
+								aux = aux.substr(aux.find_last_of("\\/") + 1);
 
-							if (false)
-								ImGui::TextWrapped("Texture File: %s", aux.substr(aux.find_last_of("\\/")));
-							else
-								ImGui::TextWrapped("Texture File: %s", aux.c_str());
+							ImGui::TextWrapped("Texture File: %s", aux.c_str());
 
 							ImGui::Text("Size: %d x %d", objects[selected].textures[objects[selected].textures.size() - 1].width, objects[selected].textures[objects[selected].textures.size() - 1].height);
 
