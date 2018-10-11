@@ -87,9 +87,10 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
-
 		float vertex_aux = 0.f;
 
+		scene->mRootNode->mTransformation.Decompose(add_obj.transform_scale, add_obj.transform_rotate, add_obj.transform_position);
+		
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{

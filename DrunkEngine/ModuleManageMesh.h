@@ -92,6 +92,10 @@ struct obj_data
 	std::vector<Color> mat_colors;
 	std::vector<texture_data> textures;
 
+	aiVector3D transform_position;
+	aiVector3D transform_scale;
+	aiQuaternion transform_rotate;
+
 	Primitive* mathbody = nullptr; // In case we create a premade object // Temporary solution
 };
 

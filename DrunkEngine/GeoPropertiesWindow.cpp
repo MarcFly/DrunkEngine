@@ -59,11 +59,11 @@ void GeoPropertiesWindow::Draw()
 					ImGui::Text("%s", objects[selected].name.c_str());
 					ImGui::Separator();
 
-					if (ImGui::CollapsingHeader("Mesh Transform"))
+					if (ImGui::CollapsingHeader("Object Transform"))
 					{
-						//ImGui::Text("Position: x:%d y:%d z:%d", );
-						//ImGui::Text("Rotation: x:%d y:%d z:%d", );
-						//ImGui::Text("Scale: x:%d y:%d z:%d", );
+						ImGui::Text("Transform Position: x:%d y:%d z:%d", objects[selected].transform_position.x, objects[selected].transform_position.y, objects[selected].transform_position.z);
+							ImGui::Text("Transform Rotate: x:%d y:%d z:%d w:%d", objects[selected].transform_rotate.x, objects[selected].transform_rotate.y, objects[selected].transform_rotate.z, objects[selected].transform_rotate.w);
+							ImGui::Text("Transform Scale: x:%d y:%d z:%d", objects[selected].transform_scale.x, objects[selected].transform_scale.y, objects[selected].transform_scale.z);
 					}
 
 					if (ImGui::CollapsingHeader("Mesh Properties"))
@@ -83,24 +83,22 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
 					{
-
-						ImGui::Separator();
-						if (check_info && objects[selected].textures.size() > 0)
+						if (objects[selected].textures.size() > 0)
 						{
-							ImGui::Image(ImTextureID(objects[selected].textures[objects[selected].textures.size() - 1].id_tex), show_size);
-							
-							std::string aux = objects[selected].textures[objects[selected].textures.size() - 1].filename.c_str();
-							
-							if (strrchr(aux.c_str(), '\\') != nullptr)
-								aux = aux.substr(aux.find_last_of("\\/") + 1);
+							ImGui::Separator();
 
-							ImGui::TextWrapped("Texture File: %s", aux.c_str());
+							if (check_info)
+								tex_name = objects[selected].textures[objects[selected].textures.size() - 1].filename.c_str();
+
+							ImGui::Image(ImTextureID(objects[selected].textures[objects[selected].textures.size() - 1].id_tex), show_size);
+
+							if (strrchr(tex_name.c_str(), '\\') != nullptr)
+								tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+
+							ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
 
 							ImGui::Text("Size: %d x %d", objects[selected].textures[objects[selected].textures.size() - 1].width, objects[selected].textures[objects[selected].textures.size() - 1].height);
-
 						}
-							
-
 					}
 				}
 				ImGui::EndChild();

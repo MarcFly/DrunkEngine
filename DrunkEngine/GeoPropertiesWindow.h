@@ -18,6 +18,8 @@ public:
 	int num_vertex;
 	int num_faces;
 
+	std::string tex_name;
+
 	bool check_info;
 
 	ImVec2 show_size = {128,128};
