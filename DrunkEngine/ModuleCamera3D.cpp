@@ -71,8 +71,11 @@ update_status ModuleCamera3D::Update(float dt)
 
 	Position += newPos;
 
-	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT)
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT))
+	{
 		Reference = vec3(0.0f, 0.0f, 0.0f);
+		Rotate();
+	}
 	else
 	{
 		Reference = Position;
@@ -86,37 +89,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
-		int dx = -App->input->GetMouseXMotion();
-		int dy = -App->input->GetMouseYMotion();
-
-		Position -= Reference;
-
-		if (dx != 0)
-		{
-			float DeltaX = (float)dx * MOUSE_SENSIBILITY;
-
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-
-		}
-
-		if (dy != 0)
-		{
-			float DeltaY = (float)dy * MOUSE_SENSIBILITY;
-
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
-
-			if (Y.y < 0.0f)
-			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
-			}
-
-		}
-
-		Position = Reference + Z * length(Position);
+		Rotate();
 	}
 
 	// Recalculate matrix -------------
@@ -176,6 +149,41 @@ void ModuleCamera3D::Transport(const vec3 &Movement)
 	Position = Movement;
 
 	CalculateViewMatrix();
+}
+
+void ModuleCamera3D::Rotate()
+{
+	int dx = -App->input->GetMouseXMotion();
+	int dy = -App->input->GetMouseYMotion();
+
+	Position -= Reference;
+
+	if (dx != 0)
+	{
+		float DeltaX = (float)dx * MOUSE_SENSIBILITY;
+
+		X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+		Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+		Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+
+	}
+
+	if (dy != 0)
+	{
+		float DeltaY = (float)dy * MOUSE_SENSIBILITY;
+
+		Y = rotate(Y, DeltaY, X);
+		Z = rotate(Z, DeltaY, X);
+
+		if (Y.y < 0.0f)
+		{
+			Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+			Y = cross(Z, X);
+		}
+
+	}
+
+	Position = Reference + Z * length(Position);
 }
 
 // -----------------------------------------------------------------
