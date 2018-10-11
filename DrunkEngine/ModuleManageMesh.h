@@ -123,6 +123,9 @@ public:
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 
+	bool Load(JSON_Value* root_value);
+	bool Save(JSON_Value* root_value);
+
 public:
 	std::vector<obj_data> Objects;
 	int curr_tws = 0;
@@ -131,7 +134,9 @@ public:
 	int curr_tmagf = 0;
 	int curr_tminf = 0;
 
+	std::string scene_folder;
 	std::string tex_folder;
+
 
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }

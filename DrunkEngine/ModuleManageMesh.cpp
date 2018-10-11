@@ -40,6 +40,7 @@ bool ModuleManageMesh::Start()
 {
 	bool ret = true;
 
+	Load(nullptr);
 	LoadFBX("./BakerHouse.fbx");
 
 	return ret;
@@ -67,11 +68,22 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	bool ret = true;
 
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
-	
-	obj_data add_obj;
 	std::string aux = file_path;
+
+	if (scene == nullptr)
+	{
+		std::string new_file_path = file_path;
+		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+
+		new_file_path = scene_folder + new_file_path;
+
+		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
+		aux = new_file_path;
+	}
+
+	obj_data add_obj;
 	
-	add_obj.name = aux.substr(aux.find_last_of("\\") + 1);
+	add_obj.name = aux.substr(aux.find_last_of("\\/") + 1);
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -228,6 +240,35 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 		glDisableClientState(GL_VERTEX_ARRAY);
 
 	}
+}
+
+bool ModuleManageMesh::Load(JSON_Value * root_value)
+{
+	bool ret = false;
+
+	root_value = json_parse_file("config_data.json");
+
+	scene_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.scenes_path");
+	tex_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.textures_path");
+
+	ret = true;
+	return ret;
+}
+
+bool ModuleManageMesh::Save(JSON_Value * root_value)
+{
+	bool ret = false;
+
+
+	//root_value = json_parse_file("config_data.json");
+	//JSON_Object* root_obj = json_value_get_object(root_value);
+	//
+	//
+	//
+	//json_serialize_to_file(root_value, "config_data.json");
+
+	ret = true;
+	return ret;
 }
 
 //-SET OBJ DATA------------------------------------------------------------------------------------------
