@@ -75,6 +75,8 @@ struct mesh_data
 
 	GLuint tex_index = 0;
 
+	GLuint num_faces = 0;
+
 	obj_data* parent = nullptr;
 
 };

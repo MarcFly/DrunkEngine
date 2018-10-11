@@ -81,6 +81,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
       
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
+			add.num_faces = scene->mMeshes[i]->mNumFaces;
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
 
