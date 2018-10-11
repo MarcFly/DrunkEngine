@@ -97,11 +97,9 @@ void OptionsWindow::Draw()
 			ImGui::Text("Refresh rate: %d", 0);
 
 			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreen))
-			{
-				//SDL_SetWindowSize(App->window->window, width, height);
+			{				
 				App->window->SetFullscreen(App->window->fullscreen);
 				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
-
 			}
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Resizable", &App->window->resizable))

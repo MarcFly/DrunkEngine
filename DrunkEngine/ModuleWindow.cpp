@@ -101,10 +101,20 @@ void ModuleWindow::SetTitle(const char* title)
 
 void ModuleWindow::SetFullscreen(bool fullscreen)
 {
-	if(fullscreen)
+	if (fullscreen)
+	{
+		SDL_DisplayMode DM;
+		SDL_GetCurrentDisplayMode(0, &DM);
+		SDL_GetWindowSize(window, &window_w, &window_h);
+		SDL_SetWindowSize(window, DM.w, DM.h);
+
 		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
+	}
 	else
+	{
 		SDL_SetWindowFullscreen(this->window, 0);
+		SDL_SetWindowSize(window, window_w, window_h);
+	}
 }
 
 void ModuleWindow::SetResizable(bool resizable)
@@ -135,7 +145,9 @@ bool ModuleWindow::Load(JSON_Value* root_value)
 	bool ret = false;
 
 	root_value = json_parse_file("config_data.json");
-	SDL_SetWindowSize(window, json_object_dotget_number(json_object(root_value), "window.size.width"), json_object_dotget_number(json_object(root_value), "window.size.height"));
+	window_w = json_object_dotget_number(json_object(root_value), "window.size.width");
+	window_h = json_object_dotget_number(json_object(root_value), "window.size.height");
+	SDL_SetWindowSize(window, window_w, window_h);
 
 	fullscreen = json_object_dotget_boolean(json_object(root_value), "window.options.fullscreen");
 	SetFullscreen(fullscreen);
@@ -166,11 +178,9 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 	//root_value = json_value_init_object();
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	
-	int width, height;
-	SDL_GetWindowSize(window, &width, &height);
-	json_object_dotset_number(root_obj, "window.size.width", width);
+	json_object_dotset_number(root_obj, "window.size.width", window_w);
 	//json_object_set_number(root_obj, "width", width);
-	json_object_dotset_number(root_obj, "window.size.height", height);
+	json_object_dotset_number(root_obj, "window.size.height", window_h);
 	
 	json_object_dotset_boolean(root_obj, "window.options.fullscreen", this->fullscreen);
 	json_object_dotset_boolean(root_obj, "window.options.resizable", this->resizable);
