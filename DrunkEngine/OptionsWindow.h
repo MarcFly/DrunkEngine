@@ -8,7 +8,7 @@
 class OptionsWindow : public Window
 {
 public:
-	OptionsWindow(Application* app);
+	OptionsWindow();
 	virtual ~OptionsWindow();
 
 	void Draw() override;

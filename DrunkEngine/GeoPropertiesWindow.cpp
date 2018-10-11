@@ -1,8 +1,7 @@
 #include "GeoPropertiesWindow.h"
 
-GeoPropertiesWindow::GeoPropertiesWindow(Application * app) : Window("Object Properties")
+GeoPropertiesWindow::GeoPropertiesWindow() : Window("Object Properties")
 {
-	App = app;
 	num_vertex = 0;
 	num_faces = 0;
 	check_info = false;

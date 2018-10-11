@@ -7,7 +7,7 @@
 class GeoPropertiesWindow: public Window
 {
 public:
-	GeoPropertiesWindow(Application* app);
+	GeoPropertiesWindow();
 	virtual ~GeoPropertiesWindow();
 
 	void Draw() override;

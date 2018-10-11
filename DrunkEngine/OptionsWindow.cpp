@@ -12,9 +12,8 @@
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
 
-OptionsWindow::OptionsWindow(Application* app) : Window("Options")
+OptionsWindow::OptionsWindow() : Window("Options")
 {
-	App = app;
 	key_repeated = false;
 	max_fps = 60;
 

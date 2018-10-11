@@ -3,9 +3,8 @@
 #include <gl/GL.h>
 #include "ModuleManageMesh.h"
 
-AboutWindow::AboutWindow(Application* app) : Window("About...")
+AboutWindow::AboutWindow() : Window("About...")
 {
-	App = app;
 
 }
 

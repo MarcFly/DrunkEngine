@@ -6,7 +6,7 @@
 class GEOMWindow : public Window
 {
 public:
-	GEOMWindow(Application* app);
+	GEOMWindow();
 	virtual ~GEOMWindow();
 
 	void Draw() override;

@@ -17,7 +17,9 @@
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/Release/ILU.lib")
 
-ModuleManageMesh::ModuleManageMesh(Application* app, bool start_enabled) : Module(app, start_enabled)
+void CallLog(const char* str, char* usrData);
+
+ModuleManageMesh::ModuleManageMesh(bool start_enabled) : Module(start_enabled)
 {
 	// Stream log messages to Debug window
 	struct aiLogStream stream;
@@ -32,6 +34,11 @@ bool ModuleManageMesh::Init()
 	// DevIL initialization
 	ilInit();
 	iluInit();
+
+	struct aiLogStream stream;
+	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
+	stream.callback = CallLog;
+	aiAttachLogStream(&stream);
 
 	return ret;
 }
@@ -600,4 +607,9 @@ bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 	SetParents();
 
 	return ret;
+}
+
+void CallLog(const char* str, char* usrData)
+{
+	App->ui->console_win->AddLog(str);
 }

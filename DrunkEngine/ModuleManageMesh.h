@@ -98,7 +98,7 @@ struct obj_data
 class ModuleManageMesh : public Module
 {
 public:
-	ModuleManageMesh(Application* parent, bool start_enabled = true);
+	ModuleManageMesh(bool start_enabled = true);
 	~ModuleManageMesh() {};
 
 	bool Init();

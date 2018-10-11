@@ -1,9 +1,9 @@
 #include "GeometryCreationWindow.h"
 #include "ModulePhysics3D.h"
 
-GEOMWindow::GEOMWindow(Application* app) : Window("Create Objects")
+GEOMWindow::GEOMWindow() : Window("Create Objects")
 {
-	App = app;
+
 }
 
 GEOMWindow::~GEOMWindow() {}

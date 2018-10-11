@@ -6,7 +6,7 @@
 class AboutWindow : public Window
 {
 public:
-	AboutWindow(Application* app);
+	AboutWindow();
 	virtual ~AboutWindow();
 
 	void Draw() override;

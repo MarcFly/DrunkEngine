@@ -56,6 +56,9 @@ private:
 	void FinishUpdate();
 	void Frame_Metrics();
 
+	
 };
+
+extern Application* App;
 
 #endif
