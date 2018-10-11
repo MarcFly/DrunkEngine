@@ -41,5 +41,9 @@
     "console_menu": 6,
     "mesh_menu": 16,
     "about_menu": 12
+  },
+  "manage_mesh": {
+    "scenes_path": "Test Models and Textures/",
+    "textures_path": "Test Models and Textures/"
   }
 }
