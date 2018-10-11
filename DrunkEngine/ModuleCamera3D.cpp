@@ -1,6 +1,8 @@
 #include "Application.h"
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
+#include "ModuleUI.h"
+#include "ConsoleWindow.h"
 
 #define MOV_SPEED 4.0f
 #define MOUSE_SENSIBILITY 0.2f
@@ -26,7 +28,7 @@ ModuleCamera3D::~ModuleCamera3D()
 // -----------------------------------------------------------------
 bool ModuleCamera3D::Start()
 {
-	PLOG("Setting up the camera");
+	App->ui->console_win->AddLog("Setting up the camera");
 	bool ret = true;
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -40,7 +42,7 @@ bool ModuleCamera3D::Start()
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
-	PLOG("Cleaning camera");
+	App->ui->console_win->AddLog("Cleaning camera");
 
 	return true;
 }

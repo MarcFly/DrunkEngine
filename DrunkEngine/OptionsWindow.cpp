@@ -7,7 +7,7 @@
 #include "Imgui/imgui.h"
 #include <gl/GL.h>
 #include "ModuleManageMesh.h"
-
+#include "ConsoleWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -17,6 +17,8 @@ OptionsWindow::OptionsWindow(Application* app) : Window("Options")
 	App = app;
 	key_repeated = false;
 	max_fps = 60;
+
+	App->ui->console_win->AddLog("Created Options Window-----------------");
 }
 
 OptionsWindow::~OptionsWindow()
@@ -39,42 +41,44 @@ void OptionsWindow::Draw()
 			ImGui::Checkbox("Vsync", &App->renderer3D->vsync);
 			App->renderer3D->ChangeVsync();
 
-			if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
+			/*if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
 			{
 				App->Cap_FPS(max_fps);
-			}
+			}*/
 
 			char title[20];
 			if (frame_read_time.Read() >= 200) {
-				if(fps_history.size() < 25)
-					fps_history.push_back(App->GetFPS());
-				else
+				
+				if (fps_history.size() > fps_h_size)
 				{
 					for (int i = 1; i < fps_history.size(); i++)
 						fps_history[i - 1] = fps_history[i];
 
-					--*fps_history.end()._Ptr = App->GetFPS();
+					fps_history[fps_history.size() - 1] = App->GetFPS();
 				}
+				else
+					fps_history.push_back(App->GetFPS());
+
 				frame_read_time.Start();
 			}
 			sprintf_s(title, 20, "Framerate %.2f", fps_history[fps_history.size() - 1]);
 
-			
-			ImGui::PlotHistogram("##framerate", &fps_history[0], fps_history.size(), 0, title, 0.0f, max_fps + 1, ImVec2(310, 100));
-		
-			if (dt_history.size() > 60) 
+			ImGui::PlotHistogram("##framerate", &fps_history[0], fps_h_size, 0, title, 0.0f, (max_fps + 1) * 1.25f, ImVec2(310, 100));
+
+			if (dt_history.size() > dt_h_size)
 			{
 				for (int i = 1; i < dt_history.size(); i++)
-					dt_history[i-1] = dt_history[i];
+					dt_history[i - 1] = dt_history[i];
 
-				--*dt_history.end()._Ptr = App->GetDt();
+				dt_history[dt_history.size() - 1] = App->GetDt();
 			}
 			else
 				dt_history.push_back(App->GetDt());
 			
+			
 			sprintf_s(title, 20, "DT %.2f ms", dt_history[dt_history.size() - 1]);
 
-			ImGui::PlotHistogram("##time_differential", &dt_history[0], dt_history.size(), 0, title, 0.0f, 1000*(1.0f / max_fps) + 1, ImVec2(310, 100));
+			ImGui::PlotHistogram("##time_differential", &dt_history[0], dt_h_size, 0, title, 0.0f, (1000*(1.0f / max_fps) + 1) * 1.25f, ImVec2(310, 100));
 			
 		}
 		if (ImGui::CollapsingHeader("Windows"))

@@ -32,7 +32,7 @@ ModuleUI::~ModuleUI()
 
 bool ModuleUI::Init()
 {
-	PLOG("Initiating IMGUI Module")
+	PLOG("Initiating IMGUI Module");
 	bool ret = true;
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
@@ -41,11 +41,11 @@ bool ModuleUI::Init()
 
 	show_demo_window = false;
 
+	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(options_win = new OptionsWindow(App));
 	windows.push_back(about_win = new AboutWindow(App));
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow(App));
-	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(geo_properties_win = new GeoPropertiesWindow(App));
 
 	App->input->UpdateShortcuts();
@@ -87,7 +87,7 @@ update_status ModuleUI::PostUpdate(float dt)
 
 bool ModuleUI::CleanUp()
 {
-	PLOG("Cleaning UP IMGUI Module");
+	App->ui->console_win->AddLog("Cleaning UP IMGUI Module");
 
 	for (int i = 0; i < windows.size(); i++)
 	{

@@ -14,8 +14,6 @@ public:
 
 	void CheckMeshInfo();
 
-	ImTextureID* GetTexture(texture_data* tex);
-
 public:
 	int num_vertex;
 	int num_faces;

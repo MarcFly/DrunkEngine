@@ -37,7 +37,7 @@ ModulePhysics3D::~ModulePhysics3D()
 // Render not available yet----------------------------------
 bool ModulePhysics3D::Init()
 {
-	PLOG("Creating 3D Physics simulation");
+	App->ui->console_win->AddLog("Creating 3D Physics simulation");
 	bool ret = true;
 
 	return ret;
@@ -46,7 +46,7 @@ bool ModulePhysics3D::Init()
 // ---------------------------------------------------------
 bool ModulePhysics3D::Start()
 {
-	PLOG("Creating Physics environment");
+	App->ui->console_win->AddLog("Creating Physics environment");
 
 	world = new btDiscreteDynamicsWorld(dispatcher, broad_phase, solver, collision_conf);
 	world->setDebugDrawer(debug_draw);
@@ -128,7 +128,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		{
 			if (item_pb._Ptr->_Myval->mbody->Intersects(item_pb_2._Ptr->_Myval->mbody))
 			{
-				PLOG("Detected Collision!")
+				App->ui->console_win->AddLog("Detected Collision!")
 			}
 			item_pb_2++;
 		}
@@ -164,9 +164,9 @@ update_status ModulePhysics3D::PostUpdate(float dt)
 // Called before quitting
 bool ModulePhysics3D::CleanUp()
 {
-	PLOG("Destroying 3D Physics simulation!!!!");
+	App->ui->console_win->AddLog("Destroying 3D Physics simulation!!!!");
 
-	PLOG("Deleting Collision Objects");
+	App->ui->console_win->AddLog("Deleting Collision Objects");
 
 	for(int i = world->getNumCollisionObjects() - 1; i >= 0; i--)
 	{
@@ -174,7 +174,7 @@ bool ModulePhysics3D::CleanUp()
 		world->removeCollisionObject(obj);
 	}
 
-	PLOG("Deleting Constraints");
+	App->ui->console_win->AddLog("Deleting Constraints");
 
 	for(std::list<btTypedConstraint*>::iterator item = constraints.begin(); item != constraints.end(); item++)
 	{
@@ -184,21 +184,21 @@ bool ModulePhysics3D::CleanUp()
 	
 	constraints.clear();
 
-	PLOG("Deleting Motions");
+	App->ui->console_win->AddLog("Deleting Motions");
 
 	for(std::list<btDefaultMotionState*>::iterator item = motions.begin(); item != motions.end(); item++)
 		delete item._Ptr->_Myval;
 
 	motions.clear();
 
-	PLOG("Deleting Shapes");
+	App->ui->console_win->AddLog("Deleting Shapes");
 
 	for(std::list<btCollisionShape*>::iterator item = shapes.begin(); item != shapes.end(); item++)
 		delete item._Ptr->_Myval;
 
 	shapes.clear();
 
-	PLOG("Deleting PhysBodies and their respective MathBodies");
+	App->ui->console_win->AddLog("Deleting PhysBodies and their respective MathBodies");
 
 	for (std::list<PhysBody3D*>::iterator item = bodies.begin(); item != bodies.end(); item++) {
 		item._Ptr->_Myval->mbody->DelMathBody();
@@ -208,7 +208,7 @@ bool ModulePhysics3D::CleanUp()
 
 	bodies.clear();
 
-	PLOG("DELETING WORLD!!!");
+	App->ui->console_win->AddLog("DELETING WORLD!!!");
 
 	delete world;
 	
@@ -387,12 +387,12 @@ void DebugDrawer::drawContactPoint(const btVector3& PointOnB, const btVector3& n
 
 void DebugDrawer::reportErrorWarning(const char* warningString)
 {
-	PLOG("Bullet warning: %s", warningString);
+	App->ui->console_win->AddLog("Bullet warning: %s", warningString);
 }
 
 void DebugDrawer::draw3dText(const btVector3& location, const char* textString)
 {
-	PLOG("Bullet draw text: %s", textString);
+	App->ui->console_win->AddLog("Bullet draw text: %s", textString);
 }
 
 void DebugDrawer::setDebugMode(int debugMode)

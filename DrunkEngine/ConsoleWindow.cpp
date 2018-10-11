@@ -128,18 +128,19 @@ void ConsoleWindow::ClearLog()
 
 void ConsoleWindow::AddLog(const char* fmt, ...) IM_FMTARGS(2)
 {
+	char buf[1024];
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
+	buf[IM_ARRAYSIZE(buf) - 1] = 0;
+	va_end(args);
+	Items.push_back(Strdup(buf));
+
 	// FIXME-OPT
 	if (active)
-	{
-		char buf[1024];
-		va_list args;
-		va_start(args, fmt);
-		vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
-		buf[IM_ARRAYSIZE(buf) - 1] = 0;
-		va_end(args);
-		Items.push_back(Strdup(buf));
 		ScrollToBottom = true;
-	}
+	
+	PLOG(buf);
 }
 
 void ConsoleWindow::ExecCommand(const char* command_line)

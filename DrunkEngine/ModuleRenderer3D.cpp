@@ -2,6 +2,8 @@
 #include "ModuleRenderer3D.h"
 #include "PhysBody3D.h"
 #include "ModuleManageMesh.h"
+#include "ModuleUI.h"
+#include "ConsoleWindow.h"
 
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -36,16 +38,16 @@ bool ModuleRenderer3D::Init()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
 	//Create context
-	PLOG("Creating 3D Renderer context");
+	App->ui->console_win->AddLog("Creating 3D Renderer context");
 	context = SDL_GL_CreateContext(App->window->window);
 	if (GLEW_OK != glewInit())
 	{
-		PLOG("Failed GLEW Initiation!\n")
+		App->ui->console_win->AddLog("Failed GLEW Initiation!\n");
 	}
 
 	if(context == NULL)
 	{
-		PLOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		App->ui->console_win->AddLog("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
@@ -55,7 +57,7 @@ bool ModuleRenderer3D::Init()
 	{
 		//Use Vsync
 		if(SDL_GL_SetSwapInterval(vsync) < 0)
-			PLOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			App->ui->console_win->AddLog("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -188,7 +190,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 // Called before quitting
 bool ModuleRenderer3D::CleanUp()
 {
-	PLOG("Destroying 3D Renderer");
+	App->ui->console_win->AddLog("Destroying 3D Renderer");
 
 	SDL_GL_DeleteContext(context);
 
@@ -257,7 +259,7 @@ void ModuleRenderer3D::ChangeVsync()
 {
 	
 	if (SDL_GL_SetSwapInterval(vsync) < 0)
-		PLOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+		App->ui->console_win->AddLog("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 }
 
@@ -268,7 +270,7 @@ bool ModuleRenderer3D::CheckGLError()
 	//Check for error
 	if (glGetError() != GL_NO_ERROR)
 	{
-		PLOG("Error initializing OpenGL! %s\n", gluErrorString(glGetError()));
+		App->ui->console_win->AddLog("Error initializing OpenGL! %s\n", gluErrorString(glGetError()));
 		ret = false;
 	}
 
