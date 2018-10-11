@@ -3,7 +3,6 @@
 #include <gl/GL.h>
 #include "ModuleManageMesh.h"
 
-
 AboutWindow::AboutWindow(Application* app) : Window("About...")
 {
 	App = app;
@@ -66,13 +65,13 @@ void AboutWindow::Draw()
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
 		
-		ImGui::SameLine();
+		/*ImGui::SameLine();
 		ImGui::TextColored(HyperlinkColor, "Bullet (%.2f) ", btGetVersion() / 100.0f);
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Go to webpage");
 		if (ImGui::IsItemClicked())
 			ShellExecute(NULL, "open", "https://github.com/bulletphysics", NULL, NULL, SW_SHOWNORMAL);
-
+*/
 		ImGui::TextColored(HyperlinkColor, "GLEW(%d.%d.%d ", GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Go to webpage");
