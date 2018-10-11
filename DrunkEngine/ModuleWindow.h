@@ -36,6 +36,9 @@ public:
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
 
+	int window_w;
+	int window_h;
+
 	bool fullscreen;
 	bool resizable;
 	bool borderless;

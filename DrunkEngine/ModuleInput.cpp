@@ -8,7 +8,7 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "GeoTransformWindow.h"
+#include "GeoPropertiesWindow.h"
 
 #define MAX_KEYS 300
 
@@ -187,7 +187,7 @@ void ModuleInput::UpdateShortcuts()
 {
 	App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
 	App->ui->console_win->SetShortCut((SDL_Scancode)controls[CONSOLE_MENU]);
-	App->ui->geometry_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
+	App->ui->geo_properties_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
 	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
 }
 

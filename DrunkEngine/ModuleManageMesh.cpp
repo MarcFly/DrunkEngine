@@ -8,6 +8,7 @@
 #include "Assimp/include/cfileio.h"
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
+#include "GeoPropertiesWindow.h"
 
 
 #include "ModuleRenderer3D.h"
@@ -72,7 +73,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	
 	add_obj.name = aux.substr(aux.find_last_of("\\") + 1);
 
-
 	if (scene != nullptr && scene->HasMeshes())
 	{
 
@@ -85,6 +85,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
       
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
+			add.num_faces = scene->mMeshes[i]->mNumFaces;
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
 
@@ -128,6 +129,8 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			GenBuffers(add);
 
 			add_obj.meshes.push_back(add);
+
+			App->ui->geo_properties_win->CheckMeshInfo();
 		}
 
 

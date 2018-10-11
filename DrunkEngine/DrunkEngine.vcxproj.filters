@@ -573,7 +573,7 @@
     <ClInclude Include="DevIL\include\IL\ilut_config.h">
       <Filter>Sources\Tools\DevIL\include\IL</Filter>
     </ClInclude>
-    <ClInclude Include="GeoTransformWindow.h">
+    <ClInclude Include="GeoPropertiesWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -785,7 +785,7 @@
     <ClCompile Include="ConsoleWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
-    <ClCompile Include="GeoTransformWindow.cpp">
+    <ClCompile Include="GeoPropertiesWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
