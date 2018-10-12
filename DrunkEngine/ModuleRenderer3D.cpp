@@ -25,10 +25,6 @@ bool ModuleRenderer3D::Init()
 {
 	bool ret = true;
 	vsync = true;
-	wireframe = false;
-	faces = true;
-	render_normals = false;
-	normal_length = 1.0f;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -149,7 +145,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	RenderGrid();
 
 	// Something Something lights
-	// light 0 on cam pos
+	// Set light pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
@@ -279,10 +275,12 @@ bool ModuleRenderer3D::CheckGLError()
 
 void ModuleRenderer3D::RenderGrid()
 {
+	glDisable(GL_LIGHTING);
+
 	for (int i = 0; i < GRID_SIZE * 2 + 1; i++)
 	{
 		glBegin(GL_LINES);
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(0.5f, 0.5f, 0.5f);
 
 		//Z
 		glVertex3i(GRID_SIZE - i, 0, GRID_SIZE);
@@ -293,6 +291,9 @@ void ModuleRenderer3D::RenderGrid()
 		glVertex3i(GRID_SIZE, 0, -GRID_SIZE + i);
 		glEnd();
 	}
+
+	if (lighting)
+		glEnable(GL_LIGHTING);
 }
 
 void ModuleRenderer3D::SwapWireframe(bool active)

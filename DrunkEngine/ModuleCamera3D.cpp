@@ -154,8 +154,6 @@ void ModuleCamera3D::Rotate()
 	int dx = -App->input->GetMouseXMotion();
 	int dy = -App->input->GetMouseYMotion();
 
-	Position -= Reference;
-
 	if (dx != 0)
 	{
 		float DeltaX = (float)dx * MOUSE_SENSIBILITY;
@@ -182,11 +180,11 @@ void ModuleCamera3D::Rotate()
 	}
 
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
+		Position -= Reference;
 		Position = Reference + Z * length(Position);
-	else
-		Position = Reference;
+	}
 }
-
 // -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
