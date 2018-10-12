@@ -83,7 +83,7 @@ struct mesh_data
 
 	aiVector3D transform_position;
 	aiVector3D transform_scale;
-	aiQuaternion transform_rotate;
+	aiVector3D transform_rotate;
 
 };
 

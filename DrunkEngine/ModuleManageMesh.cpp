@@ -85,6 +85,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	obj_data add_obj;
 	
 	add_obj.name = aux.substr(aux.find_last_of("\\/") + 1);
+	//add_obj.name = scene->mRootNode->mName.C_Str();
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -95,11 +96,15 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			mesh_data add;
       
-			scene->mRootNode->mChildren[i]->mTransformation.Decompose(add.transform_scale, add.transform_rotate, add.transform_position);
+			aiQuaternion rotation_quat;
+			scene->mRootNode->mChildren[i]->mTransformation.Decompose(add.transform_scale, rotation_quat, add.transform_position);
+			add.transform_rotate = rotation_quat.GetEuler();
 
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
 			add.num_faces = scene->mMeshes[i]->mNumFaces;
+
+			add.name = scene->mRootNode->mChildren[i]->mName.C_Str();
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
 

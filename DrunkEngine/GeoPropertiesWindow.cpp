@@ -63,9 +63,10 @@ void GeoPropertiesWindow::Draw()
 					{
 						for (int i = 0; i < objects[selected].meshes.size(); i++)
 						{
-							ImGui::Text("Transform Position mesh %d: x:%.03f y:%.03f z:%.03f", i + 1, objects[selected].meshes[i].transform_position.x, objects[selected].meshes[i].transform_position.y, objects[selected].meshes[i].transform_position.z);
-							ImGui::Text("Transform Scale mesh %d: x:%.03f y:%.03f z:%.03f", i + 1, objects[selected].meshes[i].transform_scale.x, objects[selected].meshes[i].transform_scale.y, objects[selected].meshes[i].transform_scale.z);
-							ImGui::Text("Transform Rotation mesh %d: x:%.03f y:%.03f z:%.03f w:%.03f \n\n", i + 1, RadToDeg(objects[selected].meshes[i].transform_rotate.x), RadToDeg(objects[selected].meshes[i].transform_rotate.y), RadToDeg(objects[selected].meshes[i].transform_rotate.z), RadToDeg(objects[selected].meshes[i].transform_rotate.w));
+							ImGui::Text("%s", objects[selected].meshes[i].name.c_str());
+							ImGui::Text("Transform Position:   x:%.02f   y:%.02f   z:%.02f", objects[selected].meshes[i].transform_position.x, objects[selected].meshes[i].transform_position.y, objects[selected].meshes[i].transform_position.z);
+							ImGui::Text("Transform Scale:      x:%.02f   y:%.02f   z:%.02f", objects[selected].meshes[i].transform_scale.x, objects[selected].meshes[i].transform_scale.y, objects[selected].meshes[i].transform_scale.z);
+							ImGui::Text("Transform Rotation:   x:%.02f   y:%.02f   z:%.02f\n\n", RadToDeg(objects[selected].meshes[i].transform_rotate.x), RadToDeg(objects[selected].meshes[i].transform_rotate.y), RadToDeg(objects[selected].meshes[i].transform_rotate.z));
 						}
 					}
 
