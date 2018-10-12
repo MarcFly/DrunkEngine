@@ -250,6 +250,11 @@ bool ModuleManageMesh::Load(JSON_Value * root_value)
 	scene_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.scenes_path");
 	tex_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.textures_path");
 
+	//tws = json_object_dotget_number(json_object(root_value), "texture.tex_wrap_s");
+	//twt = json_object_dotget_number(json_object(root_value), "texture.tex_wrap_t");
+	//tmagf = json_object_dotget_number(json_object(root_value), "texture.tex_min_filter");
+	//tminf = json_object_dotget_number(json_object(root_value), "texture.tex_mag_filter");
+
 	ret = true;
 	return ret;
 }
@@ -258,12 +263,14 @@ bool ModuleManageMesh::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
-
 	//root_value = json_parse_file("config_data.json");
 	//JSON_Object* root_obj = json_value_get_object(root_value);
-	//
-	//
-	//
+
+	//json_object_dotset_number(root_obj, "texture.tex_wrap_s", tws);
+	//json_object_dotset_number(root_obj, "texture.tex_wrap_t", twt);
+	//json_object_dotset_number(root_obj, "texture.tex_min_filter", tmagf);
+	//json_object_dotset_number(root_obj, "texture.tex_mag_filter", tminf);
+	
 	//json_serialize_to_file(root_value, "config_data.json");
 
 	ret = true;
@@ -478,8 +485,6 @@ void ModuleManageMesh::DestroyObject(const int& index)
 
 void ModuleManageMesh::GenTexParams()
 {
-	uint tws, twt, tmagf, tminf;
-
 	switch (curr_tws) {
 	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_EDGE;	break;
 	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_BORDER;	break;

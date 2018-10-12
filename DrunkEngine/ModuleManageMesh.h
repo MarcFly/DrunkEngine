@@ -146,6 +146,8 @@ public:
 	std::string scene_folder;
 	std::string tex_folder;
 
+private:
+	uint tws, twt, tmagf, tminf;
 
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }

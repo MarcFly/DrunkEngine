@@ -1,4 +1,4 @@
-{ 
+{
   "camera": {
     "pos": {
       "x": 0.70710676908493042,
@@ -19,7 +19,6 @@
       "full_desktop": false
     }
   },
-  "opengl": { "vsync": true },
   "render": {
     "depth_test": true,
     "cull_face": true,
@@ -31,6 +30,12 @@
     "normals": false,
     "normal_length": 1,
     "vsync": true
+  },
+  "texture": {
+    "tex_wrap_s": 33071,
+    "tex_wrap_t": 33071,
+    "tex_min_filter": 9729,
+    "tex_mag_filter": 9729
   },
   "controls": {
     "move_forward": 26,
