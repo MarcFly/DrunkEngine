@@ -129,6 +129,7 @@ public:
 	void DestroyObject(const int& index);
 
 	void GenTexParams();
+	void SetCurrParams();
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 
@@ -139,7 +140,6 @@ public:
 	std::vector<obj_data> Objects;
 	int curr_tws = 0;
 	int curr_twt = 0;
-
 	int curr_tmagf = 0;
 	int curr_tminf = 0;
 
