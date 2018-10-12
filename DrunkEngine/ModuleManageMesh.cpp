@@ -336,6 +336,8 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 		{
 			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
 		}
+		App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
+
 	}
 	else
 	{
