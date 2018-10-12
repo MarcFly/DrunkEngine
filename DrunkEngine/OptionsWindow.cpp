@@ -36,10 +36,7 @@ void OptionsWindow::Draw()
 			
 			ImGui::Text("Organization:");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);
-
-			ImGui::Checkbox("Vsync", &App->renderer3D->vsync);
-			App->renderer3D->ChangeVsync();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);		
 
 			/*if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
 			{
@@ -81,7 +78,7 @@ void OptionsWindow::Draw()
 			ImGui::PlotHistogram("##time_differential", &dt_history[0], dt_h_size, 0, title, 0.0f, (1000*(1.0f / max_fps) + 1) * 1.25f, ImVec2(310, 100));
 			
 		}
-		if (ImGui::CollapsingHeader("Windows"))
+		if (ImGui::CollapsingHeader("Window"))
 		{
 			int width;
 			int height;
@@ -116,14 +113,21 @@ void OptionsWindow::Draw()
 			if (ImGui::Checkbox("Full Desktop", &App->window->full_desktop))
 				App->window->SetFullDesktop(App->window->full_desktop);
 
+			ImGui::Separator();
+
 			if (ImGui::Button("Save Changes"))
 				App->window->Save(nullptr);
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Render Options"))
 		{
 			ImGui::Text("Tinker with the settings we are currently using...");
 			ImGui::Separator();
+
+			if (ImGui::Checkbox("Vsync", &App->renderer3D->vsync))
+				App->renderer3D->ChangeVsync();
 
 			if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depth_test))
 				CheckEnableDisableOpenGL();
@@ -158,6 +162,8 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->renderer3D->Save(nullptr);
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Texture Parameters"))
@@ -175,6 +181,11 @@ void OptionsWindow::Draw()
 			ImGui::Combo("Texture Min Filter", &App->mesh_loader->curr_tminf, tex_f, IM_ARRAYSIZE(tex_f));
 			ImGui::Combo("Texture Mag Filter", &App->mesh_loader->curr_tmagf, tex_f, IM_ARRAYSIZE(tex_f));
 
+			ImGui::Separator();
+
+			//Save
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Input"))
@@ -361,6 +372,8 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 			if (ImGui::Button("Reset to Default"))
 				App->input->SetDefaultControls();
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Hardware"))

@@ -1,4 +1,4 @@
-{
+{ 
   "camera": {
     "pos": {
       "x": 0.70710676908493042,
@@ -19,7 +19,8 @@
       "full_desktop": false
     }
   },
-  "opengl": {
+  "opengl": { "vsync": true },
+  "render": {
     "depth_test": true,
     "cull_face": true,
     "lighting": true,
@@ -28,7 +29,8 @@
     "wireframe": false,
     "faces&wireframe": true,
     "normals": false,
-    "normal_length": 1
+    "normal_length": 1,
+    "vsync": true
   },
   "controls": {
     "move_forward": 26,
