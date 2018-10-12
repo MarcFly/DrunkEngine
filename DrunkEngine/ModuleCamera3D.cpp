@@ -228,6 +228,8 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 
 	json_serialize_to_file(root_value, "config_data.json");
 
+	App->ui->console_win->AddLog("Camera position saved");
+
 	ret = true;
 	return ret;
 }

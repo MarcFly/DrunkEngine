@@ -355,9 +355,10 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 	json_object_dotset_boolean(root_obj, "render.normals", render_normals);
 	json_object_dotset_number(root_obj, "render.normal_length", normal_length);
 	json_object_dotset_boolean(root_obj, "render.vsync", vsync);
-	
 
 	json_serialize_to_file(root_value, "config_data.json");
+
+	App->ui->console_win->AddLog("Render config saved");
 
 	ret = true;
 	return ret;

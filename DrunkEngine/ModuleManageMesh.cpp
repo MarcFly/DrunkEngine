@@ -102,8 +102,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
 
-			App->ui->console_win->AddLog("New mesh with %d vertices", add.num_vertex);
-
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
@@ -133,7 +131,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						vertex_aux = abs(add.vertex[j]);
 				}
 			}
-			App->ui->console_win->AddLog("Said mesh starts with %d indices", add.num_index);
+			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices and %d tris", add.num_vertex, add.num_index, add.num_faces);
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 
