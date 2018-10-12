@@ -71,7 +71,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 	Position += newPos;
 
-	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT))
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
 		Reference = vec3(0.0f, 0.0f, 0.0f);
 		Rotate();
@@ -88,9 +88,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
-	{
 		Rotate();
-	}
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
@@ -183,7 +181,10 @@ void ModuleCamera3D::Rotate()
 
 	}
 
-	Position = Reference + Z * length(Position);
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+		Position = Reference + Z * length(Position);
+	else
+		Position = Reference;
 }
 
 // -----------------------------------------------------------------
