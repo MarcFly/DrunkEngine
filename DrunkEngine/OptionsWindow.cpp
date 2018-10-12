@@ -8,6 +8,7 @@
 #include <gl/GL.h>
 #include "ModuleManageMesh.h"
 #include "ConsoleWindow.h"
+#include <Psapi.h>
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -356,8 +357,7 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->input->Save(nullptr);
-
-			ImGui::SameLine();
+ImGui::SameLine();
 			if (ImGui::Button("Reset to Default"))
 				App->input->SetDefaultControls();
 		}
@@ -376,7 +376,16 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d Threads (%d KB)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
 
-			ImGui::Text("System Ram: ");
+			ImGui::Text("Used System Ram: ");
+			ImGui::SameLine();
+			PROCESS_MEMORY_COUNTERS test = { 0 };
+			{
+				GetProcessMemoryInfo(GetCurrentProcess(), &test, sizeof(test));
+			}
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB",  test.WorkingSetSize / (1024.0f * 1024.0f));
+
+
+			ImGui::Text("Total System Ram: ");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f GB", SDL_GetSystemRAM() / 1024.0f);
 
