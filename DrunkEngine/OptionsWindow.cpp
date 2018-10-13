@@ -8,7 +8,7 @@
 #include <gl/GL.h>
 #include "ModuleManageMesh.h"
 #include "ConsoleWindow.h"
-#include <Psapi.h>
+
 #include "GLEW/include/GL/wglew.h"
 
 #define MEM_BUDGET_NVX 0x9048
@@ -18,6 +18,8 @@ OptionsWindow::OptionsWindow() : Window("Options")
 {
 	key_repeated = false;
 	max_fps = 60;
+
+	//ram_read_time.Start();
 
 	App->ui->console_win->AddLog("Created Options Window-----------------");
 }
@@ -358,7 +360,7 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->input->Save(nullptr);
-ImGui::SameLine();
+			ImGui::SameLine();
 			if (ImGui::Button("Reset to Default"))
 				App->input->SetDefaultControls();
 		}
@@ -379,8 +381,10 @@ ImGui::SameLine();
 
 			ImGui::Text("Used System Ram: ");
 			ImGui::SameLine();
-			PROCESS_MEMORY_COUNTERS mem = { 0 };
-			GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
+			if (ram_read_time.Read() > 1000) {
+				GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
+				ram_read_time.Start();
+			}
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB",  mem.WorkingSetSize / (1024.0f * 1024.0f));
 
 
@@ -445,25 +449,33 @@ ImGui::SameLine();
 			// VRAM DATA
 			GLint budget = 0;
 			GLint available = 0;
-			
-			if (gpu_vendor.find_first_of("NVIDIA") > 0 || gpu_vendor.find_first_of("nvidia") > 0)
+			GLuint used_mem = 0;
+
+			if (gpu_vendor.find("NVIDIA") != -1)
 			{
 				glGetIntegerv(MEM_BUDGET_NVX, &budget);
 				glGetIntegerv(MEM_AVAILABLE_NVX, &available);
+
+				used_mem = (budget - available) / 1024;
 			}
-			else if (gpu_vendor.find_first_of("ATI") > 0 || gpu_vendor.find_first_of("ati") > 0)
+			else if (gpu_vendor.find("ATI") != -1)
 			{
 				// With these ones, the info may not be accurate, no better way besides just counting the vram used manually
-				GLint vbo_mem;
-				GLint tex_mem;
-				GLint rbo_mem;
-				glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, &vbo_mem);
-				glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, &tex_mem);
-				glGetIntegerv(GL_RENDERBUFFER_FREE_MEMORY_ATI, &rbo_mem);
+				GLint vbo_mem[4];
+				GLint tex_mem[4];
+				GLint rbo_mem[4];
+				glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, vbo_mem);
+				glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, tex_mem);
+				glGetIntegerv(GL_RENDERBUFFER_FREE_MEMORY_ATI, rbo_mem);
+
+				used_mem = (vbo_mem[0] + tex_mem[0] + rbo_mem[0]) / (1024 * 1024);
 
 				wglGetGPUInfoAMD(wglGetGPUIDsAMD(0, 0), WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(GLuint), &budget);
+
+				available = budget - used_mem;
+				budget *= 1024;
+				available *= 1024;
 			}
-			GLuint used_mem = (budget - available) / 1024;
 			
 			ImGui::Text("VRAM Used: ");
 			ImGui::SameLine();
