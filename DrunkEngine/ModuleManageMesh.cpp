@@ -104,6 +104,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			mesh_data add;
       
+			//if (CANNOT READ MESH) TODO
+			//	continue;
+
 			aiQuaternion rotation_quat;
 			scene->mRootNode->mChildren[i]->mTransformation.Decompose(add.transform_scale, rotation_quat, add.transform_position);
 			add.transform_rotate = rotation_quat.GetEuler();
@@ -171,7 +174,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 				}
 			}
-			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices and %d tris", add.num_vertex, add.num_index, add.num_faces);
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 
@@ -179,7 +181,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			GenBuffers(add);
 
-			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces", add.num_vertex, add.num_index, add.num_faces);
+			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", add.num_vertex, add.num_index, add.num_faces);
 
 			add_obj.meshes.push_back(add);
 
