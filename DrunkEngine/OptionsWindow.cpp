@@ -143,15 +143,18 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Checkbox("Color Materials", &App->renderer3D->color_material))
 				CheckEnableDisableOpenGL();
+			ImGui::SameLine();
 
 			if (ImGui::Checkbox("Textures 2D", &App->renderer3D->texture_2d))
 				CheckEnableDisableOpenGL();
-			ImGui::SameLine();
 
 			ImGui::Checkbox("Render Faces", &App->renderer3D->faces);
 			ImGui::SameLine();
 
 			ImGui::Checkbox("Render Wireframe", &App->renderer3D->wireframe);
+			ImGui::SameLine();
+
+			ImGui::Checkbox("Render Bounding Box", &App->renderer3D->bounding_box);
 			ImGui::SameLine();
 
 			ImGui::Checkbox("Show Normals", &App->renderer3D->render_normals);

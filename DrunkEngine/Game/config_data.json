@@ -1,4 +1,4 @@
-{ 
+{
   "camera": {
     "pos": {
       "x": 0.70710676908493042,
@@ -29,7 +29,8 @@
     "faces&wireframe": true,
     "normals": false,
     "normal_length": 1,
-    "vsync": true
+    "vsync": true,
+    "bounding_box": false
   },
   "texture": {
     "curr_wrap_s": 0,

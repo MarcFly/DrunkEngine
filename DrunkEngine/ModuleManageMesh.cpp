@@ -131,10 +131,36 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					}
 				}			
 
+				add.box_x = add.vertex[0];
+				add.box_nx = add.vertex[0];
+				add.box_y = add.vertex[1];
+				add.box_ny = add.vertex[1];
+				add.box_z = add.vertex[2];
+				add.box_nz = add.vertex[2];
+
 				for (uint j = 0; j < scene->mMeshes[i]->mNumVertices * 3; j++)
 				{
 					if (vertex_aux < abs(add.vertex[j]))
 						vertex_aux = abs(add.vertex[j]);
+
+					if (j % 3 == 0 && add.box_x < add.vertex[j])
+						add.box_x = add.vertex[j];
+
+					if (j % 3 == 0 && add.box_nx > add.vertex[j])
+						add.box_nx = add.vertex[j];
+
+					if (j % 3 == 1 && add.box_y < add.vertex[j])
+						add.box_y = add.vertex[j];
+
+					if (j % 3 == 1 && add.box_ny > add.vertex[j])
+						add.box_ny = add.vertex[j];
+
+					if (j % 3 == 2 && add.box_z < add.vertex[j])
+						add.box_z = add.vertex[j];
+
+					if (j % 3 == 2 && add.box_nz > add.vertex[j])
+						add.box_nz = add.vertex[j];
+
 				}
 			}
 			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices and %d tris", add.num_vertex, add.num_index, add.num_faces);

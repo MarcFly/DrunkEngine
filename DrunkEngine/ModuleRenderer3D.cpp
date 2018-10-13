@@ -230,6 +230,9 @@ void ModuleRenderer3D::Render(bool use_texture)
 					glEnd();
 				}
 
+				if (bounding_box)
+					RenderBoundBox(mesh);
+
 				glDisableClientState(GL_VERTEX_ARRAY);
 			}
 		}
@@ -295,6 +298,54 @@ void ModuleRenderer3D::RenderGrid()
 		glEnable(GL_LIGHTING);
 }
 
+void ModuleRenderer3D::RenderBoundBox(mesh_data* mesh)
+{
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+
+	glEnd();
+
+	if (lighting)
+		glEnable(GL_LIGHTING);
+}
+
 void ModuleRenderer3D::SwapWireframe(bool active)
 {
 	if (active)
@@ -331,7 +382,8 @@ bool ModuleRenderer3D::Load(JSON_Value * root_value)
 	faces = json_object_dotget_boolean(json_object(root_value), "render.faces&wireframe");
 	render_normals = json_object_dotget_boolean(json_object(root_value), "render.normals");
 	normal_length = json_object_dotget_number(json_object(root_value), "render.normal_length");
-	vsync = json_object_dotget_boolean(json_object(root_value), "render.vsync"); 
+	vsync = json_object_dotget_boolean(json_object(root_value), "render.vsync");
+	bounding_box = json_object_dotget_boolean(json_object(root_value), "render.bounding_box");
 
 	ret = true;
 	return ret;
@@ -355,6 +407,7 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 	json_object_dotset_boolean(root_obj, "render.normals", render_normals);
 	json_object_dotset_number(root_obj, "render.normal_length", normal_length);
 	json_object_dotset_boolean(root_obj, "render.vsync", vsync);
+	json_object_dotset_boolean(root_obj, "render.bounding_box", bounding_box);
 
 	json_serialize_to_file(root_value, "config_data.json");
 
