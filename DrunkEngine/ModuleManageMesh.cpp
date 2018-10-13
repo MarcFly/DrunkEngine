@@ -118,7 +118,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			add.name = scene->mRootNode->mChildren[i]->mName.C_Str();
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
-      
+
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
@@ -171,7 +171,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 					if (j % 3 == 2 && add.box_nz > add.vertex[j])
 						add.box_nz = add.vertex[j];
-
 				}
 			}
 
@@ -187,7 +186,9 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			App->ui->geo_properties_win->CheckMeshInfo();
 		}
-
+		
+		SetObjBoundBox(add_obj, scene);
+		
 		App->camera->SetToObj(&add_obj, vertex_aux);
 
 		// Texture Setup
@@ -580,6 +581,37 @@ void ModuleManageMesh::SetCurrParams()
 	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_LINEAR; break;
 	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
 	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+}
+
+void ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
+{
+	object.box_x = object.meshes[0].box_x;
+	object.box_nx = object.meshes[0].box_nx;
+	object.box_y = object.meshes[0].box_y;
+	object.box_ny = object.meshes[0].box_ny;
+	object.box_z = object.meshes[0].box_z;
+	object.box_nz = object.meshes[0].box_nz;
+
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		if (object.box_x < object.meshes[i].box_x)
+			object.box_x = object.meshes[i].box_x;
+
+		if (object.box_nx > object.meshes[i].box_nx)
+			object.box_nx = object.meshes[i].box_nx;
+
+		if (object.box_y < object.meshes[i].box_y)
+			object.box_y = object.meshes[i].box_y;
+
+		if (object.box_ny > object.meshes[i].box_ny)
+			object.box_ny = object.meshes[i].box_ny;
+
+		if (object.box_z < object.meshes[i].box_z)
+			object.box_z = object.meshes[i].box_z;
+
+		if (object.box_nz > object.meshes[i].box_nz)
+			object.box_nz = object.meshes[i].box_nz;
 	}
 }
 

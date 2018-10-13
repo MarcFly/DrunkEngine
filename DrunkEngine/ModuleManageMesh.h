@@ -102,6 +102,13 @@ struct obj_data
 	aiVector3D transform_scale;
 	aiQuaternion transform_rotate;
 
+	float box_x;
+	float box_nx;
+	float box_y;
+	float box_ny;
+	float box_z;
+	float box_nz;
+
 	Primitive* mathbody = nullptr; // In case we create a premade object // Temporary solution
 };
 
@@ -132,6 +139,8 @@ public:
 
 	void GenTexParams();
 	void SetCurrParams();
+
+	void SetObjBoundBox(obj_data &object, const aiScene* scene);
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 

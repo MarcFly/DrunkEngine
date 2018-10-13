@@ -76,7 +76,17 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		Reference = vec3(0.0f, 0.0f, 0.0f);
+		if (App->mesh_loader->Objects.size() == 0)
+			Reference = vec3(0.0f, 0.0f, 0.0f);
+		else
+		{
+			float aux_x = (App->mesh_loader->Objects.begin()->box_x + App->mesh_loader->Objects.begin()->box_nx) / 2;
+			float aux_y = (App->mesh_loader->Objects.begin()->box_y + App->mesh_loader->Objects.begin()->box_ny) / 2;
+			float aux_z = (App->mesh_loader->Objects.begin()->box_z + App->mesh_loader->Objects.begin()->box_nz) / 2;
+
+			Reference = vec3(aux_x, aux_y, aux_z);
+		}
+
 		Rotate();
 	}
 	else
