@@ -114,10 +114,16 @@ bool ModuleUI::MainMenu()
 		if (ImGui::BeginMenu("Menu"))
 		{
 			if (ImGui::MenuItem("Options"))
-				options_win->SwitchActive();
+				options_win->SwitchActive();				
 
-			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
-				console_win->SwitchActive();
+			if (ImGui::MenuItem("Show/Hide Windows"))
+				ShowHideWindows();
+
+			if (ImGui::MenuItem("About..."))
+				about_win->SwitchActive();
+
+			if (ImGui::MenuItem("Go to Github"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
 
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
@@ -127,25 +133,26 @@ bool ModuleUI::MainMenu()
 
 		if (ImGui::BeginMenu("Tools"))
 		{
-			if (ImGui::MenuItem("Random Generator"))
+
+			/*if (ImGui::MenuItem("Random Generator"))
 				random_win->SwitchActive();
 
 			if (ImGui::MenuItem("Test Objects"))
-				geometry_win->SwitchActive();
+				geometry_win->SwitchActive();*/
 
 			if (ImGui::MenuItem("Objects Properties"))
 				geo_properties_win->SwitchActive();			
 
-			if (ImGui::MenuItem("Show/Hide Windows"))
-				ShowHideWindows();
+			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
+				console_win->SwitchActive();		
 
 			ImGui::EndMenu();
 		}
 
 		if (ImGui::BeginMenu("Help"))
 		{
-			if (ImGui::MenuItem("Examples"))
-				show_demo_window = !show_demo_window;
+			/*if (ImGui::MenuItem("Examples"))
+				show_demo_window = !show_demo_window;*/
 
 			if (ImGui::MenuItem("Download Latest"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
@@ -155,9 +162,6 @@ bool ModuleUI::MainMenu()
 
 			if (ImGui::MenuItem("Report a Bug"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/issues", NULL, NULL, SW_SHOWNORMAL);
-						
-			if (ImGui::MenuItem("About..."))
-				about_win->SwitchActive();
 
 			ImGui::EndMenu();
 		}
