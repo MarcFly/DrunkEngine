@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
+    <RootNamespace>SDLGame</RootNamespace>
+    <ProjectName>DrunkEngine</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutWindow.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="Assimp\include\ai_assert.h" />
+    <ClInclude Include="Assimp\include\anim.h" />
+    <ClInclude Include="Assimp\include\camera.h" />
+    <ClInclude Include="Assimp\include\cexport.h" />
+    <ClInclude Include="Assimp\include\cfileio.h" />
+    <ClInclude Include="Assimp\include\cimport.h" />
+    <ClInclude Include="Assimp\include\color4.h" />
+    <ClInclude Include="Assimp\include\Compiler\poppack1.h" />
+    <ClInclude Include="Assimp\include\Compiler\pstdint.h" />
+    <ClInclude Include="Assimp\include\Compiler\pushpack1.h" />
+    <ClInclude Include="Assimp\include\config.h" />
+    <ClInclude Include="Assimp\include\DefaultLogger.hpp" />
+    <ClInclude Include="Assimp\include\defs.h" />
+    <ClInclude Include="Assimp\include\Exporter.hpp" />
+    <ClInclude Include="Assimp\include\Importer.hpp" />
+    <ClInclude Include="Assimp\include\importerdesc.h" />
+    <ClInclude Include="Assimp\include\IOStream.hpp" />
+    <ClInclude Include="Assimp\include\IOSystem.hpp" />
+    <ClInclude Include="Assimp\include\light.h" />
+    <ClInclude Include="Assimp\include\Logger.hpp" />
+    <ClInclude Include="Assimp\include\LogStream.hpp" />
+    <ClInclude Include="Assimp\include\material.h" />
+    <ClInclude Include="Assimp\include\matrix3x3.h" />
+    <ClInclude Include="Assimp\include\matrix4x4.h" />
+    <ClInclude Include="Assimp\include\mesh.h" />
+    <ClInclude Include="Assimp\include\metadata.h" />
+    <ClInclude Include="Assimp\include\NullLogger.hpp" />
+    <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h" />
+    <ClInclude Include="Assimp\include\postprocess.h" />
+    <ClInclude Include="Assimp\include\ProgressHandler.hpp" />
+    <ClInclude Include="Assimp\include\quaternion.h" />
+    <ClInclude Include="Assimp\include\scene.h" />
+    <ClInclude Include="Assimp\include\texture.h" />
+    <ClInclude Include="Assimp\include\types.h" />
+    <ClInclude Include="Assimp\include\vector2.h" />
+    <ClInclude Include="Assimp\include\vector3.h" />
+    <ClInclude Include="Assimp\include\version.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="ConsoleWindow.h" />
+    <ClInclude Include="DevIL\include\IL\devil_cpp_wrapper.hpp" />
+    <ClInclude Include="DevIL\include\IL\devil_internal_exports.h" />
+    <ClInclude Include="DevIL\include\IL\il.h" />
+    <ClInclude Include="DevIL\include\IL\ilu.h" />
+    <ClInclude Include="DevIL\include\IL\ilut.h" />
+    <ClInclude Include="DevIL\include\IL\ilut_config.h" />
+    <ClInclude Include="DevIL\include\IL\ilu_region.h" />
+    <ClInclude Include="DevIL\include\IL\il_wrap.h" />
+    <ClInclude Include="GeometryCreationWindow.h" />
+    <ClInclude Include="GeoPropertiesWindow.h" />
+    <ClInclude Include="GLEW\include\GL\eglew.h" />
+    <ClInclude Include="GLEW\include\GL\glew.h" />
+    <ClInclude Include="GLEW\include\GL\glxew.h" />
+    <ClInclude Include="GLEW\include\GL\wglew.h" />
+    <ClInclude Include="glmath\glmath.h" />
+    <ClInclude Include="ModuleManageMesh.h" />
+    <ClInclude Include="MGL\Algorithm\GJK.h" />
+    <ClInclude Include="MGL\Algorithm\Random\LCG.h" />
+    <ClInclude Include="MGL\Algorithm\SAT.h" />
+    <ClInclude Include="MGL\emscripten\library_system.h" />
+    <ClInclude Include="MGL\Geometry\AABB.h" />
+    <ClInclude Include="MGL\Geometry\AABB2D.h" />
+    <ClInclude Include="MGL\Geometry\Capsule.h" />
+    <ClInclude Include="MGL\Geometry\Circle.h" />
+    <ClInclude Include="MGL\Geometry\Frustum.h" />
+    <ClInclude Include="MGL\Geometry\GeometryAll.h" />
+    <ClInclude Include="MGL\Geometry\GeomType.h" />
+    <ClInclude Include="MGL\Geometry\HitInfo.h" />
+    <ClInclude Include="MGL\Geometry\KDTree.h" />
+    <ClInclude Include="MGL\Geometry\Line.h" />
+    <ClInclude Include="MGL\Geometry\LineSegment.h" />
+    <ClInclude Include="MGL\Geometry\OBB.h" />
+    <ClInclude Include="MGL\Geometry\PBVolume.h" />
+    <ClInclude Include="MGL\Geometry\Plane.h" />
+    <ClInclude Include="MGL\Geometry\Polygon.h" />
+    <ClInclude Include="MGL\Geometry\Polyhedron.h" />
+    <ClInclude Include="MGL\Geometry\QuadTree.h" />
+    <ClInclude Include="MGL\Geometry\Ray.h" />
+    <ClInclude Include="MGL\Geometry\Sphere.h" />
+    <ClInclude Include="MGL\Geometry\Triangle.h" />
+    <ClInclude Include="MGL\Geometry\TriangleMesh.h" />
+    <ClInclude Include="MGL\MathBuildConfig.h" />
+    <ClInclude Include="MGL\MathGeoLib.h" />
+    <ClInclude Include="MGL\MathGeoLibFwd.h" />
+    <ClInclude Include="MGL\Math\assume.h" />
+    <ClInclude Include="MGL\Math\BitOps.h" />
+    <ClInclude Include="MGL\Math\Callstack.h" />
+    <ClInclude Include="MGL\Math\FixedPoint.h" />
+    <ClInclude Include="MGL\Math\float2.h" />
+    <ClInclude Include="MGL\Math\float3.h" />
+    <ClInclude Include="MGL\Math\float3x3.h" />
+    <ClInclude Include="MGL\Math\float3x4.h" />
+    <ClInclude Include="MGL\Math\float4.h" />
+    <ClInclude Include="MGL\Math\float4d.h" />
+    <ClInclude Include="MGL\Math\float4x4.h" />
+    <ClInclude Include="MGL\Math\float4x4_neon.h" />
+    <ClInclude Include="MGL\Math\float4x4_sse.h" />
+    <ClInclude Include="MGL\Math\float4_neon.h" />
+    <ClInclude Include="MGL\Math\float4_sse.h" />
+    <ClInclude Include="MGL\Math\FloatCmp.h" />
+    <ClInclude Include="MGL\Math\grisu3.h" />
+    <ClInclude Include="MGL\Math\InclWindows.h" />
+    <ClInclude Include="MGL\Math\MathAll.h" />
+    <ClInclude Include="MGL\Math\MathConstants.h" />
+    <ClInclude Include="MGL\Math\MathFunc.h" />
+    <ClInclude Include="MGL\Math\MathLog.h" />
+    <ClInclude Include="MGL\Math\MathNamespace.h" />
+    <ClInclude Include="MGL\Math\MathTypes.h" />
+    <ClInclude Include="MGL\Math\MatrixProxy.h" />
+    <ClInclude Include="MGL\Math\MiniFloat.h" />
+    <ClInclude Include="MGL\Math\myassert.h" />
+    <ClInclude Include="MGL\Math\Polynomial.h" />
+    <ClInclude Include="MGL\Math\Quat.h" />
+    <ClInclude Include="MGL\Math\quat_simd.h" />
+    <ClInclude Include="MGL\Math\Rect.h" />
+    <ClInclude Include="MGL\Math\Reinterpret.h" />
+    <ClInclude Include="MGL\Math\simd.h" />
+    <ClInclude Include="MGL\Math\SSEMath.h" />
+    <ClInclude Include="MGL\Math\sse_mathfun.h" />
+    <ClInclude Include="MGL\Math\TransformOps.h" />
+    <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
+    <ClInclude Include="MGL\Time\Clock.h" />
+    <ClInclude Include="OptionsWindow.h" />
+    <ClInclude Include="Globals.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\implements\imgui_impl_opengl2.h" />
+    <ClInclude Include="imgui\implements\imgui_impl_sdl.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="ModuleCamera3D.h" />
+    <ClInclude Include="ModuleRenderer3D.h" />
+    <ClInclude Include="ModuleUI.h" />
+    <ClInclude Include="Module.h" />
+    <ClInclude Include="ModuleInput.h" />
+    <ClInclude Include="ModuleWindow.h" />
+    <ClInclude Include="parson\parson.h" />
+    <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h" />
+    <ClInclude Include="PhysBody3D.h" />
+    <ClInclude Include="Primitive.h" />
+    <ClInclude Include="RandomGenWindow.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutWindow.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ConsoleWindow.cpp" />
+    <ClCompile Include="GeometryCreationWindow.cpp" />
+    <ClCompile Include="GeoPropertiesWindow.cpp" />
+    <ClCompile Include="glmath\glmath.cpp" />
+    <ClCompile Include="MGL\Algorithm\GJK.cpp" />
+    <ClCompile Include="MGL\Algorithm\Random\LCG.cpp" />
+    <ClCompile Include="MGL\Geometry\AABB.cpp" />
+    <ClCompile Include="MGL\Geometry\Capsule.cpp" />
+    <ClCompile Include="MGL\Geometry\Circle.cpp" />
+    <ClCompile Include="MGL\Geometry\Frustum.cpp" />
+    <ClCompile Include="MGL\Geometry\Line.cpp" />
+    <ClCompile Include="MGL\Geometry\LineSegment.cpp" />
+    <ClCompile Include="MGL\Geometry\OBB.cpp" />
+    <ClCompile Include="MGL\Geometry\PBVolume.cpp" />
+    <ClCompile Include="MGL\Geometry\Plane.cpp" />
+    <ClCompile Include="MGL\Geometry\Polygon.cpp" />
+    <ClCompile Include="MGL\Geometry\Polyhedron.cpp" />
+    <ClCompile Include="MGL\Geometry\Ray.cpp" />
+    <ClCompile Include="MGL\Geometry\Sphere.cpp" />
+    <ClCompile Include="MGL\Geometry\Triangle.cpp" />
+    <ClCompile Include="MGL\Geometry\TriangleMesh.cpp" />
+    <ClCompile Include="MGL\Math\BitOps.cpp" />
+    <ClCompile Include="MGL\Math\Callstack.cpp" />
+    <ClCompile Include="MGL\Math\float2.cpp" />
+    <ClCompile Include="MGL\Math\float3.cpp" />
+    <ClCompile Include="MGL\Math\float3x3.cpp" />
+    <ClCompile Include="MGL\Math\float3x4.cpp" />
+    <ClCompile Include="MGL\Math\float4.cpp" />
+    <ClCompile Include="MGL\Math\float4d.cpp" />
+    <ClCompile Include="MGL\Math\float4x4.cpp" />
+    <ClCompile Include="MGL\Math\grisu3.c" />
+    <ClCompile Include="MGL\Math\grisu3_cpp.cpp" />
+    <ClCompile Include="MGL\Math\MathFunc.cpp" />
+    <ClCompile Include="MGL\Math\MathLog.cpp" />
+    <ClCompile Include="MGL\Math\MathOps.cpp" />
+    <ClCompile Include="MGL\Math\MiniFloat.cpp" />
+    <ClCompile Include="MGL\Math\Polynomial.cpp" />
+    <ClCompile Include="MGL\Math\Quat.cpp" />
+    <ClCompile Include="MGL\Math\SSEMath.cpp" />
+    <ClCompile Include="MGL\Math\TransformOps.cpp" />
+    <ClCompile Include="MGL\SysInfo\SystemInfo.cpp" />
+    <ClCompile Include="MGL\Time\Clock.cpp" />
+    <ClCompile Include="ModuleManageMesh.cpp" />
+    <ClCompile Include="OptionsWindow.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="imgui\implements\imgui_impl_opengl2.cpp" />
+    <ClCompile Include="imgui\implements\imgui_impl_sdl.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ModuleCamera3D.cpp" />
+    <ClCompile Include="ModuleInput.cpp" />
+    <ClCompile Include="ModuleRenderer3D.cpp" />
+    <ClCompile Include="ModuleUI.cpp" />
+    <ClCompile Include="ModuleWindow.cpp" />
+    <ClCompile Include="parson\parson.c" />
+    <ClCompile Include="pcg-c-basic-0.9\pcg_basic.c" />
+    <ClCompile Include="PhysBody3D.cpp" />
+    <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="RandomGenWindow.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assimp\include\.editorconfig" />
+    <None Include="Assimp\include\color4.inl" />
+    <None Include="Assimp\include\material.inl" />
+    <None Include="Assimp\include\matrix3x3.inl" />
+    <None Include="Assimp\include\matrix4x4.inl" />
+    <None Include="Assimp\include\quaternion.inl" />
+    <None Include="Assimp\include\vector2.inl" />
+    <None Include="Assimp\include\vector3.inl" />
+    <None Include="Assimp\libx86\assimp.dll" />
+    <None Include="Assimp\libx86\assimp.exp" />
+    <None Include="DevIL\include\IL\config.h.win" />
+    <None Include="DevIL\include\IL\DevIL.i" />
+    <None Include="DevIL\include\IL\stamp-h.in" />
+    <None Include="DevIL\libx86\Release\DevIL.dll" />
+    <None Include="DevIL\libx86\Release\ILU.dll" />
+    <None Include="DevIL\libx86\Release\ILUT.dll" />
+    <None Include="DevIL\libx86\unicode\Release\DevIL.dll" />
+    <None Include="DevIL\libx86\unicode\Release\ILU.dll" />
+    <None Include="DevIL\libx86\unicode\Release\ILUT.dll" />
+    <None Include="GLEW\libx86\Release\Win32\glew32.dll" />
+    <None Include="MGL\emscripten\library_system.js" />
+    <None Include="MGL\Geometry\KDTree.inl" />
+    <None Include="MGL\Geometry\QuadTree.inl" />
+    <None Include="MGL\Geometry\TriangleMesh_IntersectRay_AVX.inl" />
+    <None Include="MGL\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
+    <None Include="MGL\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
+    <None Include="MGL\Math\float2.inl" />
+    <None Include="MGL\Math\Matrix.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Assimp\libx86\assimp.lib" />
+    <Library Include="Assimp\libx86\zlibstatic.lib" />
+    <Library Include="DevIL\libx86\Release\DevIL.lib" />
+    <Library Include="DevIL\libx86\Release\ILU.lib" />
+    <Library Include="DevIL\libx86\Release\ILUT.lib" />
+    <Library Include="DevIL\libx86\unicode\Release\DevIL.lib" />
+    <Library Include="DevIL\libx86\unicode\Release\ILU.lib" />
+    <Library Include="DevIL\libx86\unicode\Release\ILUT.lib" />
+    <Library Include="GLEW\libx86\Release\Win32\glew32.lib" />
+    <Library Include="GLEW\libx86\Release\Win32\glew32s.lib" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
