@@ -17,7 +17,9 @@
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/Release/ILU.lib")
 
-ModuleManageMesh::ModuleManageMesh(Application* app, bool start_enabled) : Module(app, start_enabled)
+void CallLog(const char* str, char* usrData);
+
+ModuleManageMesh::ModuleManageMesh(bool start_enabled) : Module(start_enabled)
 {
 	// Stream log messages to Debug window
 	struct aiLogStream stream;
@@ -32,6 +34,11 @@ bool ModuleManageMesh::Init()
 	// DevIL initialization
 	ilInit();
 	iluInit();
+
+	struct aiLogStream stream;
+	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
+	stream.callback = CallLog;
+	aiAttachLogStream(&stream);
 
 	return ret;
 }
@@ -89,7 +96,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
-		float vertex_aux = 0.f;
 
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
@@ -107,7 +113,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			add.name = scene->mRootNode->mChildren[i]->mName.C_Str();
 
 			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
-
+      
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
@@ -171,11 +177,28 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 			GenBuffers(add);
 
+			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces", add.num_vertex, add.num_index, add.num_faces);
+
 			add_obj.meshes.push_back(add);
 
 			App->ui->geo_properties_win->CheckMeshInfo();
 		}
 
+		// Texture Setup
+		if (scene->HasMaterials())
+		{
+			for (int i = 0; i < scene->mNumMaterials; i++)
+			{
+				SetupMat(add_obj, scene->mMaterials[i]);
+				aiString path;
+				aiReturn err = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+				LoadTextCurrentObj(path.C_Str(), &add_obj);
+			}
+		}
+
+		App->camera->SetToObj(&add_obj);
+
+		App->ui->console_win->AddLog("New Object with %d meshes, %d texture/s, %d color/s", add_obj.meshes.size(), add_obj.textures.size(), add_obj.mat_colors.size());
 
 		if (Objects.size() > 0)
 		{
@@ -185,26 +208,11 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		}
 		else
 			Objects.push_back(add_obj);
-
-		App->camera->Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
-		App->camera->LookAt(vec3(0.0f, 0.0f, 0.0f));
-		App->camera->mesh_multiplier = vertex_aux / 4;
-
+		
 		// ReSet all Parenting for later use
 		SetParents();
 
-		// Texture Setup
-		std::vector<obj_data>::iterator item = --Objects.end();
-		if (scene->HasMaterials())
-		{
-			for (int i = 0; i < scene->mNumMaterials; i++)
-			{
-				SetupMat(*item._Ptr, scene->mMaterials[i]);
-				aiString path;
-				aiReturn err = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-				LoadTextCurrentObj(path.C_Str(), item._Ptr);
-			}
-		}
+		
 
 		aiReleaseImport(scene);
 	}
@@ -378,6 +386,8 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 		{
 			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
 		}
+		App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
+
 	}
 	else
 	{
@@ -642,4 +652,9 @@ bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 	SetParents();
 
 	return ret;
+}
+
+void CallLog(const char* str, char* usrData)
+{
+	App->ui->console_win->AddLog(str);
 }

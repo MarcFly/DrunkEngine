@@ -9,14 +9,17 @@
 #include "ModuleManageMesh.h"
 #include "ConsoleWindow.h"
 
+#include "GLEW/include/GL/wglew.h"
+
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
 
-OptionsWindow::OptionsWindow(Application* app) : Window("Options")
+OptionsWindow::OptionsWindow() : Window("Options")
 {
-	App = app;
 	key_repeated = false;
 	max_fps = 60;
+
+	//ram_read_time.Start();
 
 	App->ui->console_win->AddLog("Created Options Window-----------------");
 }
@@ -377,7 +380,6 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->input->Save(nullptr);
-
 			ImGui::SameLine();
 			if (ImGui::Button("Reset to Default"))
 				App->input->SetDefaultControls();
@@ -399,7 +401,16 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d Threads (%d KB)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
 
-			ImGui::Text("System Ram: ");
+			ImGui::Text("Used System Ram: ");
+			ImGui::SameLine();
+			if (ram_read_time.Read() > 1000) {
+				GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
+				ram_read_time.Start();
+			}
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB",  mem.WorkingSetSize / (1024.0f * 1024.0f));
+
+
+			ImGui::Text("Total System Ram: ");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f GB", SDL_GetSystemRAM() / 1024.0f);
 
@@ -442,9 +453,11 @@ void OptionsWindow::Draw()
 			ImGui::Separator();
 
 			// GPU
+			std::string gpu_vendor = (char*)glGetString(GL_VENDOR);
+			
 			ImGui::Text("Brand: ");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", glGetString(GL_VENDOR));
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", gpu_vendor.c_str());
 
 			ImGui::Text("GPU: ");
 			ImGui::SameLine();
@@ -454,17 +467,49 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", glGetString(GL_VERSION));
 
-			ImGui::Text("VRAM Budget: ");
-			ImGui::SameLine();
-			GLint budget = 0;
-			glGetIntegerv(MEM_BUDGET_NVX, &budget);
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", budget / 1024.0f);
 
-			ImGui::Text("VRAM Budget: ");
-			ImGui::SameLine();
+			// VRAM DATA
+			GLint budget = 0;
 			GLint available = 0;
-			glGetIntegerv(MEM_AVAILABLE_NVX, &available);
+			GLuint used_mem = 0;
+
+			if (gpu_vendor.find("NVIDIA") != -1)
+			{
+				glGetIntegerv(MEM_BUDGET_NVX, &budget);
+				glGetIntegerv(MEM_AVAILABLE_NVX, &available);
+
+				used_mem = (budget - available) / 1024;
+			}
+			else if (gpu_vendor.find("ATI") != -1)
+			{
+				// With these ones, the info may not be accurate, no better way besides just counting the vram used manually
+				GLint vbo_mem[4];
+				GLint tex_mem[4];
+				GLint rbo_mem[4];
+				glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, vbo_mem);
+				glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, tex_mem);
+				glGetIntegerv(GL_RENDERBUFFER_FREE_MEMORY_ATI, rbo_mem);
+
+				used_mem = (vbo_mem[0] + tex_mem[0] + rbo_mem[0]) / (1024 * 1024);
+
+				wglGetGPUInfoAMD(wglGetGPUIDsAMD(0, 0), WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(GLuint), &budget);
+
+				available = budget - used_mem;
+				budget *= 1024;
+				available *= 1024;
+			}
+			
+			ImGui::Text("VRAM Used: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d MB", used_mem);
+
+			ImGui::Text("VRAM Available: ");
+			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", available / 1024.0f);
+
+			ImGui::Text("VRAM Total: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", budget / 1024.0f);
 
 		}
 	}

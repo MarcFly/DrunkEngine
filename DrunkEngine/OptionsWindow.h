@@ -4,11 +4,12 @@
 #include "Window.h"
 #include "Application.h"
 #include <vector>
+#include <Psapi.h>
 
 class OptionsWindow : public Window
 {
 public:
-	OptionsWindow(Application* app);
+	OptionsWindow();
 	virtual ~OptionsWindow();
 
 	void Draw() override;
@@ -32,6 +33,9 @@ public:
 
 	int input_change;
 	bool key_repeated;
+
+	PROCESS_MEMORY_COUNTERS mem = { 0 };
+	Timer ram_read_time;
 
 };
 

@@ -3,13 +3,14 @@
 
 #include "Module.h"
 #include "Globals.h"
+#include "ModuleManageMesh.h"
 
 #include "glmath/glmath.h"
 
 class ModuleCamera3D : public Module
 {
 public:
-	ModuleCamera3D(Application* app, bool start_enabled = true);
+	ModuleCamera3D(bool start_enabled = true);
 	~ModuleCamera3D();
 
 	bool Start();
@@ -21,6 +22,8 @@ public:
 	void Move(const vec3 &Movement);
 	void Transport(const vec3 &Movement);
 	void Rotate();
+
+	void SetToObj(obj_data* obj);
 
 	float* GetViewMatrix();
 

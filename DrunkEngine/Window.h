@@ -27,7 +27,6 @@ public:
 
 public:
 	bool active = false;
-	Application* App;
 
 protected:
 	std::string name;

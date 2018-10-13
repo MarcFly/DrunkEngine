@@ -21,7 +21,7 @@
 
 using namespace std;
 
-ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled)
 {
 	ImGui::CreateContext();
 }
@@ -42,11 +42,11 @@ bool ModuleUI::Init()
 	show_demo_window = false;
 
 	windows.push_back(console_win = new ConsoleWindow());
-	windows.push_back(options_win = new OptionsWindow(App));
-	windows.push_back(about_win = new AboutWindow(App));
+	windows.push_back(options_win = new OptionsWindow());
+	windows.push_back(about_win = new AboutWindow());
 	windows.push_back(random_win = new RandomGenWindow());
-	windows.push_back(geometry_win = new GEOMWindow(App));
-	windows.push_back(geo_properties_win = new GeoPropertiesWindow(App));
+	windows.push_back(geometry_win = new GEOMWindow());
+	windows.push_back(geo_properties_win = new GeoPropertiesWindow());
 
 	App->input->UpdateShortcuts();
 
