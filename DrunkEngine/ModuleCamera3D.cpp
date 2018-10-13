@@ -254,6 +254,11 @@ void ModuleCamera3D::SetToObj(obj_data* obj, float vertex_aux)
 	}
 
 	Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
-	LookAt(vec3(0.0f, 0.0f, 0.0f));
+
+	float aux_x = (obj->box_x + obj->box_nx) / 2;
+	float aux_y = (obj->box_y + obj->box_ny) / 2;
+	float aux_z = (obj->box_z + obj->box_nz) / 2;
+
+	LookAt(vec3(aux_x, aux_y, aux_z));
 	mesh_multiplier = vertex_aux / 4;
 }
