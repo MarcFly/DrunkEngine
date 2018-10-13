@@ -23,7 +23,7 @@ public:
 	void Transport(const vec3 &Movement);
 	void Rotate();
 
-	void SetToObj(obj_data* obj);
+	void SetToObj(obj_data* obj, float vertex_aux);
 
 	float* GetViewMatrix();
 

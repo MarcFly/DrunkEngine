@@ -232,9 +232,8 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 	return ret;
 }
 
-void ModuleCamera3D::SetToObj(obj_data* obj)
+void ModuleCamera3D::SetToObj(obj_data* obj, float vertex_aux)
 {
-	float vertex_aux = 0.f;
 	
 	for (int i = 0; i < obj->meshes.size() - 1; i++) {
 		for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)

@@ -97,6 +97,8 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	if (scene != nullptr && scene->HasMeshes())
 	{
 
+		float vertex_aux = 0.f;
+
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
@@ -184,6 +186,8 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			App->ui->geo_properties_win->CheckMeshInfo();
 		}
 
+		App->camera->SetToObj(&add_obj, vertex_aux);
+
 		// Texture Setup
 		if (scene->HasMaterials())
 		{
@@ -195,8 +199,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 				LoadTextCurrentObj(path.C_Str(), &add_obj);
 			}
 		}
-
-		App->camera->SetToObj(&add_obj);
 
 		App->ui->console_win->AddLog("New Object with %d meshes, %d texture/s, %d color/s", add_obj.meshes.size(), add_obj.textures.size(), add_obj.mat_colors.size());
 
