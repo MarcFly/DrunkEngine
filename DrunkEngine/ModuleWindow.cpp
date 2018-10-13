@@ -78,6 +78,11 @@ bool ModuleWindow::Init()
 		}
 	}
 
+	SDL_DisplayMode DM;
+	SDL_GetCurrentDisplayMode(0, &DM);
+	screen_size_w = DM.w;
+	screen_size_h = DM.h;
+
 	return ret;
 }
 
@@ -114,13 +119,12 @@ void ModuleWindow::SetFullscreen(bool fullscreen)
 {
 	if (fullscreen)
 	{
-		SDL_DisplayMode DM;
-		SDL_GetCurrentDisplayMode(0, &DM);
 		SDL_GetWindowSize(window, &window_w, &window_h);
-		SDL_SetWindowSize(window, DM.w, DM.h);
+		SDL_SetWindowSize(window, screen_size_w, screen_size_h);
 
 		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
 	}
+
 	else
 	{
 		SDL_SetWindowFullscreen(this->window, 0);
@@ -202,6 +206,8 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 	json_object_dotset_number(root_obj, "window.options.brightness", this->brightness);
 
 	json_serialize_to_file(root_value, "config_data.json");
+
+	App->ui->console_win->AddLog("Window config saved");
 
 	ret = true;
 	return ret;

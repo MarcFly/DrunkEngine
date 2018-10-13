@@ -1,6 +1,6 @@
 #include "ConsoleWindow.h"
 
-ConsoleWindow::ConsoleWindow() : Window("Console")
+ConsoleWindow::ConsoleWindow() : Window("Log")	//Change to "Console" for Assignment 2
 {
 	ClearLog();
 	memset(InputBuf, 0, sizeof(InputBuf));
@@ -98,19 +98,19 @@ void ConsoleWindow::Draw()
 
 	ImGui::Separator();
 
-	// Command-line
+	// Command-line						Console fcn
 	bool reclaim_focus = false;
-	if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &TextEditCallbackStub, (void*)this))
-	{
-		char* s = InputBuf;
-		Strtrim(s);
-		if (s[0])
-			ExecCommand(s);
-		strcpy(s, "");
-		reclaim_focus = true;
-	}
+	//if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &TextEditCallbackStub, (void*)this))
+	//{
+	//	char* s = InputBuf;
+	//	Strtrim(s);
+	//	if (s[0])
+	//		ExecCommand(s);
+	//	strcpy(s, "");
+	//	reclaim_focus = true;
+	//}
 
-	//// Auto-focus on window apparition
+	// Auto-focus on window apparition
 	ImGui::SetItemDefaultFocus();
 	if (reclaim_focus)
 		ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget

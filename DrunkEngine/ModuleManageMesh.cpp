@@ -48,6 +48,7 @@ bool ModuleManageMesh::Start()
 	bool ret = true;
 
 	Load(nullptr);
+	SetCurrParams();
 	LoadFBX("./BakerHouse.fbx");
 
 	return ret;
@@ -91,6 +92,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	obj_data add_obj;
 	
 	add_obj.name = aux.substr(aux.find_last_of("\\/") + 1);
+	//add_obj.name = scene->mRootNode->mName.C_Str();
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -100,12 +102,18 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 		{
 			mesh_data add;
       
+			aiQuaternion rotation_quat;
+			scene->mRootNode->mChildren[i]->mTransformation.Decompose(add.transform_scale, rotation_quat, add.transform_position);
+			add.transform_rotate = rotation_quat.GetEuler();
+
 			add.num_vertex = scene->mMeshes[i]->mNumVertices;
 			add.vertex = new float[add.num_vertex*3];
 			add.num_faces = scene->mMeshes[i]->mNumFaces;
 
-			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
+			add.name = scene->mRootNode->mChildren[i]->mName.C_Str();
 
+			memcpy(add.vertex, scene->mMeshes[i]->mVertices, 3*sizeof(float)*add.num_vertex);
+      
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				add.num_index = scene->mMeshes[i]->mNumFaces*3;
@@ -128,7 +136,40 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 						SetNormals(add, j);						
 					}
 				}			
+
+				add.box_x = add.vertex[0];
+				add.box_nx = add.vertex[0];
+				add.box_y = add.vertex[1];
+				add.box_ny = add.vertex[1];
+				add.box_z = add.vertex[2];
+				add.box_nz = add.vertex[2];
+
+				for (uint j = 0; j < scene->mMeshes[i]->mNumVertices * 3; j++)
+				{
+					if (vertex_aux < abs(add.vertex[j]))
+						vertex_aux = abs(add.vertex[j]);
+
+					if (j % 3 == 0 && add.box_x < add.vertex[j])
+						add.box_x = add.vertex[j];
+
+					if (j % 3 == 0 && add.box_nx > add.vertex[j])
+						add.box_nx = add.vertex[j];
+
+					if (j % 3 == 1 && add.box_y < add.vertex[j])
+						add.box_y = add.vertex[j];
+
+					if (j % 3 == 1 && add.box_ny > add.vertex[j])
+						add.box_ny = add.vertex[j];
+
+					if (j % 3 == 2 && add.box_z < add.vertex[j])
+						add.box_z = add.vertex[j];
+
+					if (j % 3 == 2 && add.box_nz > add.vertex[j])
+						add.box_nz = add.vertex[j];
+
+				}
 			}
+			App->ui->console_win->AddLog("New mesh with %d vertices, %d indices and %d tris", add.num_vertex, add.num_index, add.num_faces);
 
 			SetTexCoords(&add, scene->mMeshes[i]);
 
@@ -249,6 +290,11 @@ bool ModuleManageMesh::Load(JSON_Value * root_value)
 	scene_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.scenes_path");
 	tex_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.textures_path");
 
+	curr_tws = json_object_dotget_number(json_object(root_value), "texture.curr_wrap_s");
+	curr_twt = json_object_dotget_number(json_object(root_value), "texture.curr_wrap_t");
+	curr_tmagf = json_object_dotget_number(json_object(root_value), "texture.curr_min_filter");
+	curr_tminf = json_object_dotget_number(json_object(root_value), "texture.curr_mag_filter");
+
 	ret = true;
 	return ret;
 }
@@ -257,13 +303,17 @@ bool ModuleManageMesh::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
+	root_value = json_parse_file("config_data.json");
+	JSON_Object* root_obj = json_value_get_object(root_value);
 
-	//root_value = json_parse_file("config_data.json");
-	//JSON_Object* root_obj = json_value_get_object(root_value);
-	//
-	//
-	//
-	//json_serialize_to_file(root_value, "config_data.json");
+	json_object_dotset_number(root_obj, "texture.curr_wrap_s", curr_tws);
+	json_object_dotset_number(root_obj, "texture.curr_wrap_t", curr_twt);
+	json_object_dotset_number(root_obj, "texture.curr_min_filter", curr_tmagf);
+	json_object_dotset_number(root_obj, "texture.curr_mag_filter", curr_tminf);
+
+	json_serialize_to_file(root_value, "config_data.json");
+
+	App->ui->console_win->AddLog("Texture config saved");
 
 	ret = true;
 	return ret;
@@ -479,8 +529,16 @@ void ModuleManageMesh::DestroyObject(const int& index)
 
 void ModuleManageMesh::GenTexParams()
 {
-	uint tws, twt, tmagf, tminf;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
 
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
+}
+
+void ModuleManageMesh::SetCurrParams()
+{
 	switch (curr_tws) {
 	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_EDGE;	break;
 	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_BORDER;	break;
@@ -519,12 +577,6 @@ void ModuleManageMesh::GenTexParams()
 	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
 	default: App->ui->console_win->AddLog("Unsuccessful initialization");
 	}
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
-
-	// Texture Filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
 }
 
 // CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------

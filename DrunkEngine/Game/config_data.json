@@ -19,7 +19,7 @@
       "full_desktop": false
     }
   },
-  "opengl": {
+  "render": {
     "depth_test": true,
     "cull_face": true,
     "lighting": true,
@@ -28,7 +28,15 @@
     "wireframe": false,
     "faces&wireframe": true,
     "normals": false,
-    "normal_length": 1
+    "normal_length": 1,
+    "vsync": true,
+    "bounding_box": false
+  },
+  "texture": {
+    "curr_wrap_s": 0,
+    "curr_wrap_t": 0,
+    "curr_min_filter": 0,
+    "curr_mag_filter": 0
   },
   "controls": {
     "move_forward": 26,

@@ -116,7 +116,7 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();
 
-			if (ImGui::MenuItem("Console"))
+			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
 				console_win->SwitchActive();
 
 			if (ImGui::MenuItem("Exit"))

@@ -206,6 +206,8 @@ void ModuleInput::SetDefaultControls()
 	controls[CONSOLE_MENU] = SDL_SCANCODE_C;
 	controls[MESH_MENU] = SDL_SCANCODE_M;
 	controls[ABOUT_MENU] = SDL_SCANCODE_I;
+
+	App->ui->console_win->AddLog("Input config set to default");
 }
 
 bool ModuleInput::Load(JSON_Value * root_value)
@@ -250,6 +252,8 @@ bool ModuleInput::Save(JSON_Value * root_value)
 	json_object_dotset_number(root_obj, "controls.mesh_menu", controls[MESH_MENU]);
 
 	json_serialize_to_file(root_value, "config_data.json");
+
+	App->ui->console_win->AddLog("Input config saved");
 
 	ret = true;
 	return ret;

@@ -24,11 +24,6 @@ ModuleRenderer3D::~ModuleRenderer3D()
 bool ModuleRenderer3D::Init()
 {
 	bool ret = true;
-	vsync = true;
-	wireframe = false;
-	faces = true;
-	render_normals = false;
-	normal_length = 1.0f;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -149,7 +144,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	RenderGrid();
 
 	// Something Something lights
-	// light 0 on cam pos
+	// Set light pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
@@ -235,6 +230,9 @@ void ModuleRenderer3D::Render(bool use_texture)
 					glEnd();
 				}
 
+				if (bounding_box)
+					RenderBoundBox(mesh);
+
 				glDisableClientState(GL_VERTEX_ARRAY);
 			}
 		}
@@ -279,10 +277,12 @@ bool ModuleRenderer3D::CheckGLError()
 
 void ModuleRenderer3D::RenderGrid()
 {
+	glDisable(GL_LIGHTING);
+
 	for (int i = 0; i < GRID_SIZE * 2 + 1; i++)
 	{
 		glBegin(GL_LINES);
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(0.5f, 0.5f, 0.5f);
 
 		//Z
 		glVertex3i(GRID_SIZE - i, 0, GRID_SIZE);
@@ -293,6 +293,57 @@ void ModuleRenderer3D::RenderGrid()
 		glVertex3i(GRID_SIZE, 0, -GRID_SIZE + i);
 		glEnd();
 	}
+
+	if (lighting)
+		glEnable(GL_LIGHTING);
+}
+
+void ModuleRenderer3D::RenderBoundBox(mesh_data* mesh)
+{
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+
+	glEnd();
+
+	if (lighting)
+		glEnable(GL_LIGHTING);
 }
 
 void ModuleRenderer3D::SwapWireframe(bool active)
@@ -322,15 +373,17 @@ bool ModuleRenderer3D::Load(JSON_Value * root_value)
 
 	root_value = json_parse_file("config_data.json");
 
-	depth_test = json_object_dotget_boolean(json_object(root_value), "opengl.depth_test");
-	cull_face = json_object_dotget_boolean(json_object(root_value), "opengl.cull_face");
-	lighting = json_object_dotget_boolean(json_object(root_value), "opengl.lighting");
-	color_material = json_object_dotget_boolean(json_object(root_value), "opengl.color_materials");
-	texture_2d = json_object_dotget_boolean(json_object(root_value), "opengl.texture2d");
-	wireframe = json_object_dotget_boolean(json_object(root_value), "opengl.wireframe");
-	faces = json_object_dotget_boolean(json_object(root_value), "opengl.faces&wireframe");
-	render_normals = json_object_dotget_boolean(json_object(root_value), "opengl.normals");
-	normal_length = json_object_dotget_number(json_object(root_value), "opengl.normal_length");
+	depth_test = json_object_dotget_boolean(json_object(root_value), "render.depth_test");
+	cull_face = json_object_dotget_boolean(json_object(root_value), "render.cull_face");
+	lighting = json_object_dotget_boolean(json_object(root_value), "render.lighting");
+	color_material = json_object_dotget_boolean(json_object(root_value), "render.color_materials");
+	texture_2d = json_object_dotget_boolean(json_object(root_value), "render.texture2d");
+	wireframe = json_object_dotget_boolean(json_object(root_value), "render.wireframe");
+	faces = json_object_dotget_boolean(json_object(root_value), "render.faces&wireframe");
+	render_normals = json_object_dotget_boolean(json_object(root_value), "render.normals");
+	normal_length = json_object_dotget_number(json_object(root_value), "render.normal_length");
+	vsync = json_object_dotget_boolean(json_object(root_value), "render.vsync");
+	bounding_box = json_object_dotget_boolean(json_object(root_value), "render.bounding_box");
 
 	ret = true;
 	return ret;
@@ -344,17 +397,21 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
-	json_object_dotset_boolean(root_obj, "opengl.depth_test", depth_test);
-	json_object_dotset_boolean(root_obj, "opengl.cull_face", cull_face);
-	json_object_dotset_boolean(root_obj, "opengl.lighting", lighting);
-	json_object_dotset_boolean(root_obj, "opengl.color_materials", color_material);
-	json_object_dotset_boolean(root_obj, "opengl.texture2d", texture_2d);
-	json_object_dotset_boolean(root_obj, "opengl.wireframe", wireframe);
-	json_object_dotset_boolean(root_obj, "opengl.faces&wireframe", faces);
-	json_object_dotset_boolean(root_obj, "opengl.normals", render_normals);
-	json_object_dotset_number(root_obj, "opengl.normal_length", normal_length);
+	json_object_dotset_boolean(root_obj, "render.depth_test", depth_test);
+	json_object_dotset_boolean(root_obj, "render.cull_face", cull_face);
+	json_object_dotset_boolean(root_obj, "render.lighting", lighting);
+	json_object_dotset_boolean(root_obj, "render.color_materials", color_material);
+	json_object_dotset_boolean(root_obj, "render.texture2d", texture_2d);
+	json_object_dotset_boolean(root_obj, "render.wireframe", wireframe);
+	json_object_dotset_boolean(root_obj, "render.faces&wireframe", faces);
+	json_object_dotset_boolean(root_obj, "render.normals", render_normals);
+	json_object_dotset_number(root_obj, "render.normal_length", normal_length);
+	json_object_dotset_boolean(root_obj, "render.vsync", vsync);
+	json_object_dotset_boolean(root_obj, "render.bounding_box", bounding_box);
 
 	json_serialize_to_file(root_value, "config_data.json");
+
+	App->ui->console_win->AddLog("Render config saved");
 
 	ret = true;
 	return ret;

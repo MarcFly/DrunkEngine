@@ -39,6 +39,9 @@ public:
 	int window_w;
 	int window_h;
 
+	int screen_size_w;
+	int screen_size_h;
+
 	bool fullscreen;
 	bool resizable;
 	bool borderless;

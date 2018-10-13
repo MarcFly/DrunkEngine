@@ -16,6 +16,8 @@
 #define CHECKERS_HEIGHT 128
 #define CHECKERS_WIDTH 128
 
+struct mesh_data;
+
 class ModuleRenderer3D : public Module
 {
 public:
@@ -33,6 +35,7 @@ public:
 	void ChangeVsync();
 	bool CheckGLError();
 	void RenderGrid();
+	void RenderBoundBox(mesh_data* mesh);
 	void SwapWireframe(bool active);
 
 	void InitCheckTex();
@@ -59,6 +62,8 @@ public:
 	bool faces;
 	bool render_normals;
 	float normal_length;
+
+	bool bounding_box;
 
   // Checker Texture
 	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];

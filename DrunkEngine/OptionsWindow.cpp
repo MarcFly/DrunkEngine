@@ -39,10 +39,7 @@ void OptionsWindow::Draw()
 			
 			ImGui::Text("Organization:");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);
-
-			ImGui::Checkbox("Vsync", &App->renderer3D->vsync);
-			App->renderer3D->ChangeVsync();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ORGANIZATION);		
 
 			/*if (ImGui::SliderFloat("Max FPS", &max_fps, 0.0f, 120.0f))
 			{
@@ -84,7 +81,7 @@ void OptionsWindow::Draw()
 			ImGui::PlotHistogram("##time_differential", &dt_history[0], dt_h_size, 0, title, 0.0f, (1000*(1.0f / max_fps) + 1) * 1.25f, ImVec2(310, 100));
 			
 		}
-		if (ImGui::CollapsingHeader("Windows"))
+		if (ImGui::CollapsingHeader("Window"))
 		{
 			int width;
 			int height;
@@ -94,10 +91,10 @@ void OptionsWindow::Draw()
 			if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0.0f, 1.0f))
 				App->window->SetBrightness(App->window->brightness);
 
-			if (ImGui::SliderInt("Width", &width, 720, 1920) && !App->window->fullscreen)
+			if (ImGui::SliderInt("Width", &width, 400, App->window->screen_size_w - 1) && !App->window->fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
 
-			if (ImGui::SliderInt("Height", &height, 480, 1080) && !App->window->fullscreen)
+			if (ImGui::SliderInt("Height", &height, 400, App->window->screen_size_h - 1) && !App->window->fullscreen)
 				SDL_SetWindowSize(App->window->window, width, height);
 
 
@@ -119,14 +116,21 @@ void OptionsWindow::Draw()
 			if (ImGui::Checkbox("Full Desktop", &App->window->full_desktop))
 				App->window->SetFullDesktop(App->window->full_desktop);
 
+			ImGui::Separator();
+
 			if (ImGui::Button("Save Changes"))
 				App->window->Save(nullptr);
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Render Options"))
 		{
 			ImGui::Text("Tinker with the settings we are currently using...");
 			ImGui::Separator();
+
+			if (ImGui::Checkbox("Vsync", &App->renderer3D->vsync))
+				App->renderer3D->ChangeVsync();
 
 			if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depth_test))
 				CheckEnableDisableOpenGL();
@@ -142,15 +146,18 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Checkbox("Color Materials", &App->renderer3D->color_material))
 				CheckEnableDisableOpenGL();
+			ImGui::SameLine();
 
 			if (ImGui::Checkbox("Textures 2D", &App->renderer3D->texture_2d))
 				CheckEnableDisableOpenGL();
-			ImGui::SameLine();
 
 			ImGui::Checkbox("Render Faces", &App->renderer3D->faces);
 			ImGui::SameLine();
 
 			ImGui::Checkbox("Render Wireframe", &App->renderer3D->wireframe);
+			ImGui::SameLine();
+
+			ImGui::Checkbox("Render Bounding Box", &App->renderer3D->bounding_box);
 			ImGui::SameLine();
 
 			ImGui::Checkbox("Show Normals", &App->renderer3D->render_normals);
@@ -161,6 +168,8 @@ void OptionsWindow::Draw()
 
 			if (ImGui::Button("Save Changes"))
 				App->renderer3D->Save(nullptr);
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Texture Parameters"))
@@ -169,15 +178,26 @@ void OptionsWindow::Draw()
 			ImGui::Separator();
 
 			const char* wrap_types[] = { "CLAMP TO EDGE", "CLAMP TO BORDER", "MIRRORED REPEAT", "REPEAT", "MIRROR CLAMP" };
-			ImGui::Combo("Texture Wrap S", &App->mesh_loader->curr_tws, wrap_types, IM_ARRAYSIZE(wrap_types));
-			ImGui::Combo("Texture Wrap T", &App->mesh_loader->curr_twt, wrap_types, IM_ARRAYSIZE(wrap_types));
+			if (ImGui::Combo("Texture Wrap S", &App->mesh_loader->curr_tws, wrap_types, IM_ARRAYSIZE(wrap_types)))
+				App->mesh_loader->SetCurrParams();
+			if (ImGui::Combo("Texture Wrap T", &App->mesh_loader->curr_twt, wrap_types, IM_ARRAYSIZE(wrap_types)))
+				App->mesh_loader->SetCurrParams();
 			
 			ImGui::Separator();
 			
 			const char* tex_f[] = { "NEAREST","LINEAR"/*,"NEAREST MIPMAP NEAREST", "LINEAR MIPMAP NEAREST", "NEAREST MIPMAP LINEAR", "LINEAR MIPMAP LINEAR"*/ };
-			ImGui::Combo("Texture Min Filter", &App->mesh_loader->curr_tminf, tex_f, IM_ARRAYSIZE(tex_f));
-			ImGui::Combo("Texture Mag Filter", &App->mesh_loader->curr_tmagf, tex_f, IM_ARRAYSIZE(tex_f));
+			if (ImGui::Combo("Texture Min Filter", &App->mesh_loader->curr_tminf, tex_f, IM_ARRAYSIZE(tex_f)))
+				App->mesh_loader->SetCurrParams();
 
+			if (ImGui::Combo("Texture Mag Filter", &App->mesh_loader->curr_tmagf, tex_f, IM_ARRAYSIZE(tex_f)))
+				App->mesh_loader->SetCurrParams();
+
+			ImGui::Separator();
+
+			if (ImGui::Button("Save Changes"))
+				App->mesh_loader->Save(nullptr);
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Input"))
@@ -363,6 +383,8 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 			if (ImGui::Button("Reset to Default"))
 				App->input->SetDefaultControls();
+
+			ImGui::Separator();
 		}
 
 		if (ImGui::CollapsingHeader("Hardware"))

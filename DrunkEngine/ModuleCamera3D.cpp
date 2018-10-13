@@ -53,6 +53,9 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
+	if(ImGui::IsMouseHoveringAnyWindow())
+		return UPDATE_CONTINUE;
+
 	vec3 newPos(0, 0, 0);
 	float speed = MOV_SPEED * dt * mesh_multiplier;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
@@ -71,8 +74,11 @@ update_status ModuleCamera3D::Update(float dt)
 
 	Position += newPos;
 
-	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT)
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
 		Reference = vec3(0.0f, 0.0f, 0.0f);
+		Rotate();
+	}
 	else
 	{
 		Reference = Position;
@@ -85,39 +91,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
-	{
-		int dx = -App->input->GetMouseXMotion();
-		int dy = -App->input->GetMouseYMotion();
-
-		Position -= Reference;
-
-		if (dx != 0)
-		{
-			float DeltaX = (float)dx * MOUSE_SENSIBILITY;
-
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-
-		}
-
-		if (dy != 0)
-		{
-			float DeltaY = (float)dy * MOUSE_SENSIBILITY;
-
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
-
-			if (Y.y < 0.0f)
-			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
-			}
-
-		}
-
-		Position = Reference + Z * length(Position);
-	}
+		Rotate();
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
@@ -178,6 +152,42 @@ void ModuleCamera3D::Transport(const vec3 &Movement)
 	CalculateViewMatrix();
 }
 
+void ModuleCamera3D::Rotate()
+{
+	int dx = -App->input->GetMouseXMotion();
+	int dy = -App->input->GetMouseYMotion();
+
+	if (dx != 0)
+	{
+		float DeltaX = (float)dx * MOUSE_SENSIBILITY;
+
+		X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+		Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+		Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+
+	}
+
+	if (dy != 0)
+	{
+		float DeltaY = (float)dy * MOUSE_SENSIBILITY;
+
+		Y = rotate(Y, DeltaY, X);
+		Z = rotate(Z, DeltaY, X);
+
+		if (Y.y < 0.0f)
+		{
+			Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+			Y = cross(Z, X);
+		}
+
+	}
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
+		Position -= Reference;
+		Position = Reference + Z * length(Position);
+	}
+}
 // -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
@@ -215,6 +225,8 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 	json_object_dotset_number(root_obj, "camera.pos.z", X.x);
 
 	json_serialize_to_file(root_value, "config_data.json");
+
+	App->ui->console_win->AddLog("Camera position saved");
 
 	ret = true;
 	return ret;

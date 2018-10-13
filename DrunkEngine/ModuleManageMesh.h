@@ -81,6 +81,12 @@ struct mesh_data
 
 	obj_data* parent = nullptr;
 
+	aiVector3D transform_position;
+	aiVector3D transform_scale;
+	aiVector3D transform_rotate;
+
+	float box_x, box_nx, box_y, box_ny, box_z, box_nz;
+
 };
 
 struct obj_data
@@ -91,6 +97,10 @@ struct obj_data
 
 	std::vector<Color> mat_colors;
 	std::vector<texture_data> textures;
+
+	aiVector3D transform_position;
+	aiVector3D transform_scale;
+	aiQuaternion transform_rotate;
 
 	Primitive* mathbody = nullptr; // In case we create a premade object // Temporary solution
 };
@@ -121,6 +131,7 @@ public:
 	void DestroyObject(const int& index);
 
 	void GenTexParams();
+	void SetCurrParams();
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 
@@ -129,15 +140,17 @@ public:
 
 public:
 	std::vector<obj_data> Objects;
-	int curr_tws = 0;
-	int curr_twt = 0;
 
-	int curr_tmagf = 0;
-	int curr_tminf = 0;
+	int curr_tws;
+	int curr_twt;
+	int curr_tmagf;
+	int curr_tminf;
 
 	std::string scene_folder;
 	std::string tex_folder;
 
+private:
+	uint tws, twt, tmagf, tminf;
 
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }
