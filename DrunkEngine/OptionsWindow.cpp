@@ -328,7 +328,7 @@ void OptionsWindow::Draw()
 			}
 
 			//Console Window
-			ImGui::Text("Console Window");
+			ImGui::Text("Log Window"); //TODO Change to console for asg 2
 			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[CONSOLE_MENU]));
 			ImGui::SameLine();
 

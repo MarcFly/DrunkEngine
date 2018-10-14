@@ -565,7 +565,7 @@ void ModuleManageMesh::DestroyTexture(obj_data* curr_obj, const int& tex_ind)
 			curr_obj->meshes[i].tex_index = 0;
 	else
 		for (int i = 0; i < curr_obj->meshes.size(); i++)
-			curr_obj->meshes[i].tex_index--;
+			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
 }
 
 void ModuleManageMesh::GenTexParams()
