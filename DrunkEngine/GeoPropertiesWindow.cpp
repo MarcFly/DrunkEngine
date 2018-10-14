@@ -104,16 +104,19 @@ void GeoPropertiesWindow::Draw()
 								ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
 
 								ImGui::Text("Size: %d x %d", objects[selected].textures[i].width, objects[selected].textures[i].height);
-							
-								if (ImGui::Button("Use this Tex"))
+
+								char str[30];
+								snprintf(str, 30, "%s%d", "Use this Texture ##", i);
+
+								if (ImGui::Button(str))
 								{
 									for (int j = 0; j < objects[selected].meshes.size(); j++)
 										App->mesh_loader->Objects[selected].meshes[j].tex_index = i;
 								}
-								
-								if(ImGui::Button("Destory this texture"))
+
+								snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
+								if (ImGui::Button(str))
 									App->mesh_loader->DestroyTexture(&App->mesh_loader->Objects[selected], i);
-						
 							}
 						}
 					}
