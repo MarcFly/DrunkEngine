@@ -16,7 +16,8 @@ void GeoPropertiesWindow::Draw()
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 		// left
-		static int selected = 0;
+
+		selected = 0;
 
 		ImGui::BeginChild("left pane", ImVec2(250, 0), true);
 		//for (int i = 0; i < 2; i++)

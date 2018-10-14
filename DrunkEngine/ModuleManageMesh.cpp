@@ -502,6 +502,16 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+vec3 ModuleManageMesh::getObjectCenter(const obj_data* obj)
+{
+
+	float aux_x = (obj->box_x + obj->box_nx) / 2;
+	float aux_y = (obj->box_y + obj->box_ny) / 2;
+	float aux_z = (obj->box_z + obj->box_nz) / 2;
+
+	return vec3(aux_x, aux_y, aux_z);
+}
+
 // -----------------------
 int ModuleManageMesh::GetDevILVer()
 {

@@ -47,6 +47,8 @@ enum TexParams {
 
 struct obj_data;
 
+class vec3;
+
 struct texture_data
 {
 	GLuint id_tex = 0;
@@ -164,6 +166,8 @@ private:
 
 public:
 	std::vector<obj_data> getObjects() const { return Objects; }
+
+	vec3 getObjectCenter(const obj_data* obj);
 
 	int GetDevILVer();
 

@@ -21,6 +21,7 @@ public:
 	std::string tex_name;
 
 	bool check_info;
+	int selected;
 
 	ImVec2 show_size = {128,128};
 	
