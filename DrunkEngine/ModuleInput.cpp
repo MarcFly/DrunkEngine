@@ -73,8 +73,8 @@ update_status ModuleInput::PreUpdate(float dt)
 
 	Uint32 buttons = SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
 
-	mouse_x /= SCREEN_SIZE;
-	mouse_y /= SCREEN_SIZE;
+	//mouse_x /= SCREEN_SIZE;
+	//mouse_y /= SCREEN_SIZE;
 	mouse_z = 0;
 
 	for(int i = 0; i < 5; ++i)
@@ -105,20 +105,20 @@ update_status ModuleInput::PreUpdate(float dt)
 		switch(e.type)
 		{
 			case SDL_MOUSEWHEEL:
-			mouse_z = e.wheel.y;
-			break;
+				mouse_z = e.wheel.y;
+				break;
 
 			case SDL_MOUSEMOTION:
-			mouse_x = e.motion.x / SCREEN_SIZE;
-			mouse_y = e.motion.y / SCREEN_SIZE;
+				mouse_x = e.motion.x; // / SCREEN_SIZE;
+				mouse_y = e.motion.y; // / SCREEN_SIZE;
 
-			mouse_x_motion = e.motion.xrel / SCREEN_SIZE;
-			mouse_y_motion = e.motion.yrel / SCREEN_SIZE;
+				mouse_x_motion = e.motion.xrel; // / SCREEN_SIZE;
+				mouse_y_motion = e.motion.yrel; // / SCREEN_SIZE;
 			break;
 
 			case SDL_QUIT:
-			quit = true;
-			break;
+				quit = true;;
+				break;
 
 			case SDL_WINDOWEVENT:
 			{
