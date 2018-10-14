@@ -162,7 +162,7 @@ void OptionsWindow::Draw()
 
 			ImGui::Checkbox("Show Normals", &App->renderer3D->render_normals);
 
-			ImGui::SliderFloat("Normal Length", &App->renderer3D->normal_length, 0.2f, 300.0f);
+			ImGui::SliderFloat("Normal Length", &App->renderer3D->normal_length, 0.1f, 2.0f);
 
 			ImGui::Separator();
 

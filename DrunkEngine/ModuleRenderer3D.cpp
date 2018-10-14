@@ -156,7 +156,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
-
 	if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -194,47 +193,40 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::Render(bool use_texture)
 {
-	// Render From primitive list
-	/*std::list<PhysBody3D*>::iterator item_render = App->physics->bodies.begin();
-	while (item_render != App->physics->bodies.end() && App->physics->bodies.size() > 0) {
-		item_render._Ptr->_Myval->mbody->InnerRender();
-		item_render++;
-	}*/
 
 	for (int i = 0; i < App->mesh_loader->Objects.size(); i++)
 	{
 		for(int j = 0; j < App->mesh_loader->Objects[i].meshes.size(); j++)
 		{ 
-			App->mesh_loader->DrawMesh(&App->mesh_loader->Objects[i].meshes[j], use_texture);
-
 			// Draw elements
 			mesh_data* mesh = &App->mesh_loader->Objects[i].meshes[j];
+
+			if (faces)
+				App->mesh_loader->DrawMesh(mesh, use_texture);
+
+			// Draw Normals
+			if (render_normals)
 			{
+				glBegin(GL_LINES);
+				glColor3f(0.0f, 1.0f, 0.0f);
 
-				// Draw Normals
-				if (render_normals)
+				for (int k = 0; k < mesh->num_normal / 6; k++)
 				{
-					glBegin(GL_LINES);
-					glColor3f(0.0f, 1.0f, 0.0f);
+					glVertex3f(mesh->normal[k * 6], mesh->normal[k * 6 + 1], mesh->normal[k * 6 + 2]);
 
-					for (int k = 0; k < mesh->num_normal / 6; k++)
-					{
-						glVertex3f(mesh->normal[k * 6], mesh->normal[k * 6 + 1], mesh->normal[k * 6 + 2]);
+					vec norm(mesh->normal[k * 6 + 3] - mesh->normal[k * 6], mesh->normal[k * 6 + 4] - mesh->normal[k * 6 + 1], mesh->normal[k * 6 + 5] - mesh->normal[k * 6 + 2]);
+					norm = norm.Mul(normal_length);
 
-						vec norm(mesh->normal[k * 6 + 3] - mesh->normal[k * 6], mesh->normal[k * 6 + 4] - mesh->normal[k * 6 + 1], mesh->normal[k * 6 + 5] - mesh->normal[k * 6 + 2]);
-						norm = norm.Mul(normal_length);
-
-						glVertex3f(mesh->normal[k * 6] + norm.x, mesh->normal[k * 6 + 1] + norm.y, mesh->normal[k * 6 + 2] + norm.z);
-					}
-
-					glEnd();
+					glVertex3f(mesh->normal[k * 6] + norm.x, mesh->normal[k * 6 + 1] + norm.y, mesh->normal[k * 6 + 2] + norm.z);
 				}
 
-				if (bounding_box)
-					RenderBoundBox(mesh);
-
-				glDisableClientState(GL_VERTEX_ARRAY);
+				glEnd();
 			}
+
+			glDisableClientState(GL_VERTEX_ARRAY);
+
+			if (bounding_box)
+				RenderBoundBox(mesh);
 		}
 
 		
@@ -304,41 +296,41 @@ void ModuleRenderer3D::RenderBoundBox(mesh_data* mesh)
 
 	glBegin(GL_LINES);
 
-	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
-	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
 
-	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
-	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
 
-	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_z);
-	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
 
-	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
-	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
 
-	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
-	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
 
-	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_nz);
-	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
 
-	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
-	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
 
-	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
-	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
 
-	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_nz);
-	glVertex3f(mesh->box_x, mesh->box_y, mesh->box_nz);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
 
-	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
-	glVertex3f(mesh->box_nx, mesh->box_y, mesh->box_z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
 
-	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
-	glVertex3f(mesh->box_x, mesh->box_ny, mesh->box_z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
+	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
 
-	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_z);
-	glVertex3f(mesh->box_nx, mesh->box_ny, mesh->box_nz);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
+	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
 
 	glEnd();
 

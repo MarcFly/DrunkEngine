@@ -86,8 +86,7 @@ struct mesh_data
 	aiVector3D transform_scale;
 	aiVector3D transform_rotate;
 
-	float box_x, box_nx, box_y, box_ny, box_z, box_nz;
-
+	AABB BoundingBox;
 };
 
 struct obj_data
@@ -103,12 +102,7 @@ struct obj_data
 	aiVector3D transform_scale;
 	aiQuaternion transform_rotate;
 
-	float box_x;
-	float box_nx;
-	float box_y;
-	float box_ny;
-	float box_z;
-	float box_nz;
+	AABB BoundingBox;
 
 	Primitive* mathbody = nullptr; // In case we create a premade object // Temporary solution
 };
@@ -143,6 +137,7 @@ public:
 	void SetCurrParams();
 	void SetCurrTexTo(obj_data& curr_obj, const int tex_ind);
 
+	void SetMeshBoundBox(mesh_data &mesh);
 	void SetObjBoundBox(obj_data &object, const aiScene* scene);
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);

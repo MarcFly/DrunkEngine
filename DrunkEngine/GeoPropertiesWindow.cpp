@@ -124,9 +124,9 @@ void GeoPropertiesWindow::Draw()
 				ImGui::EndChild();
 
 			}
-			if (ImGui::Button("Select")) {}
-			ImGui::SameLine();
-			if (ImGui::Button("Save")) {}
+			//if (ImGui::Button("Select")) {}
+			//ImGui::SameLine();
+			//if (ImGui::Button("Save")) {}
 		}
 		ImGui::EndGroup();
 	}
