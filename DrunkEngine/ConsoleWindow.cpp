@@ -36,8 +36,6 @@ void ConsoleWindow::Draw()
 		ImGui::EndPopup();
 	}
 
-	ImGui::TextWrapped("Enter 'HELP' for help, press TAB to use text completion.");
-
 	// TODO: display items starting from the bottom
 
 	if (ImGui::SmallButton("Clear")) { ClearLog(); } ImGui::SameLine();

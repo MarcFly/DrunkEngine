@@ -562,6 +562,11 @@ void ModuleManageMesh::DestroyTexture(obj_data* curr_obj, const int& tex_ind)
 			curr_obj->textures[i - 1] = curr_obj->textures[i];
 		}
 		curr_obj->textures.pop_back();
+
+		for (int i = 0; curr_obj->meshes.size(); i++)
+		{
+			curr_obj->meshes[i].tex_index--;
+		}
 	}
 }
 
