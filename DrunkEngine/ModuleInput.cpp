@@ -141,7 +141,10 @@ update_status ModuleInput::PreUpdate(float dt)
 					dropped_filedir,
 					App->window->window);
 
-				std::string extension = strchr(dropped_filedir, '.');
+				
+				
+				std::string extension = strrchr(dropped_filedir, '.');
+
 				if (extension == std::string(".fbx") || extension == std::string(".FBX"))
 					App->mesh_loader->LoadFBX(dropped_filedir);
 				else if (App->mesh_loader->Objects.size() > 0) // In case we have no objects
