@@ -551,23 +551,21 @@ void ModuleManageMesh::DestroyObject(const int& index)
 
 void ModuleManageMesh::DestroyTexture(obj_data* curr_obj, const int& tex_ind)
 {
-	if (curr_obj->textures.size() <= 1)
-		App->ui->console_win->AddLog("We don't like untextured objects :( (for now)");
+	glDeleteTextures(1, &curr_obj->textures[tex_ind].id_tex);
 
-	else {
-		glDeleteTextures(1, &curr_obj->textures[tex_ind].id_tex);
-
-		for (int i = tex_ind + 1; i < curr_obj->textures.size(); i++)
-		{
-			curr_obj->textures[i - 1] = curr_obj->textures[i];
-		}
-		curr_obj->textures.pop_back();
-
-		for (int i = 0; curr_obj->meshes.size(); i++)
-		{
-			curr_obj->meshes[i].tex_index--;
-		}
+	for (int i = tex_ind + 1; i < curr_obj->textures.size(); i++)
+	{
+		curr_obj->textures[i - 1] = curr_obj->textures[i];
 	}
+	curr_obj->textures.pop_back();
+
+
+	if (curr_obj->textures.size() < 1)
+		for (int i = 0; i < curr_obj->meshes.size(); i++)
+			curr_obj->meshes[i].tex_index = 0;
+	else
+		for (int i = 0; i < curr_obj->meshes.size(); i++)
+			curr_obj->meshes[i].tex_index--;
 }
 
 void ModuleManageMesh::GenTexParams()
