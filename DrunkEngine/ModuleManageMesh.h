@@ -138,7 +138,7 @@ public:
 	void SetCurrTexTo(obj_data& curr_obj, const int tex_ind);
 
 	void SetMeshBoundBox(mesh_data &mesh);
-	void SetObjBoundBox(obj_data &object, const aiScene* scene);
+	float SetObjBoundBox(obj_data &object, const aiScene* scene);
 
 	void DrawMesh(const mesh_data* mesh, bool use_texture);
 

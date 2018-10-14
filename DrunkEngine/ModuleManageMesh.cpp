@@ -157,7 +157,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			App->ui->geo_properties_win->CheckMeshInfo();
 		}
 		
-		SetObjBoundBox(add_obj, scene);
+		vertex_aux = SetObjBoundBox(add_obj, scene);
 		
 		App->camera->SetToObj(&add_obj, vertex_aux);
 
@@ -655,13 +655,17 @@ void ModuleManageMesh::SetMeshBoundBox(mesh_data &mesh)
 	mesh.BoundingBox.minPoint = vec(min_x, min_y, min_z);
 }
 
-void ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
+float ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
 {
-	object.BoundingBox.maxPoint = object.meshes[0].BoundingBox.maxPoint;
-	object.BoundingBox.minPoint = object.meshes[0].BoundingBox.minPoint;
+	float ret = 0;
+
+	object.BoundingBox.maxPoint = vec(INT_MIN, INT_MIN, INT_MIN);
+	object.BoundingBox.minPoint = vec(INT_MAX, INT_MAX, INT_MAX);
 
 	for (int i = 0; i < scene->mNumMeshes; i++)
 	{
+		// Setting the BB min and max points
+
 		if (object.BoundingBox.maxPoint.x < object.meshes[i].BoundingBox.maxPoint.x)
 			object.BoundingBox.maxPoint.x = object.meshes[i].BoundingBox.maxPoint.x;
 
@@ -680,6 +684,18 @@ void ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
 		if (object.BoundingBox.minPoint.z > object.meshes[i].BoundingBox.minPoint.z)
 			object.BoundingBox.minPoint.z = object.meshes[i].BoundingBox.minPoint.z;
 	}
+
+	{
+		if (abs(object.BoundingBox.maxPoint.x) > ret) {ret = abs(object.BoundingBox.maxPoint.x);}
+		if (abs(object.BoundingBox.maxPoint.y) > ret) {ret = abs(object.BoundingBox.maxPoint.y);}
+		if (abs(object.BoundingBox.maxPoint.z) > ret) {ret = abs(object.BoundingBox.maxPoint.z);}
+		if (abs(object.BoundingBox.minPoint.x) > ret) {ret = abs(object.BoundingBox.minPoint.x);}
+		if (abs(object.BoundingBox.minPoint.y) > ret) {ret = abs(object.BoundingBox.minPoint.y);}
+		if (abs(object.BoundingBox.minPoint.z) > ret) {ret = abs(object.BoundingBox.minPoint.z);}
+	}
+
+	return ret;
+
 }
 
 // CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------
