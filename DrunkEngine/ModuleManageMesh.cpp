@@ -346,76 +346,109 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 	}
 
 	curr_obj->textures.push_back(texture_data());
-	
+
 	texture_data* item = (--curr_obj->textures.end())._Ptr;
 
 	if (strrchr(path, '\\') != nullptr)
 	{
 		item->filename = strrchr(path, '\\');
-		item->filename.substr(item->filename.find_first_of("\\")+3);
+		item->filename.substr(item->filename.find_first_of("\\") + 3);
 	}
 	else
 		item->filename = path;
 
-	// Load Tex parameters and data to vram?
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &item->id_tex);
-	glBindTexture(GL_TEXTURE_2D, item->id_tex);
+	bool check_rep = false;
 
-	GenTexParams();
-
-	ILuint id_Image;
-	ilGenImages(1, &id_Image);
-	ilBindImage(id_Image);
-
-	bool check = ilLoadImage(path);
-
-	if (!check)
+	for (int i = 0; i < curr_obj->textures.size() - 1; i++)
 	{
-		std::string new_file_path = path;
-		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+		check_rep = (item->filename.substr(item->filename.find_last_of("\\/") + 1) == curr_obj->textures[i].filename);
+		
+		if (check_rep)
+			break;
 
-		new_file_path = tex_folder + new_file_path;
+		check_rep = (item->filename.substr(item->filename.find_last_of("\\/") + 1) == curr_obj->textures[i].filename.substr(curr_obj->textures[i].filename.find_last_of("\\/") + 1));
 
-		check = ilLoadImage(new_file_path.c_str());
+		if (check_rep)
+			break;
+
+		check_rep = (item->filename == curr_obj->textures[i].filename);
+		
+		if (check_rep)
+			break;
+		
+		check_rep = (item->filename == curr_obj->textures[i].filename.substr(curr_obj->textures[i].filename.find_last_of("\\/") + 1));
 	}
 
-	if (check)
+	if (!check_rep)
 	{
-		ILinfo Info;
+		// Load Tex parameters and data to vram?
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glGenTextures(1, &item->id_tex);
+		glBindTexture(GL_TEXTURE_2D, item->id_tex);
 
-		iluGetImageInfo(&Info);
-		if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
-			iluFlipImage();
+		GenTexParams();
 
-		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+		ILuint id_Image;
+		ilGenImages(1, &id_Image);
+		ilBindImage(id_Image);
 
-		item->width = Info.Width;
-		item->height = Info.Height;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-		
-		for (int i = 0; i < curr_obj->meshes.size(); i++)
+		bool check = ilLoadImage(path);
+
+		if (!check)
 		{
-			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
-		}
-		App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
+			// Basically if the direct load does not work, it will get the name of the file and load it from the texture folder if its there
+			std::string new_file_path = path;
+			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
+			new_file_path = tex_folder + new_file_path;
+
+			check = ilLoadImage(new_file_path.c_str());
+		}
+
+		if (check)
+		{
+			ILinfo Info;
+
+			iluGetImageInfo(&Info);
+			if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
+				iluFlipImage();
+
+			check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+			item->width = Info.Width;
+			item->height = Info.Height;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+
+			for (int i = 0; i < curr_obj->meshes.size(); i++)
+			{
+				curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
+			}
+			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
+
+		}
+		else
+		{
+			App->ui->console_win->AddLog("Failed to load image from path %s", path);
+			curr_obj->textures.pop_back();
+			glDeleteTextures(1, &item->id_tex);
+			ret = false;
+		}
+	
+		ilDeleteImages(1, &id_Image);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		App->ui->geo_properties_win->CheckMeshInfo();
 	}
 	else
 	{
-		App->ui->console_win->AddLog("Failed to load image from path %s", path);
+
+		App->ui->console_win->AddLog("This texture is already loaded!");
 		curr_obj->textures.pop_back();
-		glDeleteTextures(1, &item->id_tex);
 		ret = false;
 	}
 
 	
-
-	ilDeleteImages(1, &id_Image);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	App->ui->geo_properties_win->CheckMeshInfo();
 
 	return ret;
 }
