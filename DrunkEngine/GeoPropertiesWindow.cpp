@@ -88,19 +88,32 @@ void GeoPropertiesWindow::Draw()
 					{
 						if (objects[selected].textures.size() > 0)
 						{
-							ImGui::Separator();
+							for (int i = 0; i < objects[selected].textures.size(); i++)
+							{
+								ImGui::Separator();
 
-							if (check_info)
-								tex_name = objects[selected].textures[objects[selected].textures.size() - 1].filename.c_str();
+								if (check_info)
+									tex_name = objects[selected].textures[i].filename.c_str();
 
-							ImGui::Image(ImTextureID(objects[selected].textures[objects[selected].textures.size() - 1].id_tex), show_size);
+								ImGui::Image(ImTextureID(objects[selected].textures[i].id_tex), show_size);
 
-							if (strrchr(tex_name.c_str(), '\\') != nullptr)
-								tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+								if (strrchr(tex_name.c_str(), '\\') != nullptr)
+									tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
 
-							ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
+								ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
 
-							ImGui::Text("Size: %d x %d", objects[selected].textures[objects[selected].textures.size() - 1].width, objects[selected].textures[objects[selected].textures.size() - 1].height);
+								ImGui::Text("Size: %d x %d", objects[selected].textures[i].width, objects[selected].textures[i].height);
+							
+								if (ImGui::Button("Use this Tex"))
+								{
+									for (int j = 0; j < objects[selected].meshes.size(); j++)
+										App->mesh_loader->Objects[selected].meshes[j].tex_index = i;
+								}
+								
+								if(ImGui::Button("Destory this texture"))
+									App->mesh_loader->DestroyTexture(&App->mesh_loader->Objects[selected], i);
+						
+							}
 						}
 					}
 				}

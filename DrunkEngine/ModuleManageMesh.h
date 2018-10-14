@@ -58,7 +58,6 @@ struct mesh_data
 {
 	std::string name;
 
-	//aiMesh* m = nullptr;
 	GLuint id_index = 0; // index in VRAM
 	GLuint num_index = 0;
 	GLuint* index = nullptr;
@@ -136,9 +135,11 @@ public:
 	void SetupMat(obj_data& mesh, aiMaterial* material = nullptr);
 	bool LoadTextCurrentObj(const char* path, obj_data* curr_obj);
 	void DestroyObject(const int& index);
+	void DestroyTexture(obj_data* curr_obj, const int& tex_ind);
 
 	void GenTexParams();
 	void SetCurrParams();
+	void SetCurrTexTo(obj_data& curr_obj, const int tex_ind);
 
 	void SetObjBoundBox(obj_data &object, const aiScene* scene);
 

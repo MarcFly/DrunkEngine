@@ -339,7 +339,14 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 {
 	bool ret = true;
 
+	if (curr_obj->textures.size() >= 10)
+	{
+		App->ui->console_win->AddLog("You are loading quite the amount of textures, the first one loaded will now be freed!");
+		DestroyTexture(curr_obj, 0);
+	}
+
 	curr_obj->textures.push_back(texture_data());
+	
 	texture_data* item = (--curr_obj->textures.end())._Ptr;
 
 	if (strrchr(path, '\\') != nullptr)
@@ -532,6 +539,22 @@ void ModuleManageMesh::DestroyObject(const int& index)
 	Objects.erase(Objects.begin(), Objects.begin());
 }
 
+void ModuleManageMesh::DestroyTexture(obj_data* curr_obj, const int& tex_ind)
+{
+	if (curr_obj->textures.size() <= 1)
+		App->ui->console_win->AddLog("We don't like untextured objects :( (for now)");
+
+	else {
+		glDeleteTextures(1, &curr_obj->textures[tex_ind].id_tex);
+
+		for (int i = tex_ind + 1; i < curr_obj->textures.size(); i++)
+		{
+			curr_obj->textures[i - 1] = curr_obj->textures[i];
+		}
+		curr_obj->textures.pop_back();
+	}
+}
+
 void ModuleManageMesh::GenTexParams()
 {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
@@ -582,6 +605,12 @@ void ModuleManageMesh::SetCurrParams()
 	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
 	default: App->ui->console_win->AddLog("Unsuccessful initialization");
 	}
+}
+
+void ModuleManageMesh::SetCurrTexTo(obj_data& curr_obj, const int tex_ind)
+{
+	for (int i = 0; i < curr_obj.meshes.size(); i++)
+		curr_obj.meshes[i].tex_index = tex_ind;
 }
 
 void ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
