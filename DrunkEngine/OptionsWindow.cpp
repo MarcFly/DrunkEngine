@@ -512,6 +512,95 @@ void OptionsWindow::Draw()
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB", budget / 1024.0f);
 
 		}
+
+		if (ImGui::CollapsingHeader("Libraries Used"))
+		{
+			// Get Library Versions
+			SDL_version sdl_ver;
+			SDL_GetVersion(&sdl_ver);
+			int major, minor;
+			glGetIntegerv(GL_MAJOR_VERSION, &major);
+			glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+			ImGui::Text("LIBRARIES USED:");
+
+			ImGui::Separator();
+
+			ImGui::TextColored(HyperlinkColor, "OpenGL (%d.%d) ", major, minor);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://www.opengl.org/", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "SDL (%d.%d.%d) ", sdl_ver.major, sdl_ver.minor, sdl_ver.patch);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://www.libsdl.org/", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "ImGui  (%.2f) ", IMGUI_VERSION_NUM / 10000.0f);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
+
+			/*ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "Bullet (%.2f) ", btGetVersion() / 100.0f);
+			if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+			ShellExecute(NULL, "open", "https://github.com/bulletphysics", NULL, NULL, SW_SHOWNORMAL);
+			*/
+			ImGui::TextColored(HyperlinkColor, "GLEW(%d.%d.%d ", GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "http://glew.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%D) ", App->mesh_loader->GetDevILVer() / 100, App->mesh_loader->GetDevILVer() / 10 - 10 * (App->mesh_loader->GetDevILVer() / 100), App->mesh_loader->GetDevILVer() - 10 * (App->mesh_loader->GetDevILVer() / 10));
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "http://openil.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", App->mesh_loader->GetAssimpMajorVer(), App->mesh_loader->GetAssimpMinorVer(), App->mesh_loader->GetAssimpVersionRevision());
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "http://www.assimp.org/", NULL, NULL, SW_SHOWNORMAL);
+
+			
+			ImGui::TextColored(HyperlinkColor, "MathGeoLib ");
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://github.com/juj/MathGeoLib", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "GLMATH ");
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "http://glmath.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "PCG_RNG ");
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "http://www.pcg-random.org/", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "Parson");
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://github.com/kgabis/parson", NULL, NULL, SW_SHOWNORMAL);
+		}
 	}
 	ImGui::End();
 }
