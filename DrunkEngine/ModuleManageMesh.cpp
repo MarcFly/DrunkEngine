@@ -699,7 +699,7 @@ float ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
 }
 
 // CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------
-
+/*
 bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 {
 	bool ret = true;
@@ -772,6 +772,8 @@ bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 
 	return ret;
 }
+*/
+
 
 void CallLog(const char* str, char* usrData)
 {

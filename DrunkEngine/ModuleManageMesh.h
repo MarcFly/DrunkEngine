@@ -120,7 +120,7 @@ public:
 
 	bool LoadFBX(const char* file_path);
 
-	bool CreatePrimitiveObject(const vec& center, PCube& sphere);
+	//bool CreatePrimitiveObject(const vec& center, PCube& sphere);
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 
