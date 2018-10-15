@@ -2,7 +2,7 @@
 #define _GEOPROPERTIES_WINDOW_
 
 #include "Window.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 
 class GeoPropertiesWindow: public Window
 {

@@ -28,7 +28,7 @@ void GeoPropertiesWindow::Draw()
 		//		selected = i;
 		//}
 
-		std::vector<obj_data> objects = App->mesh_loader->getObjects();
+		std::vector<GameObject> objects = App->mesh_loader->getObjects();
 
 		if (objects.size() > 0)
 		{
@@ -87,23 +87,23 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
 					{
-						if (objects[selected].textures.size() > 0)
+						if (objects[selected].materials.size() > 0)
 						{
-							for (int i = 0; i < objects[selected].textures.size(); i++)
+							for (int i = 0; i < objects[selected].materials.size(); i++)
 							{
 								ImGui::Separator();
 
 								if (check_info)
-									tex_name = objects[selected].textures[i].filename.c_str();
+									tex_name = objects[selected].materials[i].filename.c_str();
 
-								ImGui::Image(ImTextureID(objects[selected].textures[i].id_tex), show_size);
+								ImGui::Image(ImTextureID(objects[selected].materials[i].id_tex), show_size);
 
 								if (strrchr(tex_name.c_str(), '\\') != nullptr)
 									tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
 
 								ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
 
-								ImGui::Text("Size: %d x %d", objects[selected].textures[i].width, objects[selected].textures[i].height);
+								ImGui::Text("Size: %d x %d", objects[selected].materials[i].width, objects[selected].materials[i].height);
 
 								char str[30];
 								snprintf(str, 30, "%s%d", "Use this Texture ##", i);

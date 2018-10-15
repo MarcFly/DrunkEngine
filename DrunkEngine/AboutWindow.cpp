@@ -1,7 +1,7 @@
 #include "AboutWindow.h"
 #include "GLEW/include/GL/glew.h"
 #include <gl/GL.h>
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 
 AboutWindow::AboutWindow() : Window("About...")
 {

@@ -3,7 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 
 #include "glmath/glmath.h"
 
@@ -23,7 +23,7 @@ public:
 	void Transport(const vec3 &Movement);
 	void Rotate();
 
-	void SetToObj(obj_data* obj, float vertex_aux);
+	void SetToObj(GameObject* obj, float vertex_aux);
 
 	float* GetViewMatrix();
 

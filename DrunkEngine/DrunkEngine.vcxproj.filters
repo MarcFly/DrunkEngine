@@ -118,14 +118,11 @@
     <Filter Include="Sources\Tools\GLEW\libx86\Release\Win32">
       <UniqueIdentifier>{bc58903d-a9f8-4d80-ad30-37c74a7aa548}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\GameObject">
+    <Filter Include="Sources\Modules\GameObject Structure">
       <UniqueIdentifier>{e62cf581-991b-4584-9238-f60d45800ed1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\GameObject\ComponentMesh">
-      <UniqueIdentifier>{4ccf75f6-65ff-434b-b5ce-b48ec293fa32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Modules\GameObject\ComponentMaterial">
-      <UniqueIdentifier>{bbc28f04-7d9b-4a71-974c-2a43491c6999}</UniqueIdentifier>
+    <Filter Include="Sources\Modules\GameObject Structure\Components">
+      <UniqueIdentifier>{b226c4eb-2984-4717-9a2b-2ac9059d041a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -426,9 +423,6 @@
     <ClInclude Include="glmath\glmath.h">
       <Filter>Sources\Tools\glmath</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleManageMesh.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Assimp\include\ai_assert.h">
       <Filter>Sources\Tools\Assimp\include</Filter>
     </ClInclude>
@@ -569,6 +563,21 @@
     </ClInclude>
     <ClInclude Include="GeoPropertiesWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMesh.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMaterial.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTransform.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScene.h">
+      <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -767,14 +776,26 @@
     <ClCompile Include="glmath\glmath.cpp">
       <Filter>Sources\Tools\glmath</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleManageMesh.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="ConsoleWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
     <ClCompile Include="GeoPropertiesWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleScene.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMesh.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTransform.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMaterial.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

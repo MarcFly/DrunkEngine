@@ -114,6 +114,9 @@
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ComponentMaterial.h" />
+    <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ConsoleWindow.h" />
     <ClInclude Include="DevIL\include\IL\devil_cpp_wrapper.hpp" />
     <ClInclude Include="DevIL\include\IL\devil_internal_exports.h" />
@@ -130,7 +133,8 @@
     <ClInclude Include="GLEW\include\GL\glxew.h" />
     <ClInclude Include="GLEW\include\GL\wglew.h" />
     <ClInclude Include="glmath\glmath.h" />
-    <ClInclude Include="ModuleManageMesh.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
     <ClInclude Include="MGL\Algorithm\Random\LCG.h" />
     <ClInclude Include="MGL\Algorithm\SAT.h" />
@@ -226,7 +230,11 @@
     <ClCompile Include="AboutWindow.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ComponentMaterial.cpp" />
+    <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="ConsoleWindow.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="GeoPropertiesWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
@@ -268,7 +276,7 @@
     <ClCompile Include="MGL\Math\TransformOps.cpp" />
     <ClCompile Include="MGL\SysInfo\SystemInfo.cpp" />
     <ClCompile Include="MGL\Time\Clock.cpp" />
-    <ClCompile Include="ModuleManageMesh.cpp" />
+    <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />

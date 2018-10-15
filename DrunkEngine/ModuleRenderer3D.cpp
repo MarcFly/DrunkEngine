@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "PhysBody3D.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
 
@@ -199,7 +199,7 @@ void ModuleRenderer3D::Render(bool use_texture)
 		for(int j = 0; j < App->mesh_loader->Objects[i].meshes.size(); j++)
 		{ 
 			// Draw elements
-			mesh_data* mesh = &App->mesh_loader->Objects[i].meshes[j];
+			ComponentMesh* mesh = &App->mesh_loader->Objects[i].meshes[j];
 
 			if (faces)
 				App->mesh_loader->DrawMesh(mesh, use_texture);
@@ -290,7 +290,7 @@ void ModuleRenderer3D::RenderGrid()
 		glEnable(GL_LIGHTING);
 }
 
-void ModuleRenderer3D::RenderBoundBox(mesh_data* mesh)
+void ModuleRenderer3D::RenderBoundBox(ComponentMesh* mesh)
 {
 	glDisable(GL_LIGHTING);
 
@@ -359,6 +359,49 @@ void ModuleRenderer3D::InitCheckTex()
 	}
 }
 
+void ModuleRenderer3D::SetTextureParams()
+{
+	switch (curr_tws) {
+	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_EDGE;	break;
+	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_BORDER;	break;
+	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): tws = GL_MIRRORED_REPEAT; break;
+	case (TP_REPEAT - TP_TEXTURE_WRAP - 1):	tws = GL_REPEAT; break;
+	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_MIRROR_CLAMP_TO_EDGE; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+
+	switch (curr_twt) {
+	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_EDGE; break;
+	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_BORDER; break;
+	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_MIRRORED_REPEAT; break;
+	case (TP_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_REPEAT; break;
+	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_MIRROR_CLAMP_TO_EDGE; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+
+	// Texture Filter
+	switch (curr_tmagf) {
+	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR; break;
+	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_NEAREST; break;
+	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_LINEAR; break;
+	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_LINEAR; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+
+	switch (curr_tminf) {
+	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR; break;
+	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_NEAREST; break;
+	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_LINEAR; break;
+	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+}
+
+// SAVELOAD--------------------------------------------------------------------------------
 bool ModuleRenderer3D::Load(JSON_Value * root_value)
 {
 	bool ret = false;
