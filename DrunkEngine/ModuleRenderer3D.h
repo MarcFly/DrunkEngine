@@ -73,6 +73,7 @@ public:
 	void SwapWireframe(bool active);
 
 	void SetTextureParams();
+	void GenTexParams();
 
 	void InitCheckTex();
 

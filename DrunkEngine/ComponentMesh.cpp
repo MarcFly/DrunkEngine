@@ -151,6 +151,5 @@ void ComponentMesh::SetMeshBoundBox()
 			min_z = this->vertex[i * 3 + 2];
 	}
 
-	this->BoundingBox.maxPoint = vec(max_x, max_y, max_z);
-	this->BoundingBox.minPoint = vec(min_x, min_y, min_z);
+	this->BoundingBox = new AABB(vec(min_x, min_y, min_z), vec(max_x, max_y, max_z));
 }

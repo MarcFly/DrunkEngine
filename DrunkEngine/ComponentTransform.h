@@ -7,7 +7,7 @@ class ComponentTransform
 {
 public:
 	ComponentTransform() {};
-	ComponentTransform(aiMatrix4x4* t, GameObject* par);
+	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 
 	~ComponentTransform() {};
 public:

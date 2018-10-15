@@ -401,6 +401,16 @@ void ModuleRenderer3D::SetTextureParams()
 	}
 }
 
+void ModuleRenderer3D::GenTexParams()
+{
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
+}
+
 // SAVELOAD--------------------------------------------------------------------------------
 bool ModuleRenderer3D::Load(JSON_Value * root_value)
 {
@@ -419,6 +429,12 @@ bool ModuleRenderer3D::Load(JSON_Value * root_value)
 	normal_length = json_object_dotget_number(json_object(root_value), "render.normal_length");
 	vsync = json_object_dotget_boolean(json_object(root_value), "render.vsync");
 	bounding_box = json_object_dotget_boolean(json_object(root_value), "render.bounding_box");
+
+	curr_tws = json_object_dotget_number(json_object(root_value), "texture.curr_wrap_s");
+	curr_twt = json_object_dotget_number(json_object(root_value), "texture.curr_wrap_t");
+	curr_tmagf = json_object_dotget_number(json_object(root_value), "texture.curr_min_filter");
+	curr_tminf = json_object_dotget_number(json_object(root_value), "texture.curr_mag_filter");
+
 
 	ret = true;
 	return ret;
@@ -443,6 +459,11 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 	json_object_dotset_number(root_obj, "render.normal_length", normal_length);
 	json_object_dotset_boolean(root_obj, "render.vsync", vsync);
 	json_object_dotset_boolean(root_obj, "render.bounding_box", bounding_box);
+
+	json_object_dotset_number(root_obj, "texture.curr_wrap_s", curr_tws);
+	json_object_dotset_number(root_obj, "texture.curr_wrap_t", curr_twt);
+	json_object_dotset_number(root_obj, "texture.curr_min_filter", curr_tmagf);
+	json_object_dotset_number(root_obj, "texture.curr_mag_filter", curr_tminf);
 
 	json_serialize_to_file(root_value, "config_data.json");
 

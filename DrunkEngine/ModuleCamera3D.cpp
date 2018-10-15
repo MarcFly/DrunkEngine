@@ -240,13 +240,13 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 void ModuleCamera3D::SetToObj(GameObject* obj, float vertex_aux)
 {
 	
-	for (int i = 0; i < obj->meshes.size() - 1; i++) {
-		for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
-		{
-			if (vertex_aux < abs(obj->meshes[i].vertex[j]))
-				vertex_aux = abs(obj->meshes[i].vertex[j]);
-		}
-	}
+	//for (int i = 0; i < obj->meshes.size() - 1; i++) {
+	//	for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
+	//	{
+	//		if (vertex_aux < abs(obj->meshes[i].vertex[j]))
+	//			vertex_aux = abs(obj->meshes[i].vertex[j]);
+	//	}
+	//}
 
 	Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
 

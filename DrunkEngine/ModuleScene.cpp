@@ -76,6 +76,7 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 
 	if (scene == nullptr)
 	{
+		// Trying to load it from the scene folder
 		std::string new_file_path = file_path;
 		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
@@ -91,47 +92,7 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	{
 		DestroyScene();
 		GameObject* root = new GameObject(scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
-	}
-
-	if (scene != nullptr && scene->HasMeshes())
-	{
-
-		float vertex_aux = 0.f;
-
 		
-		
-		vertex_aux = SetObjBoundBox(add_obj, scene);
-		
-		App->camera->SetToObj(&add_obj, vertex_aux);
-
-		// Texture Setup
-		if (scene->HasMaterials())
-		{
-			for (int i = 0; i < scene->mNumMaterials; i++)
-			{
-				SetupMat(add_obj, scene->mMaterials[i]);
-				aiString path;
-				aiReturn err = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-				LoadTextCurrentObj(path.C_Str(), &add_obj);
-			}
-		}
-
-		App->ui->console_win->AddLog("New Object with %d meshes, %d texture/s, %d color/s", add_obj.meshes.size(), add_obj.materials.size(), add_obj.mat_colors.size());
-
-		if (Objects.size() > 0)
-		{
-			DestroyObject(0);
-			Objects.insert(Objects.begin(), add_obj);
-			Objects.pop_back();
-		}
-		else
-			Objects.push_back(add_obj);
-		
-		// ReSet all Parenting for later use
-		SetParents();
-
-		
-
 		aiReleaseImport(scene);
 	}
 	else
@@ -208,11 +169,7 @@ bool ModuleScene::Load(JSON_Value * root_value)
 	scene_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.scenes_path");
 	tex_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.materials_path");
 
-	curr_tws = json_object_dotget_number(json_object(root_value), "texture.curr_wrap_s");
-	curr_twt = json_object_dotget_number(json_object(root_value), "texture.curr_wrap_t");
-	curr_tmagf = json_object_dotget_number(json_object(root_value), "texture.curr_min_filter");
-	curr_tminf = json_object_dotget_number(json_object(root_value), "texture.curr_mag_filter");
-
+	
 	ret = true;
 	return ret;
 }
@@ -224,10 +181,7 @@ bool ModuleScene::Save(JSON_Value * root_value)
 	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
-	json_object_dotset_number(root_obj, "texture.curr_wrap_s", curr_tws);
-	json_object_dotset_number(root_obj, "texture.curr_wrap_t", curr_twt);
-	json_object_dotset_number(root_obj, "texture.curr_min_filter", curr_tmagf);
-	json_object_dotset_number(root_obj, "texture.curr_mag_filter", curr_tminf);
+	
 
 	json_serialize_to_file(root_value, "config_data.json");
 
@@ -238,143 +192,6 @@ bool ModuleScene::Save(JSON_Value * root_value)
 }
 
 //-SET OBJ DATA------------------------------------------------------------------------------------------
-
-void ModuleScene::SetupMat(GameObject& obj, aiMaterial* material)
-{
-
-	aiColor3D color;
-	material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-	obj.mat_colors.push_back(Color(color.r,color.g,color.b,1));
-	
-}
-
-bool ModuleScene::LoadTextCurrentObj(const char* path, GameObject* curr_obj)
-{
-	bool ret = true;
-
-	if (curr_obj->textures.size() >= 10)
-	{
-		App->ui->console_win->AddLog("You are loading quite the amount of textures, the first one loaded will now be freed!");
-		DestroyTexture(curr_obj, 0);
-	}
-
-	curr_obj->textures.push_back(texture_data());
-
-	texture_data* item = (--curr_obj->textures.end())._Ptr;
-
-	if (strrchr(path, '\\') != nullptr)
-	{
-		item->filename = strrchr(path, '\\');
-		item->filename.substr(item->filename.find_first_of("\\") + 3);
-	}
-	else
-		item->filename = path;
-
-	bool check_rep = false;
-
-	for (int i = 0; i < curr_obj->textures.size() - 1; i++)
-	{
-		check_rep = (item->filename.substr(item->filename.find_last_of("\\/") + 1) == curr_obj->textures[i].filename);
-		
-		if (check_rep)
-			break;
-
-		check_rep = (item->filename.substr(item->filename.find_last_of("\\/") + 1) == curr_obj->textures[i].filename.substr(curr_obj->textures[i].filename.find_last_of("\\/") + 1));
-
-		if (check_rep)
-			break;
-
-		check_rep = (item->filename == curr_obj->textures[i].filename);
-		
-		if (check_rep)
-			break;
-		
-		check_rep = (item->filename == curr_obj->textures[i].filename.substr(curr_obj->textures[i].filename.find_last_of("\\/") + 1));
-	}
-
-	if (!check_rep)
-	{
-		// Load Tex parameters and data to vram?
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glGenTextures(1, &item->id_tex);
-		glBindTexture(GL_TEXTURE_2D, item->id_tex);
-
-		GenTexParams();
-
-		ILuint id_Image;
-		ilGenImages(1, &id_Image);
-		ilBindImage(id_Image);
-
-		bool check = ilLoadImage(path);
-
-		if (!check)
-		{
-			// Basically if the direct load does not work, it will get the name of the file and load it from the texture folder if its there
-			std::string new_file_path = path;
-			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-			new_file_path = tex_folder + new_file_path;
-
-			check = ilLoadImage(new_file_path.c_str());
-		}
-
-		if (check)
-		{
-			ILinfo Info;
-
-			iluGetImageInfo(&Info);
-			if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
-				iluFlipImage();
-
-			check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-			item->width = Info.Width;
-			item->height = Info.Height;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-
-			for (int i = 0; i < curr_obj->meshes.size(); i++)
-			{
-				curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
-			}
-			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
-
-		}
-		else
-		{
-			App->ui->console_win->AddLog("Failed to load image from path %s", path);
-			curr_obj->textures.pop_back();
-			glDeleteTextures(1, &item->id_tex);
-			ret = false;
-		}
-	
-		ilDeleteImages(1, &id_Image);
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		App->ui->geo_properties_win->CheckMeshInfo();
-	}
-	else
-	{
-
-		App->ui->console_win->AddLog("This texture is already loaded!");
-		curr_obj->textures.pop_back();
-		ret = false;
-	}
-
-	
-
-	return ret;
-}
-
-vec3 ModuleScene::getObjectCenter(const GameObject* obj)
-{
-
-	float aux_x = (obj->BoundingBox.maxPoint.x + obj->BoundingBox.minPoint.x) / 2;
-	float aux_y = (obj->BoundingBox.maxPoint.y + obj->BoundingBox.minPoint.y) / 2;
-	float aux_z = (obj->BoundingBox.maxPoint.z + obj->BoundingBox.minPoint.z) / 2;
-
-	return vec3(aux_x, aux_y, aux_z);
-}
 
 // -----------------------
 int ModuleScene::GetDevILVer()
@@ -434,15 +251,7 @@ void ModuleScene::DestroyTexture(GameObject* curr_obj, const int& tex_ind)
 			
 }
 
-void ModuleScene::GenTexParams()
-{
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
 
-	// Texture Filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
-}
 
 
 

@@ -21,6 +21,8 @@ public:
 	void GenBuffers();
 	void SetMeshBoundBox();
 
+	void Draw();
+
 public:
 	std::string name;
 
@@ -48,7 +50,7 @@ public:
 	aiVector3D transform_scale;
 	aiVector3D transform_rotate;
 
-	AABB BoundingBox;
+	AABB* BoundingBox;
 
 	Primitive* BoundingBody = nullptr;
 

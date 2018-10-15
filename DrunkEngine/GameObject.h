@@ -21,8 +21,9 @@ public:
 	void Draw();
 
 	vec getObjectCenter();
-	void SetBoundBox();
-	void SetBoundBody();
+	float SetBoundBox();
+	void SetBoundBoxFromMeshes();
+	//void SetBoundBody();
 
 	void DestroyObject();
 
@@ -34,7 +35,7 @@ public:
 	std::vector<ComponentMesh*> meshes;
 	std::vector<ComponentMaterial*> materials;
 
-	AABB BoundingBox;
+	AABB* BoundingBox = nullptr;
 
 	Primitive* mBoundingBody = nullptr; // In case we create a premade object // Temporary solution
 
