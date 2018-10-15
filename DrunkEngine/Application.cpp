@@ -81,7 +81,7 @@ void Application::PrepareUpdate()
 void Application::FinishUpdate()
 {
 
-	bool ret = true;
+	/*bool ret = true;
 
 	std::list<Module*>::iterator item = list_modules.begin();
 
@@ -99,7 +99,7 @@ void Application::FinishUpdate()
 		{
 			ret = item._Ptr->_Myval->Load(nullptr);
 			item++;
-		}
+		}*/
 
 }
 
