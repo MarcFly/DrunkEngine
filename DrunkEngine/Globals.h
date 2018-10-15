@@ -31,10 +31,6 @@ enum update_status
 };
 
 // Configuration -----------
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-#define SCREEN_SIZE 1
-#define VSYNC true
 #define TITLE "DrunkEngine"
 #define ORGANIZATION "UPC CITM"
 

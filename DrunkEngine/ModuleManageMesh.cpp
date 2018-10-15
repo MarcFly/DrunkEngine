@@ -92,7 +92,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 	obj_data add_obj;
 	
 	add_obj.name = aux.substr(aux.find_last_of("\\/") + 1);
-	//add_obj.name = scene->mRootNode->mName.C_Str();
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -142,36 +141,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 					}
 				}			
 
-				add.box_x = add.vertex[0];
-				add.box_nx = add.vertex[0];
-				add.box_y = add.vertex[1];
-				add.box_ny = add.vertex[1];
-				add.box_z = add.vertex[2];
-				add.box_nz = add.vertex[2];
-
-				for (uint j = 0; j < scene->mMeshes[i]->mNumVertices * 3; j++)
-				{
-					if (vertex_aux < abs(add.vertex[j]))
-						vertex_aux = abs(add.vertex[j]);
-
-					if (j % 3 == 0 && add.box_x < add.vertex[j])
-						add.box_x = add.vertex[j];
-
-					if (j % 3 == 0 && add.box_nx > add.vertex[j])
-						add.box_nx = add.vertex[j];
-
-					if (j % 3 == 1 && add.box_y < add.vertex[j])
-						add.box_y = add.vertex[j];
-
-					if (j % 3 == 1 && add.box_ny > add.vertex[j])
-						add.box_ny = add.vertex[j];
-
-					if (j % 3 == 2 && add.box_z < add.vertex[j])
-						add.box_z = add.vertex[j];
-
-					if (j % 3 == 2 && add.box_nz > add.vertex[j])
-						add.box_nz = add.vertex[j];
-				}
+				SetMeshBoundBox(add);
 			}
 
 			SetTexCoords(&add, scene->mMeshes[i]);
@@ -187,7 +157,7 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 			App->ui->geo_properties_win->CheckMeshInfo();
 		}
 		
-		SetObjBoundBox(add_obj, scene);
+		vertex_aux = SetObjBoundBox(add_obj, scene);
 		
 		App->camera->SetToObj(&add_obj, vertex_aux);
 
@@ -229,8 +199,6 @@ bool ModuleManageMesh::LoadFBX(const char* file_path)
 
 	return ret;
 }
-
-
 
 void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture) 
 {
@@ -284,6 +252,8 @@ void ModuleManageMesh::DrawMesh(const mesh_data* mesh, bool use_texture)
 		glDisableClientState(GL_VERTEX_ARRAY);
 
 	}
+
+	//DrawBB(mesh);
 }
 
 bool ModuleManageMesh::Load(JSON_Value * root_value)
@@ -339,76 +309,116 @@ bool ModuleManageMesh::LoadTextCurrentObj(const char* path, obj_data* curr_obj)
 {
 	bool ret = true;
 
+	if (curr_obj->textures.size() >= 10)
+	{
+		App->ui->console_win->AddLog("You are loading quite the amount of textures, the first one loaded will now be freed!");
+		DestroyTexture(curr_obj, 0);
+	}
+
 	curr_obj->textures.push_back(texture_data());
+
 	texture_data* item = (--curr_obj->textures.end())._Ptr;
 
 	if (strrchr(path, '\\') != nullptr)
 	{
 		item->filename = strrchr(path, '\\');
-		item->filename.substr(item->filename.find_first_of("\\")+3);
+		item->filename.substr(item->filename.find_first_of("\\") + 3);
 	}
 	else
 		item->filename = path;
 
-	// Load Tex parameters and data to vram?
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &item->id_tex);
-	glBindTexture(GL_TEXTURE_2D, item->id_tex);
+	bool check_rep = false;
 
-	GenTexParams();
-
-	ILuint id_Image;
-	ilGenImages(1, &id_Image);
-	ilBindImage(id_Image);
-
-	bool check = ilLoadImage(path);
-
-	if (!check)
+	for (int i = 0; i < curr_obj->textures.size() - 1; i++)
 	{
-		std::string new_file_path = path;
-		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+		check_rep = (item->filename.substr(item->filename.find_last_of("\\/") + 1) == curr_obj->textures[i].filename);
+		
+		if (check_rep)
+			break;
 
-		new_file_path = tex_folder + new_file_path;
+		check_rep = (item->filename.substr(item->filename.find_last_of("\\/") + 1) == curr_obj->textures[i].filename.substr(curr_obj->textures[i].filename.find_last_of("\\/") + 1));
 
-		check = ilLoadImage(new_file_path.c_str());
+		if (check_rep)
+			break;
+
+		check_rep = (item->filename == curr_obj->textures[i].filename);
+		
+		if (check_rep)
+			break;
+		
+		check_rep = (item->filename == curr_obj->textures[i].filename.substr(curr_obj->textures[i].filename.find_last_of("\\/") + 1));
 	}
 
-	if (check)
+	if (!check_rep)
 	{
-		ILinfo Info;
+		// Load Tex parameters and data to vram?
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glGenTextures(1, &item->id_tex);
+		glBindTexture(GL_TEXTURE_2D, item->id_tex);
 
-		iluGetImageInfo(&Info);
-		if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
-			iluFlipImage();
+		GenTexParams();
 
-		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+		ILuint id_Image;
+		ilGenImages(1, &id_Image);
+		ilBindImage(id_Image);
 
-		item->width = Info.Width;
-		item->height = Info.Height;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-		
-		for (int i = 0; i < curr_obj->meshes.size(); i++)
+		bool check = ilLoadImage(path);
+
+		if (!check)
 		{
-			curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
-		}
-		App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
+			// Basically if the direct load does not work, it will get the name of the file and load it from the texture folder if its there
+			std::string new_file_path = path;
+			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
+			new_file_path = tex_folder + new_file_path;
+
+			check = ilLoadImage(new_file_path.c_str());
+		}
+
+		if (check)
+		{
+			ILinfo Info;
+
+			iluGetImageInfo(&Info);
+			if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
+				iluFlipImage();
+
+			check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+			item->width = Info.Width;
+			item->height = Info.Height;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, item->width, item->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+
+			for (int i = 0; i < curr_obj->meshes.size(); i++)
+			{
+				curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
+			}
+			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, item->width, item->height);
+
+		}
+		else
+		{
+			App->ui->console_win->AddLog("Failed to load image from path %s", path);
+			curr_obj->textures.pop_back();
+			glDeleteTextures(1, &item->id_tex);
+			ret = false;
+		}
+	
+		ilDeleteImages(1, &id_Image);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		App->ui->geo_properties_win->CheckMeshInfo();
 	}
 	else
 	{
-		App->ui->console_win->AddLog("Failed to load image from path %s", path);
+
+		App->ui->console_win->AddLog("This texture is already loaded!");
 		curr_obj->textures.pop_back();
-		glDeleteTextures(1, &item->id_tex);
 		ret = false;
 	}
 
 	
-
-	ilDeleteImages(1, &id_Image);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	App->ui->geo_properties_win->CheckMeshInfo();
 
 	return ret;
 }
@@ -495,6 +505,16 @@ void ModuleManageMesh::GenBuffers(mesh_data& mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+vec3 ModuleManageMesh::getObjectCenter(const obj_data* obj)
+{
+
+	float aux_x = (obj->BoundingBox.maxPoint.x + obj->BoundingBox.minPoint.x) / 2;
+	float aux_y = (obj->BoundingBox.maxPoint.y + obj->BoundingBox.minPoint.y) / 2;
+	float aux_z = (obj->BoundingBox.maxPoint.z + obj->BoundingBox.minPoint.z) / 2;
+
+	return vec3(aux_x, aux_y, aux_z);
+}
+
 // -----------------------
 int ModuleManageMesh::GetDevILVer()
 {
@@ -530,6 +550,27 @@ void ModuleManageMesh::DestroyObject(const int& index)
 	Objects[index].mat_colors.clear();
 
 	Objects.erase(Objects.begin(), Objects.begin());
+}
+
+void ModuleManageMesh::DestroyTexture(obj_data* curr_obj, const int& tex_ind)
+{
+	glDeleteTextures(1, &curr_obj->textures[tex_ind].id_tex);
+
+	for (int i = tex_ind + 1; i < curr_obj->textures.size(); i++)
+	{
+		curr_obj->textures[i - 1] = curr_obj->textures[i];
+	}
+	curr_obj->textures.pop_back();
+
+
+	if (curr_obj->textures.size() < 1)
+		for (int i = 0; i < curr_obj->meshes.size(); i++)
+			curr_obj->meshes[i].tex_index = 0;
+	else
+		for (int i = 0; i < curr_obj->meshes.size(); i++)
+			if (curr_obj->meshes[i].tex_index >= curr_obj->textures.size())
+				curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
+			
 }
 
 void ModuleManageMesh::GenTexParams()
@@ -584,39 +625,81 @@ void ModuleManageMesh::SetCurrParams()
 	}
 }
 
-void ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
+void ModuleManageMesh::SetCurrTexTo(obj_data& curr_obj, const int tex_ind)
 {
-	object.box_x = object.meshes[0].box_x;
-	object.box_nx = object.meshes[0].box_nx;
-	object.box_y = object.meshes[0].box_y;
-	object.box_ny = object.meshes[0].box_ny;
-	object.box_z = object.meshes[0].box_z;
-	object.box_nz = object.meshes[0].box_nz;
+	for (int i = 0; i < curr_obj.meshes.size(); i++)
+		curr_obj.meshes[i].tex_index = tex_ind;
+}
+
+void ModuleManageMesh::SetMeshBoundBox(mesh_data &mesh)
+{
+	float max_x = INT_MIN, max_y = INT_MIN, max_z = INT_MIN, min_x = INT_MAX, min_y = INT_MAX, min_z = INT_MAX;
+
+	for (int i = 0; i < mesh.num_vertex; i++)
+	{
+		if (max_x < mesh.vertex[i * 3])
+			max_x = mesh.vertex[i * 3];
+		if (min_x > mesh.vertex[i * 3])
+			min_x = mesh.vertex[i * 3];
+		if (max_y < mesh.vertex[i * 3 + 1])
+			max_y = mesh.vertex[i * 3 + 1];
+		if (min_y > mesh.vertex[i * 3 + 1])
+			min_y = mesh.vertex[i * 3 + 1];
+		if (max_z < mesh.vertex[i * 3 + 2])
+			max_z = mesh.vertex[i * 3 + 2];
+		if (min_z > mesh.vertex[i * 3 + 2])
+			min_z = mesh.vertex[i * 3 + 2];
+	}
+
+	mesh.BoundingBox.maxPoint = vec(max_x, max_y, max_z);
+	mesh.BoundingBox.minPoint = vec(min_x, min_y, min_z);
+}
+
+float ModuleManageMesh::SetObjBoundBox(obj_data &object, const aiScene* scene)
+{
+	float ret = 0;
+
+	object.BoundingBox.maxPoint = vec(INT_MIN, INT_MIN, INT_MIN);
+	object.BoundingBox.minPoint = vec(INT_MAX, INT_MAX, INT_MAX);
 
 	for (int i = 0; i < scene->mNumMeshes; i++)
 	{
-		if (object.box_x < object.meshes[i].box_x)
-			object.box_x = object.meshes[i].box_x;
+		// Setting the BB min and max points
 
-		if (object.box_nx > object.meshes[i].box_nx)
-			object.box_nx = object.meshes[i].box_nx;
+		if (object.BoundingBox.maxPoint.x < object.meshes[i].BoundingBox.maxPoint.x)
+			object.BoundingBox.maxPoint.x = object.meshes[i].BoundingBox.maxPoint.x;
 
-		if (object.box_y < object.meshes[i].box_y)
-			object.box_y = object.meshes[i].box_y;
+		if (object.BoundingBox.minPoint.x > object.meshes[i].BoundingBox.minPoint.x)
+			object.BoundingBox.minPoint.x = object.meshes[i].BoundingBox.minPoint.x;
 
-		if (object.box_ny > object.meshes[i].box_ny)
-			object.box_ny = object.meshes[i].box_ny;
+		if (object.BoundingBox.maxPoint.y < object.meshes[i].BoundingBox.maxPoint.y)
+			object.BoundingBox.maxPoint.y = object.meshes[i].BoundingBox.maxPoint.y;
 
-		if (object.box_z < object.meshes[i].box_z)
-			object.box_z = object.meshes[i].box_z;
+		if (object.BoundingBox.minPoint.y > object.meshes[i].BoundingBox.minPoint.y)
+			object.BoundingBox.minPoint.y = object.meshes[i].BoundingBox.minPoint.y;
 
-		if (object.box_nz > object.meshes[i].box_nz)
-			object.box_nz = object.meshes[i].box_nz;
+		if (object.BoundingBox.maxPoint.z < object.meshes[i].BoundingBox.maxPoint.z)
+			object.BoundingBox.maxPoint.z = object.meshes[i].BoundingBox.maxPoint.z;
+
+		if (object.BoundingBox.minPoint.z > object.meshes[i].BoundingBox.minPoint.z)
+			object.BoundingBox.minPoint.z = object.meshes[i].BoundingBox.minPoint.z;
 	}
+
+	{
+		if (abs(object.BoundingBox.maxPoint.x) > ret) {ret = abs(object.BoundingBox.maxPoint.x);}
+		if (abs(object.BoundingBox.maxPoint.y) > ret) {ret = abs(object.BoundingBox.maxPoint.y);}
+		if (abs(object.BoundingBox.maxPoint.z) > ret) {ret = abs(object.BoundingBox.maxPoint.z);}
+		if (abs(object.BoundingBox.minPoint.x) > ret) {ret = abs(object.BoundingBox.minPoint.x);}
+		if (abs(object.BoundingBox.minPoint.y) > ret) {ret = abs(object.BoundingBox.minPoint.y);}
+		if (abs(object.BoundingBox.minPoint.z) > ret) {ret = abs(object.BoundingBox.minPoint.z);}
+	}
+
+	return ret;
+
 }
 
 // CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------
-
+/*
 bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 {
 	bool ret = true;
@@ -689,6 +772,8 @@ bool ModuleManageMesh::CreatePrimitiveObject(const vec& center, PCube& cube)
 
 	return ret;
 }
+*/
+
 
 void CallLog(const char* str, char* usrData)
 {

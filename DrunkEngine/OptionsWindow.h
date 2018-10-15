@@ -34,6 +34,8 @@ public:
 	int input_change;
 	bool key_repeated;
 
+	ImVec4 HyperlinkColor = { 30 / 250.f, 139 / 250.f, 18 / 250.f, 1 };
+
 	PROCESS_MEMORY_COUNTERS mem = { 0 };
 	Timer ram_read_time;
 

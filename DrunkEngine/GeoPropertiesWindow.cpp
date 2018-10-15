@@ -16,7 +16,8 @@ void GeoPropertiesWindow::Draw()
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 		// left
-		static int selected = 0;
+
+		selected = 0;
 
 		ImGui::BeginChild("left pane", ImVec2(250, 0), true);
 		//for (int i = 0; i < 2; i++)
@@ -88,28 +89,44 @@ void GeoPropertiesWindow::Draw()
 					{
 						if (objects[selected].textures.size() > 0)
 						{
-							ImGui::Separator();
+							for (int i = 0; i < objects[selected].textures.size(); i++)
+							{
+								ImGui::Separator();
 
-							if (check_info)
-								tex_name = objects[selected].textures[objects[selected].textures.size() - 1].filename.c_str();
+								if (check_info)
+									tex_name = objects[selected].textures[i].filename.c_str();
 
-							ImGui::Image(ImTextureID(objects[selected].textures[objects[selected].textures.size() - 1].id_tex), show_size);
+								ImGui::Image(ImTextureID(objects[selected].textures[i].id_tex), show_size);
 
-							if (strrchr(tex_name.c_str(), '\\') != nullptr)
-								tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+								if (strrchr(tex_name.c_str(), '\\') != nullptr)
+									tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
 
-							ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
+								ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
 
-							ImGui::Text("Size: %d x %d", objects[selected].textures[objects[selected].textures.size() - 1].width, objects[selected].textures[objects[selected].textures.size() - 1].height);
+								ImGui::Text("Size: %d x %d", objects[selected].textures[i].width, objects[selected].textures[i].height);
+
+								char str[30];
+								snprintf(str, 30, "%s%d", "Use this Texture ##", i);
+
+								if (ImGui::Button(str))
+								{
+									for (int j = 0; j < objects[selected].meshes.size(); j++)
+										App->mesh_loader->Objects[selected].meshes[j].tex_index = i;
+								}
+
+								snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
+								if (ImGui::Button(str))
+									App->mesh_loader->DestroyTexture(&App->mesh_loader->Objects[selected], i);
+							}
 						}
 					}
 				}
 				ImGui::EndChild();
 
 			}
-			if (ImGui::Button("Select")) {}
-			ImGui::SameLine();
-			if (ImGui::Button("Save")) {}
+			//if (ImGui::Button("Select")) {}
+			//ImGui::SameLine();
+			//if (ImGui::Button("Save")) {}
 		}
 		ImGui::EndGroup();
 	}

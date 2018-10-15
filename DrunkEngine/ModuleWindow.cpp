@@ -30,8 +30,6 @@ bool ModuleWindow::Init()
 	else
 	{
 		//Create window
-		int width = SCREEN_WIDTH * SCREEN_SIZE;
-		int height = SCREEN_HEIGHT * SCREEN_SIZE;
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
 		//Use OpenGL 2.1
@@ -41,6 +39,11 @@ bool ModuleWindow::Init()
 		// Set Important SDL_GL_Attributes
 		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, true);
+
+		SDL_DisplayMode DM;
+		SDL_GetCurrentDisplayMode(0, &DM);
+		screen_size_w = DM.w;
+		screen_size_h = DM.h;
 
 		Load(nullptr);
 
@@ -64,7 +67,7 @@ bool ModuleWindow::Init()
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 
-		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_w, window_h, flags);
 
 		if(window == NULL)
 		{
@@ -77,11 +80,6 @@ bool ModuleWindow::Init()
 			screen_surface = SDL_GetWindowSurface(window);
 		}
 	}
-
-	SDL_DisplayMode DM;
-	SDL_GetCurrentDisplayMode(0, &DM);
-	screen_size_w = DM.w;
-	screen_size_h = DM.h;
 
 	return ret;
 }
@@ -164,6 +162,13 @@ bool ModuleWindow::Load(JSON_Value* root_value)
 	root_value = json_parse_file("config_data.json");
 	window_w = json_object_dotget_number(json_object(root_value), "window.size.width");
 	window_h = json_object_dotget_number(json_object(root_value), "window.size.height");
+
+	if (window_w == 0 || window_h == 0)
+	{
+		window_w = screen_size_w - 100;
+		window_h = screen_size_h - 100;
+	}
+
 	SDL_SetWindowSize(window, window_w, window_h);
 
 	fullscreen = json_object_dotget_boolean(json_object(root_value), "window.options.fullscreen");

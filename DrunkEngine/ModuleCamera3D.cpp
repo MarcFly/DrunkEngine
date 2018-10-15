@@ -3,6 +3,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
+#include "GeoPropertiesWindow.h"
 
 #define MOV_SPEED 4.0f
 #define MOUSE_SENSIBILITY 0.2f
@@ -70,7 +71,7 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetMouseZ() < 0) newPos += Z * speed * MOUSE_WHEEL_SPEED;
 	if (App->input->GetMouseZ() > 0) newPos -= Z * speed * MOUSE_WHEEL_SPEED;
 
-	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN) LookAt(vec3(0.0f, 0.0f, 0.0f));
+	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN) LookAt(App->mesh_loader->getObjectCenter(&App->mesh_loader->Objects[0])); // TODO Change to selected obj for assignment 2
 
 	Position += newPos;
 
@@ -79,13 +80,7 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->mesh_loader->Objects.size() == 0)
 			Reference = vec3(0.0f, 0.0f, 0.0f);
 		else
-		{
-			float aux_x = (App->mesh_loader->Objects.begin()->box_x + App->mesh_loader->Objects.begin()->box_nx) / 2;
-			float aux_y = (App->mesh_loader->Objects.begin()->box_y + App->mesh_loader->Objects.begin()->box_ny) / 2;
-			float aux_z = (App->mesh_loader->Objects.begin()->box_z + App->mesh_loader->Objects.begin()->box_nz) / 2;
-
-			Reference = vec3(aux_x, aux_y, aux_z);
-		}
+			Reference = App->mesh_loader->getObjectCenter(&App->mesh_loader->Objects[0]); // TODO Change to selected obj for assignment 2
 
 		Rotate();
 	}
@@ -254,6 +249,8 @@ void ModuleCamera3D::SetToObj(obj_data* obj, float vertex_aux)
 	}
 
 	Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
-	LookAt(vec3(0.0f, 0.0f, 0.0f));
+
+	LookAt(App->mesh_loader->getObjectCenter(obj));
+
 	mesh_multiplier = vertex_aux / 4;
 }
