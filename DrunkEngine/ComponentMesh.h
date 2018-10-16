@@ -23,6 +23,8 @@ public:
 	void SetMeshBoundBox();
 	
 	void Draw();
+	void DrawMesh();
+	void DrawMeshWire();
 	void DrawNormals();
 	void DrawBB();
 

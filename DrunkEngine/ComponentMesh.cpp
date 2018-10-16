@@ -158,6 +158,32 @@ void ComponentMesh::SetMeshBoundBox()
 
 void ComponentMesh::Draw()
 {
+	if (App->renderer3D->faces)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		DrawMesh();
+	}
+
+	if (App->renderer3D->wireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		DrawMeshWire();
+	}
+
+	// Set Default Color back
+	Color def = App->camera->background;
+	glColor4f(def.r, def.g, def.b, def.a);
+
+	if (App->renderer3D->render_normals)
+		this->DrawNormals();
+
+	if (App->renderer3D->bounding_box)
+		this->DrawBB();
+	
+}
+
+void ComponentMesh::DrawMesh()
+{
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -203,17 +229,24 @@ void ComponentMesh::Draw()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
 
-	// Set Default Color back
-	Color def = App->camera->background;
-	glColor4f(def.r, def.g, def.b, def.a);
+void ComponentMesh::DrawMeshWire()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	if (App->renderer3D->render_normals)
-		this->DrawNormals();
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
 
-	if (App->renderer3D->bounding_box)
-		this->DrawBB();
-	
+	glColor3f(1, 1, 1);
+
+	// Draw
+	glDrawElements(GL_TRIANGLES, this->num_index, GL_UNSIGNED_INT, NULL);
+
+	// Unbind Buffers
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void ComponentMesh::DrawNormals()
