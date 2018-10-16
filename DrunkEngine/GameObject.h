@@ -25,9 +25,13 @@ public:
 	void SetBoundBoxFromMeshes();
 	//void SetBoundBody();
 
-	void DestroyObject();
+	
 
-	void DestroyMaterial();
+	void AdjustObjects();
+	void AdjustMaterials();
+	void AdjustMeshes();
+
+	void CleanUp();
 
 public:
 	std::string name;
@@ -37,11 +41,24 @@ public:
 
 	AABB* BoundingBox = nullptr;
 
-	Primitive* mBoundingBody = nullptr; // In case we create a premade object // Temporary solution
+	Primitive* BoundingBody = nullptr; // In case we create a premade object // Temporary solution
 
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
 	std::vector<GameObject*> children;
+
+	bool to_pop = false;
+
+public:
+	void DestroyThisObject() 
+	{
+		this->CleanUp();
+		this->to_pop = true;
+		parent->AdjustObjects();
+	}
+
+	void DestroyMaterial();
+	void DestroyMesh();
 };
 
 #endif

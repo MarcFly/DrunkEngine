@@ -42,25 +42,24 @@ void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
 
 	bool check_rep = false;
 
-	std::list<Texture*>::iterator item = textures.begin();
 	for (int i = 0; i < textures.size(); i++)
 	{
-		check_rep = (tex->filename.substr(tex->filename.find_last_of("\\/") + 1) == item._Ptr->_Myval->filename);
+		check_rep = (tex->filename.substr(tex->filename.find_last_of("\\/") + 1) == textures[i]->filename);
 
 		if (check_rep)
 			break;
 
-		check_rep = (tex->filename.substr(tex->filename.find_last_of("\\/") + 1) == item._Ptr->_Myval->filename.substr(item._Ptr->_Myval->filename.find_last_of("\\/") + 1));
+		check_rep = (tex->filename.substr(tex->filename.find_last_of("\\/") + 1) == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1));
 
 		if (check_rep)
 			break;
 
-		check_rep = (tex->filename == item._Ptr->_Myval->filename);
+		check_rep = (tex->filename == textures[i]->filename);
 
 		if (check_rep)
 			break;
 
-		check_rep = (tex->filename == item._Ptr->_Myval->filename.substr(item._Ptr->_Myval->filename.find_last_of("\\/") + 1));
+		check_rep = (tex->filename == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1));
 	}
 
 	if (!check_rep)
@@ -128,4 +127,34 @@ void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
 		tex = nullptr;
 	}
 
+}
+
+void ComponentMaterial::DestroyTexture(const int& tex_ind)
+{
+	glDeleteTextures(1, &textures[tex_ind]->id_tex);
+
+	delete textures[tex_ind];
+
+	for (int i = tex_ind + 1; i < textures.size(); i++)
+		textures[i - 1] = textures[i];
+	
+	textures.pop_back();
+
+
+	if (textures.size() < 1)
+		for (int i = 0; i < parent->meshes.size(); i++)
+			parent->meshes[i]->Material_Ind = 0;
+	else
+		for (int i = 0; i < parent->meshes.size(); i++)
+			if (parent->meshes[i]->Material_Ind >= textures.size())
+				parent->meshes[i]->Material_Ind = - 1;
+}
+
+void ComponentMaterial::CleanUp()
+{
+	for (int i = 0; i < textures.size(); i++)
+		DestroyTexture(i);
+
+
+	parent = nullptr;
 }

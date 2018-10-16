@@ -31,11 +31,20 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 		for (int j = 0; j < scene->mNumMaterials; j++)
 			this->materials.push_back(new ComponentMaterial(scene->mMaterials[j], this));
 
-		this->transform = new ComponentTransform(obj->mTransformation, this);
+		this->transform = new ComponentTransform(&obj->mTransformation, this);
 		
 		App->camera->SetToObj(this, SetBoundBox());
 	}
 
+}
+
+void GameObject::Draw()
+{
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->Draw();
+
+	for (int i = 0; i < this->meshes.size(); i++)
+		this->meshes[i]->Draw();
 }
 
 vec GameObject::getObjectCenter()
@@ -76,7 +85,7 @@ float GameObject::SetBoundBox()
 			if (this->BoundingBox->maxPoint.y < this->children[i]->BoundingBox->maxPoint.y)
 				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;																	
 			if (this->BoundingBox->minPoint.y > this->children[i]->BoundingBox->minPoint.y)
-				this->BoundingBox->minPoint.y = this->children[i]->BoundingBox->minPoint.y)												 						
+				this->BoundingBox->minPoint.y = this->children[i]->BoundingBox->minPoint.y;
 			if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
 				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;												 						
 			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
@@ -114,11 +123,72 @@ void GameObject::SetBoundBoxFromMeshes()
 			if (this->BoundingBox->maxPoint.y < this->meshes[i]->BoundingBox->maxPoint.y)
 				this->BoundingBox->maxPoint.y = this->meshes[i]->BoundingBox->maxPoint.y;
 			if (this->BoundingBox->minPoint.y > this->meshes[i]->BoundingBox->minPoint.y)
-				this->BoundingBox->minPoint.y = this->meshes[i]->BoundingBox->minPoint.y)
+				this->BoundingBox->minPoint.y = this->meshes[i]->BoundingBox->minPoint.y;
 				if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
 					this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;
 			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
 				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
 		}
 	}
+}
+
+void GameObject::AdjustObjects()
+{
+	int i = 0;
+	for (i; i < this->children.size(); i++)
+	{
+		if (this->children[i]->to_pop == true)
+		{
+			delete this->children[i];
+			this->children[i] = nullptr;
+			break;
+		}
+	}
+
+	for (int j = i; j < this->children.size() - 1; j++)
+	{
+		this->children[j] = this->children[j + 1];
+	}
+
+	this->children.pop_back();
+}
+
+void GameObject::CleanUp()
+{
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->CleanUp();
+
+	for (int i = 0; i < this->meshes.size(); i++)
+	{
+		this->meshes[i]->CleanUp();
+		delete this->meshes[i];
+		this->meshes[i] = nullptr;
+	}
+	this->meshes.clear();
+
+	for (int i = 0; i < this->materials.size(); i++)
+	{
+		this->materials[i]->CleanUp();
+		delete this->materials[i];
+		this->materials[i] = nullptr;
+	}
+	this->meshes.clear();
+
+	delete this->transform;
+	this->transform = nullptr;
+
+	if (this->BoundingBox != nullptr) {
+		delete this->BoundingBox;
+		this->BoundingBox = nullptr;
+	}
+
+	if (this->BoundingBody != nullptr) {
+		this->BoundingBody->DelMathBody();
+		delete this->BoundingBody;
+		this->BoundingBody = nullptr;
+	}
+
+	this->parent = nullptr;
+	this->root = nullptr;
+	this->name.clear();
 }

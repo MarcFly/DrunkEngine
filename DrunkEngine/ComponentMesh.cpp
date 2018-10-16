@@ -153,3 +153,85 @@ void ComponentMesh::SetMeshBoundBox()
 
 	this->BoundingBox = new AABB(vec(min_x, min_y, min_z), vec(max_x, max_y, max_z));
 }
+
+void ComponentMesh::Draw()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
+
+	if (this->Material_Ind != -1)
+	{
+		if (this->Material_Ind < this->parent->materials.size())
+		{
+			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
+			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
+			if (this->parent->materials[Material_Ind]->textures.size() > 0)
+			{
+				for (int i = 0; i < this->parent->materials[Material_Ind]->textures.size(); i++)
+				{
+					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+					glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
+					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+
+					glBindTexture(GL_TEXTURE_2D, this->parent->materials[Material_Ind]->textures[i]->id_tex);
+				}
+			}
+			else
+			{
+				Color c = this->parent->materials[Material_Ind]->default_print;
+				glColor4f(c.r, c.g, c.b, c.a);
+			}
+		}
+		else
+		{
+			this->Material_Ind = -1;
+			App->ui->console_win->AddLog("Tried to render non-existing Material!");
+		}
+	}
+	else
+	{
+		glColor4f(1, 1, 1, 1);
+	}
+
+	// Draw
+	glDrawElements(GL_TRIANGLES, this->num_index, GL_UNSIGNED_INT, NULL);
+
+	// Unbind Buffers
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Set Default Color back
+	Color def = App->camera->background;
+	glColor4f(def.r, def.g, def.b, def.a);
+	
+}
+
+void ComponentMesh::CleanUp()
+{
+	glDeleteBuffers(1, &this->id_index);
+	glDeleteBuffers(1, &this->id_uvs);
+	glDeleteBuffers(1, &this->id_vertex);
+
+	delete this->index; this->index = nullptr;
+	delete this->normal; this->normal = nullptr;
+	delete this->tex_coords; this->tex_coords = nullptr;
+	delete this->vertex; this->vertex = nullptr;
+
+	if (this->BoundingBox != nullptr) {
+		delete this->BoundingBox;
+		this->BoundingBox = nullptr;
+	}
+
+	if (this->BoundingBody != nullptr) {
+		this->BoundingBody->DelMathBody();
+		delete this->BoundingBody;
+		this->BoundingBody = nullptr;
+	}
+
+	this->parent = nullptr;
+	this->root = nullptr;
+}

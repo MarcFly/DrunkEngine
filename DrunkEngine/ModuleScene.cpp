@@ -104,62 +104,6 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	return ret;
 }
 
-void ModuleScene::DrawMesh(const ComponentMesh* mesh, bool use_texture) 
-{
-	// Draw elements
-	{
-
-		glColor4f(1, 1, 1, 1);
-
-		// Bind buffers
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->id_vertex);
-		glVertexPointer(3, GL_FLOAT, 0, NULL);
-		
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->id_index);
-
-		glColor4f(1, 1, 1, 1);
-
-		if (use_texture)
-		{
-			if(mesh->parent->textures.size() > 0 && mesh)
-			int test = mesh->parent->textures.size() - 1;
-			if(mesh->parent->textures.size() > 0 && mesh->tex_index <= (mesh->parent->textures.size() - 1))
-			{ 
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-				glBindBuffer(GL_ARRAY_BUFFER, mesh->id_uvs);
-				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
-
-				glBindTexture(GL_TEXTURE_2D, mesh->parent->textures[mesh->tex_index].id_tex);
-			}
-			else if (mesh->parent->mat_colors.size() > 0)
-			{
-				Color c = mesh->parent->mat_colors[mesh->tex_index];
-				glColor4f(c.r, c.g, c.b, c.a);
-			}
-		}
-		
-		// Draw
-		glDrawElements(GL_TRIANGLES, mesh->num_index, GL_UNSIGNED_INT, NULL);
-
-		// Unbind Buffers
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-		glColor4f(0, 1, 0, 1);
-
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
-
-	}
-
-	//DrawBB(mesh);
-}
-
 bool ModuleScene::Load(JSON_Value * root_value)
 {
 	bool ret = false;
@@ -230,78 +174,10 @@ void ModuleScene::DestroyObject(const int& index)
 	Objects.erase(Objects.begin(), Objects.begin());
 }
 
-void ModuleScene::DestroyTexture(GameObject* curr_obj, const int& tex_ind)
-{
-	glDeleteTextures(1, &curr_obj->textures[tex_ind].id_tex);
-
-	for (int i = tex_ind + 1; i < curr_obj->textures.size(); i++)
-	{
-		curr_obj->textures[i - 1] = curr_obj->textures[i];
-	}
-	curr_obj->textures.pop_back();
-
-
-	if (curr_obj->textures.size() < 1)
-		for (int i = 0; i < curr_obj->meshes.size(); i++)
-			curr_obj->meshes[i].tex_index = 0;
-	else
-		for (int i = 0; i < curr_obj->meshes.size(); i++)
-			if (curr_obj->meshes[i].tex_index >= curr_obj->textures.size())
-				curr_obj->meshes[i].tex_index = curr_obj->textures.size() - 1;
-			
-}
-
-
-
-
-
 void ModuleScene::SetCurrTexTo(GameObject& curr_obj, const int tex_ind)
 {
 	for (int i = 0; i < curr_obj.meshes.size(); i++)
 		curr_obj.meshes[i].tex_index = tex_ind;
-}
-
-float ModuleScene::SetObjBoundBox(GameObject &object, const aiScene* scene)
-{
-	float ret = 0;
-
-	object.BoundingBox.maxPoint = vec(INT_MIN, INT_MIN, INT_MIN);
-	object.BoundingBox.minPoint = vec(INT_MAX, INT_MAX, INT_MAX);
-
-	for (int i = 0; i < scene->mNumMeshes; i++)
-	{
-		// Setting the BB min and max points
-
-		if (object.BoundingBox.maxPoint.x < object.meshes[i].BoundingBox.maxPoint.x)
-			object.BoundingBox.maxPoint.x = object.meshes[i].BoundingBox.maxPoint.x;
-
-		if (object.BoundingBox.minPoint.x > object.meshes[i].BoundingBox.minPoint.x)
-			object.BoundingBox.minPoint.x = object.meshes[i].BoundingBox.minPoint.x;
-
-		if (object.BoundingBox.maxPoint.y < object.meshes[i].BoundingBox.maxPoint.y)
-			object.BoundingBox.maxPoint.y = object.meshes[i].BoundingBox.maxPoint.y;
-
-		if (object.BoundingBox.minPoint.y > object.meshes[i].BoundingBox.minPoint.y)
-			object.BoundingBox.minPoint.y = object.meshes[i].BoundingBox.minPoint.y;
-
-		if (object.BoundingBox.maxPoint.z < object.meshes[i].BoundingBox.maxPoint.z)
-			object.BoundingBox.maxPoint.z = object.meshes[i].BoundingBox.maxPoint.z;
-
-		if (object.BoundingBox.minPoint.z > object.meshes[i].BoundingBox.minPoint.z)
-			object.BoundingBox.minPoint.z = object.meshes[i].BoundingBox.minPoint.z;
-	}
-
-	{
-		if (abs(object.BoundingBox.maxPoint.x) > ret) {ret = abs(object.BoundingBox.maxPoint.x);}
-		if (abs(object.BoundingBox.maxPoint.y) > ret) {ret = abs(object.BoundingBox.maxPoint.y);}
-		if (abs(object.BoundingBox.maxPoint.z) > ret) {ret = abs(object.BoundingBox.maxPoint.z);}
-		if (abs(object.BoundingBox.minPoint.x) > ret) {ret = abs(object.BoundingBox.minPoint.x);}
-		if (abs(object.BoundingBox.minPoint.y) > ret) {ret = abs(object.BoundingBox.minPoint.y);}
-		if (abs(object.BoundingBox.minPoint.z) > ret) {ret = abs(object.BoundingBox.minPoint.z);}
-	}
-
-	return ret;
-
 }
 
 // CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------
@@ -384,4 +260,16 @@ bool ModuleScene::CreatePrimitiveObject(const vec& center, PCube& cube)
 void CallLog(const char* str, char* usrData)
 {
 	App->ui->console_win->AddLog(str);
+}
+
+bool ModuleScene::DestroyScene()
+{
+	bool ret = true;
+
+	Root_Object->CleanUp();
+
+	delete Root_Object;
+	Root_Object = nullptr;
+
+	return ret;
 }

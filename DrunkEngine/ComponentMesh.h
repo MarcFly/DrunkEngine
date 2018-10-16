@@ -20,8 +20,10 @@ public:
 	void SetNormals(const int& index);
 	void GenBuffers();
 	void SetMeshBoundBox();
-
+	
 	void Draw();
+
+	void CleanUp();
 
 public:
 	std::string name;
@@ -46,17 +48,15 @@ public:
 
 	GLuint num_faces = 0;
 
-	aiVector3D transform_position;
-	aiVector3D transform_scale;
-	aiVector3D transform_rotate;
-
 	AABB* BoundingBox;
 
 	Primitive* BoundingBody = nullptr;
 
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
-	ComponentTransform*	transform = nullptr;
+
+public:
+	void SetTextTo(const int& Mat_ind) { this->Material_Ind = Mat_ind; };
 };
 
 #endif

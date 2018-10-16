@@ -58,13 +58,6 @@ public:
 	int GetAssimpMajorVer() { return aiGetVersionMajor(); };
 	int GetAssimpMinorVer() { return aiGetVersionMinor(); };
 	int GetAssimpVersionRevision() { return aiGetVersionRevision(); };
-
-	void SetParents() 
-	{
-		for (int j = 0; j < Objects.size(); j++)
-			for (int k = 0; k < Objects[j].meshes.size(); k++)
-				Objects[j].meshes[k].parent = &Objects[j];
-	}
 };
 
 #endif

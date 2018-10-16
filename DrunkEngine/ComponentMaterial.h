@@ -28,14 +28,16 @@ public:
 	~ComponentMaterial() {};
 
 	void LoadTexture(const char* path, Texture* tex);
-	void DestroyTexture();
+	void DestroyTexture(const int& tex_index);
+
+	void CleanUp();
 
 public:
 
 
 
 	uint NumDiffTextures = 0;
-	std::list<Texture*> textures;
+	std::vector<Texture*> textures;
 	uint NumProperties = 0;
 	Color default_print = {1,1,1,1};
 	
