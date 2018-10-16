@@ -102,7 +102,9 @@ public:
 
 	bool bounding_box;
 
+	// Value as our Enum type
 	int curr_tws, curr_twt, curr_tmagf, curr_tminf;
+	// Value as GL Type
 	uint tws, twt, tmagf, tminf;
 
   // Checker Texture

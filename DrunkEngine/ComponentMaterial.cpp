@@ -9,6 +9,8 @@
 
 ComponentMaterial::ComponentMaterial(aiMaterial * mat, GameObject * par)
 {
+	this->parent = par;
+
 	// Default Material Color
 	aiColor3D color;
 	mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
@@ -22,38 +24,38 @@ ComponentMaterial::ComponentMaterial(aiMaterial * mat, GameObject * par)
 	{
 		aiString path;
 		aiReturn err = mat->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-		Texture* diff = new Texture;
-		LoadTexture(path.C_Str(), diff);
-
-		if (diff != nullptr)
-			textures.push_back(diff);
+		LoadTexture(path.C_Str());
 	}
 
 	App->ui->console_win->AddLog("New Material with %d textures loaded.", this->textures.size());
 }
 
-void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
+void ComponentMaterial::LoadTexture(const char * path)
 {
+	Texture* ret = new Texture;
+	ret->mparent = this;
+
 	bool check_rep = false;
 
 	if (strrchr(path, '\\') != nullptr)
 	{
-		tex->filename = strrchr(path, '\\');
-		tex->filename.substr(tex->filename.find_first_of("\\") + 3);
+		ret->filename = strrchr(path, '\\');
+		ret->filename.substr(ret->filename.find_first_of("\\") + 3);
 	}
 	else
-		tex->filename = path;
+		ret->filename = path;
 
-	Texture* aux = CheckTexRep(tex->filename.c_str());
-	if (aux != nullptr)
+	Texture* test = CheckTexRep(ret->filename.c_str());
+
+	if (test != nullptr)
 		check_rep = true;
 
 	if (!check_rep)
 	{
 		// Load Tex parameters and data to vram?
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glGenTextures(1, &tex->id_tex);
-		glBindTexture(GL_TEXTURE_2D, tex->id_tex);
+		glGenTextures(1, &ret->id_tex);
+		glBindTexture(GL_TEXTURE_2D, ret->id_tex);
 
 		App->renderer3D->GenTexParams();
 
@@ -84,19 +86,20 @@ void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
 
 			check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
-			tex->width = Info.Width;
-			tex->height = Info.Height;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex->width, tex->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+			ret->width = Info.Width;
+			ret->height = Info.Height;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
 
-			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, tex->width, tex->height);
+			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, ret->width, ret->height);
 
 		}
 		else
 		{
 			App->ui->console_win->AddLog("Failed to load image from path %s", path);
 			
-			glDeleteTextures(1, &tex->id_tex);
-			delete tex;
+			glDeleteTextures(1, &ret->id_tex);
+			delete ret;
+			ret = nullptr;
 		}
 
 		ilDeleteImages(1, &id_Image);
@@ -108,18 +111,40 @@ void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
 	else
 	{
 
-		App->ui->console_win->AddLog("This texture is already loaded!");
-		delete tex;
-		tex = nullptr;
+		App->ui->console_win->AddLog("Setting Reference to already Loaded Texture...");
+		ret = test;
+		if(ret->mparent != this)
+			ret->referenced_mats.push_back(this);
 	}
 
+	if(ret != nullptr)
+		this->textures.push_back(ret);
 }
 
 void ComponentMaterial::DestroyTexture(const int& tex_ind)
 {
 	glDeleteTextures(1, &textures[tex_ind]->id_tex);
 
-	delete textures[tex_ind];
+	if (!textures[tex_ind]->deleted)
+	{
+		for(int i = 0; i < textures[tex_ind]->referenced_mats.size(); i++)
+		{ 
+			for (int j = 0; j < textures[tex_ind]->referenced_mats[i]->textures.size(); j++)
+			{ 
+				if (textures[tex_ind]->referenced_mats[i]->textures[j]->filename == textures[tex_ind]->filename)
+				{
+					textures[tex_ind]->referenced_mats[i]->textures[j]->deleted = true;
+			
+				}
+			}
+				
+		}
+			
+
+		delete textures[tex_ind];
+	}
+
+	textures[tex_ind] = nullptr;
 
 	for (int i = tex_ind + 1; i < textures.size(); i++)
 		textures[i - 1] = textures[i];
@@ -148,11 +173,11 @@ Texture* ComponentMaterial::CheckTexRep(std::string name)
 
 	GameObject* par = this->parent;
 
-	while (par != nullptr || ret != nullptr)
+	while (par != NULL && ret == nullptr)
 	{
-		for (int i = 0; par->materials.size(); i++)
+		for (int i = 0; i < par->materials.size(); i++)
 		{
-			ret = CheckNameRep(name);
+			ret = par->materials[i]->CheckNameRep(name);
 		}
 
 		par = par->parent;
@@ -165,7 +190,7 @@ Texture* ComponentMaterial::CheckNameRep(std::string name)
 {
 	Texture* ret = nullptr;
 
-	for (int i = 0; i < textures.size(); i++)
+	for (int i = 0; i < this->textures.size(); i++)
 	{
 		if(name.substr(name.find_last_of("\\/") + 1) == textures[i]->filename)
 			ret = textures[i];

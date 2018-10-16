@@ -26,14 +26,14 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 {
 	float vertex_aux = 0;
 
-	for (int i = 0; i < obj->mNumChildren; i++)
-		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
-
 	for (int i = 0; i < obj->mNumMeshes; i++)
 		this->meshes.push_back(new ComponentMesh(scene->mMeshes[obj->mMeshes[i]], this));
 
 	for (int i = 0; i < scene->mNumMaterials; i++)
 		this->materials.push_back(new ComponentMaterial(scene->mMaterials[i], this));
+
+	for (int i = 0; i < obj->mNumChildren; i++)
+		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
 
 	this->transform = new ComponentTransform(&obj->mTransformation, this);
 	App->camera->SetToObj(this, SetBoundBox());
@@ -41,14 +41,15 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 
 void GameObject::Draw()
 {
-	for (int i = 0; i < this->children.size(); i++)
-		this->children[i]->Draw();
-
 	for (int i = 0; i < this->meshes.size(); i++)
 		this->meshes[i]->Draw();
 
 	if (App->renderer3D->bounding_box)
 		this->DrawBB();
+
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->Draw();
+		
 }
 
 void GameObject::DrawBB()
@@ -57,6 +58,8 @@ void GameObject::DrawBB()
 
 	glBegin(GL_LINES);
 
+	glColor3f(0, 1, 0);
+
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
 
@@ -92,6 +95,8 @@ void GameObject::DrawBB()
 
 	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
 	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glColor3f(0, 1, 0);
 
 	glEnd();
 
@@ -249,8 +254,7 @@ void GameObject::AdjustMeshes()
 
 void GameObject::CleanUp()
 {
-	for (int i = 0; i < this->children.size(); i++)
-		this->children[i]->CleanUp();
+	
 
 	for (int i = 0; i < this->meshes.size(); i++)
 	{
@@ -281,6 +285,9 @@ void GameObject::CleanUp()
 		delete this->BoundingBody;
 		this->BoundingBody = nullptr;
 	}
+
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->CleanUp();
 
 	this->parent = nullptr;
 	this->root = nullptr;

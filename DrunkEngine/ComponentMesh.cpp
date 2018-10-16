@@ -168,6 +168,9 @@ void ComponentMesh::Draw()
 	{
 		if (this->Material_Ind < this->parent->materials.size())
 		{
+			Color c = this->parent->materials[Material_Ind]->default_print;
+			glColor4f(c.r, c.g, c.b, c.a);
+
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
 			if (this->parent->materials[Material_Ind]->textures.size() > 0)
@@ -180,11 +183,6 @@ void ComponentMesh::Draw()
 
 					glBindTexture(GL_TEXTURE_2D, this->parent->materials[Material_Ind]->textures[i]->id_tex);
 				}
-			}
-			else
-			{
-				Color c = this->parent->materials[Material_Ind]->default_print;
-				glColor4f(c.r, c.g, c.b, c.a);
 			}
 		}
 		else
@@ -232,16 +230,21 @@ void ComponentMesh::DrawNormals()
 
 		glVertex3f(this->normal[k * 6] + norm.x, this->normal[k * 6 + 1] + norm.y, this->normal[k * 6 + 2] + norm.z);
 	}
-
+	glColor3f(0, 1, 0);
 	glEnd();
+
+	
 }
 
 void ComponentMesh::DrawBB()
 {
+	
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_LINES);
 
+	glColor3f(0, 1, 0);
+
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
 
@@ -277,11 +280,15 @@ void ComponentMesh::DrawBB()
 
 	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
 	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glColor3f(1, 1, 1);
 
 	glEnd();
 
 	if (App->renderer3D->lighting)
 		glEnable(GL_LIGHTING);
+
+	
 }
 
 void ComponentMesh::CleanUp()

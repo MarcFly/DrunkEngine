@@ -17,12 +17,19 @@ enum TextureMode
 	TM_MAX
 };
 
+class ComponentMaterial;
+
 struct Texture
 {
 	GLuint id_tex = 0;
 	GLuint width, height;
 	std::string filename;
 	TextureMode type = TM_Error;
+	ComponentMaterial* mparent;
+
+	std::vector<ComponentMaterial*> referenced_mats;
+
+	bool deleted = false;
 };
 
 class ComponentMaterial
@@ -33,7 +40,7 @@ public:
 
 	~ComponentMaterial() {};
 
-	void LoadTexture(const char* path, Texture* tex);
+	void LoadTexture(const char* path);
 	void DestroyTexture(const int& tex_index);
 
 	void CleanUp();
