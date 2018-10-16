@@ -22,7 +22,8 @@ ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled)
 // Destructor
 ModuleInput::~ModuleInput()
 {
-	delete[] keyboard;
+	if(keyboard != nullptr)
+		delete[] keyboard;
 }
 
 // Called before render is available
@@ -180,7 +181,9 @@ bool ModuleInput::CleanUp()
 {
 	PLOG("Quitting SDL input event subsystem");
 
-	delete keyboard;
+	if(keyboard != nullptr)
+		delete[] keyboard;
+	keyboard = nullptr;
 
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
