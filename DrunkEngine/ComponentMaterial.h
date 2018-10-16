@@ -34,15 +34,14 @@ public:
 
 public:
 
-
-
 	uint NumDiffTextures = 0;
 	std::vector<Texture*> textures;
 	uint NumProperties = 0;
 	Color default_print = {1,1,1,1};
-	
 
 	GameObject* parent = nullptr;
+
+	bool to_pop = false;
 };
 
 #endif

@@ -153,6 +153,48 @@ void GameObject::AdjustObjects()
 	this->children.pop_back();
 }
 
+void GameObject::AdjustMaterials()
+{
+	int i = 0;
+	for (i; i < this->materials.size(); i++)
+	{
+		if (this->materials[i]->to_pop == true)
+		{
+			delete this->materials[i];
+			this->materials[i] = nullptr;
+			break;
+		}
+	}
+
+	for (int j = i; j < this->materials.size() - 1; j++)
+	{
+		this->materials[j] = this->materials[j + 1];
+	}
+
+	this->materials.pop_back();
+}
+
+void GameObject::AdjustMeshes()
+{
+	int i = 0;
+	for (i; i < this->meshes.size(); i++)
+	{
+		if (this->meshes[i]->to_pop == true)
+		{
+			delete this->meshes[i];
+			this->meshes[i] = nullptr;
+			break;
+		}
+	}
+
+	for (int j = i; j < this->meshes.size() - 1; j++)
+	{
+		this->meshes[j] = this->meshes[j + 1];
+	}
+
+	this->meshes.pop_back();
+}
+
 void GameObject::CleanUp()
 {
 	for (int i = 0; i < this->children.size(); i++)

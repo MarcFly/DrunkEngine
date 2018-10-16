@@ -143,37 +143,6 @@ int ModuleScene::GetDevILVer()
 	return IL_VERSION;
 }
 
-void ModuleScene::DestroyObject(const int& index)
-{
-	for (int i = 0; i < Objects[index].meshes.size(); i++) {
-		glDeleteBuffers(1, &Objects[index].meshes[i].id_index);
-		//glDeleteBuffers(GL_ARRAY_BUFFER, &Objects[index].meshes[i].id_normal);
-		glDeleteBuffers(1, &Objects[index].meshes[i].id_uvs);
-		glDeleteBuffers(1, &Objects[index].meshes[i].id_vertex);
-
-		delete Objects[index].meshes[i].index;
-		delete Objects[index].meshes[i].normal;
-		delete Objects[index].meshes[i].tex_coords;
-		delete Objects[index].meshes[i].vertex;
-
-		if (Objects[index].mBoundingBody != nullptr) {
-			Objects[index].mBoundingBody->DelMathBody();
-			delete Objects[index].mBoundingBody;
-		}
-	}
-	Objects[index].meshes.clear();
-
-	for (int i = 0; i < Objects[index].materials.size(); i++)
-	{
-		glDeleteTextures(1, &Objects[index].materials[i].id_tex);
-	}
-	Objects[index].materials.clear();
-
-	Objects[index].mat_colors.clear();
-
-	Objects.erase(Objects.begin(), Objects.begin());
-}
-
 void ModuleScene::SetCurrTexTo(GameObject& curr_obj, const int tex_ind)
 {
 	for (int i = 0; i < curr_obj.meshes.size(); i++)

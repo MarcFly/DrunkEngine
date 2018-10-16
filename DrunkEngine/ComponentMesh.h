@@ -55,6 +55,8 @@ public:
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
 
+	bool to_pop = false;
+
 public:
 	void SetTextTo(const int& Mat_ind) { this->Material_Ind = Mat_ind; };
 };
