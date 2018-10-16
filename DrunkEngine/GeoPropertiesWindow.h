@@ -14,6 +14,8 @@ public:
 
 	void CheckMeshInfo();
 
+	void CreateObjLeaf(GameObject* obj, int& st);
+
 public:
 	int total_num_vertex;
 	int total_num_faces;

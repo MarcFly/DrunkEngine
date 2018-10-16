@@ -13,6 +13,12 @@ GeoPropertiesWindow::~GeoPropertiesWindow()
 
 void GeoPropertiesWindow::Draw()
 {
+	ImGui::Begin(GetName().c_str(), &active);
+	{
+		int start_val = -1;
+		CreateObjLeaf(App->mesh_loader->Root_Object, start_val);
+	}
+	ImGui::End();
 	/*ImGui::Begin(GetName().c_str(), &active);
 	{
 		// left
@@ -138,4 +144,38 @@ void GeoPropertiesWindow::CheckMeshInfo()
 	check_info = true;
 	total_num_vertex = 0;
 	total_num_faces = 0;
+}
+
+void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int& st)
+{
+	static int selection_mask = (1 << 2);
+	int n_sel = st;
+	
+	//int num_child = 0;
+	//if (obj->parent != nullptr)
+	//	num_child - obj->parent->children.size();
+	////num_child++;
+
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask & (1 << st)) ? ImGuiTreeNodeFlags_Selected : 0);
+	bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+	{
+		if (ImGui::IsItemClicked())
+			n_sel = st;
+		if (n_open)
+		{
+			for (int i = 0; i < obj->children.size(); i++)
+			{
+				CreateObjLeaf(obj->children[i], st+=i);
+			}
+			ImGui::TreePop();
+		}
+	}
+	if (n_sel != -1)
+	{
+		if (ImGui::GetIO().KeyCtrl)
+			selection_mask ^= (1 << n_sel);
+		else
+			selection_mask = (1 << n_sel);
+	}
+	
 }
