@@ -1,7 +1,11 @@
 #ifndef _COMPONENT_TRANSFORM_
 #define _COMPONENT_TRANSFORM_
 
-#include "GameObject.h"
+#include "MGL/MathGeoLib.h"
+#include "Assimp/include/scene.h"
+
+class GameObject;
+class ComponentMesh;
 
 class ComponentTransform
 {

@@ -2,11 +2,12 @@
 #define _COMPONENT_MESH_
 
 #include "GLEW/include/GL/glew.h"
-
-#include "GameObject.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
+#include "Assimp/include/scene.h"
+
+class GameObject;
 
 class ComponentMesh
 {
@@ -22,6 +23,8 @@ public:
 	void SetMeshBoundBox();
 	
 	void Draw();
+	void DrawNormals();
+	void DrawBB();
 
 	void CleanUp();
 

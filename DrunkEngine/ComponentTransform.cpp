@@ -1,4 +1,5 @@
 #include "ComponentTransform.h"
+#include "Assimp/include/scene.h"
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {

@@ -1,9 +1,16 @@
 #include "GameObject.h"
 #include "Application.h"
+#include "ComponentMaterial.h"
+#include "ComponentMesh.h"
+#include "ComponentTransform.h"
 
 GameObject::GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par)
 {
 	this->parent = par;
+	this->root = this->parent;
+	while (this->root->parent != nullptr)
+		this->root = this->root->parent;
+
 	this->name = obj_root->mName.C_Str();
 	CreateThisObj(scene, obj_root);
 }
@@ -17,25 +24,19 @@ GameObject::GameObject(const aiScene* scene, const aiNode * root_obj, const char
 
 void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 {
-
 	float vertex_aux = 0;
 
 	for (int i = 0; i < obj->mNumChildren; i++)
-	{
-		for (int j = 0; i < obj->mChildren[i]->mNumChildren; j++)
-			this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
+		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
 
-		for (int j = 0; j < obj->mNumMeshes; j++)
-			this->meshes.push_back(new ComponentMesh(scene->mMeshes[obj->mMeshes[j]], this));
+	for (int i = 0; i < obj->mNumMeshes; i++)
+		this->meshes.push_back(new ComponentMesh(scene->mMeshes[obj->mMeshes[i]], this));
 
-		for (int j = 0; j < scene->mNumMaterials; j++)
-			this->materials.push_back(new ComponentMaterial(scene->mMaterials[j], this));
+	for (int i = 0; i < scene->mNumMaterials; i++)
+		this->materials.push_back(new ComponentMaterial(scene->mMaterials[i], this));
 
-		this->transform = new ComponentTransform(&obj->mTransformation, this);
-		
-		App->camera->SetToObj(this, SetBoundBox());
-	}
-
+	this->transform = new ComponentTransform(&obj->mTransformation, this);
+	App->camera->SetToObj(this, SetBoundBox());
 }
 
 void GameObject::Draw()
@@ -45,6 +46,57 @@ void GameObject::Draw()
 
 	for (int i = 0; i < this->meshes.size(); i++)
 		this->meshes[i]->Draw();
+
+	if (App->renderer3D->bounding_box)
+		this->DrawBB();
+}
+
+void GameObject::DrawBB()
+{
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glEnd();
+
+	if (App->renderer3D->lighting)
+		glEnable(GL_LIGHTING);
 }
 
 vec GameObject::getObjectCenter()
@@ -62,7 +114,7 @@ float GameObject::SetBoundBox()
 
 	this->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX),vec(INT_MIN, INT_MIN, INT_MIN));
 
-	if (children.size() < 0)
+	if (this->children.size() == 0)
 	{
 		SetBoundBoxFromMeshes();
 	}
@@ -124,10 +176,10 @@ void GameObject::SetBoundBoxFromMeshes()
 				this->BoundingBox->maxPoint.y = this->meshes[i]->BoundingBox->maxPoint.y;
 			if (this->BoundingBox->minPoint.y > this->meshes[i]->BoundingBox->minPoint.y)
 				this->BoundingBox->minPoint.y = this->meshes[i]->BoundingBox->minPoint.y;
-				if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
-					this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;
-			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
-				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
+			if (this->BoundingBox->maxPoint.z < this->meshes[i]->BoundingBox->maxPoint.z)
+				this->BoundingBox->maxPoint.z = this->meshes[i]->BoundingBox->maxPoint.z;
+			if (this->BoundingBox->minPoint.z > this->meshes[i]->BoundingBox->minPoint.z)
+				this->BoundingBox->minPoint.z = this->meshes[i]->BoundingBox->minPoint.z;
 		}
 	}
 }

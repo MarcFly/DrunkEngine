@@ -35,9 +35,13 @@ Application::~Application()
 
 	while(item != list_modules.end())
 	{
+		/*if(item._Ptr->_Myval != nullptr)
+			delete item._Ptr->_Myval;*/
+		item._Ptr->_Myval->CleanUp();
 		delete item._Ptr->_Myval;
 		item++;
 	}
+	list_modules.clear();
 }
 
 bool Application::Init()

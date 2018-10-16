@@ -1,7 +1,13 @@
 #ifndef _COMPONENT_MATERIAL_
 #define _COMPONENT_MATERIAL_
 
-#include "GameObject.h"
+#include <vector>
+#include <string>
+#include "GLEW/include/GL/glew.h"
+#include "Assimp/include/scene.h"
+#include "Color.h"
+
+class GameObject;
 
 enum TextureMode
 {
@@ -34,9 +40,9 @@ public:
 
 public:
 
-	uint NumDiffTextures = 0;
+	unsigned int NumDiffTextures = 0;
 	std::vector<Texture*> textures;
-	uint NumProperties = 0;
+	unsigned int NumProperties = 0;
 	Color default_print = {1,1,1,1};
 
 	GameObject* parent = nullptr;

@@ -52,6 +52,6 @@
   },
   "manage_mesh": {
     "scenes_path": "Test Models and Textures\/",
-    "textures_path": "Test Models and Textures\/"
+    "materials_path": "Test Models and Textures\/"
   }
 }

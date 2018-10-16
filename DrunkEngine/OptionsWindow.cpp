@@ -178,19 +178,19 @@ void OptionsWindow::Draw()
 			ImGui::Separator();
 
 			const char* wrap_types[] = { "CLAMP TO EDGE", "CLAMP TO BORDER", "MIRRORED REPEAT", "REPEAT", "MIRROR CLAMP" };
-			if (ImGui::Combo("Texture Wrap S", &App->mesh_loader->curr_tws, wrap_types, IM_ARRAYSIZE(wrap_types)))
-				App->mesh_loader->SetCurrParams();
-			if (ImGui::Combo("Texture Wrap T", &App->mesh_loader->curr_twt, wrap_types, IM_ARRAYSIZE(wrap_types)))
-				App->mesh_loader->SetCurrParams();
+			if (ImGui::Combo("Texture Wrap S", &App->renderer3D->curr_tws, wrap_types, IM_ARRAYSIZE(wrap_types)))
+				App->renderer3D->SetTextureParams();
+			if (ImGui::Combo("Texture Wrap T", &App->renderer3D->curr_twt, wrap_types, IM_ARRAYSIZE(wrap_types)))
+				App->renderer3D->SetTextureParams();
 			
 			ImGui::Separator();
 			
 			const char* tex_f[] = { "NEAREST","LINEAR"/*,"NEAREST MIPMAP NEAREST", "LINEAR MIPMAP NEAREST", "NEAREST MIPMAP LINEAR", "LINEAR MIPMAP LINEAR"*/ };
-			if (ImGui::Combo("Texture Min Filter", &App->mesh_loader->curr_tminf, tex_f, IM_ARRAYSIZE(tex_f)))
-				App->mesh_loader->SetCurrParams();
+			if (ImGui::Combo("Texture Min Filter", &App->renderer3D->curr_tminf, tex_f, IM_ARRAYSIZE(tex_f)))
+				App->renderer3D->SetTextureParams();
 
-			if (ImGui::Combo("Texture Mag Filter", &App->mesh_loader->curr_tmagf, tex_f, IM_ARRAYSIZE(tex_f)))
-				App->mesh_loader->SetCurrParams();
+			if (ImGui::Combo("Texture Mag Filter", &App->renderer3D->curr_tmagf, tex_f, IM_ARRAYSIZE(tex_f)))
+				App->renderer3D->SetTextureParams();
 
 			ImGui::Separator();
 

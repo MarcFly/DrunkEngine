@@ -4,6 +4,8 @@
 #include "Application.h"
 #include "ConsoleWindow.h"
 #include "GeoPropertiesWindow.h"
+#include "GameObject.h"
+#include "ComponentMesh.h"
 
 ComponentMaterial::ComponentMaterial(aiMaterial * mat, GameObject * par)
 {
@@ -141,13 +143,10 @@ void ComponentMaterial::DestroyTexture(const int& tex_ind)
 	textures.pop_back();
 
 
-	if (textures.size() < 1)
+	if(textures.size() > 0)
 		for (int i = 0; i < parent->meshes.size(); i++)
-			parent->meshes[i]->Material_Ind = 0;
-	else
-		for (int i = 0; i < parent->meshes.size(); i++)
-			if (parent->meshes[i]->Material_Ind >= textures.size())
-				parent->meshes[i]->Material_Ind = - 1;
+			if (this->parent->meshes[i]->Material_Ind >= textures.size())
+				this->parent->meshes[i]->Material_Ind = - 1;
 }
 
 void ComponentMaterial::CleanUp()

@@ -13,7 +13,7 @@ GeoPropertiesWindow::~GeoPropertiesWindow()
 
 void GeoPropertiesWindow::Draw()
 {
-	ImGui::Begin(GetName().c_str(), &active);
+	/*ImGui::Begin(GetName().c_str(), &active);
 	{
 		// left
 
@@ -130,7 +130,7 @@ void GeoPropertiesWindow::Draw()
 		}
 		ImGui::EndGroup();
 	}
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void GeoPropertiesWindow::CheckMeshInfo()

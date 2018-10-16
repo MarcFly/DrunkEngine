@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "ConsoleWindow.h"
 #include "GeoPropertiesWindow.h"
+#include "GameObject.h"
+#include "ComponentMaterial.h"
 
 ComponentMesh::ComponentMesh(const aiMesh * mesh, GameObject * par)
 {
@@ -207,7 +209,79 @@ void ComponentMesh::Draw()
 	// Set Default Color back
 	Color def = App->camera->background;
 	glColor4f(def.r, def.g, def.b, def.a);
+
+	if (App->renderer3D->render_normals)
+		this->DrawNormals();
+
+	if (App->renderer3D->bounding_box)
+		this->DrawBB();
 	
+}
+
+void ComponentMesh::DrawNormals()
+{
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 1.0f, 0.0f);
+
+	for (int k = 0; k < this->num_normal / 6; k++)
+	{
+		glVertex3f(this->normal[k * 6], this->normal[k * 6 + 1], this->normal[k * 6 + 2]);
+
+		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 6 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
+		norm = norm.Mul(App->renderer3D->normal_length);
+
+		glVertex3f(this->normal[k * 6] + norm.x, this->normal[k * 6 + 1] + norm.y, this->normal[k * 6 + 2] + norm.z);
+	}
+
+	glEnd();
+}
+
+void ComponentMesh::DrawBB()
+{
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+
+	glEnd();
+
+	if (App->renderer3D->lighting)
+		glEnable(GL_LIGHTING);
 }
 
 void ComponentMesh::CleanUp()

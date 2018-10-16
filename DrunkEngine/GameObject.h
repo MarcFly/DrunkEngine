@@ -5,9 +5,11 @@
 #include <string>
 #include "Assimp/include/scene.h"
 #include "MGL/MathGeoLib.h"
-#include "ComponentMaterial.h"
-#include "ComponentMesh.h"
-#include "ComponentTransform.h"
+
+class ComponentMesh;
+class ComponentMaterial;
+class ComponentTransform;
+class Primitive;
 
 class GameObject
 {
@@ -19,14 +21,13 @@ public:
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);
 
 	void Draw();
+	void DrawBB();
 
 	vec getObjectCenter();
 	float SetBoundBox();
 	void SetBoundBoxFromMeshes();
 	//void SetBoundBody();
-
 	
-
 	void AdjustObjects();
 	void AdjustMaterials();
 	void AdjustMeshes();

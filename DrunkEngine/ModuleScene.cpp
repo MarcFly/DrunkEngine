@@ -91,7 +91,7 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	if (scene != nullptr)
 	{
 		DestroyScene();
-		GameObject* root = new GameObject(scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
+		Root_Object = new GameObject(scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
 		
 		aiReleaseImport(scene);
 	}
@@ -143,11 +143,11 @@ int ModuleScene::GetDevILVer()
 	return IL_VERSION;
 }
 
-void ModuleScene::SetCurrTexTo(GameObject& curr_obj, const int tex_ind)
-{
-	for (int i = 0; i < curr_obj.meshes.size(); i++)
-		curr_obj.meshes[i].tex_index = tex_ind;
-}
+//void ModuleScene::SetCurrTexTo(GameObject& curr_obj, const int tex_ind)
+//{
+//	for (int i = 0; i < curr_obj.meshes.size(); i++)
+//		curr_obj.meshes[i].tex_index = tex_ind;
+//}
 
 // CREATE PRIMITIVE OBJECTS -------------------------------------------------------------------------------
 /*
@@ -235,10 +235,13 @@ bool ModuleScene::DestroyScene()
 {
 	bool ret = true;
 
-	Root_Object->CleanUp();
+	if (Root_Object != nullptr)
+	{
+		Root_Object->CleanUp();
 
-	delete Root_Object;
-	Root_Object = nullptr;
+		delete Root_Object;
+		Root_Object = nullptr;
+	}
 
 	return ret;
 }

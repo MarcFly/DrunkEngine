@@ -156,7 +156,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
-	if (faces)
+	App->mesh_loader->Draw();
+	/*if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		Render(true);
@@ -167,7 +168,7 @@ update_status ModuleRenderer3D::Update(float dt)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
 		Render(false);
-	}
+	}*/
 
 	return UPDATE_CONTINUE;
 }
@@ -193,7 +194,8 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::Render(bool use_texture)
 {
-
+	App->mesh_loader->Draw();
+	/*
 	for (int i = 0; i < App->mesh_loader->Objects.size(); i++)
 	{
 		for(int j = 0; j < App->mesh_loader->Objects[i].meshes.size(); j++)
@@ -231,6 +233,7 @@ void ModuleRenderer3D::Render(bool use_texture)
 
 		
 	}
+	*/
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
@@ -247,10 +250,8 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 void ModuleRenderer3D::ChangeVsync()
 {
-	
 	if (SDL_GL_SetSwapInterval(vsync) < 0)
 		App->ui->console_win->AddLog("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
-
 }
 
 bool ModuleRenderer3D::CheckGLError()
@@ -285,54 +286,6 @@ void ModuleRenderer3D::RenderGrid()
 		glVertex3i(GRID_SIZE, 0, -GRID_SIZE + i);
 		glEnd();
 	}
-
-	if (lighting)
-		glEnable(GL_LIGHTING);
-}
-
-void ModuleRenderer3D::RenderBoundBox(ComponentMesh* mesh)
-{
-	glDisable(GL_LIGHTING);
-
-	glBegin(GL_LINES);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glEnd();
 
 	if (lighting)
 		glEnable(GL_LIGHTING);
