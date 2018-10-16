@@ -9,7 +9,7 @@ Application::Application()
 	camera = new ModuleCamera3D(this);
 	//physics = new ModulePhysics3D(this);
 	ui = new ModuleUI(this);
-	mesh_loader = new ModuleManageMesh(this);
+	mesh_loader = new ModuleScene(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -38,6 +38,7 @@ Application::~Application()
 		delete item._Ptr->_Myval;
 		item++;
 	}
+	list_modules.clear();
 }
 
 bool Application::Init()

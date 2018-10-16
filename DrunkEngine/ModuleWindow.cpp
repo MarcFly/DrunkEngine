@@ -87,7 +87,7 @@ bool ModuleWindow::Init()
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
-	App->ui->console_win->AddLog("Destroying SDL window and quitting all SDL systems");
+	PLOG("Destroying SDL window and quitting all SDL systems");
 
 	// Destroy Surface
 	if (screen_surface != NULL)

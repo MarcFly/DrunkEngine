@@ -43,7 +43,7 @@ bool ModuleCamera3D::Start()
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
-	App->ui->console_win->AddLog("Cleaning camera");
+	PLOG("Cleaning camera");
 
 	return true;
 }
@@ -71,17 +71,22 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetMouseZ() < 0) newPos += Z * speed * MOUSE_WHEEL_SPEED;
 	if (App->input->GetMouseZ() > 0) newPos -= Z * speed * MOUSE_WHEEL_SPEED;
 
-	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN) LookAt(App->mesh_loader->getObjectCenter(&App->mesh_loader->Objects[0])); // TODO Change to selected obj for assignment 2
-
+	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN)
+	{
+		vec aux = App->mesh_loader->Root_Object->getObjectCenter();
+		LookAt(vec3(aux.x,aux.y,aux.z)); // TODO Change to selected obj for assignment 2
+	}
 	Position += newPos;
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		if (App->mesh_loader->Objects.size() == 0)
+		if (App->mesh_loader->Root_Object != nullptr)
 			Reference = vec3(0.0f, 0.0f, 0.0f);
 		else
-			Reference = App->mesh_loader->getObjectCenter(&App->mesh_loader->Objects[0]); // TODO Change to selected obj for assignment 2
-
+		{
+			vec aux = App->mesh_loader->Root_Object->getObjectCenter();
+			Reference = {aux.x, aux.y, aux.z}; // TODO Change to selected obj for assignment 2
+		}
 		Rotate();
 	}
 	else
@@ -237,20 +242,21 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 	return ret;
 }
 
-void ModuleCamera3D::SetToObj(obj_data* obj, float vertex_aux)
+void ModuleCamera3D::SetToObj(GameObject* obj, float vertex_aux)
 {
 	
-	for (int i = 0; i < obj->meshes.size() - 1; i++) {
-		for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
-		{
-			if (vertex_aux < abs(obj->meshes[i].vertex[j]))
-				vertex_aux = abs(obj->meshes[i].vertex[j]);
-		}
-	}
+	//for (int i = 0; i < obj->meshes.size() - 1; i++) {
+	//	for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
+	//	{
+	//		if (vertex_aux < abs(obj->meshes[i].vertex[j]))
+	//			vertex_aux = abs(obj->meshes[i].vertex[j]);
+	//	}
+	//}
 
 	Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
 
-	LookAt(App->mesh_loader->getObjectCenter(obj));
+	vec aux = obj->getObjectCenter();
+	LookAt(vec3(aux.x, aux.y, aux.z));
 
 	mesh_multiplier = vertex_aux / 4;
 }

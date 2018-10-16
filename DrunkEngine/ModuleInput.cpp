@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleUI.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 
 #include "OptionsWindow.h"
 #include "AboutWindow.h"
@@ -22,7 +22,8 @@ ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled)
 // Destructor
 ModuleInput::~ModuleInput()
 {
-	delete[] keyboard;
+	if(keyboard != nullptr)
+		delete[] keyboard;
 }
 
 // Called before render is available
@@ -146,8 +147,8 @@ update_status ModuleInput::PreUpdate(float dt)
 				std::string extension = strrchr(dropped_filedir, '.');
 
 				if (extension == std::string(".fbx") || extension == std::string(".FBX"))
-					App->mesh_loader->LoadFBX(dropped_filedir);
-				else if (App->mesh_loader->Objects.size() > 0) // In case we have no objects
+					App->mesh_loader->LoadFromFile(dropped_filedir);
+				/*else if (App->mesh_loader->Root_Object != nullptr) // In case we have no objects
 				{
 					if (extension == std::string(".png") || extension == std::string(".PNG"))
 						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[App->mesh_loader->Objects.size() -1]);
@@ -157,7 +158,7 @@ update_status ModuleInput::PreUpdate(float dt)
 						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
 					else if (extension == std::string(".dds") || extension == std::string(".DDS"))
 						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
-				}
+				}*/
 				else
 					App->ui->console_win->AddLog("File format not recognized!\n");
 
@@ -178,9 +179,11 @@ update_status ModuleInput::PreUpdate(float dt)
 // Called before quitting
 bool ModuleInput::CleanUp()
 {
-	App->ui->console_win->AddLog("Quitting SDL input event subsystem");
+	PLOG("Quitting SDL input event subsystem");
 
-	delete keyboard;
+	if(keyboard != nullptr)
+		delete[] keyboard;
+	keyboard = nullptr;
 
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;

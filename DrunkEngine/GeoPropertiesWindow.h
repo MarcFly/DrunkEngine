@@ -2,7 +2,7 @@
 #define _GEOPROPERTIES_WINDOW_
 
 #include "Window.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 
 class GeoPropertiesWindow: public Window
 {
@@ -13,6 +13,8 @@ public:
 	void Draw() override;
 
 	void CheckMeshInfo();
+
+	void CreateObjLeaf(GameObject* obj, int& st);
 
 public:
 	int total_num_vertex;

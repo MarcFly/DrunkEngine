@@ -16,7 +16,41 @@
 #define CHECKERS_HEIGHT 128
 #define CHECKERS_WIDTH 128
 
-struct mesh_data;
+enum TexParams {
+	Err = 0,
+
+	TP_TEXTURE_COMPARE_MODE,
+	TP_COMPARE_REF,
+	TP_NONE,
+
+	TP_TEXTURE_LOD_BIAS,
+
+	TP_TEXTURE_FILTERS, // Filters start here, mag and min types
+	TP_NEAREST,
+	TP_LINEAR,
+	TP_NEAREST_MIPMAP_NEAREST,
+	TP_LINEAR_MIPMAP_NEAREST,
+	TP_NEAREST_MIPMAP_LINEAR,
+	TP_LINEAR_MIPMAP_LINEAR,
+
+	TP_TEXTURE_MIN_LOD,
+	TP_TEXTURE_MAX_LOD,
+	TP_TEXTURE_MAX_LEVEL,
+
+	// Wraps
+	TP_TEXTURE_WRAP, // Wraps start here
+
+	// Wrap Modes
+	TP_CLAMP_TO_EDGE,	// coordinades clamped to range based on texture size
+	TP_CLAMP_TO_BORDER,	// similar to edge but in borders data is set by border color
+	TP_MIRRORED_REPEAT,	// coordinates set to the fractional part if goes beyond 1, so 1.1 = 1/1.1
+	TP_REPEAT,			// Integer of coordinates ignored, creatign repetition pattern after 1.0, 1.1 = 0.1
+	TP_MIRROR_CLAMP_TO_EDGE,	// repeat for 1 more int (until 2) then clamps to edge
+
+
+};
+
+struct ComponentMesh;
 
 class ModuleRenderer3D : public Module
 {
@@ -35,8 +69,11 @@ public:
 	void ChangeVsync();
 	bool CheckGLError();
 	void RenderGrid();
-	void RenderBoundBox(mesh_data* mesh);
+	void RenderBoundBox(ComponentMesh* mesh);
 	void SwapWireframe(bool active);
+
+	void SetTextureParams();
+	void GenTexParams();
 
 	void InitCheckTex();
 
@@ -64,6 +101,11 @@ public:
 	float normal_length;
 
 	bool bounding_box;
+
+	// Value as our Enum type
+	int curr_tws, curr_twt, curr_tmagf, curr_tminf;
+	// Value as GL Type
+	uint tws, twt, tmagf, tminf;
 
   // Checker Texture
 	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];

@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "PhysBody3D.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
 
@@ -121,6 +121,8 @@ bool ModuleRenderer3D::Init()
 	// Projection matrix for
 	OnResize(App->window->window_w, App->window->window_h);
 	
+
+	SetTextureParams();
 	
 	return ret;
 }
@@ -156,7 +158,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
-	if (faces)
+	App->mesh_loader->Draw();
+	/*if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		Render(true);
@@ -167,7 +170,7 @@ update_status ModuleRenderer3D::Update(float dt)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3f(0, 0, 0);
 		Render(false);
-	}
+	}*/
 
 	return UPDATE_CONTINUE;
 }
@@ -193,13 +196,14 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::Render(bool use_texture)
 {
-
+	App->mesh_loader->Draw();
+	/*
 	for (int i = 0; i < App->mesh_loader->Objects.size(); i++)
 	{
 		for(int j = 0; j < App->mesh_loader->Objects[i].meshes.size(); j++)
 		{ 
 			// Draw elements
-			mesh_data* mesh = &App->mesh_loader->Objects[i].meshes[j];
+			ComponentMesh* mesh = &App->mesh_loader->Objects[i].meshes[j];
 
 			if (faces)
 				App->mesh_loader->DrawMesh(mesh, use_texture);
@@ -231,6 +235,7 @@ void ModuleRenderer3D::Render(bool use_texture)
 
 		
 	}
+	*/
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
@@ -247,10 +252,8 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 void ModuleRenderer3D::ChangeVsync()
 {
-	
 	if (SDL_GL_SetSwapInterval(vsync) < 0)
 		App->ui->console_win->AddLog("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
-
 }
 
 bool ModuleRenderer3D::CheckGLError()
@@ -290,54 +293,6 @@ void ModuleRenderer3D::RenderGrid()
 		glEnable(GL_LIGHTING);
 }
 
-void ModuleRenderer3D::RenderBoundBox(mesh_data* mesh)
-{
-	glDisable(GL_LIGHTING);
-
-	glBegin(GL_LINES);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.maxPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.maxPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.maxPoint.z);
-	glVertex3f(mesh->BoundingBox.minPoint.x, mesh->BoundingBox.minPoint.y, mesh->BoundingBox.minPoint.z);
-
-	glEnd();
-
-	if (lighting)
-		glEnable(GL_LIGHTING);
-}
-
 void ModuleRenderer3D::SwapWireframe(bool active)
 {
 	if (active)
@@ -359,6 +314,59 @@ void ModuleRenderer3D::InitCheckTex()
 	}
 }
 
+void ModuleRenderer3D::SetTextureParams()
+{
+	switch (curr_tws) {
+	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_EDGE;	break;
+	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): tws = GL_CLAMP_TO_BORDER;	break;
+	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): tws = GL_MIRRORED_REPEAT; break;
+	case (TP_REPEAT - TP_TEXTURE_WRAP - 1):	tws = GL_REPEAT; break;
+	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): tws = GL_MIRROR_CLAMP_TO_EDGE; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+
+	switch (curr_twt) {
+	case (TP_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_EDGE; break;
+	case (TP_CLAMP_TO_BORDER - TP_TEXTURE_WRAP - 1): twt = GL_CLAMP_TO_BORDER; break;
+	case (TP_MIRRORED_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_MIRRORED_REPEAT; break;
+	case (TP_REPEAT - TP_TEXTURE_WRAP - 1): twt = GL_REPEAT; break;
+	case (TP_MIRROR_CLAMP_TO_EDGE - TP_TEXTURE_WRAP - 1): twt = GL_MIRROR_CLAMP_TO_EDGE; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+
+	// Texture Filter
+	switch (curr_tmagf) {
+	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR; break;
+	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_NEAREST; break;
+	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_NEAREST_MIPMAP_LINEAR; break;
+	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tmagf = GL_LINEAR_MIPMAP_LINEAR; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+
+	switch (curr_tminf) {
+	case (TP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR; break;
+	case (TP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_NEAREST; break;
+	case (TP_LINEAR_MIPMAP_NEAREST - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_NEAREST; break;
+	case (TP_NEAREST_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_NEAREST_MIPMAP_LINEAR; break;
+	case (TP_LINEAR_MIPMAP_LINEAR - TP_TEXTURE_FILTERS - 1): tminf = GL_LINEAR_MIPMAP_LINEAR; break;
+	default: App->ui->console_win->AddLog("Unsuccessful initialization");
+	}
+}
+
+void ModuleRenderer3D::GenTexParams()
+{
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
+
+	// Texture Filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tmagf);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tminf);
+}
+
+// SAVELOAD--------------------------------------------------------------------------------
 bool ModuleRenderer3D::Load(JSON_Value * root_value)
 {
 	bool ret = false;
@@ -376,6 +384,12 @@ bool ModuleRenderer3D::Load(JSON_Value * root_value)
 	normal_length = json_object_dotget_number(json_object(root_value), "render.normal_length");
 	vsync = json_object_dotget_boolean(json_object(root_value), "render.vsync");
 	bounding_box = json_object_dotget_boolean(json_object(root_value), "render.bounding_box");
+
+	curr_tws = json_object_dotget_number(json_object(root_value), "render.curr_wrap_s");
+	curr_twt = json_object_dotget_number(json_object(root_value), "render.curr_wrap_t");
+	curr_tmagf = json_object_dotget_number(json_object(root_value), "render.curr_min_filter");
+	curr_tminf = json_object_dotget_number(json_object(root_value), "render.curr_mag_filter");
+
 
 	ret = true;
 	return ret;
@@ -400,6 +414,11 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 	json_object_dotset_number(root_obj, "render.normal_length", normal_length);
 	json_object_dotset_boolean(root_obj, "render.vsync", vsync);
 	json_object_dotset_boolean(root_obj, "render.bounding_box", bounding_box);
+
+	json_object_dotset_number(root_obj, "render.curr_wrap_s", curr_tws);
+	json_object_dotset_number(root_obj, "render.curr_wrap_t", curr_twt);
+	json_object_dotset_number(root_obj, "render.curr_min_filter", curr_tmagf);
+	json_object_dotset_number(root_obj, "render.curr_mag_filter", curr_tminf);
 
 	json_serialize_to_file(root_value, "config_data.json");
 

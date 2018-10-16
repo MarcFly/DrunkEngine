@@ -39,7 +39,7 @@ bool ModuleUI::Init()
 	ImGui_ImplOpenGL2_Init();
 	ImGui::StyleColorsDark();
 
-	show_demo_window = false;
+	show_demo_window = true;
 
 	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(options_win = new OptionsWindow());
