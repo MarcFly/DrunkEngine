@@ -34,6 +34,8 @@ ComponentMaterial::ComponentMaterial(aiMaterial * mat, GameObject * par)
 
 void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
 {
+	bool check_rep = false;
+
 	if (strrchr(path, '\\') != nullptr)
 	{
 		tex->filename = strrchr(path, '\\');
@@ -42,27 +44,9 @@ void ComponentMaterial::LoadTexture(const char * path, Texture * tex)
 	else
 		tex->filename = path;
 
-	bool check_rep = false;
-
-	for (int i = 0; i < textures.size(); i++)
-	{
-		check_rep = (tex->filename.substr(tex->filename.find_last_of("\\/") + 1) == textures[i]->filename);
-
-		if (check_rep)
-			break;
-
-		check_rep = (tex->filename.substr(tex->filename.find_last_of("\\/") + 1) == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1));
-
-		if (check_rep)
-			break;
-
-		check_rep = (tex->filename == textures[i]->filename);
-
-		if (check_rep)
-			break;
-
-		check_rep = (tex->filename == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1));
-	}
+	Texture* aux = CheckTexRep(tex->filename.c_str());
+	if (aux != nullptr)
+		check_rep = true;
 
 	if (!check_rep)
 	{
@@ -156,4 +140,53 @@ void ComponentMaterial::CleanUp()
 
 
 	parent = nullptr;
+}
+
+Texture* ComponentMaterial::CheckTexRep(std::string name)
+{
+	Texture* ret = nullptr;
+
+	GameObject* par = this->parent;
+
+	while (par != nullptr || ret != nullptr)
+	{
+		for (int i = 0; par->materials.size(); i++)
+		{
+			ret = CheckNameRep(name);
+		}
+
+		par = par->parent;
+	}
+
+	return ret;
+}
+
+Texture* ComponentMaterial::CheckNameRep(std::string name)
+{
+	Texture* ret = nullptr;
+
+	for (int i = 0; i < textures.size(); i++)
+	{
+		if(name.substr(name.find_last_of("\\/") + 1) == textures[i]->filename)
+			ret = textures[i];
+
+		if (ret != nullptr)
+			break;
+
+		if(name.substr(name.find_last_of("\\/") + 1) == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1))
+		ret = textures[i];
+		if (ret != nullptr)
+			break;
+
+		if(name == textures[i]->filename)
+			ret = textures[i];
+
+		if (ret != nullptr)
+			break;
+
+		if(name == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1))
+			ret = textures[i];
+	}
+
+	return ret;
 }

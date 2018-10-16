@@ -38,6 +38,9 @@ public:
 
 	void CleanUp();
 
+	Texture* CheckTexRep(std::string name);
+	Texture* CheckNameRep(std::string name);
+
 public:
 
 	unsigned int NumDiffTextures = 0;
