@@ -81,7 +81,43 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
 					{
-						
+						if (selected_object->materials.size() > 0)
+						{
+							if (selected_object->materials[0]->textures.size() > 0)
+							{
+								for (int i = 0; i < selected_object->materials[0]->textures.size(); i++)
+								{
+									ImGui::Separator();
+
+									if (check_info)
+										tex_name = selected_object->materials[0]->textures[i]->filename.c_str();
+
+									ImGui::Image(ImTextureID(selected_object->materials[0]->textures[i]->id_tex), show_size);
+
+									if (strrchr(tex_name.c_str(), '\\') != nullptr)
+										tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+
+									ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
+
+									ImGui::Text("Size: %d x %d", selected_object->materials[0]->textures[i]->width, selected_object->materials[0]->textures[i]->height);
+
+									char str[30];
+									snprintf(str, 30, "%s%d", "Use this Texture ##", i);
+
+									if (ImGui::Button(str))
+									{
+										for (int j = 0; j < selected_object->materials[0]->textures.size(); j++)
+											selected_object->meshes[j]->Material_Ind = i;
+									}
+
+									snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
+									if (ImGui::Button(str))
+										selected_object->materials[0]->DestroyTexture(i);
+
+
+								}
+							}
+						}
 					}
 				}
 				ImGui::EndChild();
