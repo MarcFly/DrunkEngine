@@ -27,7 +27,7 @@ public:
 	float SetBoundBox();
 	void SetBoundBoxFromMeshes();
 	//void SetBoundBody();
-	
+
 	void AdjustObjects();
 	void AdjustMaterials();
 	void AdjustMeshes();

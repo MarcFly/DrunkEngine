@@ -4,6 +4,8 @@
 #include "Window.h"
 #include "ModuleScene.h"
 
+class GameObject;
+
 class GeoPropertiesWindow: public Window
 {
 public:
@@ -23,10 +25,13 @@ public:
 	std::string tex_name;
 
 	bool check_info;
-	int selected;
 
 	int selection_mask;
 	int node_clicked;
+
+	int selection_mask_checker;
+	
+	GameObject* selected_object;
 
 	ImVec2 show_size = {128,128};
 	

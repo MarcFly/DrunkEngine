@@ -30,6 +30,9 @@ public:
 	
 	void SetCurrTexTo(GameObject& curr_obj, const int tex_ind);
 
+	GameObject* GetSelected(GameObject * obj);
+	void SetSelectedFalse(GameObject* obj);
+
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 

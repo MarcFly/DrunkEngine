@@ -8,6 +8,7 @@ GeoPropertiesWindow::GeoPropertiesWindow() : Window("Object Properties")
 
 	selection_mask = 0;
 	node_clicked = -1;
+	selection_mask_checker = 0;
 }
 
 GeoPropertiesWindow::~GeoPropertiesWindow()
@@ -18,6 +19,7 @@ void GeoPropertiesWindow::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
+		ImGui::BeginChild("Objects List", ImVec2(250, 0), true);
 		int start_val = -1;
 		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
 
@@ -30,8 +32,53 @@ void GeoPropertiesWindow::Draw()
 		}
 
 		node_clicked = -1;
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		{
+			if (selection_mask != 0) //objects.size() > 0)
+			{
+				ImGui::BeginChild("Object Config", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+				{
+
+					if (selection_mask_checker != selection_mask)
+					{
+						selection_mask_checker = selection_mask;
+						selected_object = App->mesh_loader->GetSelected(App->mesh_loader->Root_Object);
+					}
+
+					ImGui::Text("%s", selected_object->name.c_str());
+					ImGui::Separator();
+
+					if (ImGui::CollapsingHeader("Object Transform"))
+					{
+						
+					}
+
+					if (ImGui::CollapsingHeader("Mesh Properties"))
+					{
+						
+					}
+
+					if (ImGui::CollapsingHeader("Texture Properties"))
+					{
+						
+					}
+				}
+				ImGui::EndChild();
+
+			}
+			//if (ImGui::Button("Select")) {}
+			//ImGui::SameLine();
+			//if (ImGui::Button("Save")) {}
+		}
+		ImGui::EndGroup();
+
 	}
 	ImGui::End();
+
 	/*ImGui::Begin(GetName().c_str(), &active);
 	{
 		// left
@@ -175,7 +222,8 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 		if (ImGui::IsItemClicked())
 		{
 			node_clicked = st;
-			//obj->selected = true;
+			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
+			obj->selected = true;
 		}
 		if (n_open)
 		{
@@ -193,7 +241,8 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 		if (ImGui::IsItemClicked())
 		{
 			node_clicked = st;
-			//obj->selected = true;
+			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
+			obj->selected = true;
 		}
 	}
 }
