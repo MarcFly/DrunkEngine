@@ -168,13 +168,14 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 	////num_child++;
 
 	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask == (1 << st)) ? ImGuiTreeNodeFlags_Selected : 0);
-	bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+	
+	if (obj->children.size() != 0)		
 	{
-		bool a = selection_mask & (1 << st);
+		bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
 		if (ImGui::IsItemClicked())
 		{
 			node_clicked = st;
-			obj->selected = true;
+			//obj->selected = true;
 		}
 		if (n_open)
 		{
@@ -182,7 +183,17 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 			{
 				CreateObjLeaf(obj->children[i], ++st);
 			}
-			ImGui::TreePop();			
+			ImGui::TreePop();
 		}
-	}	
+	}
+	else
+	{
+		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+		ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+		if (ImGui::IsItemClicked())
+		{
+			node_clicked = st;
+			//obj->selected = true;
+		}
+	}
 }
