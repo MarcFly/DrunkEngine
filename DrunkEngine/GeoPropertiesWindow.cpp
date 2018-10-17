@@ -5,6 +5,9 @@ GeoPropertiesWindow::GeoPropertiesWindow() : Window("Object Properties")
 	total_num_vertex = 0;
 	total_num_faces = 0;
 	check_info = false;
+
+	selection_mask = 0;
+	node_clicked = 0;
 }
 
 GeoPropertiesWindow::~GeoPropertiesWindow()
@@ -16,7 +19,15 @@ void GeoPropertiesWindow::Draw()
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 		int start_val = -1;
-		CreateObjLeaf(App->mesh_loader->Root_Object, start_val);
+		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
+
+		if (node_clicked != -1)
+		{
+			if (ImGui::GetIO().KeyCtrl)
+				selection_mask ^= (1 << node_clicked);
+			else
+				selection_mask = (1 << node_clicked);
+		}
 	}
 	ImGui::End();
 	/*ImGui::Begin(GetName().c_str(), &active);
@@ -146,10 +157,8 @@ void GeoPropertiesWindow::CheckMeshInfo()
 	total_num_faces = 0;
 }
 
-void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int& st)
+void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 {
-	static int selection_mask = (1 << 2);
-	int n_sel = st;
 	
 	//int num_child = 0;
 	//if (obj->parent != nullptr)
@@ -160,22 +169,14 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int& st)
 	bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
 	{
 		if (ImGui::IsItemClicked())
-			n_sel = st;
+			node_clicked = st;
 		if (n_open)
 		{
 			for (int i = 0; i < obj->children.size(); i++)
 			{
-				CreateObjLeaf(obj->children[i], st+=i);
+				CreateObjLeaf(obj->children[i], ++st);
 			}
 			ImGui::TreePop();
 		}
-	}
-	if (n_sel != -1)
-	{
-		if (ImGui::GetIO().KeyCtrl)
-			selection_mask ^= (1 << n_sel);
-		else
-			selection_mask = (1 << n_sel);
-	}
-	
+	}	
 }

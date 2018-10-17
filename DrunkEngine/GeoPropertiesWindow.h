@@ -14,7 +14,7 @@ public:
 
 	void CheckMeshInfo();
 
-	void CreateObjLeaf(GameObject* obj, int& st);
+	void CreateObjLeaf(GameObject* obj, int st);
 
 public:
 	int total_num_vertex;
@@ -24,6 +24,9 @@ public:
 
 	bool check_info;
 	int selected;
+
+	int selection_mask;
+	int node_clicked;
 
 	ImVec2 show_size = {128,128};
 	
