@@ -51,6 +51,7 @@ void GeoPropertiesWindow::Draw()
 					{
 						selection_mask_checker = selection_mask;
 						selected_object = App->mesh_loader->GetSelected(App->mesh_loader->Root_Object);
+						check_info = true;
 					}
 					
 					ImGui::Text("%s", selected_object->name.c_str());
@@ -65,7 +66,17 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Mesh Properties"))
 					{
-						
+						if (check_info)
+						{
+							total_num_vertex = 0;
+							total_num_faces = 0;
+
+							GetTotalProperties(selected_object, total_num_vertex, total_num_faces);
+
+							check_info = false;
+						}
+						ImGui::Text("Total Num. Vertices: %d", total_num_vertex);
+						ImGui::Text("Total Num. Faces: %d", total_num_faces);
 					}
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
@@ -251,4 +262,19 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 			obj->selected = true;
 		}
 	}
+}
+
+void GeoPropertiesWindow::GetTotalProperties(const GameObject * obj, int &vertex, int &faces)
+{
+	for (int i = 0; i < obj->meshes.size(); i++)
+	{
+		vertex += obj->meshes[i]->num_vertex;
+		faces += obj->meshes[i]->num_faces;
+	}
+	
+	for (int i = 0; i < obj->children.size(); i++)
+	{
+		GetTotalProperties(obj->children[i], vertex, faces);
+	}
+
 }
