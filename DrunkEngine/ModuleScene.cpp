@@ -104,31 +104,6 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	return ret;
 }
 
-GameObject* ModuleScene::GetSelected(GameObject * obj)
-{
-	if (obj->selected == true)
-		return obj;
-
-	for (int i = 0; i < obj->children.size(); i++)
-	{
-		GameObject * aux = GetSelected(obj->children[i]);
-		if (aux->selected == true)
-			return aux;
-	}
-	
-	return obj;
-}
-
-void ModuleScene::SetSelectedFalse(GameObject * obj)
-{
-	obj->selected = false;
-
-	for (int i = 0; i < obj->children.size(); i++)
-	{
-		SetSelectedFalse(obj->children[i]);
-	}
-}
-
 bool ModuleScene::Load(JSON_Value * root_value)
 {
 	bool ret = false;

@@ -49,7 +49,6 @@ public:
 	std::vector<GameObject*> children;
 
 	bool to_pop = false;
-	bool selected = 0;
 
 public:
 	void DestroyThisObject() 

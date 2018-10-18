@@ -42,7 +42,7 @@ void GeoPropertiesWindow::Draw()
 
 		ImGui::BeginGroup();
 		{
-			if (selection_mask != 0) //objects.size() > 0)
+			if (App->mesh_loader->active_objects.size() == 1) //objects.size() > 0)
 			{
 				ImGui::BeginChild("Object Config", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
 				{
@@ -50,7 +50,7 @@ void GeoPropertiesWindow::Draw()
 					if (selection_mask_checker != selection_mask)
 					{
 						selection_mask_checker = selection_mask;
-						selected_object = App->mesh_loader->GetSelected(App->mesh_loader->Root_Object);
+						selected_object = App->mesh_loader->active_objects[0];
 						check_info = true;
 					}
 					
@@ -145,6 +145,12 @@ void GeoPropertiesWindow::Draw()
 				ImGui::EndChild();
 
 			}
+
+			else if (App->mesh_loader->active_objects.size() > 1) //objects.size() > 0)
+			{
+				ImGui::Text("+ 1 obj selected");
+			}
+
 			//if (ImGui::Button("Select")) {}
 			//ImGui::SameLine();
 			//if (ImGui::Button("Save")) {}
@@ -297,8 +303,8 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 		if (ImGui::IsItemClicked())
 		{
 			node_clicked = st;
-			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
-			obj->selected = true;
+			App->mesh_loader->active_objects.clear();
+			App->mesh_loader->active_objects.push_back(obj);
 		}
 		if (n_open)
 		{
@@ -316,8 +322,8 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 		if (ImGui::IsItemClicked())
 		{
 			node_clicked = st;
-			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
-			obj->selected = true;
+			App->mesh_loader->active_objects.clear();
+			App->mesh_loader->active_objects.push_back(obj);
 		}
 	}
 }
