@@ -75,7 +75,7 @@ void GeoPropertiesWindow::Draw()
 						ImGui::DragFloat3("Scale", scale, 0.1f);
 						
 						//Rot
-						float rot[3] = { selected_object->transform->transform_rotate.GetEuler().x, selected_object->transform->transform_rotate.GetEuler().y, selected_object->transform->transform_rotate.GetEuler().z };
+						float rot[3] = { RadToDeg(selected_object->transform->transform_rotate.GetEuler().x), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().z) };
 						ImGui::DragFloat3("Rotation", rot, 1.f, -180.f, 180.f);
 
 						ImGui::Spacing();

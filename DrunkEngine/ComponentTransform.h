@@ -16,6 +16,10 @@ public:
 
 	~ComponentTransform() {};
 
+	void TransformPosition(const int pos_x, const int pos_y, const int pos_z);
+	void TransformRotation(const int rot_x, const int rot_y, const int rot_z);
+	void TransformScale(const int scale_x, const int scale_y, const int scale_z);
+
 	void CleanUp();
 
 public:
