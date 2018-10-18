@@ -68,15 +68,18 @@ void GeoPropertiesWindow::Draw()
 
 						//Pos
 						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
-						ImGui::DragFloat3 ("Position", pos, 1.f);
-						
+						if (ImGui::DragFloat3 ("Position", pos, 1.f))
+							selected_object->transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+
 						//Scale
 						float scale[3] = { selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z };
-						ImGui::DragFloat3("Scale", scale, 0.1f);
-						
+						if (ImGui::DragFloat3("Scale", scale, 0.1f))
+							selected_object->transform->SetTransformScale(scale[0], scale[1], scale[2]);
+
 						//Rot
-						float rot[3] = { RadToDeg(selected_object->transform->transform_rotate.GetEuler().x), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().z) };
-						ImGui::DragFloat3("Rotation", rot, 1.f, -180.f, 180.f);
+						float rot[3] = { RadToDeg(selected_object->transform->transform_rotate.GetEuler().z), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().x) };
+						if (ImGui::DragFloat3("Rotation", rot, 1.f))
+							selected_object->transform->SetTransformRotation(rot[0], rot[1], rot[2]);
 
 						ImGui::Spacing();
 						ImGui::Spacing();
