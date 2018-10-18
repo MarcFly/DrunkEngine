@@ -106,7 +106,7 @@ void GeoPropertiesWindow::Draw()
 
 									if (ImGui::Button(str))
 									{
-										for (int j = 0; j < selected_object->materials[0]->textures.size(); j++)
+										for (int j = 0; j < selected_object->meshes.size(); j++)
 											selected_object->meshes[j]->Material_Ind = i;
 									}
 
