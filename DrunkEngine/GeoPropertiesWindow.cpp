@@ -1,10 +1,18 @@
 #include "GeoPropertiesWindow.h"
+#include "GameObject.h"
+#include "ComponentTransform.h"
+#include "ComponentMaterial.h"
+#include "ComponentMesh.h"
 
 GeoPropertiesWindow::GeoPropertiesWindow() : Window("Object Properties")
 {
 	total_num_vertex = 0;
 	total_num_faces = 0;
 	check_info = false;
+
+	selection_mask = 0;
+	node_clicked = -1;
+	selection_mask_checker = 0;
 }
 
 GeoPropertiesWindow::~GeoPropertiesWindow()
@@ -15,10 +23,137 @@ void GeoPropertiesWindow::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
+		ImGui::BeginChild("Objects List", ImVec2(250, 0), true);
 		int start_val = -1;
-		CreateObjLeaf(App->mesh_loader->Root_Object, start_val);
+		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
+
+		if (node_clicked != -1)
+		{
+			if (ImGui::GetIO().KeyCtrl)
+				selection_mask ^= (1 << node_clicked);
+			else
+				selection_mask = (1 << node_clicked);
+		}
+
+		node_clicked = -1;
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		{
+			if (selection_mask != 0) //objects.size() > 0)
+			{
+				ImGui::BeginChild("Object Config", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+				{
+
+					if (selection_mask_checker != selection_mask)
+					{
+						selection_mask_checker = selection_mask;
+						selected_object = App->mesh_loader->GetSelected(App->mesh_loader->Root_Object);
+						check_info = true;
+					}
+					
+					ImGui::Text("%s", selected_object->name.c_str());
+					ImGui::Separator();
+
+					if (ImGui::CollapsingHeader("Object Transform"))
+					{
+						ImGui::Spacing();
+						ImGui::Spacing();
+
+						ImGui::Text("Use CTRL + click to input value");
+
+						ImGui::Spacing();
+
+						//Pos
+						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
+						if (ImGui::DragFloat3 ("Position", pos, 1.f))
+							selected_object->transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+
+						//Scale
+						float scale[3] = { selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z };
+						if (ImGui::DragFloat3("Scale", scale, 0.1f))
+							selected_object->transform->SetTransformScale(scale[0], scale[1], scale[2]);
+
+						//Rot
+						float rot[3] = { RadToDeg(selected_object->transform->transform_rotate.GetEuler().z), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().x) };
+						if (ImGui::DragFloat3("Rotation", rot, 1.f))
+							selected_object->transform->SetTransformRotation(rot[0], rot[1], rot[2]);
+
+						ImGui::Spacing();
+						ImGui::Spacing();
+						ImGui::Spacing();
+					}
+
+					if (ImGui::CollapsingHeader("Mesh Properties"))
+					{
+						if (check_info)
+						{
+							total_num_vertex = 0;
+							total_num_faces = 0;
+
+							GetTotalProperties(selected_object, total_num_vertex, total_num_faces);
+
+							check_info = false;
+						}
+						ImGui::Text("Total Num. Vertices: %d", total_num_vertex);
+						ImGui::Text("Total Num. Faces: %d", total_num_faces);
+					}
+
+					if (ImGui::CollapsingHeader("Texture Properties"))
+					{
+						if (selected_object->materials.size() > 0)
+						{
+							if (selected_object->materials[0]->textures.size() > 0)
+							{
+								for (int i = 0; i < selected_object->materials[0]->textures.size(); i++)
+								{
+									ImGui::Separator();
+
+									if (check_info)
+										tex_name = selected_object->materials[0]->textures[i]->filename.c_str();
+
+									ImGui::Image(ImTextureID(selected_object->materials[0]->textures[i]->id_tex), show_size);
+
+									if (strrchr(tex_name.c_str(), '\\') != nullptr)
+										tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+
+									ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
+
+									ImGui::Text("Size: %d x %d", selected_object->materials[0]->textures[i]->width, selected_object->materials[0]->textures[i]->height);
+
+									char str[30];
+									snprintf(str, 30, "%s%d", "Use this Texture ##", i);
+
+									if (ImGui::Button(str))
+									{
+										for (int j = 0; j < selected_object->meshes.size(); j++)
+											selected_object->meshes[j]->Material_Ind = i;
+									}
+
+									snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
+									if (ImGui::Button(str))
+										selected_object->materials[0]->DestroyTexture(i);
+
+
+								}
+							}
+						}
+					}
+				}
+				ImGui::EndChild();
+
+			}
+			//if (ImGui::Button("Select")) {}
+			//ImGui::SameLine();
+			//if (ImGui::Button("Save")) {}
+		}
+		ImGui::EndGroup();
+
 	}
 	ImGui::End();
+
 	/*ImGui::Begin(GetName().c_str(), &active);
 	{
 		// left
@@ -146,36 +281,58 @@ void GeoPropertiesWindow::CheckMeshInfo()
 	total_num_faces = 0;
 }
 
-void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int& st)
+void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 {
-	static int selection_mask = (1 << 2);
-	int n_sel = st;
 	
 	//int num_child = 0;
 	//if (obj->parent != nullptr)
 	//	num_child - obj->parent->children.size();
 	////num_child++;
 
-	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask & (1 << st)) ? ImGuiTreeNodeFlags_Selected : 0);
-	bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask == (1 << st)) ? ImGuiTreeNodeFlags_Selected : 0);
+	
+	if (obj->children.size() != 0)		
 	{
+		bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
 		if (ImGui::IsItemClicked())
-			n_sel = st;
+		{
+			node_clicked = st;
+			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
+			obj->selected = true;
+		}
 		if (n_open)
 		{
 			for (int i = 0; i < obj->children.size(); i++)
 			{
-				CreateObjLeaf(obj->children[i], st+=i);
+				CreateObjLeaf(obj->children[i], ++st);
 			}
 			ImGui::TreePop();
 		}
 	}
-	if (n_sel != -1)
+	else
 	{
-		if (ImGui::GetIO().KeyCtrl)
-			selection_mask ^= (1 << n_sel);
-		else
-			selection_mask = (1 << n_sel);
+		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+		ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+		if (ImGui::IsItemClicked())
+		{
+			node_clicked = st;
+			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
+			obj->selected = true;
+		}
+	}
+}
+
+void GeoPropertiesWindow::GetTotalProperties(const GameObject * obj, int &vertex, int &faces)
+{
+	for (int i = 0; i < obj->meshes.size(); i++)
+	{
+		vertex += obj->meshes[i]->num_vertex;
+		faces += obj->meshes[i]->num_faces;
 	}
 	
+	for (int i = 0; i < obj->children.size(); i++)
+	{
+		GetTotalProperties(obj->children[i], vertex, faces);
+	}
+
 }

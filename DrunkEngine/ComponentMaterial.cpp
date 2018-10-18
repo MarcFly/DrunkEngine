@@ -133,7 +133,7 @@ void ComponentMaterial::DestroyTexture(const int& tex_ind)
 			{ 
 				if (textures[tex_ind]->referenced_mats[i]->textures[j]->filename == textures[tex_ind]->filename)
 				{
-					textures[tex_ind]->referenced_mats[i]->textures[j]->deleted = true;
+					textures[tex_ind]->referenced_mats[i]->PopTexture(j);
 			
 				}
 			}
@@ -146,16 +146,21 @@ void ComponentMaterial::DestroyTexture(const int& tex_ind)
 
 	textures[tex_ind] = nullptr;
 
-	for (int i = tex_ind + 1; i < textures.size(); i++)
+	PopTexture(tex_ind);
+}
+
+void ComponentMaterial::PopTexture(const int& tex_index)
+{
+	for (int i = tex_index + 1; i < textures.size(); i++)
 		textures[i - 1] = textures[i];
-	
+
 	textures.pop_back();
 
 
-	if(textures.size() > 0)
+	if (textures.size() > 0)
 		for (int i = 0; i < parent->meshes.size(); i++)
 			if (this->parent->meshes[i]->Material_Ind >= textures.size())
-				this->parent->meshes[i]->Material_Ind = - 1;
+				this->parent->meshes[i]->Material_Ind = -1;
 }
 
 void ComponentMaterial::CleanUp()

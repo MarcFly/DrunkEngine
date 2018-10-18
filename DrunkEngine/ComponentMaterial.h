@@ -42,6 +42,7 @@ public:
 
 	void LoadTexture(const char* path);
 	void DestroyTexture(const int& tex_index);
+	void PopTexture(const int& tex_index);
 
 	void CleanUp();
 
