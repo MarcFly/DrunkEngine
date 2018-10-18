@@ -27,16 +27,6 @@ void GeoPropertiesWindow::Draw()
 		int start_val = -1;
 		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
 
-		if (node_clicked != -1)
-		{
-			if (ImGui::GetIO().KeyCtrl)
-				selection_mask ^= (1 << node_clicked);
-			else
-				selection_mask = (1 << node_clicked);
-		}
-
-		node_clicked = -1;
-
 		ImGui::EndChild();
 		ImGui::SameLine();
 
@@ -46,13 +36,6 @@ void GeoPropertiesWindow::Draw()
 			{
 				ImGui::BeginChild("Object Config", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
 				{
-
-					if (selection_mask_checker != selection_mask)
-					{
-						selection_mask_checker = selection_mask;
-						selected_object = App->mesh_loader->active_objects[0];
-						check_info = true;
-					}
 					
 					ImGui::Text("%s", selected_object->name.c_str());
 					ImGui::Separator();
@@ -295,16 +278,33 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 	//	num_child - obj->parent->children.size();
 	////num_child++;
 
-	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask == (1 << st)) ? ImGuiTreeNodeFlags_Selected : 0);
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | (obj->active ? ImGuiTreeNodeFlags_Selected : 0);
 	
 	if (obj->children.size() != 0)		
 	{
 		bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->mesh_loader->active_objects.size() > 0)
 		{
-			node_clicked = st;
-			App->mesh_loader->active_objects.clear();
+			bool repeated = false;
+			for (int i = 0; i < App->mesh_loader->active_objects.size(); i++)
+			{
+				if (App->mesh_loader->active_objects[i] == obj)
+					repeated = true;
+			}
+			if (!repeated)
+			{
+				App->mesh_loader->active_objects.push_back(obj);
+				obj->active = true;
+			}
+		}
+		else if (ImGui::IsItemClicked())
+		{
+			App->mesh_loader->SetActiveFalse();
 			App->mesh_loader->active_objects.push_back(obj);
+			obj->active = true;
+
+			selected_object = App->mesh_loader->active_objects[0];
+			check_info = true;
 		}
 		if (n_open)
 		{
@@ -319,11 +319,28 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 	{
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 		ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->mesh_loader->active_objects.size() > 0)
 		{
-			node_clicked = st;
-			App->mesh_loader->active_objects.clear();
+			bool repeated = false;
+			for (int i = 0; i < App->mesh_loader->active_objects.size(); i++)
+			{
+				if (App->mesh_loader->active_objects[i] == obj)
+					repeated = true;
+			}
+			if (!repeated)
+			{
+				App->mesh_loader->active_objects.push_back(obj);
+				obj->active = true;
+			}
+		}
+		else if (ImGui::IsItemClicked())
+		{
+			App->mesh_loader->SetActiveFalse();
 			App->mesh_loader->active_objects.push_back(obj);
+			obj->active = true;
+
+			selected_object = App->mesh_loader->active_objects[0];
+			check_info = true;
 		}
 	}
 }

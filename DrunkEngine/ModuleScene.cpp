@@ -104,6 +104,15 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	return ret;
 }
 
+void ModuleScene::SetActiveFalse()
+{
+	for (int i = 0; i < active_objects.size(); i++)
+	{
+		active_objects[i]->active = false;
+	}
+	active_objects.clear();
+}
+
 bool ModuleScene::Load(JSON_Value * root_value)
 {
 	bool ret = false;
