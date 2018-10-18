@@ -15,7 +15,7 @@ class GameObject
 {
 public:
 	GameObject() {};
-	GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par);
+	//GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par);
 	GameObject(const aiScene* scene, const aiNode* root_obj, const char* file_path);
 
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);

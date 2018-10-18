@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include "GLEW/include/GL/glew.h"
-#include "Assimp/include/scene.h"
 #include "Color.h"
 
 class GameObject;
@@ -36,11 +35,10 @@ class ComponentMaterial
 {
 public:
 	ComponentMaterial() {};
-	ComponentMaterial(aiMaterial* mat, GameObject* par);
+	//ComponentMaterial(CGameObject* par);
 
 	~ComponentMaterial() {};
 
-	void LoadTexture(const char* path);
 	void DestroyTexture(const int& tex_index);
 	void PopTexture(const int& tex_index);
 

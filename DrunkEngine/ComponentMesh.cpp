@@ -5,53 +5,8 @@
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 
-ComponentMesh::ComponentMesh(const aiMesh * mesh, GameObject * par)
+ComponentMesh::ComponentMesh()
 {
-	this->parent = par;
-	this->root = parent->root;
-
-	this->num_vertex = mesh->mNumVertices;
-	this->vertex = new float[this->num_vertex * 3];
-	this->num_faces = mesh->mNumFaces;
-
-	this->name = mesh->mName.C_Str();
-
-	memcpy(this->vertex, mesh->mVertices, 3 * sizeof(float)*this->num_vertex);
-
-	if (mesh->HasFaces())
-	{
-		this->num_index = mesh->mNumFaces * 3;
-		this->index = new GLuint[this->num_index];
-
-		this->num_normal = this->num_index * 2;
-		this->normal = new float[this->num_normal];
-
-		for (uint j = 0; j < mesh->mNumFaces; j++)
-		{
-			if (mesh->mFaces[j].mNumIndices != 3)
-				App->ui->console_win->AddLog("WARNING, geometry face with != 3 indices!");
-			else
-			{
-				memcpy(&this->index[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(GLuint));
-
-				SetNormals(j);
-			}
-		}
-
-		SetMeshBoundBox();
-	}
-
-	SetTexCoords(mesh);
-
-	this->Material_Ind = mesh->mMaterialIndex;
-
-	GenBuffers();
-
-	App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", this->num_vertex, this->num_index, this->num_faces);
-
-	App->ui->geo_properties_win->CheckMeshInfo();
-
-
 }
 
 bool ComponentMesh::SetTexCoords(const aiMesh * mesh)

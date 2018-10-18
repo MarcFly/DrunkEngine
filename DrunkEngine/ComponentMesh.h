@@ -12,8 +12,8 @@ class GameObject;
 class ComponentMesh
 {
 public:
-	ComponentMesh() {};
-	ComponentMesh(const aiMesh* mesh, GameObject* par);
+	ComponentMesh();
+	//ComponentMesh(const aiMesh* mesh, GameObject* par);
 
 	~ComponentMesh() {};
 
@@ -53,7 +53,7 @@ public:
 
 	GLuint num_faces = 0;
 
-	AABB* BoundingBox;
+	AABB* BoundingBox = nullptr;
 
 	Primitive* BoundingBody = nullptr;
 

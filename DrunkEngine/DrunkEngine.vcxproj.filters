@@ -124,6 +124,9 @@
     <Filter Include="Sources\Modules\GameObject Structure\Components">
       <UniqueIdentifier>{b226c4eb-2984-4717-9a2b-2ac9059d041a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\Import/Export">
+      <UniqueIdentifier>{22699cfd-1c77-4dc9-a255-60cf3482b4bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -579,6 +582,9 @@
     <ClInclude Include="ModuleScene.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleImport.h">
+      <Filter>Sources\Modules\Import/Export</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -796,6 +802,9 @@
     </ClCompile>
     <ClCompile Include="ComponentMaterial.cpp">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleImport.cpp">
+      <Filter>Sources\Modules\Import/Export</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
