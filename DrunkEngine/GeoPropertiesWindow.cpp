@@ -59,9 +59,28 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Object Transform"))
 					{
-						ImGui::Text("Transform Position:   x:%.02f   y:%.02f   z:%.02f", selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z);
-						ImGui::Text("Transform Scale:      x:%.02f   y:%.02f   z:%.02f", selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z);
-						ImGui::Text("Transform Rotation:   x:%.02f   y:%.02f   z:%.02f\n\n", RadToDeg(selected_object->transform->transform_rotate.GetEuler().x), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().z));
+						ImGui::Spacing();
+						ImGui::Spacing();
+
+						ImGui::Text("Use CTRL + click to input value");
+
+						ImGui::Spacing();
+
+						//Pos
+						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
+						ImGui::DragFloat3 ("Position", pos, 1.f);
+						
+						//Scale
+						float scale[3] = { selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z };
+						ImGui::DragFloat3("Scale", scale, 0.1f);
+						
+						//Rot
+						float rot[3] = { selected_object->transform->transform_rotate.GetEuler().x, selected_object->transform->transform_rotate.GetEuler().y, selected_object->transform->transform_rotate.GetEuler().z };
+						ImGui::DragFloat3("Rotation", rot, 1.f, -180.f, 180.f);
+
+						ImGui::Spacing();
+						ImGui::Spacing();
+						ImGui::Spacing();
 					}
 
 					if (ImGui::CollapsingHeader("Mesh Properties"))
