@@ -26,7 +26,6 @@ public:
 	void DrawMesh();
 	void DrawMeshWire();
 	void DrawNormals();
-	void DrawBB();
 
 	void CleanUp();
 

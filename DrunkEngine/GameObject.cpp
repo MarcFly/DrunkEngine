@@ -44,7 +44,7 @@ void GameObject::Draw()
 	for (int i = 0; i < this->meshes.size(); i++)
 		this->meshes[i]->Draw();
 
-	if (App->renderer3D->bounding_box)
+	if (App->renderer3D->bounding_box || this->active)
 		this->DrawBB();
 
 	for (int i = 0; i < this->children.size(); i++)
