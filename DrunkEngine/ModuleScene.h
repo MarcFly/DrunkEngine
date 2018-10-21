@@ -30,8 +30,7 @@ public:
 	
 	void SetCurrTexTo(GameObject& curr_obj, const int tex_ind);
 
-	GameObject* GetSelected(GameObject * obj);
-	void SetSelectedFalse(GameObject* obj);
+	void SetActiveFalse();
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
@@ -41,6 +40,8 @@ public:
 
 	std::string scene_folder;
 	std::string tex_folder;
+
+	std::vector<GameObject*> active_objects;
 
 public:
 	GameObject* getRootObj() const { return Root_Object; };

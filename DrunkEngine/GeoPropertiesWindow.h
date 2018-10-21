@@ -27,6 +27,7 @@ public:
 	std::string tex_name;
 
 	bool check_info;
+	bool selected_mask;
 
 	int selection_mask;
 	int node_clicked;
@@ -34,6 +35,7 @@ public:
 	int selection_mask_checker;
 	
 	GameObject* selected_object;
+	std::vector<int> selection_mask_vec;
 
 	ImVec2 show_size = {128,128};
 	

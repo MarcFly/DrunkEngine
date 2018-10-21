@@ -27,32 +27,15 @@ void GeoPropertiesWindow::Draw()
 		int start_val = -1;
 		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
 
-		if (node_clicked != -1)
-		{
-			if (ImGui::GetIO().KeyCtrl)
-				selection_mask ^= (1 << node_clicked);
-			else
-				selection_mask = (1 << node_clicked);
-		}
-
-		node_clicked = -1;
-
 		ImGui::EndChild();
 		ImGui::SameLine();
 
 		ImGui::BeginGroup();
 		{
-			if (selection_mask != 0) //objects.size() > 0)
+			if (App->mesh_loader->active_objects.size() == 1) //objects.size() > 0)
 			{
 				ImGui::BeginChild("Object Config", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
 				{
-
-					if (selection_mask_checker != selection_mask)
-					{
-						selection_mask_checker = selection_mask;
-						selected_object = App->mesh_loader->GetSelected(App->mesh_loader->Root_Object);
-						check_info = true;
-					}
 					
 					ImGui::Text("%s", selected_object->name.c_str());
 					ImGui::Separator();
@@ -77,7 +60,11 @@ void GeoPropertiesWindow::Draw()
 							selected_object->transform->SetTransformScale(scale[0], scale[1], scale[2]);
 
 						//Rot
-						float rot[3] = { RadToDeg(selected_object->transform->transform_rotate.GetEuler().z), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().x) };
+						//aiVector3D trans_rot = selected_object->transform->transform_rotate.GetEuler();
+						Quat quat_rot = { selected_object->transform->transform_rotate.x, selected_object->transform->transform_rotate.y, selected_object->transform->transform_rotate.z, selected_object->transform->transform_rotate.w };
+						float3 trans_rot = quat_rot.ToEulerXYZ();
+
+						float rot[3] = { RadToDeg(trans_rot.x), RadToDeg(trans_rot.y), RadToDeg(trans_rot.z) };
 						if (ImGui::DragFloat3("Rotation", rot, 1.f))
 							selected_object->transform->SetTransformRotation(rot[0], rot[1], rot[2]);
 
@@ -145,6 +132,12 @@ void GeoPropertiesWindow::Draw()
 				ImGui::EndChild();
 
 			}
+
+			else if (App->mesh_loader->active_objects.size() > 1) //objects.size() > 0)
+			{
+				ImGui::Text("+ 1 obj selected");
+			}
+
 			//if (ImGui::Button("Select")) {}
 			//ImGui::SameLine();
 			//if (ImGui::Button("Save")) {}
@@ -289,16 +282,33 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 	//	num_child - obj->parent->children.size();
 	////num_child++;
 
-	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask == (1 << st)) ? ImGuiTreeNodeFlags_Selected : 0);
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | (obj->active ? ImGuiTreeNodeFlags_Selected : 0);
 	
 	if (obj->children.size() != 0)		
 	{
 		bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->mesh_loader->active_objects.size() > 0)
 		{
-			node_clicked = st;
-			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
-			obj->selected = true;
+			bool repeated = false;
+			for (int i = 0; i < App->mesh_loader->active_objects.size(); i++)
+			{
+				if (App->mesh_loader->active_objects[i] == obj)
+					repeated = true;
+			}
+			if (!repeated)
+			{
+				App->mesh_loader->active_objects.push_back(obj);
+				obj->active = true;
+			}
+		}
+		else if (ImGui::IsItemClicked())
+		{
+			App->mesh_loader->SetActiveFalse();
+			App->mesh_loader->active_objects.push_back(obj);
+			obj->active = true;
+
+			selected_object = App->mesh_loader->active_objects[0];
+			check_info = true;
 		}
 		if (n_open)
 		{
@@ -313,11 +323,28 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 	{
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 		ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->mesh_loader->active_objects.size() > 0)
 		{
-			node_clicked = st;
-			App->mesh_loader->SetSelectedFalse(App->mesh_loader->Root_Object);
-			obj->selected = true;
+			bool repeated = false;
+			for (int i = 0; i < App->mesh_loader->active_objects.size(); i++)
+			{
+				if (App->mesh_loader->active_objects[i] == obj)
+					repeated = true;
+			}
+			if (!repeated)
+			{
+				App->mesh_loader->active_objects.push_back(obj);
+				obj->active = true;
+			}
+		}
+		else if (ImGui::IsItemClicked())
+		{
+			App->mesh_loader->SetActiveFalse();
+			App->mesh_loader->active_objects.push_back(obj);
+			obj->active = true;
+
+			selected_object = App->mesh_loader->active_objects[0];
+			check_info = true;
 		}
 	}
 }
