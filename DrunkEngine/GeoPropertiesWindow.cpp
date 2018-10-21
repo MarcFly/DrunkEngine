@@ -60,7 +60,11 @@ void GeoPropertiesWindow::Draw()
 							selected_object->transform->SetTransformScale(scale[0], scale[1], scale[2]);
 
 						//Rot
-						float rot[3] = { RadToDeg(selected_object->transform->transform_rotate.GetEuler().z), RadToDeg(selected_object->transform->transform_rotate.GetEuler().y), RadToDeg(selected_object->transform->transform_rotate.GetEuler().x) };
+						//aiVector3D trans_rot = selected_object->transform->transform_rotate.GetEuler();
+						Quat quat_rot = { selected_object->transform->transform_rotate.x, selected_object->transform->transform_rotate.y, selected_object->transform->transform_rotate.z, selected_object->transform->transform_rotate.w };
+						float3 trans_rot = quat_rot.ToEulerXYZ();
+
+						float rot[3] = { RadToDeg(trans_rot.x), RadToDeg(trans_rot.y), RadToDeg(trans_rot.z) };
 						if (ImGui::DragFloat3("Rotation", rot, 1.f))
 							selected_object->transform->SetTransformRotation(rot[0], rot[1], rot[2]);
 
