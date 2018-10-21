@@ -22,8 +22,6 @@ public:
 
 	void CleanUp();
 
-	aiQuaternion toQuaternion(vec transform);
-
 public:
 
 	aiVector3D transform_position;
