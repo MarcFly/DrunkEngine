@@ -4,15 +4,32 @@
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {
 	//aiQuaternion rotation_quat; = rotation_quat.GetEuler();
-	t->Decompose(this->transform_scale, this->transform_rotate, this->transform_position);
+	aiQuaternion rot;
+	aiVector3D pos;
+	aiVector3D scale;
+
+	t->Decompose(scale, rot, pos);
+	this->transform_scale = float3(scale.x, scale.y, scale.z);
+	this->transform_rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
+	this->transform_position = float3(pos.x, pos.y, pos.z);
+
+	SetTransformRotation(transform_rotate_quat);
 
 	this->parent = par;
 }
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par)
 {
-	//aiQuaternion rotation_quat; = rotation_quat.GetEuler();
-	t->Decompose(this->transform_scale, this->transform_rotate, this->transform_position);
+
+	aiQuaternion rot;
+	aiVector3D pos;
+	aiVector3D scale;
+
+	t->Decompose(scale, rot, pos);
+	this->transform_scale = float3(scale.x, scale.y, scale.z);
+	this->transform_rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
+	this->transform_position = float3(pos.x, pos.y, pos.z);
+
 	this->mparent = par;
 }
 
@@ -24,11 +41,16 @@ void ComponentTransform::SetTransformPosition(const int pos_x, const int pos_y, 
 
 }
 
-void ComponentTransform::SetTransformRotation(const int rot_x, const int rot_y, const int rot_z)
+void ComponentTransform::SetTransformRotation(const Quat rot_quat)
 {
-	Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot_x), DegToRad(rot_y), DegToRad(rot_z));
-	
-	transform_rotate = { rot_quat.w, rot_quat.x, rot_quat.y, rot_quat.z };
+	transform_rotate_quat = rot_quat;
+	transform_rotate_euler = RadToDeg(transform_rotate_quat.ToEulerXYZ());
+}
+
+void ComponentTransform::SetTransformRotation(const float3 rot_vec)
+{
+	transform_rotate_quat = Quat::FromEulerXYZ(DegToRad(rot_vec.x), DegToRad(rot_vec.y), DegToRad(rot_vec.z));
+	transform_rotate_euler = rot_vec;
 }
 
 void ComponentTransform::SetTransformScale(const int scale_x, const int scale_y, const int scale_z)
