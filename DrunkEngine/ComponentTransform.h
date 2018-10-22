@@ -17,16 +17,18 @@ public:
 	~ComponentTransform() {};
 
 	void SetTransformPosition(const int pos_x, const int pos_y, const int pos_z);
-	void SetTransformRotation(const int rot_x, const int rot_y, const int rot_z);
+	void SetTransformRotation(const Quat rot_quat);
+	void SetTransformRotation(const float3 rot_vec);
 	void SetTransformScale(const int scale_x, const int scale_y, const int scale_z);
 
 	void CleanUp();
 
 public:
 
-	aiVector3D transform_position;
-	aiVector3D transform_scale;
-	aiQuaternion transform_rotate;
+	float3 transform_position;
+	float3 transform_scale;
+	Quat transform_rotate_quat;
+	float3 transform_rotate_euler;
 
 	GameObject* parent = nullptr;
 	ComponentMesh* mparent = nullptr;
