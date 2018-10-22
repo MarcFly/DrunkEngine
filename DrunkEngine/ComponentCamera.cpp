@@ -14,8 +14,7 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	frustum.farPlaneDistance = 100.0f;
 
 	frustum.verticalFov = DegToRad(60.0f);
-	
-	SetAspectRatio();	
+	SetAspectRatio();
 
 	frustum.pos = float3::zero;
 
@@ -32,14 +31,26 @@ void ComponentCamera::Start()
 
 bool ComponentCamera::Update(float dt)
 {
-	
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+	{
+		frustum.verticalFov += 0.0015;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
+	{
+		frustum.verticalFov -= 0.0015;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+
+	SetAspectRatio();
+
 	return true;
 }
 
 void ComponentCamera::Draw()
 {
 	glDisable(GL_LIGHTING);
-	
+	frustum.verticalFov;
 	glBegin(GL_LINES);
 	glColor3f(1.f, 1.f, 1.f);
 
