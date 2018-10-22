@@ -158,7 +158,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
-	App->mesh_loader->Draw();
+	App->mesh_loader->ObjUpdate(dt);
 	/*if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -196,7 +196,6 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::Render(bool use_texture)
 {
-	App->mesh_loader->Draw();
 	/*
 	for (int i = 0; i < App->mesh_loader->Objects.size(); i++)
 	{
@@ -244,6 +243,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	//From cameracomp
 	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	glLoadMatrixf(&ProjectionMatrix);
 	glMatrixMode(GL_MODELVIEW);

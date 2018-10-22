@@ -3,6 +3,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
 
 GameObject::GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par)
 {
@@ -35,8 +36,28 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 	for (int i = 0; i < obj->mNumChildren; i++)
 		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
 
+	this->camera = new ComponentCamera(this);
+
 	this->transform = new ComponentTransform(&obj->mTransformation, this);
-	App->camera->SetToObj(this, SetBoundBox());
+	
+	if (this->root->parent == nullptr)
+		App->camera->SetToObj(this, SetBoundBox());
+
+	Start();
+}
+
+void GameObject::Start()
+{
+	if (camera != nullptr)
+		camera->Start();
+}
+
+void GameObject::Update(float dt)
+{
+	if (camera != nullptr)
+		camera->Update(dt);
+
+	Draw();
 }
 
 void GameObject::Draw()
@@ -50,6 +71,8 @@ void GameObject::Draw()
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Draw();
 		
+	if (camera != nullptr)
+		camera->Draw();
 }
 
 void GameObject::DrawBB()
@@ -58,7 +81,7 @@ void GameObject::DrawBB()
 
 	glBegin(GL_LINES);
 
-	glColor3f(0, 1, 0);
+	glColor3f(0.f, 1.f, 0.f);
 
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);

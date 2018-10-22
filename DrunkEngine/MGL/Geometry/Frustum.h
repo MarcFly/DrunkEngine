@@ -97,43 +97,40 @@ enum FrustumHandedness
 /// Represents either an orthographic or a perspective viewing frustum.
 class Frustum
 {
-private:
+	//Added public
+public:
 	/// Specifies whether this frustum is a perspective or an orthographic frustum.
 	/** [noscript] @todo Remove the noscript attribute. */
 	FrustumType type;
-	/// Specifies whether the [-1,1] or [0,1] range is used for the post-projective depth range.
-	FrustumProjectiveSpace projectiveSpace;
-	/// Specifies the chirality of world and view spaces.
-	FrustumHandedness handedness;
 	/// The eye point of this frustum.
 	/** Specifies the position of the camera (the eye point) for this frustum in world (global) space. */
 	vec pos;
 	/// The normalized direction this frustum is watching towards. [similarOverload: pos]
 	/** This vector is specified in world (global) space. This vector is always normalized.
-		If you assign to this member directly, be sure to only assign normalized vectors. */
+	If you assign to this member directly, be sure to only assign normalized vectors. */
 	vec front;
 	/// The normalized up direction for this frustum. [similarOverload: pos]
 	/** This vector is specified in world (global) space. This vector is always normalized.
-		If you assign to this member directly, be sure to only assign normalized vectors.
-		@note The vectors front and up must always be perpendicular to each other. This means that this up vector is not
-		a static/constant up vector, e.g. (0,1,0), but changes according to when the camera pitches up and down to
-		preserve the condition that front and up are always perpendicular.
-		@note In the _local_ space of the Frustum, the direction +Y is _always_ the up direction and cannot be changed. This
-		coincides to how Direct3D and OpenGL view and projection matrices are constructed. */
+	If you assign to this member directly, be sure to only assign normalized vectors.
+	@note The vectors front and up must always be perpendicular to each other. This means that this up vector is not
+	a static/constant up vector, e.g. (0,1,0), but changes according to when the camera pitches up and down to
+	preserve the condition that front and up are always perpendicular.
+	@note In the _local_ space of the Frustum, the direction +Y is _always_ the up direction and cannot be changed. This
+	coincides to how Direct3D and OpenGL view and projection matrices are constructed. */
 	vec up;
 	/// Distance from the eye point to the front plane.
 	/** This parameter must be positive. If perspective projection is used, this parameter must be strictly positive
-		(0 is not allowed). If orthographic projection is used, 0 is possible (but uncommon, and not recommended).
-		When using the Frustum class to derive perspective projection matrices for a GPU, it should be noted that too
-		small values cause poor resolution of Z values near the back plane in post-perspective space, if non-linear
-		depth is used (which is common). The larger this value is, the more resolution there is for the Z values across the
-		depth range. Too large values cause clipping of geometry when they come very near the camera. */
+	(0 is not allowed). If orthographic projection is used, 0 is possible (but uncommon, and not recommended).
+	When using the Frustum class to derive perspective projection matrices for a GPU, it should be noted that too
+	small values cause poor resolution of Z values near the back plane in post-perspective space, if non-linear
+	depth is used (which is common). The larger this value is, the more resolution there is for the Z values across the
+	depth range. Too large values cause clipping of geometry when they come very near the camera. */
 	float nearPlaneDistance;
 	/// Distance from the eye point to the back plane of the projection matrix. [similarOverload: nearPlaneDistance]
 	/** This parameter must be strictly greater than nearPlaneDistance. The range [nearPlaneDistance, farPlaneDistance]
-		specifies the visible range of objects inside the Frustum. When using the Frustum class for deriving perspective
-		projection matrix for GPU rendering, it should be remembered that any geometry farther from the camera (in Z value)
-		than this distance will be clipped from the view, and not rendered. */
+	specifies the visible range of objects inside the Frustum. When using the Frustum class for deriving perspective
+	projection matrix for GPU rendering, it should be remembered that any geometry farther from the camera (in Z value)
+	than this distance will be clipped from the view, and not rendered. */
 	float farPlaneDistance;
 	union
 	{
@@ -153,6 +150,12 @@ private:
 		/** @see type. */
 		float orthographicHeight;
 	};
+
+private:
+	/// Specifies whether the [-1,1] or [0,1] range is used for the post-projective depth range.
+	FrustumProjectiveSpace projectiveSpace;
+	/// Specifies the chirality of world and view spaces.
+	FrustumHandedness handedness;
 
 	void WorldMatrixChanged();
 	void ProjectionMatrixChanged();
