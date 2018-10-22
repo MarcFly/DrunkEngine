@@ -147,18 +147,19 @@ update_status ModuleInput::PreUpdate(float dt)
 				std::string extension = strrchr(dropped_filedir, '.');
 
 				if (extension == std::string(".fbx") || extension == std::string(".FBX"))
-					App->mesh_loader->LoadFromFile(dropped_filedir);
-				/*else if (App->mesh_loader->Root_Object != nullptr) // In case we have no objects
+					App->importer->ExportScene(dropped_filedir);
+					//App->mesh_loader->LoadFromFile(dropped_filedir);
+				else if (App->mesh_loader->Root_Object != nullptr) // In case we have no objects
 				{
 					if (extension == std::string(".png") || extension == std::string(".PNG"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[App->mesh_loader->Objects.size() -1]);
+						App->importer->ExportTexture(dropped_filedir);
 					else if (extension == std::string(".bmp") || extension == std::string(".BMP"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
+						App->importer->ExportTexture(dropped_filedir);
 					else if (extension == std::string(".jpg") || extension == std::string(".JPG"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
-					else if (extension == std::string(".dds") || extension == std::string(".DDS"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
-				}*/
+						App->importer->ExportTexture(dropped_filedir);
+					/*else if (extension == std::string(".dds") || extension == std::string(".DDS"))
+						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);*/
+				}
 				else
 					App->ui->console_win->AddLog("File format not recognized!\n");
 

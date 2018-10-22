@@ -10,6 +10,8 @@
 #include "Assimp/include/scene.h"
 #include "Color.h"
 
+#include <iostream>
+#include <fstream>
 
 class ModuleImport : public Module {
 public:
@@ -34,9 +36,43 @@ public:
 	ComponentMesh* ImportMesh(const char* mesh);
 	ComponentMesh* ImportMesh(const aiMesh* mesh, GameObject* par);
 
+	void ExportScene(const char* scene);
+
+	void ExportTexture(const char* path);
+
+	void ExportMesh(const aiMesh* mesh);
+	void ExportMeshNormals(char* data, const int& index, const unsigned int& vertex_size, const unsigned int& index_size);
+	void ExportBBox(char* data, const int& num_vertex, const unsigned int& start_size);
+	//void ExportNode(const aiScene* scene, const aiNode* node);
+
 	void SerializeSceneData();
 
+	void SerializeObjectData(const GameObject* obj, std::ofstream& file);
+
+	
+
 public:
+
+
+public:
+
+	int ParCount(GameObject* obj)
+	{
+		int ret = 0;
+
+		while (obj != nullptr)
+		{
+			ret++;
+			obj = obj->parent;
+		}
+
+		return ret;
+	}
+	void TabFile(const int& tabs, std::ofstream& file)
+	{
+		for (int i = 0; i < tabs; i++)
+			file << "\t";
+	}
 
 };
 
