@@ -36,11 +36,12 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 	for (int i = 0; i < obj->mNumChildren; i++)
 		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
 
-	this->camera = new ComponentCamera(this);
+	if (this->parent == nullptr)
+		this->camera = new ComponentCamera(this);
 
 	this->transform = new ComponentTransform(&obj->mTransformation, this);
 	
-	if (this->root->parent == nullptr)
+	if (camera != nullptr)
 		App->camera->SetToObj(this, SetBoundBox());
 
 	Start();
