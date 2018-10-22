@@ -10,11 +10,12 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	frustum.front = float3(0.f, 0.f, 1.f);
 	frustum.up = float3(0.f, 1.f, 0.f);
 
-	frustum.nearPlaneDistance = 0.5f;
+	frustum.nearPlaneDistance = 0.1f;
 	frustum.farPlaneDistance = 100.0f;
 
 	frustum.verticalFov = DegToRad(60.0f);
-	SetAspectRatio(1.5f);	
+	
+	SetAspectRatio();	
 
 	frustum.pos = float3::zero;
 
@@ -31,6 +32,7 @@ void ComponentCamera::Start()
 
 bool ComponentCamera::Update(float dt)
 {
+	
 	return true;
 }
 
@@ -87,9 +89,10 @@ void ComponentCamera::CleanUp()
 {
 }
 
-void ComponentCamera::SetAspectRatio(float a_ratio)
+void ComponentCamera::SetAspectRatio()
 {
-	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * a_ratio);
+	float aspect_ratio = ((float)App->window->window_w / (float)App->window->window_h);		//Window aspect ratio
+	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * aspect_ratio);
 	projection_update = true;
 }
 

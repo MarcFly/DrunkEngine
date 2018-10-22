@@ -17,7 +17,7 @@ public:
 	void Draw();
 	void CleanUp();;
 
-	void SetAspectRatio(float a_ratio);
+	void SetAspectRatio();
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
