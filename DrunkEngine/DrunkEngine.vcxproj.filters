@@ -806,6 +806,9 @@
     <ClCompile Include="ModuleImport.cpp">
       <Filter>Sources\Modules\Import/Export</Filter>
     </ClCompile>
+    <ClCompile Include="MeshImport.cpp">
+      <Filter>Sources\Modules\Import/Export</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MGL\Math\float2.inl">

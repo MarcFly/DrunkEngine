@@ -239,6 +239,7 @@
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="GeoPropertiesWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
+    <ClCompile Include="MeshImport.cpp" />
     <ClCompile Include="MGL\Algorithm\GJK.cpp" />
     <ClCompile Include="MGL\Algorithm\Random\LCG.cpp" />
     <ClCompile Include="MGL\Geometry\AABB.cpp" />

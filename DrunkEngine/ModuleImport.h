@@ -40,7 +40,7 @@ public:
 
 	void ExportTexture(const char* path);
 
-	void ExportMesh(const aiMesh* mesh);
+	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
 	void ExportMeshNormals(char* data, const int& index, const unsigned int& vertex_size, const unsigned int& index_size);
 	void ExportBBox(char* data, const int& num_vertex, const unsigned int& start_size);
 	//void ExportNode(const aiScene* scene, const aiNode* node);
@@ -55,6 +55,18 @@ public:
 
 
 public:
+	
+	std::string GetFileName(const char* file)
+	{
+		std::string ret = file;
+
+		ret = ret.substr(ret.find_last_of("\\/") + 1);
+
+		std::string aux = strrchr(ret.c_str(), '.');
+		ret.erase(ret.length() - aux.length()).c_str();
+
+		return ret;
+	}
 
 	int ParCount(GameObject* obj)
 	{
