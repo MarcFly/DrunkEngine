@@ -113,6 +113,11 @@ void ModuleScene::SetActiveFalse()
 	active_objects.clear();
 }
 
+void ModuleScene::SetmainCam(ComponentCamera * cam)
+{
+	Main_Cam = cam;
+}
+
 bool ModuleScene::Load(JSON_Value * root_value)
 {
 	bool ret = false;
@@ -238,11 +243,6 @@ bool ModuleScene::CreatePrimitiveObject(const vec& center, PCube& cube)
 void CallLog(const char* str, char* usrData)
 {
 	App->ui->console_win->AddLog(str);
-}
-
-ComponentCamera * ModuleScene::GetMainCamera()
-{
-	return active_cameras[0];	//TODO put id to cameras
 }
 
 bool ModuleScene::DestroyScene()

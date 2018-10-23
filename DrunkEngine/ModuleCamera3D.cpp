@@ -23,13 +23,8 @@ bool ModuleCamera3D::Start()
 {
 	main_camera = new ComponentCamera(nullptr);
 
-	main_camera->CalculateViewMatrix();
-
 	App->ui->console_win->AddLog("Setting up the camera");
-	bool ret = true;
-
-	main_camera->Position = vec(0.0f, 0.0f, 0.0f);
-	main_camera->Reference = vec(0.0f, 0.0f, 0.0f);
+	bool ret = true;	
 
 	main_camera->Move(vec(1.0f, 1.0f, 0.0f));
 	main_camera->LookAt(vec(0.0f, 0.0f, 0.0f));

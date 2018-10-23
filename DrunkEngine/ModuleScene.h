@@ -26,14 +26,14 @@ public:
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 
-	ComponentCamera * GetMainCamera();
-
 	bool LoadTextCurrentObj(const char* path, GameObject* curr_obj);
 	bool DestroyScene();
 	
 	void SetCurrTexTo(GameObject& curr_obj, const int tex_ind);
 
 	void SetActiveFalse();
+
+	void SetmainCam(ComponentCamera * cam);
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
@@ -49,6 +49,8 @@ public:
 
 public:
 	GameObject* getRootObj() const { return Root_Object; };
+
+	ComponentCamera * Main_Cam = nullptr;
 
 	int GetDevILVer();
 

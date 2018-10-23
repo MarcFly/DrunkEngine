@@ -142,13 +142,13 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->mesh_loader->GetMainCamera()->GetViewMatrix());
+	glLoadMatrixf(App->mesh_loader->Main_Cam->GetViewMatrix());
 
 	RenderGrid();
 
 	// Something Something lights
 	// Set light pos
-	lights[0].SetPos(App->mesh_loader->GetMainCamera()->Position.x, App->mesh_loader->GetMainCamera()->Position.y, App->mesh_loader->GetMainCamera()->Position.z);
+	lights[0].SetPos(App->mesh_loader->Main_Cam->Position.x, App->mesh_loader->Main_Cam->Position.y, App->mesh_loader->Main_Cam->Position.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -246,7 +246,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	//From cameracomp
 
-	ProjectionMatrix = App->mesh_loader->GetMainCamera()->frustum.ProjectionMatrix();
+	ProjectionMatrix = App->mesh_loader->Main_Cam->frustum.ProjectionMatrix();
 	//ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 
 	glLoadMatrixf(&ProjectionMatrix[0][0]);

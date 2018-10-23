@@ -10,6 +10,10 @@ ComponentCamera::ComponentCamera(GameObject * par)
 {
 	if (par != nullptr)
 		this->parent = par;
+	else
+		App->mesh_loader->SetmainCam(this);
+
+	CalculateViewMatrix();
 
 	App->mesh_loader->active_cameras.push_back(this);
 
@@ -18,6 +22,9 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	X = vec(1.0f, 0.0f, 0.0f);
 	Y = vec(0.0f, 1.0f, 0.0f);
 	Z = vec(0.0f, 0.0f, 1.0f);
+
+	Position = vec(0.0f, 0.0f, 0.0f);
+	Reference = vec(0.0f, 0.0f, 0.0f);
 
 	frustum.type = FrustumType::PerspectiveFrustum;
 	frustum.front = Z;
@@ -34,6 +41,7 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	frustum.GetCornerPoints(bb_frustum);
 
 	mesh_multiplier = 1;
+
 }
 
 ComponentCamera::~ComponentCamera()
