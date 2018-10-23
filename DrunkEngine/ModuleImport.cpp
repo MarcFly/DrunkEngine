@@ -390,7 +390,7 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 
 	unsigned int vertex_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
-	unsigned int normal_size = sizeof(float)*(mesh->mNumFaces * 3);
+	unsigned int normal_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int uv_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int BBox_size = sizeof(float) * 3 * 2; // 2 Vertex of 3 float each
 	//unsigned int Mat_index = sizeof(unsigned int); // The material index 
@@ -418,9 +418,10 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	for (uint j = 0; j < mesh->mNumFaces; j++)
 	{
 		memcpy(cursor, mesh->mFaces[j].mIndices, sizeof(GLuint) * 3);
-		cursor += 3 *sizeof(GLuint);
+		cursor += (sizeof(GLuint) * 3);
 		//ExportMeshNormals(cursor, j, vertex_size, index_size);
 	}
+
 	memcpy(cursor, mesh->mNormals, normal_size);
 	cursor += normal_size;
 
