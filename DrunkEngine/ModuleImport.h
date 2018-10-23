@@ -41,7 +41,7 @@ public:
 	void ExportTexture(const char* path);
 
 	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
-	void ExportMeshNormals(char* data, const int& index, const unsigned int& vertex_size, const unsigned int& index_size);
+	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
 	void ExportBBox(char* data, const int& num_vertex);
 	//void ExportNode(const aiScene* scene, const aiNode* node);
 

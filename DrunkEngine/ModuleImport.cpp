@@ -223,9 +223,9 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 		ret->num_index = ranges[1];
 		ret->index = new GLuint[ret->num_index * 3];
 		memcpy(ret->index, cursor, ret->num_index * 3 * sizeof(GLuint));
-		cursor += ((ret->num_index * 3 )* sizeof(GLuint));
+		cursor += ((ret->num_index)* sizeof(GLuint));
 
-		ret->num_normal = ranges[2] / 3;  /* * 2*/ // Will have to create normals here
+		ret->num_normal = ranges[2] / 3;
 		ret->normal = new GLfloat[ret->num_normal * 3];
 		memcpy(ret->normal,cursor, ret->num_normal * 3 * sizeof(GLfloat));
 		cursor += ((ret->num_normal * 3 )* sizeof(GLfloat));
@@ -390,7 +390,7 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 
 	unsigned int vertex_size = sizeof(GLfloat)*(mesh->mNumVertices * 3);
 	unsigned int index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
-	unsigned int normal_size = sizeof(GLfloat)*(mesh->mNumVertices * 3);
+	unsigned int normal_size = sizeof(GLfloat)*(mesh->mNumFaces * 3 * 2);
 	unsigned int uv_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
 	//unsigned int Mat_index = sizeof(unsigned int); // The material index 
@@ -414,26 +414,28 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	memcpy(cursor, ranges, sizeof(ranges));
 	cursor += sizeof(ranges);
 
-	memcpy(cursor, mesh->mVertices, vertex_size); cursor += vertex_size;
+	std::vector<GLfloat> vertex_aux;
+	for (uint j = 0; j < mesh->mNumVertices; j++)
+	{
+		vertex_aux.push_back(mesh->mVertices[j].x);
+		vertex_aux.push_back(mesh->mVertices[j].y);
+		vertex_aux.push_back(mesh->mVertices[j].z);
+	}
+	memcpy(cursor, &vertex_aux[0], vertex_size); 
+	cursor += vertex_size;
 
 	std::vector<GLuint> index_aux;
+	std::vector<GLfloat> normal_aux;
 	for (uint j = 0; j < mesh->mNumFaces; j++)
 	{
 		index_aux.push_back(mesh->mFaces[j].mIndices[0]);
 		index_aux.push_back(mesh->mFaces[j].mIndices[1]);
 		index_aux.push_back(mesh->mFaces[j].mIndices[2]);
-	}
 
+		ExportIndexNormals(j, normal_aux, index_aux, vertex_aux);
+	}
 	memcpy(cursor, &index_aux[0], index_size);
 	cursor += index_size;
-
-	std::vector<GLfloat> normal_aux;
-	for (uint j = 0; j < mesh->mNumVertices; j++)
-	{
-		normal_aux.push_back(mesh->mNormals[j].x);
-		normal_aux.push_back(mesh->mNormals[j].y);
-		normal_aux.push_back(mesh->mNormals[j].z);
-	}
 
 	memcpy(cursor, &normal_aux[0], normal_size);
 	cursor += normal_size;
@@ -445,6 +447,7 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 		uv_aux.push_back(mesh->mTextureCoords[0][j].y);
 		uv_aux.push_back(mesh->mTextureCoords[0][j].z);
 	}
+
 	memcpy(cursor, &uv_aux[0], uv_size);
 	cursor += uv_size;
 
@@ -463,27 +466,27 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 
 }
 
-void ModuleImport::ExportMeshNormals(char * data, const int & index, const unsigned int& vertex_size, const unsigned int& index_size)
+void ModuleImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex)
 {
 	float aux[9];
 
-	aux[0] = data[data[vertex_size + index * 3] * 3];
-	aux[1] = data[(data[vertex_size + index * 3] * 3) + 1];
-	aux[2] = data[(data[vertex_size + index * 3] * 3) + 2];
-	aux[3] = data[(data[vertex_size + (index * 3) + 1] * 3)];
-	aux[4] = data[(data[vertex_size + (index * 3) + 1] * 3) + 1];
-	aux[5] = data[(data[vertex_size + (index * 3) + 1] * 3) + 2];
-	aux[6] = data[(data[vertex_size + (index * 3) + 2] * 3)];
-	aux[7] = data[(data[vertex_size + (index * 3) + 2] * 3) + 1];
-	aux[8] = data[(data[vertex_size + (index * 3) + 2] * 3) + 2];
+	aux[0] = vertex[index[ind * 3] * 3];
+	aux[1] = vertex[(index[ind * 3] * 3) + 1];
+	aux[2] = vertex[(index[ind * 3] * 3) + 2];
+	aux[3] = vertex[(index[(ind * 3) + 1] * 3)];
+	aux[4] = vertex[(index[(ind * 3) + 1] * 3) + 1];
+	aux[5] = vertex[(index[(ind * 3) + 1] * 3) + 2];
+	aux[6] = vertex[(index[(ind * 3) + 2] * 3)];
+	aux[7] = vertex[(index[(ind * 3) + 2] * 3) + 1];
+	aux[8] = vertex[(index[(ind * 3) + 2] * 3) + 2];
 
 	float p1 = (aux[0] + aux[3] + aux[6]) / 3;
 	float p2 = (aux[1] + aux[4] + aux[7]) / 3;
 	float p3 = (aux[2] + aux[5] + aux[8]) / 3;
 
-	data[vertex_size + index_size + index * 6] = p1;
-	data[vertex_size + index_size + index * 6 + 1] = p2;
-	data[vertex_size + index_size + index * 6 + 2] = p3;
+	normals.push_back(p1);
+	normals.push_back(p2);
+	normals.push_back(p3);
 
 	vec v1(aux[0], aux[1], aux[2]);
 	vec v2(aux[3], aux[4], aux[5]);
@@ -492,9 +495,9 @@ void ModuleImport::ExportMeshNormals(char * data, const int & index, const unsig
 	vec norm = (v2 - v1).Cross(v3 - v1);
 	norm.Normalize();
 
-	data[vertex_size + index_size + index * 6 + 3] = p1 + norm.x;
-	data[vertex_size + index_size + index * 6 + 4] = p2 + norm.y;
-	data[vertex_size + index_size + index * 6 + 5] = p3 + norm.z;
+	normals.push_back(p1 + norm.x);
+	normals.push_back(p2 + norm.y);
+	normals.push_back(p3 + norm.z);
 }
 
 void ModuleImport::ExportBBox(char * data, const int& num_vertex)
