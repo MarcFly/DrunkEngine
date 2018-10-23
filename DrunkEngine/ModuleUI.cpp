@@ -39,7 +39,7 @@ bool ModuleUI::Init()
 	ImGui_ImplOpenGL2_Init();
 	ImGui::StyleColorsDark();
 
-	show_demo_window = true;
+	//show_demo_window = true;
 
 	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(options_win = new OptionsWindow());
@@ -171,8 +171,6 @@ bool ModuleUI::MainMenu()
 	}
 	ImGui::EndMainMenuBar();
 
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
 
 	return ret;
 }

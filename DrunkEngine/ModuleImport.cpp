@@ -51,8 +51,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		if (aux == nullptr)
 		{
 			ExportMesh(scene,i,path);
-			aux = ImportMesh(filename.c_str(), ret);
-			ret->meshes.push_back(aux);
+			ImportMesh(filename.c_str(), ret);
 		}
 		
 	}
@@ -196,38 +195,41 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 	std::ifstream read_file;
 	read_file.open(file, std::ios::binary);
 
-	std::streampos end = read_file.seekg(0, std::ios::end).tellg();
+	std::streampos end = read_file.seekg(0, read_file.end).tellg();
+	read_file.seekg(0, read_file.beg);
 
 	if (end > 1024)
 	{
 		char* data = new char[end];
+		read_file.read(data, sizeof(char)*end);
 
-		read_file.read(data,end);
+		char* cursor = data;
 
 		unsigned int BBox_size = 0;
 
-		uint test[3];
-		memcpy(&test[0], data, sizeof(test));
-
 		uint ranges[5];
-		memcpy(ranges, data, sizeof(ranges));
-		data += sizeof(ranges);
+		memcpy(ranges, cursor, sizeof(ranges));
+		cursor += sizeof(ranges);
 
 		ret->num_vertex = ranges[0];
-		memcpy(ret->vertex, data, ret->num_vertex);
-		data += ret->num_vertex;
+		ret->vertex = new float[ret->num_vertex];
+		memcpy(ret->vertex, cursor, ret->num_vertex);
+		cursor += ret->num_vertex * sizeof(float);
 
 		ret->num_index = ranges[1];
-		memcpy(ret->index, data, ret->num_index);
-		data += ret->num_index;
+		ret->index = new GLuint[ret->num_index];
+		memcpy(ret->index, cursor, ret->num_index);
+		cursor += ret->num_index * sizeof(GLuint);
 
 		ret->num_normal = ranges[2] /* * 2*/; // Will have to create normals here
-		memcpy(ret->normal,data, ret->num_normal);
-		data += ret->num_normal;
+		ret->normal = new float[ret->num_normal];
+		memcpy(ret->normal,cursor, ret->num_normal);
+		cursor += ret->num_normal * sizeof(float);
 
 		ret->num_uvs = ranges[3];
-		memcpy(ret->tex_coords, data, ret->num_uvs);
-		data += ret->num_uvs;
+		ret->tex_coords = new float[ret->num_uvs];
+		memcpy(ret->tex_coords, cursor, ret->num_uvs);
+		cursor += ret->num_uvs * sizeof(float);
 
 		ret->SetMeshBoundBox();
 
@@ -236,6 +238,8 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
 
 		App->ui->geo_properties_win->CheckMeshInfo();
+
+		par->meshes.push_back(ret);
 	}
 	else
 	{
@@ -387,38 +391,39 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 
 	unsigned int size_size = sizeof(unsigned int) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	uint test[3] = { 1,2,3 };
-
-	unsigned int buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + sizeof(test);
+	unsigned int buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size;
 
 	char* data = new char[buf_size];
+	char* cursor = data;
 
-	unsigned int cursor = 0;
+	uint ranges[5] =
+	{
+		vertex_size / sizeof(float),
+		index_size / sizeof(GLuint),
+		normal_size / sizeof(GLuint),
+		uv_size / sizeof(float),
+		BBox_size / sizeof(float)
+	};
 
-	memcpy(data, test, sizeof(uint) * 3); data += sizeof(test);
+	memcpy(cursor, ranges, sizeof(ranges));
+	cursor += sizeof(ranges);
 
-	memcpy(data, &vertex_size, sizeof(unsigned int)); data += sizeof(unsigned int);
-	memcpy(data, &index_size, sizeof(unsigned int)); data += sizeof(unsigned int);
-	memcpy(data, &normal_size, sizeof(unsigned int)); data += sizeof(unsigned int);
-	memcpy(data, &uv_size, sizeof(unsigned int)); data += sizeof(unsigned int);
-	memcpy(data, &BBox_size, sizeof(unsigned int)); data += sizeof(unsigned int);
-
-	memcpy(data, mesh->mVertices, vertex_size); cursor += vertex_size;
+	memcpy(cursor, mesh->mVertices, vertex_size); cursor += vertex_size;
 	for (uint j = 0; j < mesh->mNumFaces; j++)
 	{
-		memcpy(data, mesh->mFaces[j].mIndices, sizeof(GLuint) * 3);
-		data += 3;
-		//ExportMeshNormals(data, j, vertex_size, index_size);
+		memcpy(cursor, mesh->mFaces[j].mIndices, sizeof(GLuint) * 3);
+		cursor += 3;
+		//ExportMeshNormals(cursor, j, vertex_size, index_size);
 	}
-	memcpy(data, mesh->mNormals, normal_size);
-	data += normal_size;
+	memcpy(cursor, mesh->mNormals, normal_size);
+	cursor += normal_size;
 
-	memcpy(data, mesh->mTextureCoords[0], uv_size);
-	data += uv_size;
+	memcpy(cursor, mesh->mTextureCoords[0], uv_size);
+	cursor += uv_size;
 
-	ExportBBox(data, mesh->mNumVertices);
+	ExportBBox(cursor, mesh->mNumVertices);
 
-	memcpy(data, &mesh->mMaterialIndex, sizeof(unsigned int));
+	//memcpy(cursor, &mesh->mMaterialIndex, sizeof(unsigned int));
 
 	std::ofstream write_file;
 	std::string filename = "./Library/Meshes/";

@@ -44,7 +44,7 @@ bool ModuleScene::CleanUp()
 	bool ret = false;
 
 	// Test how it works
-	App->importer->SerializeSceneData();
+	//App->importer->SerializeSceneData();
 
 	PLOG("Destroying all objects");
 
