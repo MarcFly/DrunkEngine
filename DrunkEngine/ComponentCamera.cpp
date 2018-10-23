@@ -2,13 +2,19 @@
 #include "GameObject.h"
 #include "Application.h"
 
+#define MOV_SPEED 4.0f
+
 ComponentCamera::ComponentCamera(GameObject * par)
 {
 	this->parent = par;
 
+	X = vec(1.0f, 0.0f, 0.0f);
+	Y = vec(0.0f, 1.0f, 0.0f);
+	Z = vec(0.0f, 0.0f, 1.0f);
+
 	frustum.type = FrustumType::PerspectiveFrustum;
-	frustum.front = float3(0.f, 0.f, 1.f);
-	frustum.up = float3(0.f, 1.f, 0.f);
+	frustum.front = Z;
+	frustum.up = Y;
 
 	frustum.nearPlaneDistance = 0.1f;
 	frustum.farPlaneDistance = 100.0f;
@@ -31,18 +37,15 @@ void ComponentCamera::Start()
 
 bool ComponentCamera::Update(float dt)
 {
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
-	{
-		frustum.verticalFov += 0.0015;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
-	{
-		frustum.verticalFov -= 0.0015;
-		frustum.GetCornerPoints(bb_frustum);
-	}
+	float speed = MOV_SPEED * dt;
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		speed = 2 * MOV_SPEED * dt;
 
-	SetAspectRatio();
+	MoveTest(speed);
+
+
+
+
 
 	return true;
 }
@@ -50,7 +53,6 @@ bool ComponentCamera::Update(float dt)
 void ComponentCamera::Draw()
 {
 	glDisable(GL_LIGHTING);
-	frustum.verticalFov;
 	glBegin(GL_LINES);
 	glColor3f(1.f, 1.f, 1.f);
 
@@ -105,6 +107,63 @@ void ComponentCamera::SetAspectRatio()
 	float aspect_ratio = ((float)App->window->window_w / (float)App->window->window_h);		//Window aspect ratio
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * aspect_ratio);
 	projection_update = true;
+}
+
+void ComponentCamera::MoveTest(float speed)
+{
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+	{
+		frustum.verticalFov += 0.0015;
+		frustum.GetCornerPoints(bb_frustum);
+		SetAspectRatio();
+	}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
+	{
+		frustum.verticalFov -= 0.0015;
+		frustum.GetCornerPoints(bb_frustum);
+		SetAspectRatio();
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	{
+		frustum.pos += Z * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	{
+		frustum.pos -= Z * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	{
+		frustum.pos -= X * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	{
+		frustum.pos += X * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
+	{
+		frustum.pos += Y * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
+	{
+		frustum.pos -= Y * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
+	{
+		frustum.pos += Y * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
+	{
+		frustum.pos -= Y * speed;
+		frustum.GetCornerPoints(bb_frustum);
+	}
 }
 
 bool ComponentCamera::Load(JSON_Value * root_value)
