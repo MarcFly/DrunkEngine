@@ -109,6 +109,18 @@ void ComponentCamera::SetAspectRatio()
 	projection_update = true;
 }
 
+float * ComponentCamera::GetViewMatrix()
+{
+	return (float*)ViewMatrix.v;
+}
+
+void ComponentCamera::CalculateViewMatrix()
+{
+	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f);
+
+	ViewMatrixInverse = ViewMatrix.Inverted();
+}
+
 void ComponentCamera::MoveTest(float speed)
 {
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)

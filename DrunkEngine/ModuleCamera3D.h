@@ -17,11 +17,12 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
-	void LookAt(const vec3 &Spot);
-	void Move(const vec3 &Movement);
-	void Transport(const vec3 &Movement);
+	void Look(const vec &Position, const vec &Reference, bool RotateAroundReference = false);
+	void LookAt(const vec &Spot);
+	void Move(const vec &Movement);
+	void Transport(const vec &Movement);
 	void Rotate();
+	float3 RotateAngle(const float3 &u, float angle, const float3 &v);
 
 	void SetToObj(GameObject* obj, float vertex_aux);
 
@@ -36,7 +37,7 @@ private:
 
 public:
 	
-	vec3 X, Y, Z, Position, Reference;
+	vec X, Y, Z, Position, Reference;
 	Color background;
 
 	float mesh_multiplier;

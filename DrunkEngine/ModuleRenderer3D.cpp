@@ -4,6 +4,8 @@
 #include "ModuleScene.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
+#include "GameObject.h"
+#include "ComponentCamera.h"
 
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -244,8 +246,18 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//From cameracomp
+	//for (int i = 0; i < App->mesh_loader->active_objects.size(); i++)
+	//{
+	//	if (App->mesh_loader->active_objects[i]->camera != nullptr)
+	//	{			
+	//		ProjectionMatrix = App->mesh_loader->active_objects[i]->camera->frustum.ProjectionMatrix();
+	//		glLoadMatrixf(&ProjectionMatrix[0][0]);
+	//	}
+	//}
+	
 	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	glLoadMatrixf(&ProjectionMatrix);
+	glLoadMatrixf(&ProjectionMatrix[0][0]);
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
