@@ -226,7 +226,7 @@ void ComponentCamera::SetAspectRatio()
 {
 	float aspect_ratio = ((float)App->window->window_w / (float)App->window->window_h);		//Window aspect ratio
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * aspect_ratio);
-	projection_update = true;
+	frustum.SetPerspective(frustum.horizontalFov, frustum.verticalFov);
 }
 
 float * ComponentCamera::GetViewMatrix()

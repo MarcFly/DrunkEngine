@@ -22,10 +22,13 @@ public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
-public:
-	
+public:	
 	Color background;
 	ComponentCamera * main_camera;
+
+private:
+	int win_w;
+	int win_h;
 
 };
 

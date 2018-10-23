@@ -49,7 +49,6 @@ public:
 	vec X, Y, Z;
 	vec Position, Reference;
 
-	bool projection_update;
 	Frustum frustum;
 
 };
