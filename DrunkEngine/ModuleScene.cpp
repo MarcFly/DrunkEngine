@@ -60,8 +60,10 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 {
 	bool ret = true;
 
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);  // for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	std::string aux = file_path;
+
+	std::string extension = strrchr(file_path, '.');
 
 	if (scene == nullptr)
 	{
@@ -80,7 +82,7 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	if (scene != nullptr)
 	{
 		DestroyScene();
-		Root_Object = new GameObject(scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
+		Root_Object = new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
 		
 		aiReleaseImport(scene);
 	}

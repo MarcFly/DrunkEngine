@@ -31,7 +31,7 @@ bool ModuleImport::CleanUp()
 	return true;
 }
 
-GameObject * ModuleImport::ImportGameObject(const aiScene* scene, const aiNode * obj_node, GameObject* par)
+GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par)
 {
 	GameObject* ret = new GameObject();
 
@@ -43,13 +43,24 @@ GameObject * ModuleImport::ImportGameObject(const aiScene* scene, const aiNode *
 	ret->name = obj_node->mName.C_Str();
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
-		ret->meshes.push_back(ImportMesh(scene->mMeshes[obj_node->mMeshes[i]], ret));
-
+	{
+		std::string filename = "./Library/Meshes/";
+		filename += GetFileName(path) + "_Mesh_" + std::to_string(i);
+		filename.append(".drnk");
+		ComponentMesh* aux = ImportMesh(filename.c_str(), ret);
+		if (aux == nullptr)
+		{
+			ExportMesh(scene,i,path);
+			aux = ImportMesh(filename.c_str(), ret);
+			ret->meshes.push_back(aux);
+		}
+		
+	}
 	for (int i = 0; i < scene->mNumMaterials; i++)
 		ret->materials.push_back(ImportMaterial(scene->mMaterials[i], ret));
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)
-		ret->children.push_back(ImportGameObject(scene, obj_node->mChildren[i], ret));
+		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 
 	ret->transform = new ComponentTransform(&obj_node->mTransformation, ret);
 	App->camera->SetToObj(ret, ret->SetBoundBox());
@@ -175,54 +186,62 @@ Texture * ModuleImport::ImportTexture(const char * path, ComponentMaterial* par)
 	return ret;
 }
 
-ComponentMesh * ModuleImport::ImportMesh(const aiMesh * mesh, GameObject* par)
+ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 {
 	ComponentMesh* ret = new ComponentMesh();
 
 	ret->parent = par;
 	ret->root = ret->parent->root;
 
-	ret->num_vertex = mesh->mNumVertices;
-	ret->vertex = new float[ret->num_vertex * 3];
-	ret->num_faces = mesh->mNumFaces;
+	std::ifstream read_file;
+	read_file.open(file, std::ios::binary);
 
-	ret->name = mesh->mName.C_Str();
+	std::streampos end = read_file.seekg(0, std::ios::end).tellg();
 
-	memcpy(ret->vertex, mesh->mVertices, 3 * sizeof(float)*ret->num_vertex);
-
-	if (mesh->HasFaces())
+	if (end > 1024)
 	{
-		ret->num_index = mesh->mNumFaces * 3;
-		ret->index = new GLuint[ret->num_index];
+		char* data = new char[end];
 
-		ret->num_normal = ret->num_index * 2;
-		ret->normal = new float[ret->num_normal];
+		read_file.read(data,end);
 
-		for (uint j = 0; j < mesh->mNumFaces; j++)
-		{
-			if (mesh->mFaces[j].mNumIndices != 3)
-				App->ui->console_win->AddLog("WARNING, geometry face with != 3 indices!");
-			else
-			{
-				memcpy(&ret->index[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(GLuint));
+		unsigned int BBox_size = 0;
 
-				ret->SetNormals(j);
-			}
-		}
+		uint test[3];
+		memcpy(&test[0], data, sizeof(test));
+
+		uint ranges[5];
+		memcpy(ranges, data, sizeof(ranges));
+		data += sizeof(ranges);
+
+		ret->num_vertex = ranges[0];
+		memcpy(ret->vertex, data, ret->num_vertex);
+		data += ret->num_vertex;
+
+		ret->num_index = ranges[1];
+		memcpy(ret->index, data, ret->num_index);
+		data += ret->num_index;
+
+		ret->num_normal = ranges[2] /* * 2*/; // Will have to create normals here
+		memcpy(ret->normal,data, ret->num_normal);
+		data += ret->num_normal;
+
+		ret->num_uvs = ranges[3];
+		memcpy(ret->tex_coords, data, ret->num_uvs);
+		data += ret->num_uvs;
 
 		ret->SetMeshBoundBox();
+
+		ret->GenBuffers();
+
+		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
+
+		App->ui->geo_properties_win->CheckMeshInfo();
 	}
-
-	ret->SetTexCoords(mesh);
-
-	ret->Material_Ind = mesh->mMaterialIndex;
-
-	ret->GenBuffers();
-
-	App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
-
-	App->ui->geo_properties_win->CheckMeshInfo();
-
+	else
+	{
+		delete ret;
+		ret = nullptr;
+	}
 	return ret;
 }
 
@@ -351,4 +370,130 @@ void ModuleImport::SerializeObjectData(const GameObject * obj, std::ofstream& fi
 void CallLog(const char* str, char* usrData)
 {
 	App->ui->console_win->AddLog(str);
+}
+
+// -----------------
+
+void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char* path)
+{
+	aiMesh* mesh = scene->mMeshes[mesh_id];
+
+	unsigned int vertex_size = sizeof(float)*(mesh->mNumVertices * 3);
+	unsigned int index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
+	unsigned int normal_size = index_size;
+	unsigned int uv_size = vertex_size;
+	unsigned int BBox_size = sizeof(float) * 3 * 2; // 2 Vertex of 3 float each
+	//unsigned int Mat_index = sizeof(unsigned int); // The material index 
+
+	unsigned int size_size = sizeof(unsigned int) * 5; // Amount of data put inside, the first values of data will be the size of each part
+
+	uint test[3] = { 1,2,3 };
+
+	unsigned int buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + sizeof(test);
+
+	char* data = new char[buf_size];
+
+	unsigned int cursor = 0;
+
+	memcpy(data, test, sizeof(uint) * 3); data += sizeof(test);
+
+	memcpy(data, &vertex_size, sizeof(unsigned int)); data += sizeof(unsigned int);
+	memcpy(data, &index_size, sizeof(unsigned int)); data += sizeof(unsigned int);
+	memcpy(data, &normal_size, sizeof(unsigned int)); data += sizeof(unsigned int);
+	memcpy(data, &uv_size, sizeof(unsigned int)); data += sizeof(unsigned int);
+	memcpy(data, &BBox_size, sizeof(unsigned int)); data += sizeof(unsigned int);
+
+	memcpy(data, mesh->mVertices, vertex_size); cursor += vertex_size;
+	for (uint j = 0; j < mesh->mNumFaces; j++)
+	{
+		memcpy(data, mesh->mFaces[j].mIndices, sizeof(GLuint) * 3);
+		data += 3;
+		//ExportMeshNormals(data, j, vertex_size, index_size);
+	}
+	memcpy(data, mesh->mNormals, normal_size);
+	data += normal_size;
+
+	memcpy(data, mesh->mTextureCoords[0], uv_size);
+	data += uv_size;
+
+	ExportBBox(data, mesh->mNumVertices);
+
+	memcpy(data, &mesh->mMaterialIndex, sizeof(unsigned int));
+
+	std::ofstream write_file;
+	std::string filename = "./Library/Meshes/";
+	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
+	filename.append(".drnk");
+
+	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
+
+	write_file.write(data,buf_size);
+
+	/*write_file.seekp(0, std::ios::beg);
+	int control_size = write_file.seekp(0,std::ios::end).tellp();*/
+
+	write_file.close();
+
+}
+
+void ModuleImport::ExportMeshNormals(char * data, const int & index, const unsigned int& vertex_size, const unsigned int& index_size)
+{
+	float aux[9];
+
+	aux[0] = data[data[vertex_size + index * 3] * 3];
+	aux[1] = data[(data[vertex_size + index * 3] * 3) + 1];
+	aux[2] = data[(data[vertex_size + index * 3] * 3) + 2];
+	aux[3] = data[(data[vertex_size + (index * 3) + 1] * 3)];
+	aux[4] = data[(data[vertex_size + (index * 3) + 1] * 3) + 1];
+	aux[5] = data[(data[vertex_size + (index * 3) + 1] * 3) + 2];
+	aux[6] = data[(data[vertex_size + (index * 3) + 2] * 3)];
+	aux[7] = data[(data[vertex_size + (index * 3) + 2] * 3) + 1];
+	aux[8] = data[(data[vertex_size + (index * 3) + 2] * 3) + 2];
+
+	float p1 = (aux[0] + aux[3] + aux[6]) / 3;
+	float p2 = (aux[1] + aux[4] + aux[7]) / 3;
+	float p3 = (aux[2] + aux[5] + aux[8]) / 3;
+
+	data[vertex_size + index_size + index * 6] = p1;
+	data[vertex_size + index_size + index * 6 + 1] = p2;
+	data[vertex_size + index_size + index * 6 + 2] = p3;
+
+	vec v1(aux[0], aux[1], aux[2]);
+	vec v2(aux[3], aux[4], aux[5]);
+	vec v3(aux[6], aux[7], aux[8]);
+
+	vec norm = (v2 - v1).Cross(v3 - v1);
+	norm.Normalize();
+
+	data[vertex_size + index_size + index * 6 + 3] = p1 + norm.x;
+	data[vertex_size + index_size + index * 6 + 4] = p2 + norm.y;
+	data[vertex_size + index_size + index * 6 + 5] = p3 + norm.z;
+}
+
+void ModuleImport::ExportBBox(char * data, const int& num_vertex)
+{
+	float max_x = INT_MIN, max_y = INT_MIN, max_z = INT_MIN, min_x = INT_MAX, min_y = INT_MAX, min_z = INT_MAX;
+
+	for (int i = 0; i < num_vertex; i++)
+	{
+		if (max_x < data[i * 3])
+			max_x = data[i * 3];
+		if (min_x > data[i * 3])
+			min_x = data[i * 3];
+		if (max_y < data[i * 3 + 1])
+			max_y = data[i * 3 + 1];
+		if (min_y > data[i * 3 + 1])
+			min_y = data[i * 3 + 1];
+		if (max_z < data[i * 3 + 2])
+			max_z = data[i * 3 + 2];
+		if (min_z > data[i * 3 + 2])
+			min_z = data[i * 3 + 2];
+	}
+
+	memcpy(data, &min_x, sizeof(float)); data += sizeof(float);
+	memcpy(data, &min_y, sizeof(float)); data += sizeof(float);
+	memcpy(data, &min_z, sizeof(float)); data += sizeof(float);
+	memcpy(data, &max_x, sizeof(float)); data += sizeof(float);
+	memcpy(data, &max_y, sizeof(float)); data += sizeof(float);
+	memcpy(data, &max_z, sizeof(float)); data += sizeof(float);
 }

@@ -5,12 +5,12 @@
 #include "ComponentTransform.h"
 
 // Creation of Root Node from a file
-GameObject::GameObject(const aiScene* scene, const aiNode * root_obj, const char * file_path)
+GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
 {
 	this->name = "Scene";
 	this->root = this;
 
-	this->children.push_back(App->importer->ImportGameObject(scene, root_obj, this));
+	this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj, this));
 }
 
 void GameObject::Draw()

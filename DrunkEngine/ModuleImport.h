@@ -26,15 +26,15 @@ public:
 	void ImportFBX(const char* path);
 	
 	GameObject* ImportGameObject(const char* path);
-	GameObject* ImportGameObject(const aiScene* scene, const aiNode * obj_node, GameObject* par);
+	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
 
 	ComponentMaterial* ImportMaterial(const char* path);
 	ComponentMaterial* ImportMaterial(const aiMaterial* mat, GameObject* par);
 
 	Texture* ImportTexture(const char* path, ComponentMaterial* par);
 
-	ComponentMesh* ImportMesh(const char* mesh);
-	ComponentMesh* ImportMesh(const aiMesh* mesh, GameObject* par);
+	ComponentMesh* ImportMesh(const char* mesh, GameObject* par);
+	//ComponentMesh* ImportMesh(const aiMesh* mesh, GameObject* par);
 
 	void ExportScene(const char* scene);
 
@@ -42,7 +42,7 @@ public:
 
 	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
 	void ExportMeshNormals(char* data, const int& index, const unsigned int& vertex_size, const unsigned int& index_size);
-	void ExportBBox(char* data, const int& num_vertex, const unsigned int& start_size);
+	void ExportBBox(char* data, const int& num_vertex);
 	//void ExportNode(const aiScene* scene, const aiNode* node);
 
 	void SerializeSceneData();
