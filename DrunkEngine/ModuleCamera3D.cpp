@@ -29,8 +29,6 @@ bool ModuleCamera3D::Start()
 	main_camera->Move(vec(1.0f, 1.0f, 0.0f));
 	main_camera->LookAt(vec(0.0f, 0.0f, 0.0f));
 
-	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
-
 	return ret;
 }
 

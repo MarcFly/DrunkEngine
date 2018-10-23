@@ -121,7 +121,7 @@ bool ModuleRenderer3D::Init()
 	}
 
 	// Projection matrix for
-	//OnResize(App->window->window_w, App->window->window_h);
+	OnResize(App->window->window_w, App->window->window_h);
 	
 	SetTextureParams();
 	
@@ -245,8 +245,8 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glLoadIdentity();
 
 	//From cameracomp
-
-	ProjectionMatrix = App->mesh_loader->Main_Cam->frustum.ProjectionMatrix();
+	if (App->mesh_loader->Main_Cam != nullptr)
+		ProjectionMatrix = App->mesh_loader->Main_Cam->frustum.ProjectionMatrix();
 	//ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 
 	glLoadMatrixf(&ProjectionMatrix[0][0]);

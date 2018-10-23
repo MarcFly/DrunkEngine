@@ -51,6 +51,7 @@ public:
 
 	bool projection_update;
 	Frustum frustum;
+
 };
 
 
