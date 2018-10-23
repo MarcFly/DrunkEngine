@@ -73,7 +73,7 @@ void ComponentMesh::GenBuffers()
 	// Index Buffer
 	glGenBuffers(1, &this->id_index);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * this->num_index, this->index, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->num_index, this->index, GL_STATIC_DRAW);
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

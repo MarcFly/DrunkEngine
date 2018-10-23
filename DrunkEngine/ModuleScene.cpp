@@ -35,6 +35,8 @@ bool ModuleScene::Start()
 
 	Load(nullptr);
 	LoadFromFile("./BakerHouse.fbx");
+	//LoadFromFile("./Ogre.fbx");
+	//LoadFromFile("./KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	return ret;
 }

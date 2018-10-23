@@ -45,12 +45,12 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
 		std::string filename = "./Library/Meshes/";
-		filename += GetFileName(path) + "_Mesh_" + std::to_string(i);
+		filename += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
 		filename.append(".drnk");
 		ComponentMesh* aux = ImportMesh(filename.c_str(), ret);
 		if (aux == nullptr)
 		{
-			ExportMesh(scene,i,path);
+			ExportMesh(scene, obj_node->mMeshes[i],path);
 			ImportMesh(filename.c_str(), ret);
 		}
 		
@@ -189,8 +189,12 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 {
 	ComponentMesh* ret = new ComponentMesh();
 
+	//ret->
+
 	ret->parent = par;
 	ret->root = ret->parent->root;
+
+	ret->name = file;
 
 	std::ifstream read_file;
 	read_file.open(file, std::ios::binary);
@@ -211,25 +215,27 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 		memcpy(ranges, cursor, sizeof(ranges));
 		cursor += sizeof(ranges);
 
-		ret->num_vertex = ranges[0];
-		ret->vertex = new float[ret->num_vertex];
-		memcpy(ret->vertex, cursor, ret->num_vertex);
-		cursor += ret->num_vertex * sizeof(float);
+		ret->num_vertex = ranges[0] / 3;
+		ret->vertex = new float[ret->num_vertex * 3];
+		memcpy(ret->vertex, cursor, ret->num_vertex * 3 * sizeof(float));
+		cursor += (ret->num_vertex * 3 * sizeof(float));
 
-		ret->num_index = ranges[1];
-		ret->index = new GLuint[ret->num_index];
-		memcpy(ret->index, cursor, ret->num_index);
-		cursor += ret->num_index * sizeof(GLuint);
+		ret->num_index = ranges[1] / 3;
+		ret->index = new GLuint[ret->num_index * 3];
+		memcpy(ret->index, cursor, ret->num_index * 3 * sizeof(GLuint));
+		cursor += (ret->num_index * 3 * sizeof(GLuint));
 
-		ret->num_normal = ranges[2] /* * 2*/; // Will have to create normals here
-		ret->normal = new float[ret->num_normal];
-		memcpy(ret->normal,cursor, ret->num_normal);
-		cursor += ret->num_normal * sizeof(float);
+		ret->num_normal = ranges[2] / 3 /* * 2*/; // Will have to create normals here
+		ret->normal = new float[ret->num_normal * 3];
+		memcpy(ret->normal,cursor, ret->num_normal * 3 * sizeof(float));
+		cursor += (ret->num_normal * 3 * sizeof(float));
 
-		ret->num_uvs = ranges[3];
-		ret->tex_coords = new float[ret->num_uvs];
-		memcpy(ret->tex_coords, cursor, ret->num_uvs);
-		cursor += ret->num_uvs * sizeof(float);
+		ret->num_faces = ret->num_normal; // /2 when we save normals properly
+
+		ret->num_uvs = ranges[3] / 3;
+		ret->tex_coords = new float[ret->num_uvs * 3];
+		memcpy(ret->tex_coords, cursor, ret->num_uvs * 3 * sizeof(float));
+		cursor += (ret->num_uvs * 3 * sizeof(float));
 
 		ret->SetMeshBoundBox();
 
@@ -384,8 +390,8 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 
 	unsigned int vertex_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
-	unsigned int normal_size = index_size;
-	unsigned int uv_size = vertex_size;
+	unsigned int normal_size = sizeof(float)*(mesh->mNumFaces * 3);
+	unsigned int uv_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int BBox_size = sizeof(float) * 3 * 2; // 2 Vertex of 3 float each
 	//unsigned int Mat_index = sizeof(unsigned int); // The material index 
 
@@ -400,7 +406,7 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	{
 		vertex_size / sizeof(float),
 		index_size / sizeof(GLuint),
-		normal_size / sizeof(GLuint),
+		normal_size / sizeof(float),
 		uv_size / sizeof(float),
 		BBox_size / sizeof(float)
 	};
@@ -412,7 +418,7 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	for (uint j = 0; j < mesh->mNumFaces; j++)
 	{
 		memcpy(cursor, mesh->mFaces[j].mIndices, sizeof(GLuint) * 3);
-		cursor += 3;
+		cursor += 3 *sizeof(GLuint);
 		//ExportMeshNormals(cursor, j, vertex_size, index_size);
 	}
 	memcpy(cursor, mesh->mNormals, normal_size);
