@@ -9,6 +9,7 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "GeoPropertiesWindow.h"
+#include "ModuleWindow.h"
 
 
 #include "ModuleRenderer3D.h"
@@ -49,6 +50,8 @@ bool ModuleScene::Start()
 
 	Load(nullptr);
 	LoadFromFile("./BakerHouse.fbx");
+
+	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
 	return ret;
 }

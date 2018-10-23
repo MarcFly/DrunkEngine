@@ -27,21 +27,27 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	Position = vec(0.0f, 0.0f, 0.0f);
 	Reference = vec(0.0f, 0.0f, 0.0f);
 
+	frustum.nearPlaneDistance = 0.1f;
+	frustum.farPlaneDistance = 100.0f;
+
 	frustum.type = FrustumType::PerspectiveFrustum;
 	frustum.front = Z;
 	frustum.up = Y;
 
-	frustum.nearPlaneDistance = 0.1f;
-	frustum.farPlaneDistance = 100.0f;
+	frustum.SetWorldMatrix(float3x4::identity);
 
 	frustum.verticalFov = DegToRad(60.0f);
 	SetAspectRatio();
 
 	frustum.pos = float3::zero;
 
+	frustum.Translate(Position);
+
 	frustum.GetCornerPoints(bb_frustum);
 
-	frustum.Translate(Position);
+	frustum.ComputeProjectionMatrix();
+	frustum.ComputeViewProjMatrix();
+	frustum.ComputeWorldMatrix();
 
 	mesh_multiplier = 1;
 
@@ -63,6 +69,7 @@ bool ComponentCamera::Update(float dt)
 		speed = 2 * MOV_SPEED * dt;
 
 	MoveTest(speed);
+	CalculateViewMatrix();
 
 	return true;
 }
@@ -223,7 +230,7 @@ void ComponentCamera::SetAspectRatio()
 
 float * ComponentCamera::GetViewMatrix()
 {
-	return (float*)ViewMatrix.v;
+	return &ViewMatrix[0][0];
 }
 
 void ComponentCamera::CalculateViewMatrix()
