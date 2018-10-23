@@ -9,6 +9,7 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "GeoPropertiesWindow.h"
+#include "ModuleWindow.h"
 
 
 #include "ModuleRenderer3D.h"
@@ -49,6 +50,8 @@ bool ModuleScene::Start()
 
 	Load(nullptr);
 	LoadFromFile("./BakerHouse.fbx");
+
+	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
 	return ret;
 }
@@ -111,6 +114,11 @@ void ModuleScene::SetActiveFalse()
 		active_objects[i]->active = false;
 	}
 	active_objects.clear();
+}
+
+void ModuleScene::SetmainCam(ComponentCamera * cam)
+{
+	Main_Cam = cam;
 }
 
 bool ModuleScene::Load(JSON_Value * root_value)
@@ -251,6 +259,8 @@ bool ModuleScene::DestroyScene()
 		delete Root_Object;
 		Root_Object = nullptr;
 	}
+
+	active_cameras.clear();
 
 	return ret;
 }

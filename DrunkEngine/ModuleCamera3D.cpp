@@ -1,25 +1,16 @@
 #include "Application.h"
-#include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
 #include "GeoPropertiesWindow.h"
+#include "ComponentCamera.h"
 
 #define MOV_SPEED 4.0f
-#define MOUSE_SENSIBILITY 0.2f
+#define MOUSE_SENSIBILITY 0.01f
 #define MOUSE_WHEEL_SPEED 6.0f
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
-	CalculateViewMatrix();
-
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
-
-	Position = vec3(0.0f, 0.0f, 5.0f);
-	Reference = Position;
-
 	background = Color(0.1f, 0.1f, 0.1f, 1.0f);
 }
 
@@ -29,13 +20,16 @@ ModuleCamera3D::~ModuleCamera3D()
 // -----------------------------------------------------------------
 bool ModuleCamera3D::Start()
 {
+	main_camera = new ComponentCamera(nullptr);
+
 	App->ui->console_win->AddLog("Setting up the camera");
-	bool ret = true;
+	bool ret = true;	
 
-	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
-	LookAt(vec3(0.0f, 0.0f, 0.0f));
+	main_camera->Move(vec(10.0f, 10.0f, 5.0f));
+	main_camera->LookAt(vec(0.0f, 0.0f, 0.0f));
 
-	mesh_multiplier = 1;
+	win_w = App->window->window_w;
+	win_h = App->window->window_h;
 
 	return ret;
 }
@@ -57,42 +51,42 @@ update_status ModuleCamera3D::Update(float dt)
 	if(ImGui::IsMouseHoveringAnyWindow())
 		return UPDATE_CONTINUE;
 
-	vec3 newPos(0, 0, 0);
-	float speed = MOV_SPEED * dt * mesh_multiplier;
+	vec newPos(0, 0, 0);
+	float speed = MOV_SPEED * dt * main_camera->mesh_multiplier;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		speed = MOV_SPEED * 2 * dt * mesh_multiplier;
+		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
 
-	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) newPos -= Z * speed;
-	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) newPos += Z * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) newPos -= main_camera->Z * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) newPos += main_camera->Z * speed;
 
-	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) newPos -= X * speed;
-	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) newPos += X * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) newPos -= main_camera->X * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) newPos += main_camera->X * speed;
 
-	if (App->input->GetMouseZ() < 0) newPos += Z * speed * MOUSE_WHEEL_SPEED;
-	if (App->input->GetMouseZ() > 0) newPos -= Z * speed * MOUSE_WHEEL_SPEED;
+	if (App->input->GetMouseZ() < 0) newPos += main_camera->Z * speed * MOUSE_WHEEL_SPEED;
+	if (App->input->GetMouseZ() > 0) newPos -= main_camera->Z * speed * MOUSE_WHEEL_SPEED;
 
 	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN)
 	{
 		vec aux = App->mesh_loader->Root_Object->getObjectCenter();
-		LookAt(vec3(aux.x,aux.y,aux.z)); // TODO Change to selected obj for assignment 2
+		main_camera->LookAt(vec(aux.x,aux.y,aux.z)); // TODO Change to selected obj for assignment 2
 	}
-	Position += newPos;
+	main_camera->Position += newPos;
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
 		if (App->mesh_loader->Root_Object != nullptr)
-			Reference = vec3(0.0f, 0.0f, 0.0f);
+			main_camera->Reference = vec(0.0f, 0.0f, 0.0f);
 		else
 		{
 			vec aux = App->mesh_loader->Root_Object->getObjectCenter();
-			Reference = {aux.x, aux.y, aux.z}; // TODO Change to selected obj for assignment 2
+			main_camera->Reference = {aux.x, aux.y, aux.z}; // TODO Change to selected obj for assignment 2
 		}
-		Rotate();
+		main_camera->Rotate();
 	}
 	else
 	{
-		Reference = Position;
-		Reference += newPos;
+		main_camera->Reference = main_camera->Position;
+		main_camera->Reference += newPos;
 	}
 	// Mouse motion ----------------
 	// TODO: Requires mouse reset properly without affecting MouseMotion
@@ -101,126 +95,26 @@ update_status ModuleCamera3D::Update(float dt)
 
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
-		Rotate();
+		main_camera->Rotate();
 
 	// Recalculate matrix -------------
-	CalculateViewMatrix();
+	main_camera->CalculateViewMatrix();
+
+	SDL_GetWindowSize(App->window->window, &win_w, &win_h);
+	if (win_w != App->window->window_w || win_h != App->window->window_h)
+	{
+		App->window->window_w = win_w;
+		App->window->window_h = win_h;
+		main_camera->SetAspectRatio();
+		App->renderer3D->OnResize(win_w, win_h);
+	}
 
 	return UPDATE_CONTINUE;
 }
 
-// -----------------------------------------------------------------
-void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
+bool ModuleCamera3D::Load(JSON_Value * root_value)
 {
-	this->Position = Position;
-	this->Reference = Reference;
-
-	this->Position = Position;
-	this->Reference = Reference;
-
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
-
-	if (!RotateAroundReference)
-	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
-	}
-
-
-	CalculateViewMatrix();
-}
-
-// -----------------------------------------------------------------
-void ModuleCamera3D::LookAt(const vec3 &Spot)
-{
-	Reference = Spot;
-
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
-
-	CalculateViewMatrix();
-}
-
-
-// -----------------------------------------------------------------
-void ModuleCamera3D::Move(const vec3 &Movement)
-{
-	Position += Movement;
-	Reference += Movement;
-
-	CalculateViewMatrix();
-}
-
-// -----------------------------------------------------------------
-void ModuleCamera3D::Transport(const vec3 &Movement)
-{
-	Position = Movement;
-
-	CalculateViewMatrix();
-}
-
-void ModuleCamera3D::Rotate()
-{
-	int dx = -App->input->GetMouseXMotion();
-	int dy = -App->input->GetMouseYMotion();
-
-	if (dx != 0)
-	{
-		float DeltaX = (float)dx * MOUSE_SENSIBILITY;
-
-		X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-		Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-		Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-
-	}
-
-	if (dy != 0)
-	{
-		float DeltaY = (float)dy * MOUSE_SENSIBILITY;
-
-		Y = rotate(Y, DeltaY, X);
-		Z = rotate(Z, DeltaY, X);
-
-		if (Y.y < 0.0f)
-		{
-			Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-			Y = cross(Z, X);
-		}
-
-	}
-
-	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
-	{
-		Position -= Reference;
-		Position = Reference + Z * length(Position);
-	}
-}
-// -----------------------------------------------------------------
-float* ModuleCamera3D::GetViewMatrix()
-{
-	return (float*)ViewMatrix.v;
-}
-
-// -----------------------------------------------------------------
-void ModuleCamera3D::CalculateViewMatrix()
-{
-	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
-
-	ViewMatrixInverse = ViewMatrix.Inverted();
-}
-
-bool ModuleCamera3D::Load(JSON_Value* root_value)
-{
-	bool ret = false;
-
-	root_value = json_parse_file("config_data.json");
-	Look({ (float)json_object_dotget_number(json_object(root_value), "camera.pos.x") ,(float)json_object_dotget_number(json_object(root_value), "camera.pos.y") ,(float)json_object_dotget_number(json_object(root_value), "camera.pos.z") }, { 0,0,0 });
-
-	ret = true;
-	return ret;
+	return false;
 }
 
 bool ModuleCamera3D::Save(JSON_Value* root_value)
@@ -230,9 +124,9 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
-	json_object_dotset_number(root_obj, "camera.pos.x", X.x);
-	json_object_dotset_number(root_obj, "camera.pos.y", X.x);
-	json_object_dotset_number(root_obj, "camera.pos.z", X.x);
+	json_object_dotset_number(root_obj, "camera.pos.x", main_camera->X.x);
+	json_object_dotset_number(root_obj, "camera.pos.y", main_camera->X.x);
+	json_object_dotset_number(root_obj, "camera.pos.z", main_camera->X.x);
 
 	json_serialize_to_file(root_value, "config_data.json");
 
@@ -240,23 +134,4 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 
 	ret = true;
 	return ret;
-}
-
-void ModuleCamera3D::SetToObj(GameObject* obj, float vertex_aux)
-{
-	
-	//for (int i = 0; i < obj->meshes.size() - 1; i++) {
-	//	for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
-	//	{
-	//		if (vertex_aux < abs(obj->meshes[i].vertex[j]))
-	//			vertex_aux = abs(obj->meshes[i].vertex[j]);
-	//	}
-	//}
-
-	Transport(vec3(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
-
-	vec aux = obj->getObjectCenter();
-	LookAt(vec3(aux.x, aux.y, aux.z));
-
-	mesh_multiplier = vertex_aux / 4;
 }

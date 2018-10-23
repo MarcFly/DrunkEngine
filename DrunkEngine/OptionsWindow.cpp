@@ -82,20 +82,16 @@ void OptionsWindow::Draw()
 			
 		}
 		if (ImGui::CollapsingHeader("Window"))
-		{
-			int width;
-			int height;
-
-			SDL_GetWindowSize(App->window->window, &width, &height);
+		{		
 
 			if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0.0f, 1.0f))
 				App->window->SetBrightness(App->window->brightness);
 
-			if (ImGui::SliderInt("Width", &width, 400, App->window->screen_size_w - 1) && !App->window->fullscreen)
-				SDL_SetWindowSize(App->window->window, width, height);
+			if (ImGui::SliderInt("Width", &App->window->window_w, 400, App->window->screen_size_w - 1) && !App->window->fullscreen)
+				SDL_SetWindowSize(App->window->window, App->window->window_w, App->window->window_h);
 
-			if (ImGui::SliderInt("Height", &height, 400, App->window->screen_size_h - 1) && !App->window->fullscreen)
-				SDL_SetWindowSize(App->window->window, width, height);
+			if (ImGui::SliderInt("Height", &App->window->window_h, 400, App->window->screen_size_h - 1) && !App->window->fullscreen)
+				SDL_SetWindowSize(App->window->window, App->window->window_w, App->window->window_h);
 
 
 			ImGui::Text("Refresh rate: %d", 0);

@@ -7,6 +7,8 @@
 
 #include "glmath/glmath.h"
 
+class ComponentCamera;
+
 class ModuleCamera3D : public Module
 {
 public:
@@ -17,33 +19,17 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
-	void LookAt(const vec3 &Spot);
-	void Move(const vec3 &Movement);
-	void Transport(const vec3 &Movement);
-	void Rotate();
-
-	void SetToObj(GameObject* obj, float vertex_aux);
-
-	float* GetViewMatrix();
-
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
-private:
-
-	void CalculateViewMatrix();
-
-public:
-	
-	vec3 X, Y, Z, Position, Reference;
+public:	
 	Color background;
-
-	float mesh_multiplier;
+	ComponentCamera * main_camera;
 
 private:
+	int win_w;
+	int win_h;
 
-	float4x4 ViewMatrix, ViewMatrixInverse;
 };
 
 #endif
