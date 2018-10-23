@@ -39,7 +39,7 @@ public:
 
 	GLuint id_vertex = 0; // unique vertex in VRAM
 	GLuint num_vertex = 0;
-	float* vertex = nullptr;
+	GLfloat* vertex = nullptr;
 
 	GLuint id_uvs = 0;
 	GLuint num_uvs = 0;

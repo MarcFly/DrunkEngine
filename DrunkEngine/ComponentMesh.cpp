@@ -65,7 +65,7 @@ void ComponentMesh::GenBuffers()
 	// Vertex Buffer
 	glGenBuffers(1, &this->id_vertex);
 	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->num_vertex * 3, this->vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_vertex * 3, this->vertex, GL_STATIC_DRAW);
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -80,9 +80,9 @@ void ComponentMesh::GenBuffers()
 
 
 	// Texture Coordinates / UVs Buffer
-	glGenBuffers(1, (GLuint*) &(this->id_uvs));
-	glBindBuffer(GL_ARRAY_BUFFER, (GLuint)this->id_uvs);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(uint) * this->num_uvs * 3, this->tex_coords, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->id_uvs);
+	glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_uvs * 3, this->tex_coords, GL_STATIC_DRAW);
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
