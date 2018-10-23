@@ -3,7 +3,7 @@
 #include "Application.h"
 
 #define MOV_SPEED 4.0f
-#define MOUSE_SENSIBILITY 0.2f
+#define MOUSE_SENSIBILITY 0.01f
 #define MOUSE_WHEEL_SPEED 6.0f
 
 ComponentCamera::ComponentCamera(GameObject * par)
@@ -24,20 +24,21 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	Y = vec(0.0f, 1.0f, 0.0f);
 	Z = vec(0.0f, 0.0f, 1.0f);
 
-	Position = vec(0.0f, 0.0f, 0.0f);
+	Position = vec(0.0f, 0.0f, 5.0f);
 	Reference = vec(0.0f, 0.0f, 0.0f);
 
-	frustum.nearPlaneDistance = 0.1f;
+	frustum.nearPlaneDistance = 0.5f;
 	frustum.farPlaneDistance = 100.0f;
 
 	frustum.type = FrustumType::PerspectiveFrustum;
-	frustum.front = Z;
-	frustum.up = Y;
+	frustum.projectiveSpace = FrustumProjectiveSpace::FrustumSpaceGL;
+	frustum.handedness = FrustumHandedness::FrustumRightHanded;
 
 	frustum.SetWorldMatrix(float3x4::identity);
 
 	frustum.verticalFov = DegToRad(60.0f);
 	SetAspectRatio();
+
 	frustum.SetPerspective(frustum.horizontalFov, frustum.verticalFov);
 
 	frustum.pos = float3::zero;
@@ -45,10 +46,6 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	frustum.Translate(Position);
 
 	frustum.GetCornerPoints(bb_frustum);
-
-	frustum.ComputeProjectionMatrix();
-	frustum.ComputeViewProjMatrix();
-	frustum.ComputeWorldMatrix();
 
 	mesh_multiplier = 1;
 
@@ -77,50 +74,53 @@ bool ComponentCamera::Update(float dt)
 
 void ComponentCamera::Draw()
 {
-	glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
-	glColor3f(1.f, 1.f, 1.f);
+	if (parent != nullptr)
+	{
+		glDisable(GL_LIGHTING);
+		glBegin(GL_LINES);
+		glColor3f(1.f, 1.f, 1.f);
 
-	glVertex3f((GLfloat)bb_frustum[0].x, (GLfloat)bb_frustum[0].y, (GLfloat)bb_frustum[0].z);
-	glVertex3f((GLfloat)bb_frustum[1].x, (GLfloat)bb_frustum[1].y, (GLfloat)bb_frustum[1].z);
+		glVertex3f((GLfloat)bb_frustum[0].x, (GLfloat)bb_frustum[0].y, (GLfloat)bb_frustum[0].z);
+		glVertex3f((GLfloat)bb_frustum[1].x, (GLfloat)bb_frustum[1].y, (GLfloat)bb_frustum[1].z);
 
-	glVertex3f((GLfloat)bb_frustum[0].x, (GLfloat)bb_frustum[0].y, (GLfloat)bb_frustum[0].z);
-	glVertex3f((GLfloat)bb_frustum[4].x, (GLfloat)bb_frustum[4].y, (GLfloat)bb_frustum[4].z);
+		glVertex3f((GLfloat)bb_frustum[0].x, (GLfloat)bb_frustum[0].y, (GLfloat)bb_frustum[0].z);
+		glVertex3f((GLfloat)bb_frustum[4].x, (GLfloat)bb_frustum[4].y, (GLfloat)bb_frustum[4].z);
 
-	glVertex3f((GLfloat)bb_frustum[0].x, (GLfloat)bb_frustum[0].y, (GLfloat)bb_frustum[0].z);
-	glVertex3f((GLfloat)bb_frustum[2].x, (GLfloat)bb_frustum[2].y, (GLfloat)bb_frustum[2].z);
+		glVertex3f((GLfloat)bb_frustum[0].x, (GLfloat)bb_frustum[0].y, (GLfloat)bb_frustum[0].z);
+		glVertex3f((GLfloat)bb_frustum[2].x, (GLfloat)bb_frustum[2].y, (GLfloat)bb_frustum[2].z);
 
-	glVertex3f((GLfloat)bb_frustum[2].x, (GLfloat)bb_frustum[2].y, (GLfloat)bb_frustum[2].z);
-	glVertex3f((GLfloat)bb_frustum[3].x, (GLfloat)bb_frustum[3].y, (GLfloat)bb_frustum[3].z);
+		glVertex3f((GLfloat)bb_frustum[2].x, (GLfloat)bb_frustum[2].y, (GLfloat)bb_frustum[2].z);
+		glVertex3f((GLfloat)bb_frustum[3].x, (GLfloat)bb_frustum[3].y, (GLfloat)bb_frustum[3].z);
 
-	glVertex3f((GLfloat)bb_frustum[1].x, (GLfloat)bb_frustum[1].y, (GLfloat)bb_frustum[1].z);
-	glVertex3f((GLfloat)bb_frustum[3].x, (GLfloat)bb_frustum[3].y, (GLfloat)bb_frustum[3].z);
+		glVertex3f((GLfloat)bb_frustum[1].x, (GLfloat)bb_frustum[1].y, (GLfloat)bb_frustum[1].z);
+		glVertex3f((GLfloat)bb_frustum[3].x, (GLfloat)bb_frustum[3].y, (GLfloat)bb_frustum[3].z);
 
-	glVertex3f((GLfloat)bb_frustum[5].x, (GLfloat)bb_frustum[5].y, (GLfloat)bb_frustum[5].z);
-	glVertex3f((GLfloat)bb_frustum[4].x, (GLfloat)bb_frustum[4].y, (GLfloat)bb_frustum[4].z);
+		glVertex3f((GLfloat)bb_frustum[5].x, (GLfloat)bb_frustum[5].y, (GLfloat)bb_frustum[5].z);
+		glVertex3f((GLfloat)bb_frustum[4].x, (GLfloat)bb_frustum[4].y, (GLfloat)bb_frustum[4].z);
 
-	glVertex3f((GLfloat)bb_frustum[4].x, (GLfloat)bb_frustum[4].y, (GLfloat)bb_frustum[4].z);
-	glVertex3f((GLfloat)bb_frustum[6].x, (GLfloat)bb_frustum[6].y, (GLfloat)bb_frustum[6].z);
+		glVertex3f((GLfloat)bb_frustum[4].x, (GLfloat)bb_frustum[4].y, (GLfloat)bb_frustum[4].z);
+		glVertex3f((GLfloat)bb_frustum[6].x, (GLfloat)bb_frustum[6].y, (GLfloat)bb_frustum[6].z);
 
-	glVertex3f((GLfloat)bb_frustum[7].x, (GLfloat)bb_frustum[7].y, (GLfloat)bb_frustum[7].z);
-	glVertex3f((GLfloat)bb_frustum[5].x, (GLfloat)bb_frustum[5].y, (GLfloat)bb_frustum[5].z);
+		glVertex3f((GLfloat)bb_frustum[7].x, (GLfloat)bb_frustum[7].y, (GLfloat)bb_frustum[7].z);
+		glVertex3f((GLfloat)bb_frustum[5].x, (GLfloat)bb_frustum[5].y, (GLfloat)bb_frustum[5].z);
 
-	glVertex3f((GLfloat)bb_frustum[7].x, (GLfloat)bb_frustum[7].y, (GLfloat)bb_frustum[7].z);
-	glVertex3f((GLfloat)bb_frustum[6].x, (GLfloat)bb_frustum[6].y, (GLfloat)bb_frustum[6].z);
+		glVertex3f((GLfloat)bb_frustum[7].x, (GLfloat)bb_frustum[7].y, (GLfloat)bb_frustum[7].z);
+		glVertex3f((GLfloat)bb_frustum[6].x, (GLfloat)bb_frustum[6].y, (GLfloat)bb_frustum[6].z);
 
-	glVertex3f((GLfloat)bb_frustum[1].x, (GLfloat)bb_frustum[1].y, (GLfloat)bb_frustum[1].z);
-	glVertex3f((GLfloat)bb_frustum[5].x, (GLfloat)bb_frustum[5].y, (GLfloat)bb_frustum[5].z);
+		glVertex3f((GLfloat)bb_frustum[1].x, (GLfloat)bb_frustum[1].y, (GLfloat)bb_frustum[1].z);
+		glVertex3f((GLfloat)bb_frustum[5].x, (GLfloat)bb_frustum[5].y, (GLfloat)bb_frustum[5].z);
 
-	glVertex3f((GLfloat)bb_frustum[6].x, (GLfloat)bb_frustum[6].y, (GLfloat)bb_frustum[6].z);
-	glVertex3f((GLfloat)bb_frustum[2].x, (GLfloat)bb_frustum[2].y, (GLfloat)bb_frustum[2].z);
+		glVertex3f((GLfloat)bb_frustum[6].x, (GLfloat)bb_frustum[6].y, (GLfloat)bb_frustum[6].z);
+		glVertex3f((GLfloat)bb_frustum[2].x, (GLfloat)bb_frustum[2].y, (GLfloat)bb_frustum[2].z);
 
-	glVertex3f((GLfloat)bb_frustum[7].x, (GLfloat)bb_frustum[7].y, (GLfloat)bb_frustum[7].z);
-	glVertex3f((GLfloat)bb_frustum[3].x, (GLfloat)bb_frustum[3].y, (GLfloat)bb_frustum[3].z);
-	
-	glEnd();
+		glVertex3f((GLfloat)bb_frustum[7].x, (GLfloat)bb_frustum[7].y, (GLfloat)bb_frustum[7].z);
+		glVertex3f((GLfloat)bb_frustum[3].x, (GLfloat)bb_frustum[3].y, (GLfloat)bb_frustum[3].z);
 
-	if (App->renderer3D->lighting)
-		glEnable(GL_LIGHTING);
+		glEnd();
+
+		if (App->renderer3D->lighting)
+			glEnable(GL_LIGHTING);
+	}
 }
 
 void ComponentCamera::CleanUp()
@@ -258,32 +258,32 @@ void ComponentCamera::MoveTest(float speed)
 
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
-		frustum.pos += Z * speed;
+		frustum.pos -= Z * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
-		frustum.pos -= Z * speed;
+		frustum.pos += Z * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
-		frustum.pos -= X * speed;
+		frustum.pos += X * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
-		frustum.pos += X * speed;
+		frustum.pos -= X * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
 	{
-		frustum.pos += Y * speed;
+		frustum.pos -= Y * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
 	{
-		frustum.pos -= Y * speed;
+		frustum.pos += Y * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)

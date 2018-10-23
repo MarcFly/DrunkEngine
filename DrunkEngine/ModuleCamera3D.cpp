@@ -6,7 +6,7 @@
 #include "ComponentCamera.h"
 
 #define MOV_SPEED 4.0f
-#define MOUSE_SENSIBILITY 0.2f
+#define MOUSE_SENSIBILITY 0.01f
 #define MOUSE_WHEEL_SPEED 6.0f
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
@@ -26,7 +26,7 @@ bool ModuleCamera3D::Start()
 	App->ui->console_win->AddLog("Setting up the camera");
 	bool ret = true;	
 
-	main_camera->Move(vec(1.0f, 1.0f, 0.0f));
+	main_camera->Move(vec(10.0f, 10.0f, 5.0f));
 	main_camera->LookAt(vec(0.0f, 0.0f, 0.0f));
 
 	return ret;

@@ -164,24 +164,24 @@ void ComponentMesh::Draw()
 {
 	if (isMeshInsideFrustum(App->mesh_loader->active_cameras[0], this->BoundingBox))
 	{
-		if (App->renderer3D->faces)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			DrawMesh();
-		}
+	if (App->renderer3D->faces)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		DrawMesh();
+	}
 
-		if (App->renderer3D->wireframe)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			DrawMeshWire();
-		}
+	if (App->renderer3D->wireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		DrawMeshWire();
+	}
 
-		// Set Default Color back
-		Color def = App->camera->background;
-		glColor4f(def.r, def.g, def.b, def.a);
+	// Set Default Color back
+	Color def = App->camera->background;
+	glColor4f(def.r, def.g, def.b, def.a);
 
-		if (App->renderer3D->render_normals)
-			this->DrawNormals();
+	if (App->renderer3D->render_normals)
+		this->DrawNormals();
 	}
 }
 
