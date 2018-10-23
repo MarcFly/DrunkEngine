@@ -38,6 +38,7 @@ ComponentCamera::ComponentCamera(GameObject * par)
 
 	frustum.verticalFov = DegToRad(60.0f);
 	SetAspectRatio();
+	frustum.SetPerspective(frustum.horizontalFov, frustum.verticalFov);
 
 	frustum.pos = float3::zero;
 
