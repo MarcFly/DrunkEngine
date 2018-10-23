@@ -80,6 +80,8 @@ void GameObject::DrawBB()
 
 vec GameObject::getObjectCenter()
 {
+	if (this->BoundingBody == nullptr)
+		this->SetBoundBox();
 	float aux_x = (this->BoundingBox->maxPoint.x + this->BoundingBox->minPoint.x) / 2;
 	float aux_y = (this->BoundingBox->maxPoint.y + this->BoundingBox->minPoint.y) / 2;
 	float aux_z = (this->BoundingBox->maxPoint.z + this->BoundingBox->minPoint.z) / 2;

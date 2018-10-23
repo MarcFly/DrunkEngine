@@ -237,7 +237,18 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 		memcpy(ret->tex_coords, cursor, ret->num_uvs * sizeof(float) * 3);
 		cursor += (ret->num_uvs * 3 * sizeof(float));
 
-		ret->SetMeshBoundBox();
+		std::vector<float> bbox;
+		for (int i = 0; i < 6; i++)
+		{
+			bbox.push_back(1);
+			memcpy(&bbox[i], cursor, sizeof(float));
+			cursor += sizeof(float);
+		}
+
+		ret->BoundingBox = new AABB(vec(bbox[0],bbox[1],bbox[2]),vec(bbox[3],bbox[4],bbox[5]));
+		//cursor += 6 * sizeof(float);
+
+		memcpy(&ret->Material_Ind, cursor, sizeof(unsigned int));
 
 		ret->GenBuffers();
 
@@ -393,11 +404,11 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	unsigned int normal_size = sizeof(GLfloat)*(mesh->mNumFaces * 3 * 2);
 	unsigned int uv_size = sizeof(float)*(mesh->mNumVertices * 3);
 	unsigned int BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
-	//unsigned int Mat_index = sizeof(unsigned int); // The material index 
+	unsigned int Mat_index = sizeof(unsigned int); // The material index 
 
 	unsigned int size_size = sizeof(unsigned int) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	unsigned int buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size;
+	unsigned int buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + Mat_index;
 
 	char* data = new char[buf_size];
 	char* cursor = data;
@@ -451,7 +462,10 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	memcpy(cursor, &uv_aux[0], uv_size);
 	cursor += uv_size;
 
-	//ExportBBox(cursor, mesh->mNumVertices);
+	memcpy(cursor,&ExportBBox(data, mesh->mNumVertices)[0],sizeof(float)*6);
+	cursor += sizeof(float) * 6;
+	std::vector<GLfloat> test = ExportBBox(data, mesh->mNumVertices);
+	memcpy(cursor, &mesh->mMaterialIndex, Mat_index);
 
 	std::ofstream write_file;
 	std::string filename = "./Library/Meshes/";
@@ -500,8 +514,10 @@ void ModuleImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& norm
 	normals.push_back(p3 + norm.z);
 }
 
-void ModuleImport::ExportBBox(char * data, const int& num_vertex)
+std::vector<float> ModuleImport::ExportBBox(char * data, const int& num_vertex)
 {
+	std::vector<float> ret;
+
 	float max_x = INT_MIN, max_y = INT_MIN, max_z = INT_MIN, min_x = INT_MAX, min_y = INT_MAX, min_z = INT_MAX;
 
 	for (int i = 0; i < num_vertex; i++)
@@ -520,10 +536,12 @@ void ModuleImport::ExportBBox(char * data, const int& num_vertex)
 			min_z = data[i * 3 + 2];
 	}
 
-	memcpy(data, &min_x, sizeof(float)); data += sizeof(float);
-	memcpy(data, &min_y, sizeof(float)); data += sizeof(float);
-	memcpy(data, &min_z, sizeof(float)); data += sizeof(float);
-	memcpy(data, &max_x, sizeof(float)); data += sizeof(float);
-	memcpy(data, &max_y, sizeof(float)); data += sizeof(float);
-	memcpy(data, &max_z, sizeof(float)); data += sizeof(float);
+	ret.push_back(min_x);
+	ret.push_back(min_y);
+	ret.push_back(min_z);
+	ret.push_back(max_x);
+	ret.push_back(max_y);
+	ret.push_back(max_z);
+
+	return ret;
 }
