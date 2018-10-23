@@ -240,6 +240,11 @@ void CallLog(const char* str, char* usrData)
 	App->ui->console_win->AddLog(str);
 }
 
+ComponentCamera * ModuleScene::GetMainCamera()
+{
+	return active_cameras[0];	//TODO put id to cameras
+}
+
 bool ModuleScene::DestroyScene()
 {
 	bool ret = true;
@@ -251,6 +256,8 @@ bool ModuleScene::DestroyScene()
 		delete Root_Object;
 		Root_Object = nullptr;
 	}
+
+	active_cameras.clear();
 
 	return ret;
 }

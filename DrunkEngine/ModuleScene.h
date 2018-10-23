@@ -7,6 +7,7 @@
 #include "Assimp/include/scene.h"
 
 class vec3;
+class ComponentCamera;
 
 class ModuleScene : public Module
 {
@@ -25,6 +26,8 @@ public:
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 
+	ComponentCamera * GetMainCamera();
+
 	bool LoadTextCurrentObj(const char* path, GameObject* curr_obj);
 	bool DestroyScene();
 	
@@ -42,6 +45,7 @@ public:
 	std::string tex_folder;
 
 	std::vector<GameObject*> active_objects;
+	std::vector<ComponentCamera*> active_cameras;
 
 public:
 	GameObject* getRootObj() const { return Root_Object; };

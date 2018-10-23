@@ -27,6 +27,9 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 {
 	float vertex_aux = 0;
 
+	if (this->parent == nullptr)
+		this->camera = new ComponentCamera(this);
+
 	for (int i = 0; i < obj->mNumMeshes; i++)
 		this->meshes.push_back(new ComponentMesh(scene->mMeshes[obj->mMeshes[i]], this));
 
@@ -36,13 +39,9 @@ void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
 	for (int i = 0; i < obj->mNumChildren; i++)
 		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
 
-	if (this->parent == nullptr)
-		this->camera = new ComponentCamera(this);
-
 	this->transform = new ComponentTransform(&obj->mTransformation, this);
-	
-	if (camera != nullptr)
-		App->camera->SetToObj(this, SetBoundBox());
+
+	SetBoundBox();
 
 	Start();
 }
@@ -66,7 +65,7 @@ void GameObject::Draw()
 	for (int i = 0; i < this->meshes.size(); i++)
 		this->meshes[i]->Draw();
 
-	if (App->renderer3D->bounding_box || this->active)
+	if ((App->renderer3D->bounding_box || this->active) && this->BoundingBox != nullptr)
 		this->DrawBB();
 
 	for (int i = 0; i < this->children.size(); i++)

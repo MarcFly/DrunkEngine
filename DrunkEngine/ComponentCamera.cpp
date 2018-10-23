@@ -3,10 +3,17 @@
 #include "Application.h"
 
 #define MOV_SPEED 4.0f
+#define MOUSE_SENSIBILITY 0.2f
+#define MOUSE_WHEEL_SPEED 6.0f
 
 ComponentCamera::ComponentCamera(GameObject * par)
 {
-	this->parent = par;
+	if (par != nullptr)
+		this->parent = par;
+
+	App->mesh_loader->active_cameras.push_back(this);
+
+	id = App->mesh_loader->active_cameras.size();
 
 	X = vec(1.0f, 0.0f, 0.0f);
 	Y = vec(0.0f, 1.0f, 0.0f);
@@ -25,6 +32,8 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	frustum.pos = float3::zero;
 
 	frustum.GetCornerPoints(bb_frustum);
+
+	mesh_multiplier = 1;
 }
 
 ComponentCamera::~ComponentCamera()
@@ -33,6 +42,7 @@ ComponentCamera::~ComponentCamera()
 
 void ComponentCamera::Start()
 {
+
 }
 
 bool ComponentCamera::Update(float dt)
@@ -42,10 +52,6 @@ bool ComponentCamera::Update(float dt)
 		speed = 2 * MOV_SPEED * dt;
 
 	MoveTest(speed);
-
-
-
-
 
 	return true;
 }
@@ -100,6 +106,101 @@ void ComponentCamera::Draw()
 
 void ComponentCamera::CleanUp()
 {
+}
+
+void ComponentCamera::Look(const vec &Position, const vec &Reference, bool RotateAroundReference)
+{
+	this->Position = Position;
+	this->Reference = Reference;
+
+	float3 aux = Position - Reference;
+	Z = aux.Normalized();
+	aux = float3(0.0f, 1.0f, 0.0f).Cross(Z);
+	X = aux.Normalized();
+	Y = Z.Cross(X);
+
+	if (!RotateAroundReference)
+	{
+		this->Reference = this->Position;
+		this->Position += Z * 0.05f;
+	}
+
+
+	CalculateViewMatrix();
+}
+
+// -----------------------------------------------------------------
+void ComponentCamera::LookAt(const vec &Spot)
+{
+	Reference = Spot;
+
+	float3 aux = Position - Reference;
+	Z = aux.Normalized();
+	aux = float3(0.0f, 1.0f, 0.0f).Cross(Z);
+	X = aux.Normalized();
+	Y = Z.Cross(X);
+
+	CalculateViewMatrix();
+}
+
+
+// -----------------------------------------------------------------
+void ComponentCamera::Move(const vec &Movement)
+{
+	Position += Movement;
+	Reference += Movement;
+
+	CalculateViewMatrix();
+}
+
+// -----------------------------------------------------------------
+void ComponentCamera::Transport(const vec &Movement)
+{
+	Position = Movement;
+
+	CalculateViewMatrix();
+}
+
+void ComponentCamera::Rotate()
+{
+	int dx = -App->input->GetMouseXMotion();
+	int dy = -App->input->GetMouseYMotion();
+
+	if (dx != 0)
+	{
+		float DeltaX = (float)dx * MOUSE_SENSIBILITY;
+
+		X = RotateAngle(X, DeltaX, float3(0.0f, 1.0f, 0.0f));
+		Y = RotateAngle(Y, DeltaX, float3(0.0f, 1.0f, 0.0f));
+		Z = RotateAngle(Z, DeltaX, float3(0.0f, 1.0f, 0.0f));
+
+	}
+
+	if (dy != 0)
+	{
+		float DeltaY = (float)dy * MOUSE_SENSIBILITY;
+
+		Y = RotateAngle(Y, DeltaY, X);
+		Z = RotateAngle(Z, DeltaY, X);
+
+		if (Y.y < 0.0f)
+		{
+			Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+			Y = Z.Cross(X);
+		}
+
+	}
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
+		Position -= Reference;
+		Position = Reference + Z * Position.Length();
+	}
+}
+
+float3 ComponentCamera::RotateAngle(const float3 &u, float angle, const float3 &v)
+{
+	return *(float3*)&(float4x4::RotateAxisAngle(v, angle) * float4(u, 1.0f));
 }
 
 void ComponentCamera::SetAspectRatio()
@@ -176,6 +277,25 @@ void ComponentCamera::MoveTest(float speed)
 		frustum.pos -= Y * speed;
 		frustum.GetCornerPoints(bb_frustum);
 	}
+}
+
+void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
+{
+
+	//for (int i = 0; i < obj->meshes.size() - 1; i++) {
+	//	for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
+	//	{
+	//		if (vertex_aux < abs(obj->meshes[i].vertex[j]))
+	//			vertex_aux = abs(obj->meshes[i].vertex[j]);
+	//	}
+	//}
+
+	Transport(vec(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
+
+	vec aux = obj->getObjectCenter();
+	LookAt(vec(aux.x, aux.y, aux.z));
+
+	mesh_multiplier = vertex_aux / 4;
 }
 
 bool ComponentCamera::Load(JSON_Value * root_value)

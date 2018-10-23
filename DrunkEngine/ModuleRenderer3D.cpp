@@ -121,9 +121,8 @@ bool ModuleRenderer3D::Init()
 	}
 
 	// Projection matrix for
-	OnResize(App->window->window_w, App->window->window_h);
+	//OnResize(App->window->window_w, App->window->window_h);
 	
-
 	SetTextureParams();
 	
 	return ret;
@@ -138,18 +137,18 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
-	int width, height;
-	SDL_GetWindowSize(App->window->window, &width, &height);
-	glViewport(0, 0, width, height);
+	//int width, height;
+	//SDL_GetWindowSize(App->window->window, &width, &height);
+	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix());
+	glLoadMatrixf(App->mesh_loader->GetMainCamera()->GetViewMatrix());
 
 	RenderGrid();
 
 	// Something Something lights
 	// Set light pos
-	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+	lights[0].SetPos(App->mesh_loader->GetMainCamera()->Position.x, App->mesh_loader->GetMainCamera()->Position.y, App->mesh_loader->GetMainCamera()->Position.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -242,20 +241,14 @@ void ModuleRenderer3D::Render(bool use_texture)
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-	float4x4 temp;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+
 	//From cameracomp
-	//for (int i = 0; i < App->mesh_loader->active_objects.size(); i++)
-	//{
-	//	if (App->mesh_loader->active_objects[i]->camera != nullptr)
-	//	{			
-	//		ProjectionMatrix = App->mesh_loader->active_objects[i]->camera->frustum.ProjectionMatrix();
-	//		glLoadMatrixf(&ProjectionMatrix[0][0]);
-	//	}
-	//}
-	
-	ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+
+	ProjectionMatrix = App->mesh_loader->GetMainCamera()->frustum.ProjectionMatrix();
+	//ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+
 	glLoadMatrixf(&ProjectionMatrix[0][0]);
 
 	glMatrixMode(GL_MODELVIEW);
