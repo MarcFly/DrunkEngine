@@ -80,6 +80,13 @@ public:
 		return ret;
 	}
 
+	uint GetExtSize(const char* file)
+	{
+		std::string ret = strrchr(file, '.');
+
+		return ret.length();
+	}
+
 };
 
 #endif

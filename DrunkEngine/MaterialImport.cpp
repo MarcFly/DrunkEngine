@@ -20,30 +20,70 @@ void MatImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-ComponentMaterial * MatImport::ImportMaterial(const aiMaterial * mat, GameObject* par)
+ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 {
 	ComponentMaterial* ret = new ComponentMaterial();
 	ret->parent = par;
 
 	// Default Material Color
-	aiColor3D color;
-	mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-	ret->default_print = { color.r, color.g, color.b, 1 };
+	std::ifstream read_file;
+	read_file.open(file, std::ios::binary);
 
-	// For future property things
-	ret->NumProperties = mat->mNumProperties;
-	ret->NumDiffTextures = mat->GetTextureCount(aiTextureType_DIFFUSE);
+	std::streampos end = read_file.seekg(0, read_file.end).tellg();
+	read_file.seekg(0, read_file.beg);
 
-	for (int i = 0; i < ret->NumDiffTextures; i++)
+	if (end > 0)
 	{
-		aiString path;
-		aiReturn err = mat->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-		Texture* add = ImportTexture(path.C_Str(), ret);
-		if (add != nullptr)
-			ret->textures.push_back(add);
-	}
+		char* data = new char[end];
+		read_file.read(data, sizeof(char)*end);
+		char* cursor = data;
 
-	App->ui->console_win->AddLog("New Material with %d textures loaded.", ret->textures.size());
+		float color[4];
+		memcpy(&color[0], cursor, sizeof(color));
+		ret->default_print.Set(color[0], color[1], color[2], color[3]);
+		cursor += sizeof(color);
+
+		memcpy(&ret->NumProperties, cursor, sizeof(uint));
+		ret->NumProperties /= sizeof(uint);
+		cursor += sizeof(uint);
+
+		memcpy(&ret->NumDiffTextures, cursor, sizeof(uint));
+		cursor += sizeof(uint);
+
+		std::vector<uint> texture_ranges;
+		for (int i = 0; i < ret->NumDiffTextures; i++)
+		{
+			uint size;
+			memcpy(&size, cursor, sizeof(uint));
+			texture_ranges.push_back(size);
+			cursor += sizeof(uint);
+		}
+		for (int i = 0; i < ret->NumDiffTextures; i++)
+		{
+			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
+			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
+
+			std::string filename = "./Library/Textures/";
+			filename += App->importer->GetFileName(aux);
+			filename.append(".dds");
+
+			Texture* check = ImportTexture(aux, ret);
+			if (check == nullptr)
+			{
+				ExportTexture(aux);
+				ImportTexture(filename.c_str(), ret);
+			}
+			cursor += texture_ranges[i];
+		}
+
+		App->ui->console_win->AddLog("New Material with %d textures loaded.", ret->textures.size());
+
+	}
+	else
+	{
+		delete ret;
+		ret = nullptr;
+	}
 
 	return ret;
 }
@@ -141,6 +181,74 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 ////////////------------------------------------------------------------------------------------------------------------------
 //-EXPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
+
+void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char * path)
+{
+	aiMaterial* mat = scene->mMaterials[mat_id];
+
+	uint prop_size = mat->mNumProperties;
+	uint text_size = mat->GetTextureCount(aiTextureType_DIFFUSE);
+	
+	uint buf_size = sizeof(uint) * (prop_size + text_size);
+
+	aiColor3D getc;
+	mat->Get(AI_MATKEY_COLOR_DIFFUSE, getc);
+	float color[4] = {getc.r,getc.g,getc.b,1};
+
+	buf_size += sizeof(color);
+
+	std::vector<uint> texture_ranges;
+	std::vector<std::string> textures; // Only Diffuse for now
+	for (int i = 0; i < text_size; i++)
+	{
+		aiString path;
+		aiReturn err = mat->GetTexture(aiTextureType_DIFFUSE, i, &path);
+		textures.push_back(path.C_Str());
+
+
+		buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
+		
+		texture_ranges.push_back(textures[i].length() + 2);
+	}
+
+	char* data = new char[buf_size];
+	char* cursor = data;
+
+	memcpy(cursor, &color[0], sizeof(color));
+	cursor += sizeof(color);
+	
+	// I will memcpy the properties amount because its relevant
+	// but not the properties itself because we don't use them now
+	memcpy(cursor, &prop_size, sizeof(uint));
+	cursor += sizeof(uint);
+
+	memcpy(cursor, &text_size, sizeof(uint));
+	cursor += sizeof(uint);
+
+	memcpy(cursor, &texture_ranges[0], sizeof(uint)*texture_ranges.size());
+	cursor += sizeof(uint) * texture_ranges.size();
+
+	for (int i = 0; i < textures.size(); i++)
+	{
+		memcpy(cursor, textures[i].c_str(), textures[i].length());
+		cursor += textures[i].length();
+		char* exitqueue = "\0";
+		memcpy(cursor, exitqueue, 2);
+		cursor += 2;
+	}
+
+	std::ofstream write_file;
+	std::string filename = "./Library/Materials/";
+	filename += App->importer->GetFileName(path) + "_Mat_" + std::to_string(mat_id);
+	filename.append(".matdrnk");
+
+	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
+
+	write_file.write(data, buf_size);
+
+	write_file.close();
+	
+}
 
 void MatImport::ExportTexture(const char * path)
 {

@@ -23,8 +23,6 @@ ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
 {
 	ComponentMesh* ret = new ComponentMesh();
 
-	//ret->
-
 	ret->parent = par;
 	ret->root = ret->parent->root;
 
@@ -40,10 +38,7 @@ ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
 	{
 		char* data = new char[end];
 		read_file.read(data, sizeof(char)*end);
-
 		char* cursor = data;
-
-		unsigned int BBox_size = 0;
 
 		uint ranges[5];
 		memcpy(ranges, cursor, sizeof(ranges));
@@ -115,16 +110,16 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 {
 	aiMesh* mesh = scene->mMeshes[mesh_id];
 
-	unsigned int vertex_size = sizeof(GLfloat)*(mesh->mNumVertices * 3);
-	unsigned int index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
-	unsigned int normal_size = sizeof(GLfloat)*(mesh->mNumFaces * 3 * 2);
-	unsigned int uv_size = sizeof(float)*(mesh->mNumVertices * 3);
-	unsigned int BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
-	unsigned int Mat_index = sizeof(unsigned int); // The material index 
+	uint vertex_size = sizeof(GLfloat)*(mesh->mNumVertices * 3);
+	uint index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
+	uint normal_size = sizeof(GLfloat)*(mesh->mNumFaces * 3 * 2);
+	uint uv_size = sizeof(float)*(mesh->mNumVertices * 3);
+	uint BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
+	uint Mat_index = sizeof(unsigned int); // The material index 
 
-	unsigned int size_size = sizeof(unsigned int) * 5; // Amount of data put inside, the first values of data will be the size of each part
+	uint size_size = sizeof(uint) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	unsigned int buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + Mat_index;
+	uint buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + Mat_index;
 
 	char* data = new char[buf_size];
 	char* cursor = data;
@@ -187,7 +182,7 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 	std::ofstream write_file;
 	std::string filename = "./Library/Meshes/";
 	filename += App->importer->GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
-	filename.append(".drnk");
+	filename.append(".meshdrnk");
 
 	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
 
