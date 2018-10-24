@@ -13,6 +13,21 @@
 #include <iostream>
 #include <fstream>
 
+class MeshImport;
+class MatImport;
+
+enum FileType
+{
+	FT_Error = -1,
+	FT_Texture,
+	FT_Object,
+	FT_New_Object,
+	FT_Material,
+	FT_Mesh,
+
+	FT_Files_Max
+};
+
 class ModuleImport : public Module {
 public:
 	ModuleImport() {};
@@ -28,30 +43,14 @@ public:
 	GameObject* ImportGameObject(const char* path);
 	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
 
-	ComponentMaterial* ImportMaterial(const char* path);
-	ComponentMaterial* ImportMaterial(const aiMaterial* mat, GameObject* par);
-
-	Texture* ImportTexture(const char* path, ComponentMaterial* par);
-
-	ComponentMesh* ImportMesh(const char* mesh, GameObject* par);
-	//ComponentMesh* ImportMesh(const aiMesh* mesh, GameObject* par);
-
 	void ExportScene(const char* scene);
 
-	void ExportTexture(const char* path);
-
-	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
-	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
-	std::vector<float> ExportBBox(const aiVector3D* verts, const int& num_vertex);
-	//void ExportNode(const aiScene* scene, const aiNode* node);
-
-	void SerializeSceneData();
-
-	void SerializeObjectData(const GameObject* obj, std::ofstream& file);
-
-	
-
+	void LoadFile(char* file);
+	FileType CheckExtension(std::string& ext);
+	void LoadFileType(char* file, FileType type);
 public:
+	MeshImport* mesh_i;
+	MatImport* mat_i;
 
 
 public:
@@ -79,11 +78,6 @@ public:
 		}
 
 		return ret;
-	}
-	void TabFile(const int& tabs, std::ofstream& file)
-	{
-		for (int i = 0; i < tabs; i++)
-			file << "\t";
 	}
 
 };

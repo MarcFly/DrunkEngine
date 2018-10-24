@@ -135,6 +135,8 @@
     <ClInclude Include="GLEW\include\GL\wglew.h" />
     <ClInclude Include="glmath\glmath.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="MaterialImport.h" />
+    <ClInclude Include="MeshImport.h" />
     <ClInclude Include="ModuleImport.h" />
     <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
@@ -241,6 +243,7 @@
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="GeoPropertiesWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
+    <ClCompile Include="MaterialImport.cpp" />
     <ClCompile Include="MeshImport.cpp" />
     <ClCompile Include="MGL\Algorithm\GJK.cpp" />
     <ClCompile Include="MGL\Algorithm\Random\LCG.cpp" />

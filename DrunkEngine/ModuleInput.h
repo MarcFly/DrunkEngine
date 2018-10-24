@@ -86,6 +86,9 @@ public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
+	bool CheckExtension(std::string& ext);
+	void LoadFile();
+
 private:
 	KEY_STATE* keyboard;
 	KEY_STATE mouse_buttons[MAX_MOUSE_BUTTONS];
