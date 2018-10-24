@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Sources">
@@ -123,6 +123,9 @@
     </Filter>
     <Filter Include="Sources\Modules\GameObject Structure\Components">
       <UniqueIdentifier>{b226c4eb-2984-4717-9a2b-2ac9059d041a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Import/Export">
+      <UniqueIdentifier>{22699cfd-1c77-4dc9-a255-60cf3482b4bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -579,6 +582,9 @@
     <ClInclude Include="ModuleScene.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleImport.h">
+      <Filter>Sources\Modules\Import/Export</Filter>
+    </ClInclude>
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
     </ClInclude>
@@ -799,6 +805,12 @@
     </ClCompile>
     <ClCompile Include="ComponentMaterial.cpp">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleImport.cpp">
+      <Filter>Sources\Modules\Import/Export</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshImport.cpp">
+      <Filter>Sources\Modules\Import/Export</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>

@@ -58,7 +58,10 @@ public:
 	int GetAssimpMinorVer() { return aiGetVersionMinor(); };
 	int GetAssimpVersionRevision() { return aiGetVersionRevision(); };
 
+	void Draw() { if(Root_Object != nullptr)Root_Object->Draw(); };
+
 	void ObjUpdate(float dt) { Root_Object->Update(dt); };
+
 };
 
 #endif

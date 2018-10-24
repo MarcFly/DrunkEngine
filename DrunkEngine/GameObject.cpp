@@ -5,43 +5,13 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 
-GameObject::GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par)
+// Creation of Root Node from a file
+GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
 {
-	this->parent = par;
-	this->root = this->parent;
-	while (this->root->parent != nullptr)
-		this->root = this->root->parent;
-
-	this->name = obj_root->mName.C_Str();
-	CreateThisObj(scene, obj_root);
-}
-
-GameObject::GameObject(const aiScene* scene, const aiNode * root_obj, const char * file_path)
-{
-	this->name = file_path;
+	this->name = "Scene";
 	this->root = this;
-	CreateThisObj(scene, root_obj);
-}
 
-void GameObject::CreateThisObj(const aiScene* scene, const aiNode * obj)
-{
-	float vertex_aux = 0;
-
-	if (this->parent == nullptr)
-		this->camera = new ComponentCamera(this);
-
-	for (int i = 0; i < obj->mNumMeshes; i++)
-		this->meshes.push_back(new ComponentMesh(scene->mMeshes[obj->mMeshes[i]], this));
-
-	for (int i = 0; i < scene->mNumMaterials; i++)
-		this->materials.push_back(new ComponentMaterial(scene->mMaterials[i], this));
-
-	for (int i = 0; i < obj->mNumChildren; i++)
-		this->children.push_back(new GameObject(scene, obj->mChildren[i], this));
-
-	this->transform = new ComponentTransform(&obj->mTransformation, this);
-
-	SetBoundBox();
+	this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj, this));
 
 	Start();
 }
@@ -58,6 +28,7 @@ void GameObject::Update(float dt)
 		camera->Update(dt);
 
 	Draw();
+
 }
 
 void GameObject::Draw()
@@ -129,6 +100,8 @@ void GameObject::DrawBB()
 
 vec GameObject::getObjectCenter()
 {
+	if (this->BoundingBody == nullptr)
+		this->SetBoundBox();
 	float aux_x = (this->BoundingBox->maxPoint.x + this->BoundingBox->minPoint.x) / 2;
 	float aux_y = (this->BoundingBox->maxPoint.y + this->BoundingBox->minPoint.y) / 2;
 	float aux_z = (this->BoundingBox->maxPoint.z + this->BoundingBox->minPoint.z) / 2;

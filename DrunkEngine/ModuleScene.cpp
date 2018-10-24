@@ -18,28 +18,14 @@
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/Release/ILU.lib")
 
-void CallLog(const char* str, char* usrData);
-
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
-	// Stream log messages to Debug window
-	struct aiLogStream stream;
-	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
-	aiAttachLogStream(&stream);
+
 }
 
 bool ModuleScene::Init()
 {
 	bool ret = true;
-
-	// DevIL initialization
-	ilInit();
-	iluInit();
-
-	struct aiLogStream stream;
-	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
-	stream.callback = CallLog;
-	aiAttachLogStream(&stream);
 
 	return ret;
 }
@@ -50,6 +36,8 @@ bool ModuleScene::Start()
 
 	Load(nullptr);
 	LoadFromFile("./BakerHouse.fbx");
+	//LoadFromFile("./Ogre.fbx");
+	//LoadFromFile("./KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
@@ -59,6 +47,9 @@ bool ModuleScene::Start()
 bool ModuleScene::CleanUp()
 {
 	bool ret = false;
+
+	// Test how it works
+	//App->importer->SerializeSceneData();
 
 	PLOG("Destroying all objects");
 
@@ -74,8 +65,10 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 {
 	bool ret = true;
 
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);  // for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	std::string aux = file_path;
+
+	std::string extension = strrchr(file_path, '.');
 
 	if (scene == nullptr)
 	{
@@ -94,7 +87,7 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	if (scene != nullptr)
 	{
 		DestroyScene();
-		Root_Object = new GameObject(scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
+		Root_Object = new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
 		
 		aiReleaseImport(scene);
 	}
@@ -241,12 +234,6 @@ bool ModuleScene::CreatePrimitiveObject(const vec& center, PCube& cube)
 	return ret;
 }
 */
-
-
-void CallLog(const char* str, char* usrData)
-{
-	App->ui->console_win->AddLog(str);
-}
 
 bool ModuleScene::DestroyScene()
 {
