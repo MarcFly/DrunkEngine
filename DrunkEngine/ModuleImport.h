@@ -40,7 +40,7 @@ public:
 
 	void ImportFBX(const char* path);
 	
-	GameObject* ImportGameObject(const char* path);
+	GameObject* ImportGameObject(const char* path, GameObject* par);
 	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
 
 	void ExportScene(const char* scene);
@@ -109,6 +109,16 @@ public:
 
 		CreateDirectory("./Library\\Cameras", NULL);
 		SetFileAttributes("./Library\\Cameras", FILE_ATTRIBUTE_HIDDEN);
+	}
+
+	std::string GetDir(const char* full_path)
+	{
+		std::string aux = strrchr(full_path, '\\/');
+		std::string path = full_path;
+		//original_load.substr(aux.length());
+		path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /
+		
+		return path;
 	}
 
 };

@@ -35,9 +35,9 @@ bool ModuleScene::Start()
 	bool ret = true;
 
 	Load(nullptr);
-	LoadFromFile("./Test Models and Textures/BakerHouse.fbx");
-	//LoadFromFile("./Ogre.fbx");
-	//LoadFromFile("./KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	//LoadFromFile("./Test Models and Textures/BakerHouse.fbx");
+	LoadFromFile("./Test Models and Textures/Ogre.fbx");
+	//LoadFromFile("./Test Models and Textures/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 

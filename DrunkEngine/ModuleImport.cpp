@@ -44,7 +44,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 	ret->name = obj_node->mName.C_Str();
 
-	ret->SetOriginalLoadPath(path);
+	//ret->SetOriginalLoadPath(path);
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{

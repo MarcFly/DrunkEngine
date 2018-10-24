@@ -49,6 +49,14 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 
 		memcpy(&ret->NumDiffTextures, cursor, sizeof(uint));
 		cursor += sizeof(uint);
+		
+		uint dir_size;
+		memcpy(&dir_size, cursor, sizeof(uint));
+		cursor += sizeof(uint);
+
+		char* dir = new char[dir_size+1];
+		memcpy(dir, cursor, dir_size+1);
+		cursor += dir_size +2;
 
 		std::vector<uint> texture_ranges;
 		for (int i = 0; i < ret->NumDiffTextures; i++)
@@ -58,6 +66,7 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			texture_ranges.push_back(size);
 			cursor += sizeof(uint);
 		}
+		
 		for (int i = 0; i < ret->NumDiffTextures; i++)
 		{
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
@@ -70,7 +79,7 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			Texture* check = ImportTexture(aux, ret);
 			if (check == nullptr)
 			{
-				ExportTexture(aux);
+				ExportTexture(aux, dir);
 				check = ImportTexture(filename.c_str(), ret);
 			}
 			ret->textures.push_back(check);
@@ -123,37 +132,7 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 		ilBindImage(id_Image);
 
 		bool check = ilLoadImage(path);
-
-		if (!check) // Check from imported textures folder
-		{
-			std::string new_file_path = path;
-			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-			new_file_path = "./Library/Textures/" + new_file_path; // Have to set new directories
-
-			check = ilLoadImage(new_file_path.c_str());
-			if (check)
-				App->ui->console_win->AddLog("Texture found in Imported Directories");
-		}
-
-		if (!check) // Check from obj directory
-		{
-			std::string new_file_path = path;
-			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-			new_file_path = par->parent->original_load + new_file_path;
-
-			check = ilLoadImage(new_file_path.c_str());
-
-			if (check)
-			{
-				App->ui->console_win->AddLog("Texture found in Parent Directory: Exporting Texture for next time!");
-				ExportTexture(new_file_path.c_str());
-
-				check = ilLoadImage(new_file_path.c_str());
-			}
-
-		}
+		
 		if (check)
 		{
 			ILinfo Info;
@@ -217,6 +196,11 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 	buf_size += sizeof(color);
 
+	// allocating a uint for size
+	buf_size += sizeof(uint);
+	std::string dir = App->importer->GetDir(path);
+	buf_size += dir.length();
+
 	std::vector<uint> texture_ranges;
 	std::vector<std::string> textures; // Only Diffuse for now
 	for (int i = 0; i < text_size; i++)
@@ -224,7 +208,6 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 		aiString path;
 		aiReturn err = mat->GetTexture(aiTextureType_DIFFUSE, i, &path);
 		textures.push_back(path.C_Str());
-
 
 		buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 		
@@ -245,6 +228,17 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	memcpy(cursor, &text_size, sizeof(uint));
 	cursor += sizeof(uint);
 
+	uint dir_size = dir.length() + 2;
+	memcpy(cursor, &dir_size, sizeof(uint));
+	cursor += sizeof(uint);
+
+	memcpy(cursor, dir.c_str(), dir.length());
+	cursor += dir.length() + 2;
+
+	char* exitqueue = "\0";
+	memcpy(cursor, exitqueue, 2);
+	cursor += 2;
+
 	memcpy(cursor, &texture_ranges[0], sizeof(uint)*texture_ranges.size());
 	cursor += sizeof(uint) * texture_ranges.size();
 
@@ -252,7 +246,6 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	{
 		memcpy(cursor, textures[i].c_str(), textures[i].length());
 		cursor += textures[i].length();
-		char* exitqueue = "\0";
 		memcpy(cursor, exitqueue, 2);
 		cursor += 2;
 	}
@@ -270,7 +263,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	
 }
 
-void MatImport::ExportTexture(const char * path)
+void MatImport::ExportTexture(const char * path, const char* full_path)
 {
 
 	ILuint id_Image;
@@ -279,24 +272,25 @@ void MatImport::ExportTexture(const char * path)
 
 	bool check = ilLoadImage(path);
 
-	if (!check)
+	if (!check) // Check from obj directory
 	{
-		// Basically if the direct load does not work, it will get the name of the file and load it from the texture folder if its there
 		std::string new_file_path = path;
 		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
-		new_file_path = App->mesh_loader->tex_folder + new_file_path;
+		new_file_path = App->importer->GetDir(full_path) + new_file_path;
 
 		check = ilLoadImage(new_file_path.c_str());
+
+		if (check)
+		{
+			App->ui->console_win->AddLog("Texture found in Parent Directory: Exporting Texture for next time!");
+		}
+
 	}
 
 	if (check)
 	{
 		ILinfo Info;
-
-		iluGetImageInfo(&Info);
-		if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
-			iluFlipImage();
 
 		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
