@@ -229,18 +229,20 @@ ComponentMesh * ModuleImport::ImportMesh(const char* file, GameObject* par)
 		memcpy(ret->normal,cursor, ret->num_normal * 3 * sizeof(GLfloat));
 		cursor += ((ret->num_normal * 3 )* sizeof(GLfloat));
 
-		ret->num_faces = ret->num_index / 3; // /2 when we save normals properly
+		ret->num_faces = ret->num_index; // /2 when we save normals properly
 
 		ret->num_uvs = ranges[3] / 3;
 		ret->tex_coords = new GLfloat[ret->num_uvs * 3];
-		memcpy(ret->tex_coords, cursor, ret->num_uvs * sizeof(float) * 3);
-		cursor += (ret->num_uvs * 3 * sizeof(float));
+		memcpy(ret->tex_coords, cursor, ret->num_uvs * sizeof(GLfloat) * 3);
+		cursor += (ranges[3] * sizeof(GLfloat));
 
 		std::vector<float> bbox;
 		for (int i = 0; i < 6; i++)
 		{
-			bbox.push_back(1);
-			memcpy(&bbox[i], cursor, sizeof(float));
+			float* temp = new float;
+			memcpy(temp, cursor, sizeof(float));
+			bbox.push_back(*temp);
+			delete temp;
 			cursor += sizeof(float);
 		}
 
@@ -461,9 +463,10 @@ void ModuleImport::ExportMesh(const aiScene* scene, const int& mesh_id, const ch
 	memcpy(cursor, &uv_aux[0], uv_size);
 	cursor += uv_size;
 
-	memcpy(cursor,&ExportBBox(data, mesh->mNumVertices)[0],sizeof(float)*6);
+	std::vector<float> test = ExportBBox(mesh->mVertices, mesh->mNumVertices);
+	memcpy(cursor,&test[0],sizeof(float)*6);
 	cursor += sizeof(float) * 6;
-	std::vector<GLfloat> test = ExportBBox(data, mesh->mNumVertices);
+
 	memcpy(cursor, &mesh->mMaterialIndex, Mat_index);
 
 	std::ofstream write_file;
@@ -513,7 +516,7 @@ void ModuleImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& norm
 	normals.push_back(p3 + norm.z);
 }
 
-std::vector<float> ModuleImport::ExportBBox(char * data, const int& num_vertex)
+std::vector<float> ModuleImport::ExportBBox(const aiVector3D* verts, const int& num_vertex)
 {
 	std::vector<float> ret;
 
@@ -521,18 +524,18 @@ std::vector<float> ModuleImport::ExportBBox(char * data, const int& num_vertex)
 
 	for (int i = 0; i < num_vertex; i++)
 	{
-		if (max_x < data[i * 3])
-			max_x = data[i * 3];
-		if (min_x > data[i * 3])
-			min_x = data[i * 3];
-		if (max_y < data[i * 3 + 1])
-			max_y = data[i * 3 + 1];
-		if (min_y > data[i * 3 + 1])
-			min_y = data[i * 3 + 1];
-		if (max_z < data[i * 3 + 2])
-			max_z = data[i * 3 + 2];
-		if (min_z > data[i * 3 + 2])
-			min_z = data[i * 3 + 2];
+		if (max_x < verts[i].x)
+			max_x = verts[i].x;
+		if (min_x > verts[i].x)
+			min_x = verts[i].x;
+		if (max_y < verts[i].y)
+			max_y = verts[i].y;
+		if (min_y > verts[i].y)
+			min_y = verts[i].y;
+		if (max_z < verts[i].z)
+			max_z = verts[i].z;
+		if (min_z > verts[i].z)
+			min_z = verts[i].z;
 	}
 
 	ret.push_back(min_x);

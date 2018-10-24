@@ -42,7 +42,7 @@ public:
 
 	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
 	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
-	std::vector<float> ExportBBox(char* data, const int& num_vertex);
+	std::vector<float> ExportBBox(const aiVector3D* verts, const int& num_vertex);
 	//void ExportNode(const aiScene* scene, const aiNode* node);
 
 	void SerializeSceneData();
