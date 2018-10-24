@@ -9,6 +9,7 @@
 class ComponentMesh;
 class ComponentMaterial;
 class ComponentTransform;
+class ComponentCamera;
 class Primitive;
 
 class GameObject
@@ -20,6 +21,8 @@ public:
 
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);
 
+	void Start();
+	void Update(float dt);
 	void Draw();
 	void DrawBB();
 
@@ -49,8 +52,11 @@ public:
 	std::vector<GameObject*> children;
 
 	bool to_pop = false;
-	bool selected = 0;
+	bool active = false;
 
+public:
+	ComponentCamera * camera = nullptr;
+	std::vector<ComponentCamera*> cameras;
 public:
 	void DestroyThisObject() 
 	{

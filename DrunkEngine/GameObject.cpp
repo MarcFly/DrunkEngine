@@ -3,6 +3,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
@@ -11,6 +12,23 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 	this->root = this;
 
 	this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj, this));
+
+	Start();
+}
+
+void GameObject::Start()
+{
+	if (camera != nullptr)
+		camera->Start();
+}
+
+void GameObject::Update(float dt)
+{
+	if (camera != nullptr)
+		camera->Update(dt);
+
+	Draw();
+
 }
 
 void GameObject::Draw()
@@ -18,12 +36,14 @@ void GameObject::Draw()
 	for (int i = 0; i < this->meshes.size(); i++)
 		this->meshes[i]->Draw();
 
-	if (App->renderer3D->bounding_box)
+	if ((App->renderer3D->bounding_box || this->active) && this->BoundingBox != nullptr)
 		this->DrawBB();
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Draw();
 		
+	if (camera != nullptr)
+		camera->Draw();
 }
 
 void GameObject::DrawBB()
@@ -32,7 +52,7 @@ void GameObject::DrawBB()
 
 	glBegin(GL_LINES);
 
-	glColor3f(0, 1, 0);
+	glColor3f(0.f, 1.f, 0.f);
 
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
 	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);

@@ -9,6 +9,7 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "GeoPropertiesWindow.h"
+#include "ModuleWindow.h"
 
 
 #include "ModuleRenderer3D.h"
@@ -37,6 +38,8 @@ bool ModuleScene::Start()
 	LoadFromFile("./BakerHouse.fbx");
 	//LoadFromFile("./Ogre.fbx");
 	//LoadFromFile("./KSR-29 sniper rifle new_fbx_74_binary.fbx");
+
+	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
 	return ret;
 }
@@ -97,29 +100,18 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	return ret;
 }
 
-GameObject* ModuleScene::GetSelected(GameObject * obj)
+void ModuleScene::SetActiveFalse()
 {
-	if (obj->selected == true)
-		return obj;
-
-	for (int i = 0; i < obj->children.size(); i++)
+	for (int i = 0; i < active_objects.size(); i++)
 	{
-		GameObject * aux = GetSelected(obj->children[i]);
-		if (aux->selected == true)
-			return aux;
+		active_objects[i]->active = false;
 	}
-	
-	return obj;
+	active_objects.clear();
 }
 
-void ModuleScene::SetSelectedFalse(GameObject * obj)
+void ModuleScene::SetmainCam(ComponentCamera * cam)
 {
-	obj->selected = false;
-
-	for (int i = 0; i < obj->children.size(); i++)
-	{
-		SetSelectedFalse(obj->children[i]);
-	}
+	Main_Cam = cam;
 }
 
 bool ModuleScene::Load(JSON_Value * root_value)
@@ -254,6 +246,8 @@ bool ModuleScene::DestroyScene()
 		delete Root_Object;
 		Root_Object = nullptr;
 	}
+
+	active_cameras.clear();
 
 	return ret;
 }

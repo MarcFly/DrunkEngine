@@ -39,7 +39,7 @@ bool ModuleUI::Init()
 	ImGui_ImplOpenGL2_Init();
 	ImGui::StyleColorsDark();
 
-	//show_demo_window = true;
+	show_demo_window = false;
 
 	windows.push_back(console_win = new ConsoleWindow());
 	windows.push_back(options_win = new OptionsWindow());
@@ -151,8 +151,8 @@ bool ModuleUI::MainMenu()
 
 		if (ImGui::BeginMenu("Help"))
 		{
-			/*if (ImGui::MenuItem("Examples"))
-				show_demo_window = !show_demo_window;*/
+			if (ImGui::MenuItem("Examples"))
+				show_demo_window = !show_demo_window;
 
 			if (ImGui::MenuItem("Download Latest"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
