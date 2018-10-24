@@ -1,6 +1,17 @@
 #ifndef _COMPONENT_
 #define _COMPONENT_
 
+enum CTypes
+{
+	CT_Error = -1,
+	CT_Mesh,
+	CT_Material,
+	CT_Camera,
+	CT_Transform,
+
+	CT_Max
+};
+
 class Component
 {
 public:
@@ -14,6 +25,12 @@ public:
 	virtual void Draw() {};
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};
+
+public:
+	
+
+public:
+	
 
 };
 

@@ -124,17 +124,36 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 
 		bool check = ilLoadImage(path);
 
-		if (!check)
+		if (!check) // Check from imported textures folder
 		{
-			// Basically if the direct load does not work, it will get the name of the file and load it from the texture folder if its there
 			std::string new_file_path = path;
 			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
-			new_file_path = App->mesh_loader->tex_folder + new_file_path;
+			new_file_path = "./Library/Textures/" + new_file_path; // Have to set new directories
 
 			check = ilLoadImage(new_file_path.c_str());
+			if (check)
+				App->ui->console_win->AddLog("Texture found in Imported Directories");
 		}
 
+		if (!check) // Check from obj directory
+		{
+			std::string new_file_path = path;
+			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+
+			new_file_path = par->parent->original_load + new_file_path;
+
+			check = ilLoadImage(new_file_path.c_str());
+
+			if (check)
+			{
+				App->ui->console_win->AddLog("Texture found in Parent Directory: Exporting Texture for next time!");
+				ExportTexture(new_file_path.c_str());
+
+				check = ilLoadImage(new_file_path.c_str());
+			}
+
+		}
 		if (check)
 		{
 			ILinfo Info;

@@ -6,6 +6,11 @@
 #include "ComponentMesh.h"
 #include "ModuleImport.h"
 
+ComponentMaterial::ComponentMaterial(GameObject* par)
+{
+	parent = par;
+}
+
 void ComponentMaterial::DestroyTexture(const int& tex_ind)
 {
 	glDeleteTextures(1, &textures[tex_ind]->id_tex);

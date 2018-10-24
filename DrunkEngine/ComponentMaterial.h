@@ -12,7 +12,8 @@ enum TextureMode
 {
 	TM_Error = -1,
 	TM_DIFFUSE,
-	
+	TM_AMBIENT,
+
 	TM_MAX
 };
 
@@ -35,7 +36,7 @@ class ComponentMaterial : Component
 {
 public:
 	ComponentMaterial() {};
-	//ComponentMaterial(CGameObject* par);
+	ComponentMaterial(GameObject* par);
 
 	~ComponentMaterial() {};
 

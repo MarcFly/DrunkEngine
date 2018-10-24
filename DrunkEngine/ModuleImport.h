@@ -52,6 +52,12 @@ public:
 	MeshImport* mesh_i;
 	MatImport* mat_i;
 
+	std::string tex_folder;
+	std::string mesh_folder;
+	std::string mat_folder;
+	std::string cam_folder;
+	std::string obj_folder;
+
 
 public:
 	
@@ -85,6 +91,24 @@ public:
 		std::string ret = strrchr(file, '.');
 
 		return ret.length();
+	}
+
+	void SetDirectories()
+	{
+		CreateDirectory("./Library", NULL);
+		SetFileAttributes("./Library", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Meshes", NULL);
+		SetFileAttributes("./Library\\Meshes", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Materials", NULL);
+		SetFileAttributes("./Library\\Materials", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Textures", NULL);
+		SetFileAttributes("./Library\\Textures", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Cameras", NULL);
+		SetFileAttributes("./Library\\Cameras", FILE_ATTRIBUTE_HIDDEN);
 	}
 
 };

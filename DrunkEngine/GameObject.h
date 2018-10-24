@@ -57,6 +57,9 @@ public:
 public:
 	ComponentCamera * camera = nullptr;
 	std::vector<ComponentCamera*> cameras;
+
+	std::string original_load;
+
 public:
 	void DestroyThisObject() 
 	{
@@ -67,6 +70,14 @@ public:
 
 	void DestroyMaterial();
 	void DestroyMesh();
+
+	void SetOriginalLoadPath(const char* full_path)
+	{
+		std::string aux = strrchr(full_path, '\\/');
+		original_load = full_path;
+		//original_load.substr(aux.length());
+		original_load.erase(original_load.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /
+	}
 };
 
 #endif

@@ -13,6 +13,8 @@ void CallLog(const char* str, char* usrData);
 
 bool ModuleImport::Init()
 {
+	SetDirectories();
+	
 	mesh_i = new MeshImport();
 	mat_i = new MatImport();
 
@@ -41,6 +43,8 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		ret->root = ret->root->parent;
 
 	ret->name = obj_node->mName.C_Str();
+
+	ret->SetOriginalLoadPath(path);
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
