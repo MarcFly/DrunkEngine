@@ -64,8 +64,9 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		if (aux == nullptr)
 		{
 			mat_i->ExportMat(scene, i, path);
-			mat_i->ImportMat(filename.c_str(), ret);
+			aux = mat_i->ImportMat(filename.c_str(), ret);
 		}
+		ret->materials.push_back(aux);
 	}
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)

@@ -3,10 +3,11 @@
 
 #include "Module.h"
 #include "MGL/MathGeoLib.h"
+#include "Component.h"
 
 class GameObject;
 
-class ComponentCamera
+class ComponentCamera : Component
 {
 public:
 	ComponentCamera(GameObject * gameobject);

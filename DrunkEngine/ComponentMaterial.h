@@ -5,9 +5,9 @@
 #include <string>
 #include "GLEW/include/GL/glew.h"
 #include "Color.h"
+#include "Component.h"
 
 class GameObject;
-
 enum TextureMode
 {
 	TM_Error = -1,
@@ -31,7 +31,7 @@ struct Texture
 	bool deleted = false;
 };
 
-class ComponentMaterial
+class ComponentMaterial : Component
 {
 public:
 	ComponentMaterial() {};

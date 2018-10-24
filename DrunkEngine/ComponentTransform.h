@@ -3,11 +3,12 @@
 
 #include "MGL/MathGeoLib.h"
 #include "Assimp/include/scene.h"
+#include "Component.h"
 
 class GameObject;
 class ComponentMesh;
 
-class ComponentTransform
+class ComponentTransform : Component
 {
 public:
 	ComponentTransform() {};

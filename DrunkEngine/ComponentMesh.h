@@ -6,11 +6,12 @@
 #include <gl/GLU.h>
 #include "Primitive.h"
 #include "Assimp/include/scene.h"
+#include "Component.h"
 
 class GameObject;
 class ComponentCamera;
 
-class ComponentMesh
+class ComponentMesh : Component
 {
 public:
 	ComponentMesh();

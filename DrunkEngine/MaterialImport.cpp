@@ -71,8 +71,9 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			if (check == nullptr)
 			{
 				ExportTexture(aux);
-				ImportTexture(filename.c_str(), ret);
+				check = ImportTexture(filename.c_str(), ret);
 			}
+			ret->textures.push_back(check);
 			cursor += texture_ranges[i];
 		}
 
