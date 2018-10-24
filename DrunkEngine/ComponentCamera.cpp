@@ -28,7 +28,7 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	Reference = vec(0.0f, 0.0f, 0.0f);
 
 	frustum.nearPlaneDistance = 0.5f;
-	frustum.farPlaneDistance = 100.0f;
+	frustum.farPlaneDistance = 500.0f;
 
 	frustum.type = FrustumType::PerspectiveFrustum;
 	frustum.projectiveSpace = FrustumProjectiveSpace::FrustumSpaceGL;

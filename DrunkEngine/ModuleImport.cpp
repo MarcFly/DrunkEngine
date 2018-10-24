@@ -7,8 +7,7 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "GeoPropertiesWindow.h"
-
-
+#include "ComponentCamera.h"
 
 void CallLog(const char* str, char* usrData);
 
@@ -62,7 +61,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 
 	ret->transform = new ComponentTransform(&obj_node->mTransformation, ret);
-	App->camera->SetToObj(ret, ret->SetBoundBox());
+	App->mesh_loader->Main_Cam->LookToObj(ret, ret->SetBoundBox());
 
 	return ret;
 }

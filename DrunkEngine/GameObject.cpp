@@ -13,6 +13,9 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 
 	this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj, this));
 
+	if (this->parent == nullptr)
+		this->camera = new ComponentCamera(this);
+
 	Start();
 }
 
