@@ -50,9 +50,19 @@ void ComponentMaterial::PopTexture(const int& tex_index)
 
 
 	if (textures.size() > 0)
-		for (int i = 0; i < parent->meshes.size(); i++)
-			if (this->parent->meshes[i]->Material_Ind >= textures.size())
-				this->parent->meshes[i]->Material_Ind = -1;
+	{
+		std::vector<Component*> cmp_meshes;
+		cmp_meshes = parent->GetComponents(CT_Mesh);
+		if (cmp_meshes.size() > 0)
+		{
+			for (int i = 0; i < cmp_meshes.size(); i++)
+			{
+				ComponentMesh* aux = cmp_meshes[i]->AsMesh();
+				if (aux != nullptr && aux->Material_Ind >= textures.size())
+					aux->Material_Ind = -1;
+			}
+		}
+	}
 }
 
 void ComponentMaterial::CleanUp()
@@ -72,9 +82,13 @@ Texture* ComponentMaterial::CheckTexRep(std::string name)
 
 	while (par != NULL && ret == nullptr)
 	{
-		for (int i = 0; i < par->materials.size(); i++)
+		std::vector<Component*> cmp_mats;
+		cmp_mats = parent->GetComponents(CT_Material);
+		for (int i = 0; i < cmp_mats.size(); i++)
 		{
-			ret = par->materials[i]->CheckNameRep(name);
+			ComponentMaterial* aux = cmp_mats[i]->AsMaterial();
+			if(aux != nullptr)
+				ret = aux->CheckNameRep(name);
 		}
 
 		par = par->parent;

@@ -4,6 +4,11 @@
 #include "parson/parson.h"
 
 class GameObject;
+class ComponentMaterial;
+class ComponentMesh;
+class ComponentCamera;
+class ComponentTransform;
+
 
 enum CTypes
 {
@@ -19,6 +24,7 @@ enum CTypes
 class Component
 {
 public:
+	Component() {};
 	Component(CTypes id_t) : type{ id_t } {};
 	Component(CTypes id_t, GameObject* par) : type{ id_t }, parent{ par } {};
 	~Component() {};
@@ -45,9 +51,38 @@ public:
 	CTypes type;
 	bool multiple;
 	GameObject* parent;
+	unsigned int count_number;
+	bool to_pop = false;
 
 public:
-	
+	// AsX Functions for non hardcoded acces to different type when it is
+	ComponentMesh* AsMesh() {
+		if (type == CT_Mesh)
+			return (ComponentMesh*)this;
+		
+		return nullptr;
+	}
+
+	ComponentMaterial* AsMaterial() {
+		if (type == CT_Material)
+			return (ComponentMaterial*)this;
+
+		return nullptr;
+	}
+
+	ComponentTransform* AsTransform() {
+		if (type == CT_Transform)
+			return (ComponentTransform*)this;
+
+		return nullptr;
+	}
+
+	ComponentCamera* AsCamera() {
+		if (type == CT_Camera)
+			return (ComponentCamera*)this;
+
+		return nullptr;
+	}
 	
 
 };

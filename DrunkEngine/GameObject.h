@@ -11,6 +11,7 @@
 #include <math.h>
 #include "parson/parson.h"
 #include "ComponentTransform.h"
+#include <memory>
 
 class Component;
 class ComponentMesh;
@@ -40,21 +41,18 @@ public:
 	//void SetBoundBody();
 
 	void AdjustObjects();
-	void AdjustMaterials();
-	void AdjustMeshes();
+	void AdjustComponents();
 
 	void CleanUp();
+
+	std::vector<unsigned int> GetMeshProps();
+
 
 public:
 	Uint32	UUID, par_UUID = UINT_LEAST32_MAX;
 	std::string name;
-	ComponentTransform* transform = new ComponentTransform();
-	std::vector<ComponentMesh*> meshes;
-	std::vector<ComponentMaterial*> materials;
 
 	AABB* BoundingBox = nullptr;
-
-	Primitive* BoundingBody = nullptr; // In case we create a premade object // Temporary solution
 
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
@@ -92,6 +90,37 @@ public:
 
 		UUID = pcg32_random_r(&rng);
 	}
+
+	Component* GetComponent(CTypes id_t)
+	{
+		for (int i = 0; i < components.size(); i++)
+			if (components[i]->type == id_t)
+				return components[i];
+
+		return nullptr;
+	}
+
+	unsigned int GetCountCType(CTypes id_t)
+	{
+		unsigned int ret = 0;
+		for (int i = 0; i < components.size(); i++)
+			if (components[i]->type == id_t)
+				ret++;
+		return ret;
+	}
+
+	std::vector<Component*> GetComponents(CTypes id_t)
+	{
+		std::vector<Component*> ret;
+		for (int i = 0; i < components.size(); i++)
+			if (components[i]->type == id_t)
+			{
+				ret.push_back(components[i]);
+			}
+
+		return ret;
+	}
+
 
 };
 

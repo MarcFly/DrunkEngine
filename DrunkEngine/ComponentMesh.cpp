@@ -161,22 +161,33 @@ void ComponentMesh::DrawMesh()
 
 	if (this->Material_Ind != -1 && tex_coords != nullptr)
 	{
-		if (this->Material_Ind < this->parent->materials.size())
+		std::vector<Component*> cmp_mats;
+		cmp_mats = parent->GetComponents(CT_Material);
+		ComponentMaterial* mat = nullptr;
+
+		for (int i = 0; i < cmp_mats.size(); i++)
 		{
-			Color c = this->parent->materials[Material_Ind]->default_print;
+			mat = cmp_mats[i]->AsMaterial();
+			if (mat != nullptr && mat->count_number == this->Material_Ind)
+				break;
+		}
+
+		if (mat != nullptr)
+		{
+			Color c = mat->default_print;
 			glColor4f(c.r, c.g, c.b, c.a);
 
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
-			if (this->parent->materials[Material_Ind]->textures.size() > 0)
+			if (mat->textures.size() > 0)
 			{
-				for (int i = 0; i < this->parent->materials[Material_Ind]->textures.size(); i++)
+				for (int i = 0; i < mat->textures.size(); i++)
 				{
 					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 					glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
 					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-					glBindTexture(GL_TEXTURE_2D, this->parent->materials[Material_Ind]->textures[i]->id_tex);
+					glBindTexture(GL_TEXTURE_2D, mat->textures[i]->id_tex);
 				}
 			}
 		}

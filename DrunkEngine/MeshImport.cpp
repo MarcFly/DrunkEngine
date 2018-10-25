@@ -93,8 +93,6 @@ ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
 		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
 
 		App->ui->geo_properties_win->CheckMeshInfo();
-
-		par->meshes.push_back(ret);
 	}
 	else
 	{

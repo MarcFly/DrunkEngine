@@ -18,7 +18,7 @@ public:
 
 	void CreateObjLeaf(GameObject* obj, int st);
 
-	void GetTotalProperties(const GameObject* obj, int &vertex, int &faces);
+	//void GetTotalProperties(GameObject* obj, int &vertex, int &faces);
 
 public:
 	int total_num_vertex;

@@ -11,7 +11,7 @@
 class GameObject;
 class ComponentCamera;
 
-class ComponentMesh : Component
+class ComponentMesh : public Component
 {
 public:
 	ComponentMesh();

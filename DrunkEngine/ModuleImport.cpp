@@ -8,6 +8,7 @@
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
+#include "Component.h"
 
 void CallLog(const char* str, char* usrData);
 
@@ -44,6 +45,8 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 	ret->name = obj_node->mName.C_Str();
 
+	// Sequential Import for FBX Only, will create the components one by one
+
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
 		std::string filename = "./Library/Meshes/";
@@ -55,6 +58,8 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			mesh_i->ExportMesh(scene, obj_node->mMeshes[i],path);
 			mesh_i->ImportMesh(filename.c_str(), ret);
 		}
+
+		ret->components.push_back(aux);
 		
 	}
 	for (int i = 0; i < scene->mNumMaterials; i++)
@@ -68,13 +73,13 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			mat_i->ExportMat(scene, i, path);
 			aux = mat_i->ImportMat(filename.c_str(), ret);
 		}
-		ret->materials.push_back(aux);
+		ret->components.push_back(aux);
 	}
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)
 		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 
-	ret->transform = new ComponentTransform(&obj_node->mTransformation, ret);
+	ret->components.push_back(new ComponentTransform(&obj_node->mTransformation, ret));
 	App->mesh_loader->Main_Cam->LookToObj(ret, ret->SetBoundBox());
 
 	return ret;

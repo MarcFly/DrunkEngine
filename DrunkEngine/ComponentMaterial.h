@@ -6,6 +6,7 @@
 #include "GLEW/include/GL/glew.h"
 #include "Color.h"
 #include "Component.h"
+#include "Globals.h"
 
 class GameObject;
 enum TextureMode
@@ -32,10 +33,10 @@ struct Texture
 	bool deleted = false;
 };
 
-class ComponentMaterial : Component
+class ComponentMaterial : public Component
 {
 public:
-	ComponentMaterial() {};
+	ComponentMaterial() { SetBaseVals(); };
 	ComponentMaterial(GameObject* par);
 
 	~ComponentMaterial() {};
@@ -50,10 +51,10 @@ public:
 
 public:
 
-	uint NumDiffTextures = 0;
+	uint NumDiffTextures;
 	std::vector<Texture*> textures;
-	unsigned int NumProperties = 0;
-	Color default_print = {1,1,1,1};
+	uint NumProperties;
+	Color default_print;
 
 	GameObject* parent = nullptr;
 
@@ -62,16 +63,16 @@ public:
 public:
 	void SetBaseVals()
 	{
-		type = CT_Material;
-		multiple = true;
+		this->type = CT_Material;
+		this->multiple = true;
 
-		NumDiffTextures = 0;
-		NumProperties = 0;
-		default_print = { 1,1,1,1 };
+		this->NumDiffTextures = 0;
+		this->NumProperties = 0;
+		this->default_print = { 1,1,1,1 };
 
-		parent = nullptr;
+		this->parent = nullptr;
 
-		to_pop = false;
+		this->to_pop = false;
 	}
 };
 

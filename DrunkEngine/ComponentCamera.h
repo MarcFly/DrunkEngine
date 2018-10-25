@@ -7,7 +7,7 @@
 
 class GameObject;
 
-class ComponentCamera : Component
+class ComponentCamera : public Component
 {
 public:
 	ComponentCamera(GameObject * gameobject);

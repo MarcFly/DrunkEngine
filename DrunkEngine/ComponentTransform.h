@@ -8,7 +8,7 @@
 class GameObject;
 class ComponentMesh;
 
-class ComponentTransform : Component
+class ComponentTransform : public Component
 {
 public:
 	ComponentTransform() { position = { 0,0,0 }; scale = { 1,1,1 }; rotate_euler = { 0,0,0 }; SetBaseVals(); };
