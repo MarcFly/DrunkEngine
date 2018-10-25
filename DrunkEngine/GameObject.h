@@ -9,11 +9,12 @@
 #include <Windows.h>
 #include "SDL/include/SDL_stdinc.h"
 #include <math.h>
+#include "parson/parson.h"
+#include "ComponentTransform.h"
 
 class Component;
 class ComponentMesh;
 class ComponentMaterial;
-class ComponentTransform;
 class ComponentCamera;
 class Primitive;
 
@@ -30,6 +31,9 @@ public:
 	void Draw();
 	void DrawBB();
 
+	void Save(JSON_Object* root_value);
+	void Load(JSON_Object* root_value);
+
 	vec getObjectCenter();
 	float SetBoundBox();
 	void SetBoundBoxFromMeshes();
@@ -42,9 +46,9 @@ public:
 	void CleanUp();
 
 public:
-	Uint32	UUID;
+	Uint32	UUID, par_UUID = UINT_LEAST32_MAX;
 	std::string name;
-	ComponentTransform* transform = nullptr;
+	ComponentTransform* transform = new ComponentTransform();
 	std::vector<ComponentMesh*> meshes;
 	std::vector<ComponentMaterial*> materials;
 
@@ -65,6 +69,7 @@ public:
 	std::vector<ComponentCamera*> cameras;
 
 public:
+
 	void DestroyThisObject() 
 	{
 		this->CleanUp();

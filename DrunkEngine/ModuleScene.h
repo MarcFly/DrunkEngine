@@ -42,7 +42,6 @@ public:
 	GameObject* Root_Object = nullptr;
 
 	std::string scene_folder;
-	std::string tex_folder;
 
 	std::vector<GameObject*> active_objects;
 	std::vector<ComponentCamera*> active_cameras;

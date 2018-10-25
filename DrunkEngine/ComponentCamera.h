@@ -34,11 +34,11 @@ public:
 
 	void LookToObj(GameObject* obj, float vertex_aux);
 
-	bool Load(JSON_Value* root_value);
-	bool Save(JSON_Value* root_value);
+	void Load(JSON_Object* root_value);
+	void Save(JSON_Object* root_value);
 
 private:
-	GameObject * parent = nullptr;
+	GameObject * parent;
 	float3 bb_frustum[8];
 
 public:
@@ -52,6 +52,13 @@ public:
 
 	Frustum frustum;
 
+public:
+	void SetBaseVals()
+	{
+		type = CT_Camera;
+		multiple = true;
+		parent = nullptr;
+	}
 };
 
 

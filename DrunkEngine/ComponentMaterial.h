@@ -50,7 +50,7 @@ public:
 
 public:
 
-	unsigned int NumDiffTextures = 0;
+	uint NumDiffTextures = 0;
 	std::vector<Texture*> textures;
 	unsigned int NumProperties = 0;
 	Color default_print = {1,1,1,1};
@@ -58,6 +58,21 @@ public:
 	GameObject* parent = nullptr;
 
 	bool to_pop = false;
+
+public:
+	void SetBaseVals()
+	{
+		type = CT_Material;
+		multiple = true;
+
+		NumDiffTextures = 0;
+		NumProperties = 0;
+		default_print = { 1,1,1,1 };
+
+		parent = nullptr;
+
+		to_pop = false;
+	}
 };
 
 #endif

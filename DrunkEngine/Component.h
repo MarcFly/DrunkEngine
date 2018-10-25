@@ -1,6 +1,10 @@
 #ifndef _COMPONENT_
 #define _COMPONENT_
 
+#include "parson/parson.h"
+
+class GameObject;
+
 enum CTypes
 {
 	CT_Error = -1,
@@ -15,7 +19,8 @@ enum CTypes
 class Component
 {
 public:
-	Component() {};
+	Component(CTypes id_t) : type{ id_t } {};
+	Component(CTypes id_t, GameObject* par) : type{ id_t }, parent{ par } {};
 	~Component() {};
 
 	virtual void Init() {};
@@ -26,15 +31,23 @@ public:
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};
 
-	virtual void Load() {};
-	virtual void Save() {};
+	virtual void Load(JSON_Object* root_value) {};
+	virtual void Save(JSON_Object* root_value) {};
+
+	virtual void SetBaseVals()
+	{
+		type = CT_Error;
+		multiple = false;
+	}
 
 public:
 	
 	CTypes type;
 	bool multiple;
+	GameObject* parent;
 
 public:
+	
 	
 
 };

@@ -8,6 +8,8 @@
 
 ComponentCamera::ComponentCamera(GameObject * par)
 {
+	SetBaseVals();
+
 	if (par != nullptr)
 	{
 		this->parent = par;
@@ -309,12 +311,12 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	mesh_multiplier = vertex_aux / 4;
 }
 
-bool ComponentCamera::Load(JSON_Value * root_value)
+void ComponentCamera::Load(JSON_Object * root_value)
 {
-	return false;
+
 }
 
-bool ComponentCamera::Save(JSON_Value * root_value)
+void ComponentCamera::Save(JSON_Object * root_value)
 {
-	return false;
+
 }

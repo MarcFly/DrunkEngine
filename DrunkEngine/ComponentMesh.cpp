@@ -8,6 +8,7 @@
 
 ComponentMesh::ComponentMesh()
 {
+	SetBaseVals();
 }
 
 bool ComponentMesh::SetTexCoords(const aiMesh * mesh)
@@ -284,12 +285,6 @@ void ComponentMesh::CleanUp()
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
 		this->BoundingBox = nullptr;
-	}
-
-	if (this->BoundingBody != nullptr) {
-		this->BoundingBody->DelMathBody();
-		delete this->BoundingBody;
-		this->BoundingBody = nullptr;
 	}
 
 	this->parent = nullptr;

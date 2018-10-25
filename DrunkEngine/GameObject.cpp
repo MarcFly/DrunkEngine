@@ -2,8 +2,9 @@
 #include "Application.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
-#include "ComponentTransform.h"
+
 #include "ComponentCamera.h"
+
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -303,4 +304,30 @@ void GameObject::CleanUp()
 	this->parent = nullptr;
 	this->root = nullptr;
 	this->name.clear();
+}
+
+
+void GameObject::Load(JSON_Object* root_value)
+{
+
+}
+
+void GameObject::Save(JSON_Object* root_value)
+{
+
+	JSON_Object* curr = json_value_get_object(root_value);
+	std::string obj = std::to_string(this->UUID) + ".";
+	std::string set_val;
+	
+	set_val = obj + "par_UUID";
+	json_object_dotset_number(curr, set_val.c_str(), par_UUID);
+
+	set_val = obj + "name";
+	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
+
+	for (int i = 0; i < this->components.size(); i++)
+		this->components[i]->Save(curr);
+
+	for(int i = 0; i < this->children.size(); i++)
+		this->children[i]->Save(curr);
 }

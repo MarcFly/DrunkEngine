@@ -8,6 +8,8 @@
 
 ComponentMaterial::ComponentMaterial(GameObject* par)
 {
+	SetBaseVals();
+
 	parent = par;
 }
 

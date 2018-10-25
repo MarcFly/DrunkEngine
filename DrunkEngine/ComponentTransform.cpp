@@ -3,6 +3,8 @@
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par) : parent{ par }
 {
+	SetBaseVals();
+
 	aiQuaternion rot;
 	aiVector3D pos;
 	aiVector3D local_scale;
@@ -12,7 +14,7 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par) :
 	this->rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
 	this->position = float3(pos.x, pos.y, pos.z);
 
-	SetTransformRotation(rotate_quat);
+	SetTransformRotation(rotate_quat);	
 }
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par) : mparent{par}
@@ -26,6 +28,8 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par
 	this->scale = float3(local_scale.x, local_scale.y, local_scale.z);
 	this->rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
 	this->position = float3(pos.x, pos.y, pos.z);
+
+	SetBaseVals();
 }
 
 void ComponentTransform::SetTransformPosition(const int pos_x, const int pos_y, const int pos_z)
