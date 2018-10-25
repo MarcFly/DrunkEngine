@@ -68,21 +68,21 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			texture_ranges.push_back(size);
 			cursor += sizeof(uint);
 		}
-		
-		App->importer->Imp_Timer.Start();
+
 
 		for (int i = 0; i < ret->NumDiffTextures; i++)
 		{
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
-			std::string filename = "./Library/Textures/";
-			filename += App->importer->GetFileName(aux);
-			filename.append(".dds");
-
 			Texture* check = ImportTexture(aux, ret);
+
 			if (check == nullptr)
 			{
+				std::string filename = "./Library/Textures/";
+				filename += App->importer->GetFileName(aux);
+				filename.append(".dds");
+
 				ExportTexture(aux, dir);
 				check = ImportTexture(filename.c_str(), ret);
 			}
@@ -108,6 +108,8 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 
 Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 {
+	Timer text_timer;
+
 	Texture* ret = new Texture;
 	ret->mparent = par;
 
@@ -126,6 +128,9 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 	if (test != nullptr)
 		check_rep = true;
 
+	text_timer.LogTime("Repetition Check");
+	text_timer.Start();
+
 	if (!check_rep)
 	{
 		// Load Tex parameters and data to vram?
@@ -141,6 +146,21 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 
 		bool check = ilLoadImage(path);
 		
+		if (!check) // Check from imported textures folder
+		{
+			std::string new_file_path = path;
+			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+
+			new_file_path = "./Library/Textures/" + new_file_path; // Have to set new directories
+
+			check = ilLoadImage(new_file_path.c_str());
+			if (check)
+				App->ui->console_win->AddLog("Texture found in Imported Directories");
+		}
+
+		text_timer.LogTime("Texture Load");
+		text_timer.Start();
+
 		if (check)
 		{
 			ILinfo Info;
@@ -157,7 +177,11 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 
 			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, ret->width, ret->height);
 
+			text_timer.LogTime("Tex full Load");
+			text_timer.Start();
+
 		}
+
 		else
 		{
 			App->ui->console_win->AddLog("Failed to load image from path %s", path);
@@ -172,6 +196,9 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		App->ui->geo_properties_win->CheckMeshInfo();
+
+		text_timer.LogTime("Tex finish Load");
+		text_timer.Start();
 	}
 	else
 	{
