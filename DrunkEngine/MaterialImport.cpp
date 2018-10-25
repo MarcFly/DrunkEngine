@@ -22,6 +22,8 @@ void MatImport::Init()
 
 ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 {
+	App->importer->Imp_Timer.Start();
+
 	ComponentMaterial* ret = new ComponentMaterial();
 	ret->parent = par;
 
@@ -67,6 +69,8 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			cursor += sizeof(uint);
 		}
 		
+		App->importer->Imp_Timer.Start();
+
 		for (int i = 0; i < ret->NumDiffTextures; i++)
 		{
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
@@ -86,6 +90,8 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			cursor += texture_ranges[i];
 		}
 
+		App->importer->Imp_Timer.LogTime("Texture");
+
 		App->ui->console_win->AddLog("New Material with %d textures loaded.", ret->textures.size());
 
 	}
@@ -94,6 +100,8 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 		delete ret;
 		ret = nullptr;
 	}
+
+	App->importer->Imp_Timer.LogTime("Material Import");
 
 	return ret;
 }

@@ -9,6 +9,7 @@
 #include "GLEW/include/GL/glew.h"
 #include "Assimp/include/scene.h"
 #include "Color.h"
+#include "Timer.h"
 
 #include <iostream>
 #include <fstream>
@@ -58,6 +59,7 @@ public:
 	std::string cam_folder;
 	std::string obj_folder;
 
+	Timer Imp_Timer;
 
 public:
 	

@@ -21,6 +21,8 @@ void MeshImport::Init()
 
 ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
 {
+	App->importer->Imp_Timer.Start();
+
 	ComponentMesh* ret = new ComponentMesh();
 
 	ret->parent = par;
@@ -99,6 +101,9 @@ ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
 		delete ret;
 		ret = nullptr;
 	}
+
+	App->importer->Imp_Timer.LogTime("Mesh");
+
 	return ret;
 }
 
