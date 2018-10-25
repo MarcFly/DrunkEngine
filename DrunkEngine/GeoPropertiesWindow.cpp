@@ -24,7 +24,7 @@ void GeoPropertiesWindow::Draw()
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 		ImGui::BeginChild("Objects List", ImVec2(250, 0), true);
-		int start_val = -1;
+
 		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
 
 		ImGui::EndChild();
@@ -50,18 +50,18 @@ void GeoPropertiesWindow::Draw()
 						ImGui::Spacing();
 
 						//Pos
-						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
+						float pos[3] = { selected_object->transform->position.x, selected_object->transform->position.y, selected_object->transform->position.z };
 						if (ImGui::DragFloat3 ("Position", pos, 1.f))
 							selected_object->transform->SetTransformPosition(pos[0], pos[1], pos[2]);
 
 						//Scale
-						float scale[3] = { selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z };
+						float scale[3] = { selected_object->transform->scale.x, selected_object->transform->scale.y, selected_object->transform->scale.z };
 						if (ImGui::DragFloat3("Scale", scale, 0.1f))
 							selected_object->transform->SetTransformScale(scale[0], scale[1], scale[2]);
 
 						//Rot
 
-						float rot[3] = { selected_object->transform->transform_rotate_euler.x, selected_object->transform->transform_rotate_euler.y, selected_object->transform->transform_rotate_euler.z };
+						float rot[3] = { selected_object->transform->rotate_euler.x, selected_object->transform->rotate_euler.y, selected_object->transform->rotate_euler.z };
 						if (ImGui::DragFloat3("Rotation", rot, 1.f))
 							selected_object->transform->SetTransformRotation((float3)rot);
 
@@ -85,45 +85,42 @@ void GeoPropertiesWindow::Draw()
 						ImGui::Text("Total Num. Faces: %d", total_num_faces);
 					}
 
-					if (ImGui::CollapsingHeader("Texture Properties"))
+					if (ImGui::CollapsingHeader("Texture Properties") && selected_object->materials.size() > 0 && selected_object->materials[0]->textures.size() > 0)
 					{
-						if (selected_object->materials.size() > 0)
+						
+						for (int i = 0; i < selected_object->materials[0]->textures.size(); i++)
 						{
-							if (selected_object->materials[0]->textures.size() > 0)
+							ImGui::Separator();
+
+							if (check_info)
+								tex_name = selected_object->materials[0]->textures[i]->filename.c_str();
+
+							ImGui::Image(ImTextureID(selected_object->materials[0]->textures[i]->id_tex), show_size);
+
+							if (strrchr(tex_name.c_str(), '\\') != nullptr)
+								tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+
+							ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
+
+							ImGui::Text("Size: %d x %d", selected_object->materials[0]->textures[i]->width, selected_object->materials[0]->textures[i]->height);
+
+							char str[30];
+							snprintf(str, 30, "%s%d", "Use this Texture ##", i);
+
+							if (ImGui::Button(str))
 							{
-								for (int i = 0; i < selected_object->materials[0]->textures.size(); i++)
-								{
-									ImGui::Separator();
-
-									if (check_info)
-										tex_name = selected_object->materials[0]->textures[i]->filename.c_str();
-
-									ImGui::Image(ImTextureID(selected_object->materials[0]->textures[i]->id_tex), show_size);
-
-									if (strrchr(tex_name.c_str(), '\\') != nullptr)
-										tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
-
-									ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
-
-									ImGui::Text("Size: %d x %d", selected_object->materials[0]->textures[i]->width, selected_object->materials[0]->textures[i]->height);
-
-									char str[30];
-									snprintf(str, 30, "%s%d", "Use this Texture ##", i);
-
-									if (ImGui::Button(str))
-									{
-										for (int j = 0; j < selected_object->meshes.size(); j++)
-											selected_object->meshes[j]->Material_Ind = i;
-									}
-
-									snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
-									if (ImGui::Button(str))
-										selected_object->materials[0]->DestroyTexture(i);
-
-
-								}
+								for (int j = 0; j < selected_object->meshes.size(); j++)
+									selected_object->meshes[j]->Material_Ind = i;
 							}
+
+							snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
+							if (ImGui::Button(str))
+								selected_object->materials[0]->DestroyTexture(i);
+
+
 						}
+							
+						
 					}
 				}
 				ImGui::EndChild();
@@ -195,9 +192,9 @@ void GeoPropertiesWindow::Draw()
 						for (int i = 0; i < objects[selected].meshes.size(); i++)
 						{
 							ImGui::Text("%s", objects[selected].meshes[i].name.c_str());
-							ImGui::Text("Transform Position:   x:%.02f   y:%.02f   z:%.02f", objects[selected].meshes[i].transform_position.x, objects[selected].meshes[i].transform_position.y, objects[selected].meshes[i].transform_position.z);
-							ImGui::Text("Transform Scale:      x:%.02f   y:%.02f   z:%.02f", objects[selected].meshes[i].transform_scale.x, objects[selected].meshes[i].transform_scale.y, objects[selected].meshes[i].transform_scale.z);
-							ImGui::Text("Transform Rotation:   x:%.02f   y:%.02f   z:%.02f\n\n", RadToDeg(objects[selected].meshes[i].transform_rotate.x), RadToDeg(objects[selected].meshes[i].transform_rotate.y), RadToDeg(objects[selected].meshes[i].transform_rotate.z));
+							ImGui::Text("Transform Position:   x:%.02f   y:%.02f   z:%.02f", objects[selected].meshes[i].position.x, objects[selected].meshes[i].position.y, objects[selected].meshes[i].position.z);
+							ImGui::Text("Transform Scale:      x:%.02f   y:%.02f   z:%.02f", objects[selected].meshes[i].scale.x, objects[selected].meshes[i].scale.y, objects[selected].meshes[i].scale.z);
+							ImGui::Text("Transform Rotation:   x:%.02f   y:%.02f   z:%.02f\n\n", RadToDeg(objects[selected].meshes[i].rotate.x), RadToDeg(objects[selected].meshes[i].rotate.y), RadToDeg(objects[selected].meshes[i].rotate.z));
 						}
 					}
 

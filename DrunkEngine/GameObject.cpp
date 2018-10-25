@@ -6,8 +6,15 @@
 #include "ComponentCamera.h"
 
 // Creation of Root Node from a file
+GameObject::GameObject()
+{
+	SetUUID();
+	transform = new ComponentTransform();
+}
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
 {
+	SetUUID();
+
 	this->name = "Scene";
 	this->root = this;
 

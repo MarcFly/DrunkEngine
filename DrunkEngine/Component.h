@@ -31,6 +31,8 @@ public:
 
 public:
 	
+	CTypes type;
+	bool multiple;
 
 public:
 	

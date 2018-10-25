@@ -11,7 +11,7 @@ class ComponentMesh;
 class ComponentTransform : Component
 {
 public:
-	ComponentTransform() {};
+	ComponentTransform() { position = { 0,0,0 }; scale = { 1,1,1 }; rotate_euler = { 0,0,0 }; };
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 	ComponentTransform(const aiMatrix4x4* t, ComponentMesh* par);
 
@@ -26,10 +26,10 @@ public:
 
 public:
 
-	float3 transform_position;
-	float3 transform_scale;
-	Quat transform_rotate_quat;
-	float3 transform_rotate_euler;
+	float3 position;
+	float3 scale;
+	Quat rotate_quat;
+	float3 rotate_euler;
 
 	GameObject* parent = nullptr;
 	ComponentMesh* mparent = nullptr;

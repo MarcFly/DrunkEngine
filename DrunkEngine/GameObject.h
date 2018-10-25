@@ -10,6 +10,7 @@
 #include "SDL/include/SDL_stdinc.h"
 #include <math.h>
 
+class Component;
 class ComponentMesh;
 class ComponentMaterial;
 class ComponentTransform;
@@ -19,16 +20,7 @@ class Primitive;
 class GameObject
 {
 public:
-	GameObject() {
-		pcg32_random_t rng;
-		LARGE_INTEGER li;
-		QueryPerformanceFrequency(&li);
-		QueryPerformanceCounter(&li);
-		pcg32_srandom_r(&rng,li.QuadPart,(intptr_t)&rng); 
-
-		UUID = pcg32_random_r(&rng);
-	};
-	//GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par);
+	GameObject();
 	GameObject(const char* path, const aiScene* scene, const aiNode* root_obj, const char* file_path);
 
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);
@@ -63,6 +55,7 @@ public:
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
 	std::vector<GameObject*> children;
+	std::vector<Component*> components;
 
 	bool to_pop = false;
 	bool active = false;
@@ -79,8 +72,21 @@ public:
 		parent->AdjustObjects();
 	}
 
-	void DestroyMaterial();
-	void DestroyMesh();
+	void DestroyComponent()
+	{
+		// Destroy a component
+	}
+
+	void SetUUID()
+	{
+		pcg32_random_t rng;
+		LARGE_INTEGER li;
+		QueryPerformanceFrequency(&li);
+		QueryPerformanceCounter(&li);
+		pcg32_srandom_r(&rng, li.QuadPart, (intptr_t)&rng);
+
+		UUID = pcg32_random_r(&rng);
+	}
 
 };
 
