@@ -241,7 +241,8 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	for (int i = 0; i < text_size; i++)
 	{
 		aiString path;
-		aiReturn err = mat->GetTexture(aiTextureType_DIFFUSE, i, &path);
+		mat->GetTexture(aiTextureType_DIFFUSE, i, &path);
+		
 		textures.push_back(path.C_Str());
 
 		buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
@@ -325,8 +326,6 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 
 	if (check)
 	{
-		ILinfo Info;
-
 		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
 		ILuint size;

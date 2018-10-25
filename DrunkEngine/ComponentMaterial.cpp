@@ -94,7 +94,8 @@ Texture* ComponentMaterial::CheckNameRep(std::string name)
 			break;
 
 		if(name.substr(name.find_last_of("\\/") + 1) == textures[i]->filename.substr(textures[i]->filename.find_last_of("\\/") + 1))
-		ret = textures[i];
+			ret = textures[i];
+
 		if (ret != nullptr)
 			break;
 

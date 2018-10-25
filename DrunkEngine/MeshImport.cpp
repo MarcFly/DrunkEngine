@@ -12,7 +12,7 @@
 
 void MeshImport::Init()
 {
-
+	// Will initate later values
 }
 
 ////////////------------------------------------------------------------------------------------------------------------------
@@ -202,14 +202,14 @@ void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normal
 	float aux[9];
 
 	aux[0] = vertex[index[ind * 3] * 3];
-	aux[1] = vertex[(index[ind * 3] * 3) + 1];
-	aux[2] = vertex[(index[ind * 3] * 3) + 2];
-	aux[3] = vertex[(index[(ind * 3) + 1] * 3)];
-	aux[4] = vertex[(index[(ind * 3) + 1] * 3) + 1];
-	aux[5] = vertex[(index[(ind * 3) + 1] * 3) + 2];
-	aux[6] = vertex[(index[(ind * 3) + 2] * 3)];
-	aux[7] = vertex[(index[(ind * 3) + 2] * 3) + 1];
-	aux[8] = vertex[(index[(ind * 3) + 2] * 3) + 2];
+	aux[1] = vertex[index[ind * 3] * 3 + 1];
+	aux[2] = vertex[index[ind * 3] * 3 + 2];
+	aux[3] = vertex[index[(ind * 3) + 1] * 3];
+	aux[4] = vertex[index[(ind * 3) + 1] * 3 + 1];
+	aux[5] = vertex[index[(ind * 3) + 1] * 3 + 2];
+	aux[6] = vertex[index[(ind * 3) + 2] * 3];
+	aux[7] = vertex[index[(ind * 3) + 2] * 3 + 1];
+	aux[8] = vertex[index[(ind * 3) + 2] * 3 + 2];
 
 	float p1 = (aux[0] + aux[3] + aux[6]) / 3;
 	float p2 = (aux[1] + aux[4] + aux[7]) / 3;
@@ -235,7 +235,10 @@ std::vector<float> MeshImport::ExportBBox(const aiVector3D* verts, const int& nu
 {
 	std::vector<float> ret;
 
-	float max_x = INT_MIN, max_y = INT_MIN, max_z = INT_MIN, min_x = INT_MAX, min_y = INT_MAX, min_z = INT_MAX;
+	float max_x, max_y, max_z, min_x, min_y, min_z;
+	max_x = max_y = max_z = INT_MIN;
+	min_x = min_y = min_z = INT_MAX;
+
 
 	for (int i = 0; i < num_vertex; i++)
 	{

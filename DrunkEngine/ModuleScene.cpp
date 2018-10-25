@@ -48,9 +48,6 @@ bool ModuleScene::CleanUp()
 {
 	bool ret = false;
 
-	// Test how it works
-	//App->importer->SerializeSceneData();
-
 	PLOG("Destroying all objects");
 
 	ret = DestroyScene();
@@ -66,9 +63,8 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	bool ret = true;
 
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);  // for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
-	std::string aux = file_path;
 
-	std::string extension = strrchr(file_path, '.');
+	std::string aux = file_path;
 
 	if (scene == nullptr)
 	{

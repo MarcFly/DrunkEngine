@@ -26,6 +26,9 @@ public:
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};
 
+	virtual void Load() {};
+	virtual void Save() {};
+
 public:
 	
 

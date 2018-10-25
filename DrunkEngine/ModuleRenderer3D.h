@@ -50,7 +50,7 @@ enum TexParams {
 
 };
 
-struct ComponentMesh;
+class ComponentMesh;
 
 class ModuleRenderer3D : public Module
 {

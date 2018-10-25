@@ -6,7 +6,7 @@
 #include "Assimp/include/scene.h"
 #include "MGL/MathGeoLib.h"
 #include "pcg-c-basic-0.9\pcg_basic.h"
-#include <time.h>
+#include <Windows.h>
 #include "SDL/include/SDL_stdinc.h"
 #include <math.h>
 
@@ -21,10 +21,12 @@ class GameObject
 public:
 	GameObject() {
 		pcg32_random_t rng;
-		pcg32_srandom_r(&rng, time(NULL) ^ (intptr_t)&printf, 5); 
-		float value = ldexp(pcg32_random_r(&rng), -32);
+		LARGE_INTEGER li;
+		QueryPerformanceFrequency(&li);
+		QueryPerformanceCounter(&li);
+		pcg32_srandom_r(&rng,li.QuadPart,(intptr_t)&rng); 
 
-		UUID = value * (10^8);
+		UUID = pcg32_random_r(&rng);
 	};
 	//GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par);
 	GameObject(const char* path, const aiScene* scene, const aiNode* root_obj, const char* file_path);

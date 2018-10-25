@@ -44,8 +44,6 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 	ret->name = obj_node->mName.C_Str();
 
-	//ret->SetOriginalLoadPath(path);
-
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
 		std::string filename = "./Library/Meshes/";
@@ -85,7 +83,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 void ModuleImport::ExportScene(const char* file_path)
 {
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);// for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast); // for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
 	std::string aux = file_path;
 
 	if (scene == nullptr)
@@ -104,13 +102,14 @@ void ModuleImport::ExportScene(const char* file_path)
 
 	if (scene->HasMeshes())
 		for (int i = 0; i < scene->mNumMeshes; i++)
-			mesh_i->ExportMesh(scene, i, file_path);
+			mesh_i->ExportMesh(scene, i, aux.c_str());
+
 	if(scene->HasMaterials())
 		for(int i = 0; i < scene->mNumMaterials; i++)
 			for (int j = 0; j < scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE); j++)
 			{
 				aiString path;
-				aiReturn err = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, j, &path);
+				scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, j, &path);
 				mat_i->ExportTexture(path.C_Str());
 			}
 }

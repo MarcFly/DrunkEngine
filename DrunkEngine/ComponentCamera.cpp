@@ -57,7 +57,7 @@ ComponentCamera::~ComponentCamera()
 
 void ComponentCamera::Start()
 {
-
+	// Start
 }
 
 bool ComponentCamera::Update(float dt)
@@ -125,6 +125,7 @@ void ComponentCamera::Draw()
 
 void ComponentCamera::CleanUp()
 {
+	// Cleanup
 }
 
 void ComponentCamera::Look(const vec &Position, const vec &Reference, bool RotateAroundReference)
@@ -300,15 +301,6 @@ void ComponentCamera::MoveTest(float speed)
 
 void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 {
-
-	//for (int i = 0; i < obj->meshes.size() - 1; i++) {
-	//	for (uint j = 0; j < obj->meshes[i].num_vertex * 3; j++)
-	//	{
-	//		if (vertex_aux < abs(obj->meshes[i].vertex[j]))
-	//			vertex_aux = abs(obj->meshes[i].vertex[j]);
-	//	}
-	//}
-
 	Transport(vec(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
 
 	vec aux = obj->getObjectCenter();

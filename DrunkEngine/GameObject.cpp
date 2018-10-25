@@ -135,29 +135,34 @@ float GameObject::SetBoundBox()
 			// Setting the BB min and max points
 
 			if (this->BoundingBox->maxPoint.x < this->children[i]->BoundingBox->maxPoint.x)
-				this->BoundingBox->maxPoint.x = this->children[i]->BoundingBox->maxPoint.x;																	
+				this->BoundingBox->maxPoint.x = this->children[i]->BoundingBox->maxPoint.x;		
+
 			if (this->BoundingBox->minPoint.x > this->children[i]->BoundingBox->minPoint.x)
-				this->BoundingBox->minPoint.x = this->children[i]->BoundingBox->minPoint.x;																	
+				this->BoundingBox->minPoint.x = this->children[i]->BoundingBox->minPoint.x;	
+
 			if (this->BoundingBox->maxPoint.y < this->children[i]->BoundingBox->maxPoint.y)
-				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;																	
+				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;	
+
 			if (this->BoundingBox->minPoint.y > this->children[i]->BoundingBox->minPoint.y)
 				this->BoundingBox->minPoint.y = this->children[i]->BoundingBox->minPoint.y;
+
 			if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
-				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;												 						
+				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;	
+
 			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
 				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
 		}
 	}
 
 	// Set Return Value
-	{
-		if (abs(this->BoundingBox->maxPoint.x) > ret) { ret = abs(this->BoundingBox->maxPoint.x); }
-		if (abs(this->BoundingBox->maxPoint.y) > ret) { ret = abs(this->BoundingBox->maxPoint.y); }
-		if (abs(this->BoundingBox->maxPoint.z) > ret) { ret = abs(this->BoundingBox->maxPoint.z); }
-		if (abs(this->BoundingBox->minPoint.x) > ret) { ret = abs(this->BoundingBox->minPoint.x); }
-		if (abs(this->BoundingBox->minPoint.y) > ret) { ret = abs(this->BoundingBox->minPoint.y); }
-		if (abs(this->BoundingBox->minPoint.z) > ret) { ret = abs(this->BoundingBox->minPoint.z); }
-	}
+	
+	if (abs(this->BoundingBox->maxPoint.x) > ret) { ret = abs(this->BoundingBox->maxPoint.x); }
+	if (abs(this->BoundingBox->maxPoint.y) > ret) { ret = abs(this->BoundingBox->maxPoint.y); }
+	if (abs(this->BoundingBox->maxPoint.z) > ret) { ret = abs(this->BoundingBox->maxPoint.z); }
+	if (abs(this->BoundingBox->minPoint.x) > ret) { ret = abs(this->BoundingBox->minPoint.x); }
+	if (abs(this->BoundingBox->minPoint.y) > ret) { ret = abs(this->BoundingBox->minPoint.y); }
+	if (abs(this->BoundingBox->minPoint.z) > ret) { ret = abs(this->BoundingBox->minPoint.z); }
+	
 
 	return ret;
 }
@@ -191,7 +196,7 @@ void GameObject::SetBoundBoxFromMeshes()
 void GameObject::AdjustObjects()
 {
 	int i = 0;
-	for (i; i < this->children.size(); i++)
+	for (; i < this->children.size(); i++)
 	{
 		if (this->children[i]->to_pop == true)
 		{
@@ -212,7 +217,7 @@ void GameObject::AdjustObjects()
 void GameObject::AdjustMaterials()
 {
 	int i = 0;
-	for (i; i < this->materials.size(); i++)
+	for (; i < this->materials.size(); i++)
 	{
 		if (this->materials[i]->to_pop == true)
 		{
@@ -233,7 +238,7 @@ void GameObject::AdjustMaterials()
 void GameObject::AdjustMeshes()
 {
 	int i = 0;
-	for (i; i < this->meshes.size(); i++)
+	for (; i < this->meshes.size(); i++)
 	{
 		if (this->meshes[i]->to_pop == true)
 		{
