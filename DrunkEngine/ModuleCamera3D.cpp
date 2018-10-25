@@ -106,7 +106,7 @@ update_status ModuleCamera3D::Update(float dt)
 		App->window->window_w = win_w;
 		App->window->window_h = win_h;
 		main_camera->SetAspectRatio();
-		App->renderer3D->OnResize(win_w, win_h);
+		App->renderer3D->OnResize();
 	}
 
 	return UPDATE_CONTINUE;

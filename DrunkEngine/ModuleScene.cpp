@@ -39,7 +39,7 @@ bool ModuleScene::Start()
 	//LoadFromFile("./Ogre.fbx");
 	//LoadFromFile("./KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
-	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
+	App->renderer3D->OnResize();
 
 	return ret;
 }

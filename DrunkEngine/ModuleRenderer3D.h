@@ -65,7 +65,7 @@ public:
 	bool CleanUp();
 
 	void Render(bool use_texture);
-	void OnResize(int width, int height);
+	void OnResize();
 	void ChangeVsync();
 	bool CheckGLError();
 	void RenderGrid();
