@@ -21,16 +21,3 @@ public:
 };
 
 #endif
-
-/*
-if (!check) // Check from imported textures folder
-{
-	std::string new_file_path = path;
-	new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-	new_file_path = "./Library/Textures/" + new_file_path; // Have to set new directories
-
-	check = ilLoadImage(new_file_path.c_str());
-	if (check)
-		App->ui->console_win->AddLog("Texture found in Imported Directories");
-}*/
