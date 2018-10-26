@@ -114,7 +114,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 bool ModuleCamera3D::Load(JSON_Value * root_value)
 {
-	return false;
+	return true;
 }
 
 bool ModuleCamera3D::Save(JSON_Value* root_value)

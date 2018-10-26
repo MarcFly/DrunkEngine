@@ -110,6 +110,25 @@ public:
   // Checker Texture
 	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
   
+private:
+	void SetDefault()
+	{
+		depth_test = true;
+		cull_face = true;
+		lighting = false;
+		color_material = false;
+		texture_2d = true;
+		wireframe = false;
+		faces = true;
+		render_normals = false;
+		normal_length = 1;
+		vsync = true;
+		bounding_box = false;
+		curr_tws = 0;
+		curr_twt = 0;
+		curr_tminf = 0;
+		curr_tmagf = 0;
+	}
 };
 
 #endif

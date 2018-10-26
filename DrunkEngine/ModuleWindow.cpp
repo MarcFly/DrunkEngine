@@ -45,8 +45,6 @@ bool ModuleWindow::Init()
 		screen_size_w = DM.w;
 		screen_size_h = DM.h;
 
-		Load(nullptr);
-
 		if(fullscreen == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
@@ -211,8 +209,6 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 	json_object_dotset_number(root_obj, "window.options.brightness", this->brightness);
 
 	json_serialize_to_file(root_value, "config_data.json");
-
-	App->ui->console_win->AddLog("Window config saved");
 
 	ret = true;
 	return ret;

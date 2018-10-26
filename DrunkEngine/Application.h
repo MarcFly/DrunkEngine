@@ -28,6 +28,8 @@ public:
 	ModuleUI* ui;
 	ModuleScene* mesh_loader;
 
+	std::string profile = "config_data.json";
+
 private:
 
 	Timer	ms_timer;

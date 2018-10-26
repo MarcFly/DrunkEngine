@@ -64,6 +64,8 @@ public:
 		return UPDATE_CONTINUE; 
 	}
 
+	virtual void SetDefault() {};
+
 };
 
 #endif // !_MODULE_H_

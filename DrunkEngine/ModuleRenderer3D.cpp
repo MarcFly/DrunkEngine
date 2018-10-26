@@ -48,7 +48,7 @@ bool ModuleRenderer3D::Init()
 		ret = false;
 	}
 	
-	Load(nullptr);
+	//Load(nullptr);
 
 	if(ret == true)
 	{

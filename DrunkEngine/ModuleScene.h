@@ -61,6 +61,11 @@ public:
 
 	void ObjUpdate(float dt) { Root_Object->Update(dt); };
 
+private:
+	void SetDefault()
+	{
+		scene_folder = "Assets\/";
+	}
 };
 
 #endif

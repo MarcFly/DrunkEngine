@@ -104,6 +104,22 @@ public:
 	int controls[NULL_CONTROL];
 
 	bool quit;
+
+private:
+	void SetDefault()
+	{
+		controls[MOVE_FORWARD]	= 26;
+		controls[MOVE_BACK]		= 22;
+		controls[MOVE_LEFT]		= 4;
+		controls[MOVE_RIGHT]	= 7;
+		controls[FOCUS_CAMERA]	= 9;
+		controls[ORBIT_CAMERA]	= 226;
+		controls[OPTIONS_MENU]	= 18;
+		controls[CONSOLE_MENU]	= 6;
+		controls[MESH_MENU]		= 16;
+		controls[ABOUT_MENU]	= 12;
+		
+	}
 };
 
 #endif
