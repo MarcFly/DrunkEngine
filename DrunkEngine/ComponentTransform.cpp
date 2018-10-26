@@ -1,5 +1,6 @@
 #include "ComponentTransform.h"
 #include "Assimp/include/scene.h"
+#include "GameObject.h"
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par) : parent{ par }
 {
@@ -62,4 +63,46 @@ void ComponentTransform::SetTransformScale(const int scale_x, const int scale_y,
 void ComponentTransform::CleanUp()
 {
 	this->parent = nullptr;
+}
+
+void ComponentTransform::Load(JSON_Value* scene, const char* file)
+{
+
+}
+
+void ComponentTransform::Save(JSON_Value* scene, const char* file)
+{
+	JSON_Object* curr = json_value_get_object(scene);
+
+	std::string obj = std::to_string(this->parent->UUID) + ".";
+	std::string set_val;
+
+	set_val = obj + "type";
+	json_object_dotset_number(curr, set_val.c_str(), type);
+
+	set_val = obj + "position.x";
+	json_object_dotset_number(curr, set_val.c_str(), position.x);
+	set_val = obj + "position.y";
+	json_object_dotset_number(curr, set_val.c_str(), position.y);
+	set_val = obj + "position.z";
+	json_object_dotset_number(curr, set_val.c_str(), position.z);
+
+	set_val = obj + "scale.x";
+	json_object_dotset_number(curr, set_val.c_str(), scale.x);
+	set_val = obj + "scale.y";
+	json_object_dotset_number(curr, set_val.c_str(), scale.y);
+	set_val = obj + "scale.z";
+	json_object_dotset_number(curr, set_val.c_str(), scale.z);
+
+	set_val = obj + "rotate_quat.w";
+	json_object_dotset_number(curr, set_val.c_str(), rotate_quat.w);
+	set_val = obj + "rotate_quat.x";
+	json_object_dotset_number(curr, set_val.c_str(), rotate_quat.x);
+	set_val = obj + "rotate_quat.y";
+	json_object_dotset_number(curr, set_val.c_str(), rotate_quat.y);
+	set_val = obj + "rotate_quat.z";
+	json_object_dotset_number(curr, set_val.c_str(), rotate_quat.z);
+
+	json_serialize_to_file(scene, file);
+	scene = json_parse_file(file);
 }

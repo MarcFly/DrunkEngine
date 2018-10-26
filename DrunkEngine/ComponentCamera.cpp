@@ -311,12 +311,12 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	mesh_multiplier = vertex_aux / 4;
 }
 
-void ComponentCamera::Load(JSON_Object * root_value)
+void ComponentCamera::Load(JSON_Value* scene, const char* file)
 {
 
 }
 
-void ComponentCamera::Save(JSON_Object * root_value)
+void ComponentCamera::Save(JSON_Value* scene, const char* file)
 {
 
 }

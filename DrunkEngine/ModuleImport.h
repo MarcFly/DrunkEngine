@@ -115,12 +115,15 @@ public:
 
 	std::string GetDir(const char* full_path)
 	{
-		std::string aux = strrchr(full_path, '\\/');
-		std::string path = full_path;
-		//original_load.substr(aux.length());
-		path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /
-		
-		return path;
+		if (full_path != nullptr)
+		{
+			std::string aux = strrchr(full_path, '\\/');
+			std::string path = full_path;
+			//original_load.substr(aux.length());
+			path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /
+			return path;
+		}
+		return std::string("");
 	}
 
 };

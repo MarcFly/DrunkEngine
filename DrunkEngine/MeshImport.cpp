@@ -267,3 +267,65 @@ std::vector<float> MeshImport::ExportBBox(const aiVector3D* verts, const int& nu
 ////////////------------------------------------------------------------------------------------------------------------------
 //-SaveDT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
+
+void MeshImport::ExportMesh(const ComponentMesh* mesh)
+{
+	uint vertex_size = sizeof(GLfloat)*(mesh->num_vertex * 3);
+	uint index_size = sizeof(GLuint)*(mesh->num_faces);
+	uint normal_size = sizeof(GLfloat)*(mesh->num_faces);
+	uint uv_size = sizeof(float)*(mesh->num_vertex * 3);
+	uint BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
+	uint Mat_index = sizeof(unsigned int); // The material index 
+
+	uint size_size = sizeof(uint) * 5; // Amount of data put inside, the first values of data will be the size of each part
+
+	uint buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + Mat_index;
+
+	char* data = new char[buf_size];
+	char* cursor = data;
+
+	uint ranges[5] =
+	{
+		vertex_size / sizeof(GLfloat),
+		index_size / sizeof(GLuint),
+		normal_size / sizeof(GLfloat),
+		uv_size / sizeof(float),
+		BBox_size / sizeof(GLfloat)
+	};
+
+	memcpy(cursor, ranges, sizeof(ranges));
+	cursor += sizeof(ranges);
+
+	memcpy(cursor, mesh->vertex, vertex_size);
+	cursor += vertex_size;
+
+	memcpy(cursor, mesh->index, index_size);
+	cursor += index_size;
+
+	memcpy(cursor, mesh->normal, normal_size);
+	cursor += normal_size;
+
+	memcpy(cursor, mesh->tex_coords, uv_size);
+	cursor += uv_size;
+
+	std::vector<float> test;
+	test.push_back(mesh->BoundingBox->minPoint.x);
+	test.push_back(mesh->BoundingBox->minPoint.y);
+	test.push_back(mesh->BoundingBox->minPoint.z);
+	test.push_back(mesh->BoundingBox->maxPoint.x);
+	test.push_back(mesh->BoundingBox->maxPoint.y);
+	test.push_back(mesh->BoundingBox->maxPoint.z);
+
+	memcpy(cursor, &test[0], sizeof(float) * 6);
+	cursor += sizeof(float) * 6;
+
+	memcpy(cursor, &mesh->Material_Ind, Mat_index);
+
+	std::ofstream write_file;
+
+	write_file.open(mesh->name.c_str(), std::fstream::out | std::ios::binary);
+
+	write_file.write(data, buf_size);
+
+	write_file.close();
+}

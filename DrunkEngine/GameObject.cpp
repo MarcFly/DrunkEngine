@@ -9,7 +9,7 @@
 GameObject::GameObject()
 {
 	SetUUID();
-	components.push_back(new ComponentTransform());
+	components.push_back(new ComponentTransform(this));
 }
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
 {
@@ -279,15 +279,15 @@ void GameObject::CleanUp()
 }
 
 
-void GameObject::Load(JSON_Object* root_value)
+void GameObject::Load(JSON_Value* curr, const char* file)
 {
 
 }
 
-void GameObject::Save(JSON_Object* root_value)
+void GameObject::Save(JSON_Value* scene, const char* file)
 {
+	JSON_Object* curr = json_value_get_object(scene);
 
-	JSON_Object* curr = root_value;
 	std::string obj = std::to_string(this->UUID) + ".";
 	std::string set_val;
 	
@@ -297,11 +297,14 @@ void GameObject::Save(JSON_Object* root_value)
 	set_val = obj + "name";
 	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
 
+	json_serialize_to_file(scene, file);
+	scene = json_parse_file(file);
+
 	for (int i = 0; i < this->components.size(); i++)
-		this->components[i]->Save(curr);
+		this->components[i]->Save(scene, file);
 
 	for(int i = 0; i < this->children.size(); i++)
-		this->children[i]->Save(curr);
+		this->children[i]->Save(scene, file);
 }
 
 std::vector<uint> GameObject::GetMeshProps()

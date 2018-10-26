@@ -49,6 +49,9 @@ public:
 	Texture* CheckTexRep(std::string name);
 	Texture* CheckNameRep(std::string name);
 
+	void Load(JSON_Value* scene, const char* file);
+	void Save(JSON_Value* scene, const char* file);
+
 public:
 
 	uint NumDiffTextures;
@@ -57,8 +60,6 @@ public:
 	Color default_print;
 
 	GameObject* parent = nullptr;
-
-	bool to_pop = false;
 
 public:
 	void SetBaseVals()

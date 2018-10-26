@@ -41,6 +41,8 @@ bool ModuleScene::Start()
 
 	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
+	Save(nullptr);
+
 	return ret;
 }
 
@@ -115,17 +117,22 @@ bool ModuleScene::Load(JSON_Value * root_value)
 	bool ret = false;
 
 	root_value = json_parse_file("config_data.json");
+	if (root_value == nullptr)
+	{
+		JSON_Object* obj = json_value_get_object(root_value);
+		if (obj == nullptr)
+		{
+			scene_folder = json_object_dotget_string(obj, "manage_mesh.scenes_path");
 
-	scene_folder = json_object_dotget_string(json_object(root_value), "manage_mesh.scenes_path");	
+			std::string default_load = json_object_dotget_string(obj, "manage_mesh.default_load");
 
-	std::string default_load = json_object_dotget_string(json_object(root_value), "manage_mesh.default_load");
+			default_load = scene_folder + default_load;
 
-	default_load = scene_folder + default_load;
-
-	JSON_Value* scene = json_parse_file(default_load.c_str());
-	JSON_Object* scene_obj = json_value_get_object(scene);
-	getRootObj()->Load(scene_obj);
-	
+			JSON_Value* scene = json_parse_file(default_load.c_str());
+			JSON_Object* scene_obj = json_value_get_object(scene);
+			getRootObj()->Load(scene, default_load.c_str());
+		}
+	}
 	ret = true;
 	return ret;
 }
@@ -142,10 +149,14 @@ bool ModuleScene::Save(JSON_Value * root_value)
 	json_serialize_to_file(root_value, "config_data.json");
 	App->ui->console_win->AddLog("ModuleScene config saved");
 
-	std::string Save_scene = getRootObj()->name + ".scenedrnk";
+	std::string Save_scene = getRootObj()->name + ".json";
 	JSON_Value* scene = json_parse_file(Save_scene.c_str());
-	JSON_Object* scene_obj = json_value_get_object(scene);
-	getRootObj()->Save(scene_obj);
+	if (scene == nullptr)
+	{
+		json_serialize_to_file(scene, Save_scene.c_str());
+		JSON_Value* scene = json_parse_file(Save_scene.c_str());
+	}
+	getRootObj()->Save(scene, Save_scene.c_str());
 
 	json_serialize_to_file(scene, Save_scene.c_str());
 

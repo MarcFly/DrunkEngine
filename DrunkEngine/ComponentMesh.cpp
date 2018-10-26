@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
+#include "MeshImport.h"
 
 ComponentMesh::ComponentMesh()
 {
@@ -300,4 +301,28 @@ void ComponentMesh::CleanUp()
 
 	this->parent = nullptr;
 	this->root = nullptr;
+}
+
+void ComponentMesh::Load(JSON_Value* scene, const char* file)
+{
+
+}
+
+void ComponentMesh::Save(JSON_Value* scene, const char* file)
+{
+	JSON_Object* curr = json_value_get_object(scene);
+
+	std::string obj = std::to_string(this->parent->UUID) + ".";
+	std::string set_val;
+
+	set_val = obj + "type";
+	json_object_dotset_number(curr, set_val.c_str(), type);
+
+	set_val = obj + "mesh_name";
+	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
+
+	json_serialize_to_file(scene, file);
+	scene = json_parse_file(file);
+
+	App->importer->mesh_i->ExportMesh(this);
 }

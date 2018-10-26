@@ -33,9 +33,10 @@ public:
 
 	void CleanUp();
 
-public:
-	std::string name;
+	void Load(JSON_Value* scene, const char* file);
+	void Save(JSON_Value* scene, const char* file);
 
+public:
 	GLuint id_index; // index in VRAM
 	GLuint num_index;
 	GLuint* index;
@@ -61,8 +62,6 @@ public:
 	GameObject* parent;
 	GameObject* root;
 
-	bool to_pop;
-
 public:
 	void SetTextTo(const int& Mat_ind) { this->Material_Ind = Mat_ind; };
 
@@ -79,7 +78,7 @@ public:
 		BoundingBox = nullptr;
 		parent = root = nullptr;
 
-		bool to_pop = false;
+		to_pop = false;
 	}
 };
 

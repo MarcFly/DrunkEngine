@@ -18,6 +18,8 @@ public:
 	ComponentMesh* ImportMesh(const char* mesh, GameObject* par);
 
 	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
+	void ExportMesh(const ComponentMesh* mesh);
+
 	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
 	std::vector<float> ExportBBox(const aiVector3D* verts, const int& num_vertex);
 

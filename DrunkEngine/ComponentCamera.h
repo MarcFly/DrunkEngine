@@ -34,8 +34,8 @@ public:
 
 	void LookToObj(GameObject* obj, float vertex_aux);
 
-	void Load(JSON_Object* root_value);
-	void Save(JSON_Object* root_value);
+	void Load(JSON_Value* scene, const char* file);
+	void Save(JSON_Value* scene, const char* file);
 
 private:
 	GameObject * parent;

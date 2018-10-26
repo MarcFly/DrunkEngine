@@ -20,12 +20,14 @@ void MatImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
+ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par, const char* Dir)
 {
 	App->importer->Imp_Timer.Start();
 
 	ComponentMaterial* ret = new ComponentMaterial();
 	ret->parent = par;
+
+	ret->name = file;
 
 	// Default Material Color
 	std::ifstream read_file;
@@ -75,7 +77,7 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
-			Texture* check = ImportTexture(aux, ret);
+ 			Texture* check = ImportTexture(aux, ret);
 
 			if (check == nullptr)
 			{
@@ -83,10 +85,13 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 				filename += App->importer->GetFileName(aux);
 				filename.append(".dds");
 
-				ExportTexture(aux, dir);
-				check = ImportTexture(filename.c_str(), ret);
+				ExportTexture(aux, Dir);
+				check = ImportTexture(filename.c_str(), ret, Dir);
 			}
-			ret->textures.push_back(check);
+			if (check != nullptr)
+			{
+				ret->textures.push_back(check);
+			}
 			cursor += texture_ranges[i];
 		}
 
@@ -106,7 +111,7 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par)
 	return ret;
 }
 
-Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par)
+Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, const char* Dir)
 {
 	Timer text_timer;
 
@@ -354,5 +359,85 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 	}
 
 	ilDeleteImages(1, &id_Image);
+
+}
+
+////////////------------------------------------------------------------------------------------------------------------------
+//-SaveDT-//------------------------------------------------------------------------------------------------------------------
+////////////------------------------------------------------------------------------------------------------------------------
+
+void MatImport::ExportMat(const ComponentMaterial* mat)
+{
+	uint prop_size = mat->NumProperties;
+	uint text_size = mat->NumDiffTextures;
+
+	uint buf_size = sizeof(uint) * (prop_size + text_size);
+
+	float color[4] = { mat->default_print.r,mat->default_print.g,mat->default_print.b,1 };
+
+	buf_size += sizeof(color);
+
+	// allocating a uint for size
+	buf_size += sizeof(uint);
+	std::string dir = "./Library/Textures/";
+	buf_size += dir.length();
+
+	std::vector<uint> texture_ranges;
+	std::vector<std::string> textures; // Only Diffuse for now
+	for (int i = 0; i < text_size; i++)
+	{
+		if (mat->textures[i] != nullptr)
+		{
+			textures.push_back(mat->textures[i]->filename.c_str());
+
+			buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
+
+			texture_ranges.push_back(textures[i].length() + 2);
+		}
+	}
+
+	char* data = new char[buf_size];
+	char* cursor = data;
+
+	memcpy(cursor, &color[0], sizeof(color));
+	cursor += sizeof(color);
+
+	// I will memcpy the properties amount because its relevant
+	// but not the properties itself because we don't use them now
+	memcpy(cursor, &prop_size, sizeof(uint));
+	cursor += sizeof(uint);
+
+	memcpy(cursor, &text_size, sizeof(uint));
+	cursor += sizeof(uint);
+
+	uint dir_size = dir.length() + 2;
+	memcpy(cursor, &dir_size, sizeof(uint));
+	cursor += sizeof(uint);
+
+	memcpy(cursor, dir.c_str(), dir.length());
+	cursor += dir.length() + 2;
+
+	char* exitqueue = "\0";
+	memcpy(cursor, exitqueue, 2);
+	cursor += 2;
+
+	memcpy(cursor, &texture_ranges[0], sizeof(uint)*texture_ranges.size());
+	cursor += sizeof(uint) * texture_ranges.size();
+
+	for (int i = 0; i < textures.size(); i++)
+	{
+		memcpy(cursor, textures[i].c_str(), textures[i].length());
+		cursor += textures[i].length();
+		memcpy(cursor, exitqueue, 2);
+		cursor += 2;
+	}
+
+	std::ofstream write_file;
+
+	write_file.open(mat->name.c_str(), std::fstream::out | std::ios::binary);
+
+	write_file.write(data, buf_size);
+
+	write_file.close();
 
 }

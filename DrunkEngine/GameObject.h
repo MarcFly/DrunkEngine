@@ -32,8 +32,8 @@ public:
 	void Draw();
 	void DrawBB();
 
-	void Save(JSON_Object* root_value);
-	void Load(JSON_Object* root_value);
+	void Save(JSON_Value* curr, const char* file);
+	void Load(JSON_Value* curr, const char* file);
 
 	vec getObjectCenter();
 	float SetBoundBox();

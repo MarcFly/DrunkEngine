@@ -2,6 +2,7 @@
 #define _COMPONENT_
 
 #include "parson/parson.h"
+#include <string>
 
 class GameObject;
 class ComponentMaterial;
@@ -37,8 +38,8 @@ public:
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};
 
-	virtual void Load(JSON_Object* root_value) {};
-	virtual void Save(JSON_Object* root_value) {};
+	virtual void Load(JSON_Value* scene, const char* file) {};
+	virtual void Save(JSON_Value* scene, const char* file) {};
 
 	virtual void SetBaseVals()
 	{
@@ -53,6 +54,8 @@ public:
 	GameObject* parent;
 	unsigned int count_number;
 	bool to_pop = false;
+
+	std::string name; // Save objects will have file name as name
 
 public:
 	// AsX Functions for non hardcoded acces to different type when it is

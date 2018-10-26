@@ -56,24 +56,30 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		if (aux == nullptr)
 		{
 			mesh_i->ExportMesh(scene, obj_node->mMeshes[i],path);
-			mesh_i->ImportMesh(filename.c_str(), ret);
+			aux = mesh_i->ImportMesh(filename.c_str(), ret);
 		}
-
-		ret->components.push_back(aux);
-		
+		if (aux != nullptr)
+		{
+			aux->parent = ret;
+			ret->components.push_back(aux);
+		}
 	}
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
 		std::string filename = "./Library/Materials/";
 		filename += GetFileName(path) + "_Mat_" + std::to_string(i);
 		filename.append(".matdrnk");
-		ComponentMaterial* aux = mat_i->ImportMat(filename.c_str(), ret);
+		ComponentMaterial* aux = mat_i->ImportMat(filename.c_str(), ret, GetDir(path).c_str());
 		if (aux == nullptr)
 		{
 			mat_i->ExportMat(scene, i, path);
-			aux = mat_i->ImportMat(filename.c_str(), ret);
+			aux = mat_i->ImportMat(filename.c_str(), ret, GetDir(path).c_str());
 		}
-		ret->components.push_back(aux);
+		if (aux != nullptr)
+		{
+			aux->parent = ret;
+			ret->components.push_back(aux);
+		}
 	}
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)
