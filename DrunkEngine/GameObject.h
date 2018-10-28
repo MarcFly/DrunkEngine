@@ -35,6 +35,8 @@ public:
 	void AdjustMaterials();
 	void AdjustMeshes();
 
+	void CalculateGlobalTransforms();
+
 	void CleanUp();
 
 public:

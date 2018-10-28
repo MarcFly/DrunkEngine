@@ -10,7 +10,7 @@ class ComponentMesh;
 class ComponentTransform
 {
 public:
-	ComponentTransform() {};
+	ComponentTransform();
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 	ComponentTransform(const aiMatrix4x4* t, ComponentMesh* par);
 
@@ -21,9 +21,14 @@ public:
 	void SetTransformRotation(const float3 rot_vec);
 	void SetTransformScale(const int scale_x, const int scale_y, const int scale_z);
 
+	void SetLocalTransform();
+
 	void CleanUp();
 
 public:
+
+	float4x4 local_transform;
+	float4x4 global_transform;
 
 	float3 transform_position;
 	float3 transform_scale;

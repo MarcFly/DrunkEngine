@@ -1,6 +1,19 @@
 #include "ComponentTransform.h"
 #include "Assimp/include/scene.h"
 
+ComponentTransform::ComponentTransform()
+{
+	this->transform_scale = float3::one;
+	this->transform_rotate_quat = Quat::identity;
+	this->transform_position = float3::zero;
+
+	SetTransformRotation(transform_rotate_quat);
+
+	SetLocalTransform();
+
+	this->parent = nullptr;
+}
+
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {
 	//aiQuaternion rotation_quat; = rotation_quat.GetEuler();
@@ -14,6 +27,8 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 	this->transform_position = float3(pos.x, pos.y, pos.z);
 
 	SetTransformRotation(transform_rotate_quat);
+	
+	SetLocalTransform();
 
 	this->parent = par;
 }
@@ -29,6 +44,10 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par
 	this->transform_scale = float3(scale.x, scale.y, scale.z);
 	this->transform_rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
 	this->transform_position = float3(pos.x, pos.y, pos.z);
+	
+	SetTransformRotation(transform_rotate_quat);
+
+	SetLocalTransform();
 
 	this->mparent = par;
 }
@@ -58,6 +77,14 @@ void ComponentTransform::SetTransformScale(const int scale_x, const int scale_y,
 	transform_scale.x = scale_x;
 	transform_scale.y = scale_y;
 	transform_scale.z = scale_z;
+}
+
+void ComponentTransform::SetLocalTransform()
+{
+	float4x4 local_pos = float4x4::FromTRS(transform_position, Quat::identity, float3::one);
+	float4x4 local_scale = float4x4::FromTRS(float3::zero, Quat::identity, transform_scale);
+
+	local_transform = local_pos * (float4x4)transform_rotate_quat * local_scale;
 }
 
 void ComponentTransform::CleanUp()

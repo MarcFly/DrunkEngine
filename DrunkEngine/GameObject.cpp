@@ -16,6 +16,9 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 	if (this->parent == nullptr)
 		this->camera = new ComponentCamera(this);
 
+	if (this->parent == nullptr)
+		this->transform = new ComponentTransform();
+
 	Start();
 }
 
@@ -27,6 +30,8 @@ void GameObject::Start()
 
 void GameObject::Update(float dt)
 {
+	root->CalculateGlobalTransforms();
+
 	if (camera != nullptr)
 		camera->Update(dt);
 
@@ -249,6 +254,23 @@ void GameObject::AdjustMeshes()
 	}
 
 	this->meshes.pop_back();
+}
+
+void GameObject::CalculateGlobalTransforms()
+{
+	if (this->parent != nullptr)
+		this->transform->global_transform = this->parent->transform->global_transform * this->transform->local_transform;
+
+	else
+		transform->global_transform = transform->local_transform;
+	
+	if (this->children.size() > 0)
+	{
+		for (std::vector<GameObject*>::iterator it = this->children.begin(); it != this->children.end(); it++)
+		{
+			(*it)->CalculateGlobalTransforms();
+		}
+	}
 }
 
 void GameObject::CleanUp()
