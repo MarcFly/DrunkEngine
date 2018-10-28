@@ -39,9 +39,17 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	GameObject* ret = new GameObject();
 
 	ret->parent = par;
-	ret->root = ret->parent;
-	while (ret->root->parent != nullptr)
-		ret->root = ret->root->parent;
+	
+	if (ret->parent != nullptr)
+	{
+		ret->root = ret->parent->root;
+		ret->par_UUID = ret->parent->UUID;
+	}
+	else
+	{
+		ret->root = ret;
+		ret->par_UUID = UINT_FAST32_MAX;
+	}
 
 	ret->name = obj_node->mName.C_Str();
 

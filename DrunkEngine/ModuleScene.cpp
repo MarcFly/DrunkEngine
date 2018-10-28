@@ -10,7 +10,7 @@
 #include "DevIL/include/IL/ilu.h"
 #include "GeoPropertiesWindow.h"
 #include "ModuleWindow.h"
-
+#include "ComponentCamera.h"
 
 #include "ModuleRenderer3D.h"
 
@@ -36,7 +36,7 @@ bool ModuleScene::Start()
 
 	//Load(nullptr);
 	//LoadFromFile("./Test Models and Textures/BakerHouse.fbx");
-	//LoadFromFile("./Assets/Ogre.fbx");
+	LoadFromFile("./Assets/Ogre.fbx");
 	//LoadFromFile("./Test Models and Textures/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
@@ -130,6 +130,8 @@ bool ModuleScene::Load(JSON_Value * root_value)
 
 			JSON_Value* scene = json_parse_file(default_load.c_str());
 			JSON_Object* scene_obj = json_value_get_object(scene);
+			if (getRootObj() == nullptr)
+				NewScene();
 			getRootObj()->Load(scene, default_load.c_str());
 		}
 	}
@@ -168,6 +170,24 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 	ret = true;
 	return ret;
+}
+
+void ModuleScene::NewScene()
+{
+	DeleteScene();
+
+	Root_Object = new GameObject();
+	GameObject* MainCam = new GameObject();
+	MainCam->name = "Main Camera";
+	MainCam->components.push_back(new ComponentCamera(MainCam));
+	getRootObj()->children.push_back(MainCam);
+}
+
+void ModuleScene::DeleteScene()
+{
+	if (getRootObj() != nullptr)
+		getRootObj()->DestroyThisObject();
+	delete Root_Object;
 }
 
 //-SET OBJ DATA------------------------------------------------------------------------------------------

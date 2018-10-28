@@ -312,7 +312,7 @@ void ComponentMesh::Save(JSON_Value* scene, const char* file)
 {
 	JSON_Object* curr = json_value_get_object(scene);
 
-	std::string obj = std::to_string(this->parent->UUID) + ".";
+	std::string obj = std::to_string(this->parent->UUID) + ".component.";
 	std::string set_val;
 
 	set_val = obj + "type";

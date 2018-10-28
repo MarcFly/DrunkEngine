@@ -38,6 +38,9 @@ public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
+	void NewScene();
+	void DeleteScene();
+
 public:
 	GameObject* Root_Object = nullptr;
 

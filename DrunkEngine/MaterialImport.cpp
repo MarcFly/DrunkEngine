@@ -239,7 +239,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	// allocating a uint for size
 	buf_size += sizeof(uint);
 	std::string dir = App->importer->GetDir(path);
-	buf_size += dir.length();
+	buf_size += dir.length(); // \0
 
 	std::vector<uint> texture_ranges;
 	std::vector<std::string> textures; // Only Diffuse for now
@@ -250,7 +250,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 		
 		textures.push_back(path.C_Str());
 
-		buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
+		buf_size += textures[i].length() + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 		
 		texture_ranges.push_back(textures[i].length() + 2);
 	}
@@ -390,7 +390,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 		{
 			textures.push_back(mat->textures[i]->filename.c_str());
 
-			buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
+			buf_size += textures[i].length() + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 
 			texture_ranges.push_back(textures[i].length() + 2);
 		}
@@ -415,7 +415,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 	cursor += sizeof(uint);
 
 	memcpy(cursor, dir.c_str(), dir.length());
-	cursor += dir.length() + 2;
+	cursor += dir.length();
 
 	char* exitqueue = "\0";
 	memcpy(cursor, exitqueue, 2);
