@@ -20,8 +20,8 @@ public:
 
 	bool CleanUp();
 
-	bool LoadFromFile(const char* file_path);
-
+	bool LoadFBX(const char* file_path);
+	bool LoadSceneFile(const char* file_path);
 	//bool CreatePrimitiveObject(const vec& center, PCube& sphere);
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
@@ -37,6 +37,8 @@ public:
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
+
+	void SaveScene();
 
 	void NewScene();
 	void DeleteScene();

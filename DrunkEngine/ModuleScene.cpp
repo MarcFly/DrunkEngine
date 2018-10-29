@@ -37,13 +37,13 @@ bool ModuleScene::Start()
 	//Load(nullptr);
 	//LoadFromFile("./Assets/BakerHouse.fbx");
 	//LoadFromFile("./Assets/Ogre.fbx");
-	LoadFromFile("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	//Load(nullptr);
 
 	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
-	Save(nullptr);
+	SaveScene();
 
 	return ret;
 }
@@ -62,7 +62,7 @@ bool ModuleScene::CleanUp()
 	return ret;
 }
 
-bool ModuleScene::LoadFromFile(const char* file_path)
+bool ModuleScene::LoadFBX(const char* file_path)
 {
 	bool ret = true;
 
@@ -100,6 +100,22 @@ bool ModuleScene::LoadFromFile(const char* file_path)
 	return ret;
 }
 
+bool ModuleScene::LoadSceneFile(const char* file_path)
+{
+	JSON_Value* scene = json_parse_file(file_path);
+	JSON_Object* obj_g = json_value_get_object(scene);
+	JSON_Array* gos = json_object_get_array(obj_g, "scene");
+	for (int i = 0; i < json_array_get_count(gos); i++)
+	{
+		JSON_Value* val = json_array_get_value(gos, i);
+
+		getRootObj()->children.push_back(new GameObject());
+		getRootObj()->children[getRootObj()->children.size() - 1]->Load(val, file_path);
+	}
+
+	return true;
+}
+
 void ModuleScene::SetActiveFalse()
 {
 	for (int i = 0; i < active_objects.size(); i++)
@@ -130,17 +146,6 @@ bool ModuleScene::Load(JSON_Value * root_value)
 
 	if (getRootObj() == nullptr)
 		NewScene();
-
-	JSON_Value* scene = json_parse_file(default_load.c_str());
-	JSON_Object* obj_g = json_value_get_object(scene);
-	JSON_Array* gos = json_object_get_array(obj_g, "scene");
-	for (int i = 0; i < json_array_get_count(gos); i++)
-	{
-		JSON_Value* val = json_array_get_value(gos, i);
-
-		getRootObj()->children.push_back(new GameObject()); 
-		getRootObj()->children[getRootObj()->children.size() -1]->Load(val, default_load.c_str());
-	}
 			
 	ret = true;
 	return ret;
@@ -150,11 +155,27 @@ bool ModuleScene::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
+	
+
+	JSON_Object* root_obj = json_value_get_object(root_value);
+	// Write Module Scene config data to root_obj
+	std::string Save_scene = getRootObj()->name + ".drnk";
+	json_object_dotset_string(root_obj, "scene.default_load", Save_scene.c_str());
+	json_serialize_to_file(root_value, "config_data.json");
+	App->ui->console_win->AddLog("ModuleScene config saved");
+
+
+	ret = true;
+	return ret;
+}
+
+void ModuleScene::SaveScene()
+{
 	std::string Save_scene = "";
 
 	if (getRootObj() != nullptr)
 	{
-		Save_scene = getRootObj()->name + ".json";
+		Save_scene = getRootObj()->name + ".drnk";
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
 		if (scene == nullptr)
 		{
@@ -174,17 +195,6 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 		App->ui->console_win->AddLog("%s Scene saved", Save_scene.c_str());
 	}
-
-	root_value = json_parse_file("config_data.json");
-	JSON_Object* root_obj = json_value_get_object(root_value);
-	// Write Module Scene config data to root_obj
-	json_object_dotset_string(root_obj, "scene.default_load", Save_scene.c_str());
-	json_serialize_to_file(root_value, "config_data.json");
-	App->ui->console_win->AddLog("ModuleScene config saved");
-
-
-	ret = true;
-	return ret;
 }
 
 void ModuleScene::NewScene()

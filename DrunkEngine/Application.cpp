@@ -65,15 +65,19 @@ bool Application::Init()
 		while (item != list_modules.end() && ret == true)
 		{
 			item._Ptr->_Myval->SetDefault();
+			item._Ptr->_Myval->Save(root_v);
 			item++;
 		}
+
+		json_serialize_to_file(root_v, "config_file.json");
+
+		
 	}
 	else
 	{
 		while (item != list_modules.end() && ret == true)
 		{
-			if(item._Ptr->_Myval != mesh_loader)
-				ret = item._Ptr->_Myval->Load(root_v);
+			ret = item._Ptr->_Myval->Load(root_v);
 			item++;
 		}
 	}

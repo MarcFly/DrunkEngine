@@ -219,8 +219,6 @@ bool ModuleInput::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
-
-	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
 	json_object_dotset_number(root_obj, "controls.move_forward", controls[MOVE_FORWARD]);
