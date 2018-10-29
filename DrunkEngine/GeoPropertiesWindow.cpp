@@ -51,7 +51,7 @@ void GeoPropertiesWindow::Draw()
 
 						//Pos
 						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
-						if (ImGui::DragFloat3 ("Position", pos, 1.f))
+						if (ImGui::DragFloat3 ("Position", pos, 0.1f))
 							selected_object->transform->SetTransformPosition(pos[0], pos[1], pos[2]);
 
 						//Scale
@@ -62,7 +62,7 @@ void GeoPropertiesWindow::Draw()
 						//Rot
 
 						float rot[3] = { selected_object->transform->transform_rotate_euler.x, selected_object->transform->transform_rotate_euler.y, selected_object->transform->transform_rotate_euler.z };
-						if (ImGui::DragFloat3("Rotation", rot, 1.f))
+						if (ImGui::DragFloat3("Rotation", rot, 0.1f))
 							selected_object->transform->SetTransformRotation((float3)rot);
 
 						ImGui::Spacing();

@@ -52,7 +52,7 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par
 	this->mparent = par;
 }
 
-void ComponentTransform::SetTransformPosition(const int pos_x, const int pos_y, const int pos_z)
+void ComponentTransform::SetTransformPosition(const float pos_x, const float pos_y, const float pos_z)
 {
 	transform_position.x = pos_x;
 	transform_position.y = pos_y;
@@ -74,7 +74,7 @@ void ComponentTransform::SetTransformRotation(const float3 rot_vec)
 	SetLocalTransform();
 }
 
-void ComponentTransform::SetTransformScale(const int scale_x, const int scale_y, const int scale_z)
+void ComponentTransform::SetTransformScale(const float scale_x, const float scale_y, const float scale_z)
 {	
 	transform_scale.x = scale_x;
 	transform_scale.y = scale_y;

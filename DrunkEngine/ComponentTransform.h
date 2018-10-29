@@ -16,10 +16,10 @@ public:
 
 	~ComponentTransform() {};
 
-	void SetTransformPosition(const int pos_x, const int pos_y, const int pos_z);
+	void SetTransformPosition(const float pos_x, const float pos_y, const float pos_z);
 	void SetTransformRotation(const Quat rot_quat);
 	void SetTransformRotation(const float3 rot_vec);
-	void SetTransformScale(const int scale_x, const int scale_y, const int scale_z);
+	void SetTransformScale(const float scale_x, const float scale_y, const float scale_z);
 
 	void SetLocalTransform();
 
