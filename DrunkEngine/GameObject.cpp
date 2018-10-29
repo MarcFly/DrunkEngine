@@ -51,7 +51,12 @@ void GameObject::Draw()
 	}
 
 	if ((App->renderer3D->bounding_box || this->active) && this->BoundingBox != nullptr)
+	{
+		SetBoundBox();
+		this->BoundingBox->TransformAsAABB(this->transform->global_transform);
+
 		this->DrawBB();
+	}
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Draw();
