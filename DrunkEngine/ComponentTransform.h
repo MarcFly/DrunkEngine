@@ -12,7 +12,6 @@ class ComponentTransform
 public:
 	ComponentTransform();
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
-	ComponentTransform(const aiMatrix4x4* t, ComponentMesh* par);
 
 	~ComponentTransform() {};
 
@@ -40,7 +39,7 @@ public:
 	GameObject* parent = nullptr;
 	ComponentMesh* mparent = nullptr;
 
-	bool to_update = false;
+	bool to_update = true;
 };
 
 #endif

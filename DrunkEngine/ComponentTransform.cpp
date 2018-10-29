@@ -10,9 +10,9 @@ ComponentTransform::ComponentTransform()
 
 	SetTransformRotation(transform_rotate_quat);
 
-	SetLocalTransform();
-
 	this->parent = nullptr;
+
+	SetLocalTransform();
 }
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
@@ -32,25 +32,6 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 	this->parent = par;
 
 	SetLocalTransform();
-}
-
-ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par)
-{
-
-	aiQuaternion rot;
-	aiVector3D pos;
-	aiVector3D scale;
-
-	t->Decompose(scale, rot, pos);
-	this->transform_scale = float3(scale.x, scale.y, scale.z);
-	this->transform_rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
-	this->transform_position = float3(pos.x, pos.y, pos.z);
-	
-	SetTransformRotation(transform_rotate_quat);
-
-	SetLocalTransform();
-
-	this->mparent = par;
 }
 
 void ComponentTransform::SetTransformPosition(const float pos_x, const float pos_y, const float pos_z)
@@ -91,6 +72,14 @@ void ComponentTransform::SetLocalTransform()
 	local_transform = local_pos * (float4x4)transform_rotate_quat * local_scale;
 
 	to_update = true;
+}
+
+void ComponentTransform::RecursiveSetToUpdate(ComponentTransform * t)
+{
+	t->to_update = true;
+
+	if (t->parent != nullptr && t->parent->GetParentTransform() != nullptr)
+		RecursiveSetToUpdate(t->parent->GetParentTransform());
 }
 
 void ComponentTransform::CleanUp()

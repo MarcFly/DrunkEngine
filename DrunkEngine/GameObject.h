@@ -29,7 +29,7 @@ public:
 	vec getObjectCenter();
 	float SetBoundBox();
 	void SetBoundBoxFromMeshes();
-	void SetBBTransforms();
+	void SetBBTransforms(GameObject * obj) const;
 	//void SetBoundBody();
 
 	void AdjustObjects();
@@ -56,6 +56,11 @@ public:
 
 	bool to_pop = false;
 	bool active = false;
+
+	float max_distance_point = 0;
+
+public:
+	ComponentTransform * GetParentTransform();
 
 public:
 	ComponentCamera * camera = nullptr;
