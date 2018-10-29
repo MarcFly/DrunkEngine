@@ -1,4 +1,5 @@
 #include "ComponentTransform.h"
+#include "Gameobject.h"
 #include "Assimp/include/scene.h"
 
 ComponentTransform::ComponentTransform()
@@ -28,9 +29,9 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 
 	SetTransformRotation(transform_rotate_quat);
 	
-	SetLocalTransform();
-
 	this->parent = par;
+
+	SetLocalTransform();
 }
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par)
@@ -88,6 +89,8 @@ void ComponentTransform::SetLocalTransform()
 	float4x4 local_scale = float4x4::FromTRS(float3::zero, Quat::identity, transform_scale);
 
 	local_transform = local_pos * (float4x4)transform_rotate_quat * local_scale;
+
+	to_update = true;
 }
 
 void ComponentTransform::CleanUp()

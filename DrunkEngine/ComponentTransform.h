@@ -23,6 +23,8 @@ public:
 
 	void SetLocalTransform();
 
+	void RecursiveSetToUpdate(ComponentTransform* t);
+
 	void CleanUp();
 
 public:
@@ -38,6 +40,7 @@ public:
 	GameObject* parent = nullptr;
 	ComponentMesh* mparent = nullptr;
 
+	bool to_update = false;
 };
 
 #endif

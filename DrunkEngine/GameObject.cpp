@@ -52,9 +52,12 @@ void GameObject::Draw()
 
 	if ((App->renderer3D->bounding_box || this->active) && this->BoundingBox != nullptr)
 	{
-		SetBoundBox();
-		this->BoundingBox->TransformAsAABB(this->transform->global_transform);
-
+		if (this->transform->to_update || true)	//change
+		{
+			SetBoundBox();
+			this->BoundingBox->TransformAsAABB(this->transform->global_transform);
+			this->transform->to_update = false;
+		}
 		this->DrawBB();
 	}
 
@@ -174,6 +177,8 @@ float GameObject::SetBoundBox()
 		if (abs(this->BoundingBox->minPoint.y) > ret) { ret = abs(this->BoundingBox->minPoint.y); }
 		if (abs(this->BoundingBox->minPoint.z) > ret) { ret = abs(this->BoundingBox->minPoint.z); }
 	}
+
+
 
 	return ret;
 }
