@@ -57,19 +57,21 @@ void ComponentTransform::SetTransformPosition(const int pos_x, const int pos_y, 
 	transform_position.x = pos_x;
 	transform_position.y = pos_y;
 	transform_position.z = pos_z;
-
+	SetLocalTransform();
 }
 
 void ComponentTransform::SetTransformRotation(const Quat rot_quat)
 {
 	transform_rotate_quat = rot_quat;
 	transform_rotate_euler = RadToDeg(transform_rotate_quat.ToEulerXYZ());
+	SetLocalTransform();
 }
 
 void ComponentTransform::SetTransformRotation(const float3 rot_vec)
 {
 	transform_rotate_quat = Quat::FromEulerXYZ(DegToRad(rot_vec.x), DegToRad(rot_vec.y), DegToRad(rot_vec.z));
 	transform_rotate_euler = rot_vec;
+	SetLocalTransform();
 }
 
 void ComponentTransform::SetTransformScale(const int scale_x, const int scale_y, const int scale_z)
@@ -77,6 +79,7 @@ void ComponentTransform::SetTransformScale(const int scale_x, const int scale_y,
 	transform_scale.x = scale_x;
 	transform_scale.y = scale_y;
 	transform_scale.z = scale_z;
+	SetLocalTransform();
 }
 
 void ComponentTransform::SetLocalTransform()

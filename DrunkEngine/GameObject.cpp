@@ -41,9 +41,13 @@ void GameObject::Update(float dt)
 
 void GameObject::Draw()
 {
-	for (int i = 0; i < this->meshes.size(); i++)
-		this->meshes[i]->Draw();
+	glPushMatrix();
+	glMultMatrixf(this->transform->global_transform.Transposed().ptr());
 
+	for (int i = 0; i < this->meshes.size(); i++)
+	{
+		this->meshes[i]->Draw();
+	}
 	if ((App->renderer3D->bounding_box || this->active) && this->BoundingBox != nullptr)
 		this->DrawBB();
 
