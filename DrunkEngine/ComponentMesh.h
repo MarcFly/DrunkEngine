@@ -15,6 +15,9 @@ class ComponentMesh : public Component
 {
 public:
 	ComponentMesh();
+	ComponentMesh(GameObject* par) : parent{ par } {
+		SetBaseVals();
+	};
 	//ComponentMesh(const aiMesh* mesh, GameObject* par);
 
 	~ComponentMesh() {};
@@ -33,7 +36,7 @@ public:
 
 	void CleanUp();
 
-	void Load(JSON_Array* comps);
+	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 public:

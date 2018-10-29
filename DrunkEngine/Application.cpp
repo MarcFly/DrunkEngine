@@ -72,7 +72,8 @@ bool Application::Init()
 	{
 		while (item != list_modules.end() && ret == true)
 		{
-			ret = item._Ptr->_Myval->Load(root_v);
+			if(item._Ptr->_Myval != mesh_loader)
+				ret = item._Ptr->_Myval->Load(root_v);
 			item++;
 		}
 	}

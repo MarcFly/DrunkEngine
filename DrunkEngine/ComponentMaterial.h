@@ -49,7 +49,7 @@ public:
 	Texture* CheckTexRep(std::string name);
 	Texture* CheckNameRep(std::string name);
 
-	void Load(JSON_Array* comps);
+	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 public:

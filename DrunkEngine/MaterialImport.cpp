@@ -9,6 +9,9 @@
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
 
+#include <fstream>
+#include <iostream>
+
 void MatImport::Init()
 {
 	// DevIL initialization
@@ -20,14 +23,11 @@ void MatImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par, const char* Dir)
+ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat, const char* Dir)
 {
 	App->importer->Imp_Timer.Start();
 
-	ComponentMaterial* ret = new ComponentMaterial();
-	ret->parent = par;
-
-	ret->name = file;
+	mat->name = file;
 
 	// Default Material Color
 	std::ifstream read_file;
@@ -44,13 +44,13 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par, cons
 
 		float color[4];
 		memcpy(&color[0], cursor, sizeof(color));
-		ret->default_print.Set(color[0], color[1], color[2], color[3]);
+		mat->default_print.Set(color[0], color[1], color[2], color[3]);
 		cursor += sizeof(color);
 
-		memcpy(&ret->NumProperties, cursor, sizeof(uint));
+		memcpy(&mat->NumProperties, cursor, sizeof(uint));
 		cursor += sizeof(uint);
 
-		memcpy(&ret->NumDiffTextures, cursor, sizeof(uint));
+		memcpy(&mat->NumDiffTextures, cursor, sizeof(uint));
 		cursor += sizeof(uint);
 		
 		uint dir_size;
@@ -62,7 +62,7 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par, cons
 		cursor += dir_size;
 
 		std::vector<uint> texture_ranges;
-		for (int i = 0; i < ret->NumDiffTextures; i++)
+		for (int i = 0; i < mat->NumDiffTextures; i++)
 		{
 			uint size;
 			memcpy(&size, cursor, sizeof(uint));
@@ -71,12 +71,12 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par, cons
 		}
 
 
-		for (int i = 0; i < ret->NumDiffTextures; i++)
+		for (int i = 0; i < mat->NumDiffTextures; i++)
 		{
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
- 			Texture* check = ImportTexture(aux, ret);
+ 			Texture* check = ImportTexture(aux, mat);
 
 			if (check == nullptr)
 			{
@@ -85,29 +85,30 @@ ComponentMaterial * MatImport::ImportMat(const char* file, GameObject* par, cons
 				filename.append(".dds");
 
 				ExportTexture(aux, Dir);
-				check = ImportTexture(filename.c_str(), ret, Dir);
+				check = ImportTexture(filename.c_str(), mat, Dir);
 			}
 			if (check != nullptr)
 			{
-				ret->textures.push_back(check);
+				mat->textures.push_back(check);
 			}
 			cursor += texture_ranges[i];
 		}
 
 		App->importer->Imp_Timer.LogTime("Texture");
 
-		App->ui->console_win->AddLog("New Material with %d textures loaded.", ret->textures.size());
+		App->ui->console_win->AddLog("New Material with %d textures loaded.", mat->textures.size());
 
 	}
 	else
 	{
-		delete ret;
-		ret = nullptr;
+		delete mat;
+		mat = nullptr;
 	}
 
 	App->importer->Imp_Timer.LogTime("Material Import");
 
-	return ret;
+	return mat;
+
 }
 
 Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, const char* Dir)

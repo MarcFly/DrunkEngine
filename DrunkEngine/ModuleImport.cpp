@@ -9,6 +9,11 @@
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
 #include "Component.h"
+#include "MaterialImport.h"
+#include "MeshImport.h"
+
+#include <fstream>
+#include <iostream>
 
 void CallLog(const char* str, char* usrData);
 
@@ -60,11 +65,12 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		std::string filename = "./Library/Meshes/";
 		filename += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
 		filename.append(".meshdrnk");
-		ComponentMesh* aux = mesh_i->ImportMesh(filename.c_str(), ret);
-		if (aux == nullptr)
+		ComponentMesh* aux = new ComponentMesh(ret);
+		ComponentMesh* test = mesh_i->ImportMesh(filename.c_str(), aux);
+		if (test == nullptr)
 		{
 			mesh_i->ExportMesh(scene, obj_node->mMeshes[i],path);
-			aux = mesh_i->ImportMesh(filename.c_str(), ret);
+			mesh_i->ImportMesh(filename.c_str(), aux);
 		}
 		if (aux != nullptr)
 		{
@@ -77,11 +83,12 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		std::string filename = "./Library/Materials/";
 		filename += GetFileName(path) + "_Mat_" + std::to_string(i);
 		filename.append(".matdrnk");
-		ComponentMaterial* aux = mat_i->ImportMat(filename.c_str(), ret, GetDir(path).c_str());
-		if (aux == nullptr)
+		ComponentMaterial* aux = new ComponentMaterial(ret);
+		ComponentMaterial* test = mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str());
+		if (test == nullptr)
 		{
 			mat_i->ExportMat(scene, i, path);
-			aux = mat_i->ImportMat(filename.c_str(), ret, GetDir(path).c_str());
+			mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str());
 		}
 		if (aux != nullptr)
 		{

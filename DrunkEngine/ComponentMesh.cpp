@@ -303,9 +303,10 @@ void ComponentMesh::CleanUp()
 	this->root = nullptr;
 }
 
-void ComponentMesh::Load(JSON_Array* comps)
+void ComponentMesh::Load(JSON_Object* comp)
 {
-
+	this->name = json_object_get_string(comp, "name");
+	App->importer->mesh_i->ImportMesh(name.c_str(), this);
 }
 
 void ComponentMesh::Save(JSON_Array* comps)
@@ -313,9 +314,9 @@ void ComponentMesh::Save(JSON_Array* comps)
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
 
-	json_object_dotset_number(curr, "type", type);
+	json_object_dotset_number(curr, "properties.type", type);
 
-	json_object_dotset_string(curr, "mesh_name", name.c_str());
+	json_object_dotset_string(curr, "properties.mesh_name", name.c_str());
 
 	json_array_append_value(comps, append);
 

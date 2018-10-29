@@ -34,7 +34,7 @@ public:
 
 	void LookToObj(GameObject* obj, float vertex_aux);
 
-	void Load(JSON_Array* comps);
+	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 private:

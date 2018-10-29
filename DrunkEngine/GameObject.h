@@ -32,7 +32,7 @@ public:
 	void Draw();
 	void DrawBB();
 
-	void Save(JSON_Value* scene, const char* file);
+	void Save(JSON_Array* go);
 	void Load(JSON_Value* scene, const char* file);
 
 	vec getObjectCenter();
@@ -40,6 +40,7 @@ public:
 	void SetBoundBoxFromMeshes();
 	//void SetBoundBody();
 
+	Component* NewComponent(CTypes type);
 	void AdjustObjects();
 	void AdjustComponents();
 

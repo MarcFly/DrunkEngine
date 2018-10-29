@@ -13,7 +13,7 @@ public:
 
 	void Init();
 
-	ComponentMaterial* ImportMat(const char* mat, GameObject* par, const char* Dir = nullptr);
+	ComponentMaterial* ImportMat(const char* file, ComponentMaterial* mat, const char* Dir = nullptr);
 	Texture* ImportTexture(const char* path, ComponentMaterial* par, const char* Dir = nullptr);
 
 	void ExportMat(const aiScene * scene, const int& mat_id, const char * path);

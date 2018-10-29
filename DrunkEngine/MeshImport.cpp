@@ -1,14 +1,15 @@
 #include "MeshImport.h"
 #include "ComponentMesh.h"
 #include "GameObject.h"
-#include <iostream>
-#include <fstream>
 #include "Application.h"
 #include "ConsoleWindow.h"
 #include "GeoPropertiesWindow.h"
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
+
+#include <fstream>
+#include <iostream>
 
 void MeshImport::Init()
 {
@@ -19,16 +20,11 @@ void MeshImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
+ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 {
 	App->importer->Imp_Timer.Start();
 
-	ComponentMesh* ret = new ComponentMesh();
-
-	ret->parent = par;
-	ret->root = ret->parent->root;
-
-	ret->name = file;
+	mesh->name = file;
 
 	std::ifstream read_file;
 	read_file.open(file, std::ios::binary);
@@ -46,63 +42,63 @@ ComponentMesh * MeshImport::ImportMesh(const char* file, GameObject* par)
 		memcpy(ranges, cursor, sizeof(ranges));
 		cursor += sizeof(ranges);
 
-		ret->num_vertex = ranges[0] / 3;
-		if (ret->num_vertex)
+		mesh->num_vertex = ranges[0] / 3;
+		if (mesh->num_vertex)
 		{
-			ret->vertex = new GLfloat[ret->num_vertex * 3];
-			memcpy(ret->vertex, cursor, ret->num_vertex * 3 * sizeof(GLfloat));
+			mesh->vertex = new GLfloat[mesh->num_vertex * 3];
+			memcpy(mesh->vertex, cursor, mesh->num_vertex * 3 * sizeof(GLfloat));
 		}
-		cursor += ((ret->num_vertex * 3) * sizeof(GLfloat));
+		cursor += ((mesh->num_vertex * 3) * sizeof(GLfloat));
 
-		ret->num_index = ranges[1];
-		if (ret->num_index > 0)
+		mesh->num_index = ranges[1];
+		if (mesh->num_index > 0)
 		{
-			ret->index = new GLuint[ret->num_index * 3];
-			memcpy(ret->index, cursor, ret->num_index * 3 * sizeof(GLuint));
+			mesh->index = new GLuint[mesh->num_index * 3];
+			memcpy(mesh->index, cursor, mesh->num_index * 3 * sizeof(GLuint));
 		}
-		cursor += ((ret->num_index) * sizeof(GLuint));
+		cursor += ((mesh->num_index) * sizeof(GLuint));
 
-		ret->num_normal = ranges[2] / 3;
-		if (ret->num_normal > 0)
+		mesh->num_normal = ranges[2] / 3;
+		if (mesh->num_normal > 0)
 		{
-			ret->normal = new GLfloat[ret->num_normal * 3];
-			memcpy(ret->normal, cursor, ret->num_normal * 3 * sizeof(GLfloat));
+			mesh->normal = new GLfloat[mesh->num_normal * 3];
+			memcpy(mesh->normal, cursor, mesh->num_normal * 3 * sizeof(GLfloat));
 		}
-		cursor += ((ret->num_normal * 3) * sizeof(GLfloat));
+		cursor += ((mesh->num_normal * 3) * sizeof(GLfloat));
 
-		ret->num_faces = ret->num_index; // /2 when we save normals properly
+		mesh->num_faces = mesh->num_index; // /2 when we save normals properly
 
-		ret->num_uvs = ranges[3] / 3;
-		if (ret->num_uvs > 0)
+		mesh->num_uvs = ranges[3] / 3;
+		if (mesh->num_uvs > 0)
 		{
-			ret->tex_coords = new GLfloat[ret->num_uvs * 3];
-			memcpy(ret->tex_coords, cursor, ret->num_uvs * sizeof(GLfloat) * 3);
+			mesh->tex_coords = new GLfloat[mesh->num_uvs * 3];
+			memcpy(mesh->tex_coords, cursor, mesh->num_uvs * sizeof(GLfloat) * 3);
 		}
 		cursor += (ranges[3] * sizeof(GLfloat));
 
 		float bbox[6]; // Bounding Box size always 6
 		memcpy(bbox, cursor, sizeof(bbox));
-		ret->BoundingBox = new AABB(vec(bbox[0], bbox[1], bbox[2]), vec(bbox[3], bbox[4], bbox[5]));
+		mesh->BoundingBox = new AABB(vec(bbox[0], bbox[1], bbox[2]), vec(bbox[3], bbox[4], bbox[5]));
 		cursor += sizeof(bbox);
 
 		// Material Index always has 1, which should not be here but oke right now
-		memcpy(&ret->Material_Ind, cursor, sizeof(unsigned int));
+		memcpy(&mesh->Material_Ind, cursor, sizeof(unsigned int));
 
-		ret->GenBuffers();
+		mesh->GenBuffers();
 
-		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
+		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", mesh->num_vertex, mesh->num_index, mesh->num_faces);
 
 		App->ui->geo_properties_win->CheckMeshInfo();
 	}
 	else
 	{
-		delete ret;
-		ret = nullptr;
+		delete mesh;
+		mesh = nullptr;
 	}
 
 	App->importer->Imp_Timer.LogTime("Mesh");
 
-	return ret;
+	return mesh;
 }
 
 ////////////------------------------------------------------------------------------------------------------------------------

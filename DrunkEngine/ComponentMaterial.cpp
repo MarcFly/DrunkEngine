@@ -129,9 +129,10 @@ Texture* ComponentMaterial::CheckNameRep(std::string name)
 	return ret;
 }
 
-void ComponentMaterial::Load(JSON_Array* comps)
+void ComponentMaterial::Load(JSON_Object* comp)
 {
-
+	this->name = json_object_get_string(comp, "name");
+	App->importer->mat_i->ImportMat(this->name.c_str(), this);
 }
 
 void ComponentMaterial::Save(JSON_Array* comps)
@@ -139,9 +140,9 @@ void ComponentMaterial::Save(JSON_Array* comps)
 	JSON_Value* append = json_value_init_object();
 	JSON_Object*  curr = json_value_get_object(append);
 
-	json_object_dotset_number(curr, "type", type);
+	json_object_dotset_number(curr, "properties.type", type);
 
-	json_object_dotset_string(curr, "mat_name", name.c_str());
+	json_object_dotset_string(curr, "properties.mat_name", name.c_str());
 
 	json_array_append_value(comps, append);
 

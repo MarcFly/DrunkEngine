@@ -15,7 +15,8 @@ public:
 
 	void Init();
 
-	ComponentMesh* ImportMesh(const char* mesh, GameObject* par);
+	ComponentMesh* ImportMesh(const char* file, ComponentMesh* mesh);
+	void LoadMesh(ComponentMesh* mesh);
 
 	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
 	void ExportMesh(const ComponentMesh* mesh);

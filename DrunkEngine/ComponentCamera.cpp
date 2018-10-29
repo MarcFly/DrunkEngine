@@ -311,7 +311,7 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	mesh_multiplier = vertex_aux / 4;
 }
 
-void ComponentCamera::Load(JSON_Array* comps)
+void ComponentCamera::Load(JSON_Object* comp)
 {
 
 }

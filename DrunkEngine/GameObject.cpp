@@ -279,44 +279,57 @@ void GameObject::CleanUp()
 }
 
 
-void GameObject::Load(JSON_Value* scene, const char* file)
+void GameObject::Load(JSON_Value* go, const char* file)
 {
-	JSON_Object* curr = json_value_get_object(scene);
+	JSON_Object* curr = json_value_get_object(json_object_get_value_at(json_value_get_object(go),0));
 
-	this->UUID = json_object_dotget_number(curr, "");
+	this->UUID = json_object_dotget_number(curr, "UUID");
+	this->par_UUID = json_object_get_number(curr, "par_UUID");
+	this->name = json_object_get_string(curr, "name");
+
+	JSON_Array* get_array = json_object_get_array(curr, "components");
+
+	for (int i = 0; i < json_array_get_count(get_array); i++)
+	{
+		JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(get_array, i)),"properties");
+		JSON_Object* obj = json_value_get_object(val);
+		CTypes type = (CTypes)(int)json_object_get_number(curr, "type");
+		Component* add = NewComponent(type);
+		add->Load(obj);
+		this->components.push_back(add);
+	}
 }
 
-void GameObject::Save(JSON_Value* scene, const char* file)
+void GameObject::Save(JSON_Array* go)
 {
-	JSON_Object* curr = json_value_get_object(scene);
+	JSON_Value* append = json_value_init_object();
+	JSON_Object* curr = json_value_get_object(append);
 
-	std::string obj = std::to_string(this->UUID) + ".";
+	std::string obj = "gameobject.";
 	std::string set_val;
 	
+	set_val = obj + "UUID";
+	json_object_dotset_number(curr, set_val.c_str(), UUID);
+
 	set_val = obj + "par_UUID";
 	json_object_dotset_number(curr, set_val.c_str(), par_UUID);
 
 	set_val = obj + "name";
 	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
 
-	/*json_serialize_to_file(scene, file);
-	scene = json_parse_file(file);*/
 	JSON_Value* set_array = json_value_init_array();
-	JSON_Array* components = json_value_get_array(set_array);
+	JSON_Array* comps = json_value_get_array(set_array);
 
 	for (int i = 0; i < this->components.size(); i++)
-		this->components[i]->Save(components);
+		this->components[i]->Save(comps);
 
 	set_val = obj + "components";
 	json_object_dotset_value(curr,set_val.c_str(), set_array);
 
-	json_serialize_to_file(scene, file);
+	json_array_append_value(go, append);
 
 	for(int i = 0; i < this->children.size(); i++)
-		this->children[i]->Save(scene, file);
-
-	
-	//	scene = json_parse_file(file);
+		this->children[i]->Save(go);
 
 }
 
@@ -344,4 +357,18 @@ std::vector<uint> GameObject::GetMeshProps()
 	ret_v.push_back(ret[1]);
 
 	return ret_v;
+}
+
+Component* GameObject::NewComponent(CTypes type)
+{
+	if (type == CT_Mesh)
+		return new ComponentMesh(this);
+	else if (type == CT_Material)
+		return new ComponentMaterial(this);
+	else if (type == CT_Camera)
+		return new ComponentCamera(this);
+	else if (type == CT_Transform)
+		return new ComponentTransform(this);
+	
+	return nullptr;
 }

@@ -65,8 +65,21 @@ void ComponentTransform::CleanUp()
 	this->parent = nullptr;
 }
 
-void ComponentTransform::Load(JSON_Array* comps)
+void ComponentTransform::Load(JSON_Object* comp)
 {
+	this->position.x = json_object_dotget_number(comp, "position.x");
+	this->position.y = json_object_dotget_number(comp, "position.y");
+	this->position.z = json_object_dotget_number(comp, "position.z");
+	
+	this->scale.x = json_object_dotget_number(comp, "scale.x");
+	this->scale.y = json_object_dotget_number(comp, "scale.y");
+	this->scale.z = json_object_dotget_number(comp, "scale.z");
+
+	this->rotate_quat.w = json_object_dotget_number(comp, "rotate_quat.w");
+	this->rotate_quat.x = json_object_dotget_number(comp, "rotate_quat.x");
+	this->rotate_quat.y = json_object_dotget_number(comp, "rotate_quat.y");
+	this->rotate_quat.z = json_object_dotget_number(comp, "rotate_quat.z");
+
 
 }
 
@@ -75,20 +88,20 @@ void ComponentTransform::Save(JSON_Array* comps)
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
 
-	json_object_dotset_number(curr, "type", type);
+	json_object_dotset_number(curr, "properties.type", type);
 
-	json_object_dotset_number(curr, "position.x", position.x);
-	json_object_dotset_number(curr, "position.y", position.y);
-	json_object_dotset_number(curr, "position.z", position.z);
+	json_object_dotset_number(curr, "properties.position.x", position.x);
+	json_object_dotset_number(curr, "properties.position.y", position.y);
+	json_object_dotset_number(curr, "properties.position.z", position.z);
 
-	json_object_dotset_number(curr, "scale.x", scale.x);
-	json_object_dotset_number(curr, "scale.y", scale.y);
-	json_object_dotset_number(curr, "scale.z", scale.z);
+	json_object_dotset_number(curr, "properties.scale.x", scale.x);
+	json_object_dotset_number(curr, "properties.scale.y", scale.y);
+	json_object_dotset_number(curr, "properties.scale.z", scale.z);
 
-	json_object_dotset_number(curr, "rotate_quat.w", rotate_quat.w);
-	json_object_dotset_number(curr, "rotate_quat.x", rotate_quat.x);
-	json_object_dotset_number(curr, "rotate_quat.y", rotate_quat.y);
-	json_object_dotset_number(curr, "rotate_quat.z", rotate_quat.z);
+	json_object_dotset_number(curr, "properties.rotate_quat.w", rotate_quat.w);
+	json_object_dotset_number(curr, "properties.rotate_quat.x", rotate_quat.x);
+	json_object_dotset_number(curr, "properties.rotate_quat.y", rotate_quat.y);
+	json_object_dotset_number(curr, "properties.rotate_quat.z", rotate_quat.z);
 
 	json_array_append_value(comps, append);
 }
