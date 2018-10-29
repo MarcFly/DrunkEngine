@@ -293,7 +293,8 @@ void GameObject::Load(JSON_Value* go, const char* file)
 	{
 		JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(get_array, i)),"properties");
 		JSON_Object* obj = json_value_get_object(val);
-		CTypes type = (CTypes)(int)json_object_get_number(curr, "type");
+		CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
+
 		Component* add = NewComponent(type);
 		add->Load(obj);
 		this->components.push_back(add);

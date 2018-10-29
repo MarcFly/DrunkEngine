@@ -305,7 +305,7 @@ void ComponentMesh::CleanUp()
 
 void ComponentMesh::Load(JSON_Object* comp)
 {
-	this->name = json_object_get_string(comp, "name");
+	this->name = json_object_get_string(comp, "mesh_name");
 	App->importer->mesh_i->ImportMesh(name.c_str(), this);
 }
 

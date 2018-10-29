@@ -69,7 +69,7 @@ bool Application::Init()
 			item++;
 		}
 
-		json_serialize_to_file(root_v, "config_file.json");
+		json_serialize_to_file(root_v, "config_data.json");
 
 		
 	}

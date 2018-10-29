@@ -37,13 +37,13 @@ bool ModuleScene::Start()
 	//Load(nullptr);
 	//LoadFromFile("./Assets/BakerHouse.fbx");
 	//LoadFromFile("./Assets/Ogre.fbx");
-	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
-	//Load(nullptr);
+	LoadSceneFile("Scene.json");
 
 	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
 
-	SaveScene();
+	//SaveScene();
 
 	return ret;
 }
@@ -159,10 +159,13 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	// Write Module Scene config data to root_obj
-	std::string Save_scene = getRootObj()->name + ".drnk";
+	std::string Save_scene = "";
+	if(getRootObj() != nullptr)
+		Save_scene = getRootObj()->name + ".drnk";
 	json_object_dotset_string(root_obj, "scene.default_load", Save_scene.c_str());
+	json_object_dotset_string(root_obj, "scene.scenes_path", scene_folder.c_str());
 	json_serialize_to_file(root_value, "config_data.json");
-	App->ui->console_win->AddLog("ModuleScene config saved");
+	//App->ui->console_win->AddLog("ModuleScene config saved");
 
 
 	ret = true;
@@ -175,7 +178,7 @@ void ModuleScene::SaveScene()
 
 	if (getRootObj() != nullptr)
 	{
-		Save_scene = getRootObj()->name + ".drnk";
+		Save_scene = getRootObj()->name + ".json";
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
 		if (scene == nullptr)
 		{

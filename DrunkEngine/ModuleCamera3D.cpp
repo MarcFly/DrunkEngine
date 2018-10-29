@@ -123,13 +123,9 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
-	json_object_dotset_number(root_obj, "camera.pos.x", main_camera->X.x);
-	json_object_dotset_number(root_obj, "camera.pos.y", main_camera->X.x);
-	json_object_dotset_number(root_obj, "camera.pos.z", main_camera->X.x);
-
 	json_serialize_to_file(root_value, "config_data.json");
 
-	App->ui->console_win->AddLog("Camera position saved");
+	//App->ui->console_win->AddLog("Camera position saved");
 
 	ret = true;
 	return ret;

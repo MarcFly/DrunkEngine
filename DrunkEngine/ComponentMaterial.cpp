@@ -131,7 +131,7 @@ Texture* ComponentMaterial::CheckNameRep(std::string name)
 
 void ComponentMaterial::Load(JSON_Object* comp)
 {
-	this->name = json_object_get_string(comp, "name");
+	this->name = json_object_get_string(comp, "mat_name");
 	App->importer->mat_i->ImportMat(this->name.c_str(), this);
 }
 
