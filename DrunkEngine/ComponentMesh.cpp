@@ -303,26 +303,21 @@ void ComponentMesh::CleanUp()
 	this->root = nullptr;
 }
 
-void ComponentMesh::Load(JSON_Value* scene, const char* file)
+void ComponentMesh::Load(JSON_Array* comps)
 {
 
 }
 
-void ComponentMesh::Save(JSON_Value* scene, const char* file)
+void ComponentMesh::Save(JSON_Array* comps)
 {
-	JSON_Object* curr = json_value_get_object(scene);
+	JSON_Value* append = json_value_init_object();
+	JSON_Object* curr = json_value_get_object(append);
 
-	std::string obj = std::to_string(this->parent->UUID) + ".component.";
-	std::string set_val;
+	json_object_dotset_number(curr, "type", type);
 
-	set_val = obj + "type";
-	json_object_dotset_number(curr, set_val.c_str(), type);
+	json_object_dotset_string(curr, "mesh_name", name.c_str());
 
-	set_val = obj + "mesh_name";
-	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
-
-	json_serialize_to_file(scene, file);
-	scene = json_parse_file(file);
+	json_array_append_value(comps, append);
 
 	App->importer->mesh_i->ExportMesh(this);
 }

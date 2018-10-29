@@ -38,8 +38,8 @@ public:
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};
 
-	virtual void Load(JSON_Value* scene, const char* file) {};
-	virtual void Save(JSON_Value* scene, const char* file) {};
+	virtual void Load(JSON_Array* comps) {};
+	virtual void Save(JSON_Array* comps) {};
 
 	virtual void SetBaseVals()
 	{

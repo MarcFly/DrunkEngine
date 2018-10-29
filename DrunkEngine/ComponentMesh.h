@@ -33,8 +33,8 @@ public:
 
 	void CleanUp();
 
-	void Load(JSON_Value* scene, const char* file);
-	void Save(JSON_Value* scene, const char* file);
+	void Load(JSON_Array* comps);
+	void Save(JSON_Array* comps);
 
 public:
 	GLuint id_index; // index in VRAM

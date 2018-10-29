@@ -290,7 +290,7 @@ void GameObject::Save(JSON_Value* scene, const char* file)
 {
 	JSON_Object* curr = json_value_get_object(scene);
 
-	std::string obj = "go." + std::to_string(this->UUID) + ".";
+	std::string obj = std::to_string(this->UUID) + ".";
 	std::string set_val;
 	
 	set_val = obj + "par_UUID";
@@ -299,11 +299,16 @@ void GameObject::Save(JSON_Value* scene, const char* file)
 	set_val = obj + "name";
 	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
 
-	json_serialize_to_file(scene, file);
-	scene = json_parse_file(file);
+	/*json_serialize_to_file(scene, file);
+	scene = json_parse_file(file);*/
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* components = json_value_get_array(set_array);
 
 	for (int i = 0; i < this->components.size(); i++)
-		this->components[i]->Save(scene, file);
+		this->components[i]->Save(components);
+
+	set_val = obj + "components";
+	json_object_dotset_value(curr,set_val.c_str(), set_array);
 
 	json_serialize_to_file(scene, file);
 

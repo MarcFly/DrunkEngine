@@ -129,26 +129,21 @@ Texture* ComponentMaterial::CheckNameRep(std::string name)
 	return ret;
 }
 
-void ComponentMaterial::Load(JSON_Value* scene, const char* file)
+void ComponentMaterial::Load(JSON_Array* comps)
 {
 
 }
 
-void ComponentMaterial::Save(JSON_Value* scene, const char* file)
+void ComponentMaterial::Save(JSON_Array* comps)
 {
-	JSON_Object* curr = json_value_get_object(scene);
+	JSON_Value* append = json_value_init_object();
+	JSON_Object*  curr = json_value_get_object(append);
 
-	std::string obj = std::to_string(this->parent->UUID) + ".component.";
-	std::string set_val;
+	json_object_dotset_number(curr, "type", type);
 
-	set_val = obj + "type";
-	json_object_dotset_number(curr, set_val.c_str(), type);
+	json_object_dotset_string(curr, "mat_name", name.c_str());
 
-	set_val = obj + "mat_name";
-	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
-
-	json_serialize_to_file(scene, file);
-	scene = json_parse_file(file);
+	json_array_append_value(comps, append);
 
 	App->importer->mat_i->ExportMat(this);
 }
