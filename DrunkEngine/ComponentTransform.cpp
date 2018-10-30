@@ -1,30 +1,23 @@
 #include "ComponentTransform.h"
-#include "Gameobject.h"
+#include "GameObject.h"
 #include "Assimp/include/scene.h"
 #include "GameObject.h"
-
-ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par) : mparent{par}
-{
-	SetBaseVals();
-
-	SetFromMatrix(t);
-  
-  parent = nullptr;
-
-	SetLocalTransform();
-}
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {
 	SetBaseVals();
-  SetFromMatrix(t);
-  parent = par;
+	SetFromMatrix(t);
+	parent = par;
 
 	SetLocalTransform();
 }
 
 void ComponentTransform::SetFromMatrix(const aiMatrix4x4* t)
 {
+	aiVector3D local_scale;
+	aiVector3D pos;
+	aiQuaternion rot;
+
 	t->Decompose(local_scale, rot, pos);
 	this->scale = float3(local_scale.x, local_scale.y, local_scale.z);
 	this->rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);

@@ -23,8 +23,7 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 	if (this->parent == nullptr)
 		this->camera = new ComponentCamera(this);
 
-	if (this->parent == nullptr)
-		this->transform = new ComponentTransform();
+	GetTransform();
 
 	Start();
 }
@@ -41,7 +40,7 @@ void GameObject::Start()
 
 void GameObject::Update(float dt)
 {
-	root->CalculateGlobalTransforms();
+	App->mesh_loader->getRootObj()->CalculateGlobalTransforms();
 
 	if (camera != nullptr)
 		camera->Update(dt);
@@ -58,7 +57,7 @@ void GameObject::Draw()
 	for (int i = 0; i < this->components.size(); i++)
 	{
 		glPushMatrix();
-		glMultMatrixf(this->transform->global_transform.Transposed().ptr());
+		glMultMatrixf(this->GetTransform()->global_transform.Transposed().ptr());
 		this->components[i]->Draw();
 		glPopMatrix();
 	}
@@ -66,7 +65,7 @@ void GameObject::Draw()
 
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
 	{
-		if (this->transform->to_update)
+		if (this->GetTransform()->to_update)
 		{
 			SetTransformedBoundBox();
 			//this->transform->to_update = false;
@@ -208,29 +207,31 @@ void GameObject::SetTransformedBoundBox()
 
 	if (this->children.size() == 0)
 	{
-		if (this->meshes.size() > 0)
+		std::vector<Component*> cmp_meshes;
+		cmp_meshes = GetComponents(CT_Mesh);
+
+		
+		for (int i = 0; i < cmp_meshes.size(); i++)
 		{
-			for (int i = 0; i < this->meshes.size(); i++)
-			{
-				math::AABB auxBB = *this->meshes[i]->BoundingBox;
-				auxBB.TransformAsAABB(this->meshes[i]->parent->transform->global_transform);
+			math::AABB auxBB = *cmp_meshes[i]->AsMesh()->BoundingBox;
+			auxBB.TransformAsAABB(cmp_meshes[i]->AsMesh()->parent->GetTransform()->global_transform);
 
-				// Setting the BB min and max points
+			// Setting the BB min and max points
 
-				if (this->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
-					this->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
-				if (this->BoundingBox->minPoint.x > auxBB.minPoint.x)
-					this->BoundingBox->minPoint.x = auxBB.minPoint.x;
-				if (this->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
-					this->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
-				if (this->BoundingBox->minPoint.y > auxBB.minPoint.y)
-					this->BoundingBox->minPoint.y = auxBB.minPoint.y;
-				if (this->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
-					this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
-				if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
-					this->BoundingBox->minPoint.z = auxBB.minPoint.z;
-			}
+			if (this->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
+				this->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
+			if (this->BoundingBox->minPoint.x > auxBB.minPoint.x)
+				this->BoundingBox->minPoint.x = auxBB.minPoint.x;
+			if (this->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
+				this->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
+			if (this->BoundingBox->minPoint.y > auxBB.minPoint.y)
+				this->BoundingBox->minPoint.y = auxBB.minPoint.y;
+			if (this->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
+				this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
+			if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
+				this->BoundingBox->minPoint.z = auxBB.minPoint.z;
 		}
+		
 	}
 	else
 	{
@@ -241,7 +242,7 @@ void GameObject::SetTransformedBoundBox()
 		for (int i = 0; i < this->children.size(); i++)
 		{
 			math::AABB auxBB = *this->children[i]->BoundingBox;
-			auxBB.TransformAsAABB(this->children[i]->transform->global_transform);
+			auxBB.TransformAsAABB(this->children[i]->GetTransform()->global_transform);
 
 			// Setting the BB min and max points with transforms
 
@@ -343,39 +344,13 @@ void GameObject::AdjustComponents()
 	this->components.pop_back();
 }
 
-void GameObject::CleanUp()
-{
-	
-	for (int i = 0; i < this->components.size(); i++)
-	{
-		this->components[i]->CleanUp();
-		delete this->components[i];
-		this->components[i] = nullptr;
-	}
-	this->components.clear();
-
-	if (this->BoundingBox != nullptr) {
-		delete this->BoundingBox;
-		this->BoundingBox = nullptr;
-	}
-
-	for (int i = 0; i < this->children.size(); i++)
-		this->children[i]->CleanUp();
-
-	this->children.clear();
-
-	this->parent = nullptr;
-	this->root = nullptr;
-	this->name.clear();
-}
-
 void GameObject::CalculateGlobalTransforms()
 {
 	if (this->parent != nullptr)
-		this->transform->global_transform = this->parent->transform->global_transform * this->transform->local_transform;
+		this->GetTransform()->global_transform = this->parent->GetTransform()->global_transform * this->GetTransform()->local_transform;
 
 	else
-		transform->global_transform = transform->local_transform;
+		GetTransform()->global_transform = GetTransform()->local_transform;
 	
 	if (this->children.size() > 0)
 	{
@@ -387,8 +362,7 @@ void GameObject::CalculateGlobalTransforms()
 }
 
 void GameObject::CleanUp()
-  {
-	
+{
 	for (int i = 0; i < this->components.size(); i++)
 	{
 		this->components[i]->CleanUp();
@@ -514,7 +488,7 @@ Component* GameObject::NewComponent(CTypes type)
 ComponentTransform * GameObject::GetParentTransform()
 {
 	if (parent != nullptr)
-		return parent->GetTransfomr();
+		return parent->GetTransform();
 	else
 		return nullptr;
 }

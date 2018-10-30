@@ -51,17 +51,17 @@ void GeoPropertiesWindow::Draw()
 
 						ComponentTransform* aux = selected_object->GetComponent(CT_Transform)->AsTransform();
 						//Pos
-						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
+						float pos[3] = { selected_object->GetTransform()->position.x, selected_object->GetTransform()->position.y, selected_object->GetTransform()->position.z };
 						if (ImGui::DragFloat3 ("Position", pos, 0.1f))
 							selected_object->GetTransform()->SetTransformPosition(pos[0], pos[1], pos[2]);
 
 						//Scale
-						float scale[3] = { selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z };
+						float scale[3] = { selected_object->GetTransform()->scale.x, selected_object->GetTransform()->scale.y, selected_object->GetTransform()->scale.z };
 						if (ImGui::DragFloat3("Scale", scale, 0.1f))
 							selected_object->GetTransform()->SetTransformScale(scale[0], scale[1], scale[2]);
 
 							//Rot
-						float rot[3] = { selected_object->transform->transform_rotate_euler.x, selected_object->transform->transform_rotate_euler.y, selected_object->transform->transform_rotate_euler.z };
+						float rot[3] = { selected_object->GetTransform()->rotate_euler.x, selected_object->GetTransform()->rotate_euler.y, selected_object->GetTransform()->rotate_euler.z };
 						if (ImGui::DragFloat3("Rotation", rot, 0.2f))
 							selected_object->GetTransform()->SetTransformRotation((float3)rot);
 
@@ -177,7 +177,7 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 			{
 				App->mesh_loader->active_objects.push_back(obj);
 				obj->active = true;
-				obj->transform->to_update = true;
+				obj->GetTransform()->to_update = true;
 			}
 		}
 		else if (ImGui::IsItemClicked())
@@ -185,7 +185,7 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 			App->mesh_loader->SetActiveFalse();
 			App->mesh_loader->active_objects.push_back(obj);
 			obj->active = true;
-			obj->transform->to_update = true;
+			obj->GetTransform()->to_update = true;
 
 			selected_object = App->mesh_loader->active_objects[0];
 			check_info = true;
