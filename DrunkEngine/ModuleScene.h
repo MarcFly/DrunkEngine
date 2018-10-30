@@ -22,9 +22,6 @@ public:
 
 	bool LoadFBX(const char* file_path);
 	bool LoadSceneFile(const char* file_path);
-	//bool CreatePrimitiveObject(const vec& center, PCube& sphere);
-	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
-	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
 
 	bool LoadTextCurrentObj(const char* path, GameObject* curr_obj);
 	bool DestroyScene();
@@ -42,6 +39,8 @@ public:
 
 	void NewScene();
 	void DeleteScene();
+
+	void OrderScene();
 
 public:
 	GameObject* Root_Object = nullptr;

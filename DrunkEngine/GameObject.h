@@ -38,7 +38,6 @@ public:
 	vec getObjectCenter();
 	float SetBoundBox();
 	void SetBoundBoxFromMeshes();
-	//void SetBoundBody();
 
 	Component* NewComponent(CTypes type);
 	void AdjustObjects();
@@ -50,7 +49,7 @@ public:
 
 
 public:
-	Uint32	UUID, par_UUID = UINT_LEAST32_MAX;
+	Uint32	UUID, par_UUID = UINT_FAST32_MAX;
 	std::string name;
 
 	AABB* BoundingBox = nullptr;
@@ -134,7 +133,23 @@ public:
 		return ret;
 	}
 
+	GameObject* GetChild(Uint32 UUID)
+	{
+		GameObject* ret = nullptr;
 
+		for (int i = 0; i < children.size(); i++)
+		{
+			if (children[i]->UUID == UUID)
+				ret = children[i];
+			else
+				ret = children[i]->GetChild(UUID);
+
+			if (ret != nullptr)
+				break;
+		}
+
+		return ret;
+	}
 };
 
 #endif

@@ -113,6 +113,8 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 		getRootObj()->children[getRootObj()->children.size() - 1]->Load(val, file_path);
 	}
 
+	OrderScene();
+
 	return true;
 }
 
@@ -165,8 +167,6 @@ bool ModuleScene::Save(JSON_Value * root_value)
 	json_object_dotset_string(root_obj, "scene.default_load", Save_scene.c_str());
 	json_object_dotset_string(root_obj, "scene.scenes_path", scene_folder.c_str());
 	json_serialize_to_file(root_value, "config_data.json");
-	//App->ui->console_win->AddLog("ModuleScene config saved");
-
 
 	ret = true;
 	return ret;
@@ -243,3 +243,20 @@ bool ModuleScene::DestroyScene()
 	return ret;
 }
 
+void ModuleScene::OrderScene()
+{
+	for (int i = 0; i < getRootObj()->children.size(); i++)
+	{
+		if (getRootObj()->children[i]->par_UUID != UINT_FAST32_MAX)
+		{
+			GameObject* obj = getRootObj()->children[i];
+			getRootObj()->children[i]->to_pop = true;
+			getRootObj()->AdjustObjects();
+			obj->to_pop = false;
+			GameObject* get = getRootObj()->GetChild(obj->par_UUID);
+			if (get != nullptr)
+				get->children.push_back(obj);
+			i--;
+		}
+	}
+}

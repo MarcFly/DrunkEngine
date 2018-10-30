@@ -217,8 +217,8 @@ void GameObject::AdjustObjects()
 	{
 		if (this->children[i]->to_pop == true)
 		{
-			delete this->children[i];
-			this->children[i] = nullptr;
+			//delete this->children[i];
+			//this->children[i] = nullptr;
 			break;
 		}
 	}
