@@ -36,14 +36,14 @@ bool ModuleScene::Start()
 
 	//Load(nullptr);
 	//LoadFromFile("./Assets/BakerHouse.fbx");
-	//LoadFromFile("./Assets/Ogre.fbx");
-	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	LoadFBX("./Assets/Ogre.fbx");
+	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	//LoadSceneFile("Scene.json");
 
 	App->renderer3D->OnResize();
 
-	SaveScene();
+	//SaveScene();
 
 	return ret;
 }

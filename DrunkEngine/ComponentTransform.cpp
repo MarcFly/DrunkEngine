@@ -19,9 +19,10 @@ void ComponentTransform::SetFromMatrix(const aiMatrix4x4* t)
 	aiQuaternion rot;
 
 	t->Decompose(local_scale, rot, pos);
-	this->scale = float3(local_scale.x, local_scale.y, local_scale.z);
-	this->rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
-	this->position = float3(pos.x, pos.y, pos.z);
+
+	scale = float3(local_scale.x, local_scale.y, local_scale.z);
+	rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
+	position = float3(pos.x, pos.y, pos.z);
 
 	SetTransformRotation(rotate_quat);
 }
@@ -77,25 +78,25 @@ void ComponentTransform::RecursiveSetToUpdate(ComponentTransform * t)
 
 void ComponentTransform::CleanUp()
 {
-	this->parent = nullptr;
+	parent = nullptr;
 }
 
 void ComponentTransform::Load(JSON_Object* comp)
 {
-	this->position.x = json_object_dotget_number(comp, "position.x");
-	this->position.y = json_object_dotget_number(comp, "position.y");
-	this->position.z = json_object_dotget_number(comp, "position.z");
+	position.x = json_object_dotget_number(comp, "position.x");
+	position.y = json_object_dotget_number(comp, "position.y");
+	position.z = json_object_dotget_number(comp, "position.z");
 	
-	this->scale.x = json_object_dotget_number(comp, "scale.x");
-	this->scale.y = json_object_dotget_number(comp, "scale.y");
-	this->scale.z = json_object_dotget_number(comp, "scale.z");
+	scale.x = json_object_dotget_number(comp, "scale.x");
+	scale.y = json_object_dotget_number(comp, "scale.y");
+	scale.z = json_object_dotget_number(comp, "scale.z");
 
-	this->rotate_quat.w = json_object_dotget_number(comp, "rotate_quat.w");
-	this->rotate_quat.x = json_object_dotget_number(comp, "rotate_quat.x");
-	this->rotate_quat.y = json_object_dotget_number(comp, "rotate_quat.y");
-	this->rotate_quat.z = json_object_dotget_number(comp, "rotate_quat.z");
+	rotate_quat.w = json_object_dotget_number(comp, "rotate_quat.w");
+	rotate_quat.x = json_object_dotget_number(comp, "rotate_quat.x");
+	rotate_quat.y = json_object_dotget_number(comp, "rotate_quat.y");
+	rotate_quat.z = json_object_dotget_number(comp, "rotate_quat.z");
 
-
+	SetTransformRotation(rotate_quat);
 }
 
 void ComponentTransform::Save(JSON_Array* comps)
