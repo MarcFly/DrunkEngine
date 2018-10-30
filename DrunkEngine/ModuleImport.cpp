@@ -61,6 +61,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 
 	ret->transform = new ComponentTransform(&obj_node->mTransformation, ret);
+	
 	App->mesh_loader->Main_Cam->LookToObj(ret, ret->SetBoundBox());
 
 	return ret;

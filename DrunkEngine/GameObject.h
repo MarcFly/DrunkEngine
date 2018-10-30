@@ -28,12 +28,15 @@ public:
 
 	vec getObjectCenter();
 	float SetBoundBox();
+	void SetTransformedBoundBox();
 	void SetBoundBoxFromMeshes();
 	//void SetBoundBody();
 
 	void AdjustObjects();
 	void AdjustMaterials();
 	void AdjustMeshes();
+
+	void CalculateGlobalTransforms();
 
 	void CleanUp();
 
@@ -53,6 +56,11 @@ public:
 
 	bool to_pop = false;
 	bool active = false;
+
+	float max_distance_point = 0;
+
+public:
+	ComponentTransform * GetParentTransform();
 
 public:
 	ComponentCamera * camera = nullptr;
