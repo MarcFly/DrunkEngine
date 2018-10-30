@@ -92,6 +92,18 @@ public:
 		UUID = pcg32_random_r(&rng);
 	}
 
+	ComponentTransform* GetTransform()
+	{
+		for (int i = 0; i < components.size(); i++)
+		{
+			if (components[i]->type == CT_Transform)
+				return components[i]->AsTransform();
+		}
+
+		components.push_back(new ComponentTransform(this));
+		return components[components.size() - 1]->AsTransform();
+	}
+
 	Component* GetComponent(CTypes id_t)
 	{
 		for (int i = 0; i < components.size(); i++)

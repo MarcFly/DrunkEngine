@@ -23,6 +23,8 @@ public:
 	void SetTransformRotation(const float3 rot_vec);
 	void SetTransformScale(const int scale_x, const int scale_y, const int scale_z);
 
+	void SetFromMatrix(const aiMatrix4x4* t);
+
 	void CleanUp();
 
 	void Load(JSON_Object* comp);

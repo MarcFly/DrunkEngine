@@ -3,7 +3,7 @@
   "scene": [
     {
       "gameobject": {
-        "UUID": 3922717699,
+        "UUID": 2616352862,
         "par_UUID": 4294967295,
         "name": "Scene",
         "components": []
@@ -11,8 +11,8 @@
     },
     {
       "gameobject": {
-        "UUID": 2760990922,
-        "par_UUID": 3922717699,
+        "UUID": 2919868140,
+        "par_UUID": 2616352862,
         "name": "RootNode",
         "components": [
           {
@@ -68,8 +68,8 @@
     },
     {
       "gameobject": {
-        "UUID": 3706219626,
-        "par_UUID": 2760990922,
+        "UUID": 656676928,
+        "par_UUID": 2919868140,
         "name": "Sight",
         "components": [
           {
@@ -131,8 +131,8 @@
     },
     {
       "gameobject": {
-        "UUID": 1699574403,
-        "par_UUID": 2760990922,
+        "UUID": 2027527449,
+        "par_UUID": 2919868140,
         "name": "Bipod",
         "components": [
           {
@@ -194,8 +194,8 @@
     },
     {
       "gameobject": {
-        "UUID": 1441483042,
-        "par_UUID": 2760990922,
+        "UUID": 3399289888,
+        "par_UUID": 2919868140,
         "name": "Cartridge",
         "components": [
           {
@@ -257,8 +257,8 @@
     },
     {
       "gameobject": {
-        "UUID": 131515577,
-        "par_UUID": 2760990922,
+        "UUID": 3918827895,
+        "par_UUID": 2919868140,
         "name": "Rifle",
         "components": [
           {
@@ -320,8 +320,8 @@
     },
     {
       "gameobject": {
-        "UUID": 2636784288,
-        "par_UUID": 2760990922,
+        "UUID": 3106837900,
+        "par_UUID": 2919868140,
         "name": "Point",
         "components": [
           {
@@ -377,8 +377,8 @@
     },
     {
       "gameobject": {
-        "UUID": 1775663821,
-        "par_UUID": 2760990922,
+        "UUID": 2841622554,
+        "par_UUID": 2919868140,
         "name": "Hemi",
         "components": [
           {
