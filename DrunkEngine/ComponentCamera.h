@@ -3,10 +3,11 @@
 
 #include "Module.h"
 #include "MGL/MathGeoLib.h"
+#include "Component.h"
 
 class GameObject;
 
-class ComponentCamera
+class ComponentCamera : public Component
 {
 public:
 	ComponentCamera(GameObject * gameobject);
@@ -33,11 +34,10 @@ public:
 
 	void LookToObj(GameObject* obj, float vertex_aux);
 
-	bool Load(JSON_Value* root_value);
-	bool Save(JSON_Value* root_value);
+	void Load(JSON_Object* comp);
+	void Save(JSON_Array* comps);
 
 private:
-	GameObject * parent = nullptr;
 	float3 bb_frustum[8];
 
 public:
@@ -51,6 +51,13 @@ public:
 
 	Frustum frustum;
 
+public:
+	void SetBaseVals()
+	{
+		type = CT_Camera;
+		multiple = true;
+		parent = nullptr;
+	}
 };
 
 

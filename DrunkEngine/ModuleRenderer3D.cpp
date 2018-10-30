@@ -48,7 +48,7 @@ bool ModuleRenderer3D::Init()
 		ret = false;
 	}
 	
-	Load(nullptr);
+	//Load(nullptr);
 
 	if(ret == true)
 	{
@@ -404,8 +404,6 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
-
-	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
 	json_object_dotset_boolean(root_obj, "render.depth_test", depth_test);
@@ -427,7 +425,7 @@ bool ModuleRenderer3D::Save(JSON_Value * root_value)
 
 	json_serialize_to_file(root_value, "config_data.json");
 
-	App->ui->console_win->AddLog("Render config saved");
+	//App->ui->console_win->AddLog("Render config saved");
 
 	ret = true;
 	return ret;

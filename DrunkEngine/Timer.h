@@ -21,6 +21,12 @@ private:
 	bool	running;
 	Uint32	started_at;
 	Uint32	stopped_at;
+
+public:
+	void LogTime(const char* info = nullptr)
+	{
+		PLOG("%s took %d ms", info, Read());
+	}
 };
 
 #endif //__TIMER_H__

@@ -6,14 +6,20 @@
 #include <gl/GLU.h>
 #include "Primitive.h"
 #include "Assimp/include/scene.h"
+#include "Component.h"
 
 class GameObject;
 class ComponentCamera;
 
-class ComponentMesh
+class ComponentMesh : public Component
 {
 public:
 	ComponentMesh();
+	ComponentMesh(GameObject* par) {
+		SetBaseVals();
+
+		parent = par;
+	};
 	//ComponentMesh(const aiMesh* mesh, GameObject* par);
 
 	~ComponentMesh() {};
@@ -32,40 +38,52 @@ public:
 
 	void CleanUp();
 
+	void Load(JSON_Object* comp);
+	void Save(JSON_Array* comps);
+
 public:
-	std::string name;
+	GLuint id_index; // index in VRAM
+	GLuint num_index;
+	GLuint* index;
 
-	GLuint id_index = 0; // index in VRAM
-	GLuint num_index = 0;
-	GLuint* index = nullptr;
+	GLuint id_vertex; // unique vertex in VRAM
+	GLuint num_vertex;
+	GLfloat* vertex;
 
-	GLuint id_vertex = 0; // unique vertex in VRAM
-	GLuint num_vertex = 0;
-	GLfloat* vertex = nullptr;
+	GLuint id_uvs;
+	GLuint num_uvs;
+	GLfloat* tex_coords;
 
-	GLuint id_uvs = 0;
-	GLuint num_uvs = 0;
-	GLfloat* tex_coords = nullptr;
+	GLuint id_normal;
+	GLuint num_normal;
+	GLfloat* normal;
 
-	GLuint id_normal = 0;
-	GLuint num_normal = 0;
-	GLfloat* normal = nullptr;
+	GLuint Material_Ind;
 
-	GLuint Material_Ind = 0;
+	GLuint num_faces;
 
-	GLuint num_faces = 0;
+	AABB* BoundingBox;
 
-	AABB* BoundingBox = nullptr;
-
-	Primitive* BoundingBody = nullptr;
-
-	GameObject* parent = nullptr;
-	GameObject* root = nullptr;
-
-	bool to_pop = false;
+	GameObject* root;
 
 public:
 	void SetTextTo(const int& Mat_ind) { this->Material_Ind = Mat_ind; };
+
+	void SetBaseVals()
+	{
+		type = CT_Mesh;
+		multiple = true;
+
+		id_index = id_normal = id_vertex = id_uvs = 0;
+		num_faces = num_index = num_normal = num_uvs = num_vertex = 0;
+
+		index = nullptr;
+		normal = tex_coords = vertex = nullptr;
+		BoundingBox = nullptr;
+		parent = root = nullptr;
+
+		to_pop = false;
+	}
 };
 
 #endif

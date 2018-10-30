@@ -5,9 +5,11 @@
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
+#include "MeshImport.h"
 
 ComponentMesh::ComponentMesh()
 {
+	SetBaseVals();
 }
 
 bool ComponentMesh::SetTexCoords(const aiMesh * mesh)
@@ -64,27 +66,34 @@ void ComponentMesh::SetNormals(const int& index)
 void ComponentMesh::GenBuffers()
 {
 	// Vertex Buffer
-	glGenBuffers(1, &this->id_vertex);
-	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_vertex * 3, this->vertex, GL_STATIC_DRAW);
+	if (this->num_vertex > 0)
+	{
+		glGenBuffers(1, &this->id_vertex);
+		glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_vertex * 3, this->vertex, GL_STATIC_DRAW);
+	}
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Index Buffer
+	if (this->num_index > 0)
+	{
 	glGenBuffers(1, &this->id_index);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->num_index, this->index, GL_STATIC_DRAW);
-
+	}
 	// **Unbind Buffer**
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
 	// Texture Coordinates / UVs Buffer
-	glGenBuffers(1, &this->id_uvs);
-	glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_uvs * 3, this->tex_coords, GL_STATIC_DRAW);
-
+	if (this->num_uvs > 0)
+	{
+		glGenBuffers(1, &this->id_uvs);
+		glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_uvs * 3, this->tex_coords, GL_STATIC_DRAW);
+	}
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -119,24 +128,27 @@ void ComponentMesh::Draw()
 {
 	if (App->mesh_loader->active_cameras.size() > 0 && isMeshInsideFrustum(App->mesh_loader->active_cameras[0], this->BoundingBox))
 	{
-		if (App->renderer3D->faces)
+		if (index != nullptr && vertex != nullptr)
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			DrawMesh();
+			if (App->renderer3D->faces)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				DrawMesh();
+			}
+
+			if (App->renderer3D->wireframe)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				DrawMeshWire();
+			}
+
+			// Set Default Color back
+			Color def = App->camera->background;
+			glColor4f(def.r, def.g, def.b, def.a);
+
+			if (App->renderer3D->render_normals)
+				this->DrawNormals();
 		}
-
-		if (App->renderer3D->wireframe)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			DrawMeshWire();
-		}
-
-		// Set Default Color back
-		Color def = App->camera->background;
-		glColor4f(def.r, def.g, def.b, def.a);
-
-		if (App->renderer3D->render_normals)
-			this->DrawNormals();
 	}
 }
 
@@ -149,24 +161,35 @@ void ComponentMesh::DrawMesh()
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
 
-	if (this->Material_Ind != -1)
+	if (this->Material_Ind != -1 && tex_coords != nullptr)
 	{
-		if (this->Material_Ind < this->parent->materials.size())
+		std::vector<Component*> cmp_mats;
+		cmp_mats = parent->GetComponents(CT_Material);
+		ComponentMaterial* mat = nullptr;
+
+		for (int i = 0; i < cmp_mats.size(); i++)
 		{
-			Color c = this->parent->materials[Material_Ind]->default_print;
+			mat = cmp_mats[i]->AsMaterial();
+			if (mat != nullptr && mat->count_number == this->Material_Ind)
+				break;
+		}
+
+		if (mat != nullptr)
+		{
+			Color c = mat->default_print;
 			glColor4f(c.r, c.g, c.b, c.a);
 
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
-			if (this->parent->materials[Material_Ind]->textures.size() > 0)
+			if (mat->textures.size() > 0)
 			{
-				for (int i = 0; i < this->parent->materials[Material_Ind]->textures.size(); i++)
+				for (int i = 0; i < mat->textures.size(); i++)
 				{
 					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 					glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
 					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-					glBindTexture(GL_TEXTURE_2D, this->parent->materials[Material_Ind]->textures[i]->id_tex);
+					glBindTexture(GL_TEXTURE_2D, mat->textures[i]->id_tex);
 				}
 			}
 		}
@@ -277,12 +300,26 @@ void ComponentMesh::CleanUp()
 		this->BoundingBox = nullptr;
 	}
 
-	if (this->BoundingBody != nullptr) {
-		this->BoundingBody->DelMathBody();
-		delete this->BoundingBody;
-		this->BoundingBody = nullptr;
-	}
-
 	this->parent = nullptr;
 	this->root = nullptr;
+}
+
+void ComponentMesh::Load(JSON_Object* comp)
+{
+	this->name = json_object_get_string(comp, "mesh_name");
+	App->importer->mesh_i->ImportMesh(name.c_str(), this);
+}
+
+void ComponentMesh::Save(JSON_Array* comps)
+{
+	JSON_Value* append = json_value_init_object();
+	JSON_Object* curr = json_value_get_object(append);
+
+	json_object_dotset_number(curr, "properties.type", type);
+
+	json_object_dotset_string(curr, "properties.mesh_name", name.c_str());
+
+	json_array_append_value(comps, append);
+
+	App->importer->mesh_i->ExportMesh(this);
 }

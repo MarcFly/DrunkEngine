@@ -9,9 +9,25 @@
 #include "GLEW/include/GL/glew.h"
 #include "Assimp/include/scene.h"
 #include "Color.h"
+#include "Timer.h"
 
 #include <iostream>
 #include <fstream>
+
+class MeshImport;
+class MatImport;
+
+enum FileType
+{
+	FT_Error = -1,
+	FT_Texture,
+	FT_Object,
+	FT_New_Object,
+	FT_Material,
+	FT_Mesh,
+
+	FT_Files_Max
+};
 
 class ModuleImport : public Module {
 public:
@@ -25,34 +41,25 @@ public:
 
 	void ImportFBX(const char* path);
 	
-	GameObject* ImportGameObject(const char* path);
+	GameObject* ImportGameObject(const char* path, GameObject* par);
 	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
-
-	ComponentMaterial* ImportMaterial(const char* path);
-	ComponentMaterial* ImportMaterial(const aiMaterial* mat, GameObject* par);
-
-	Texture* ImportTexture(const char* path, ComponentMaterial* par);
-
-	ComponentMesh* ImportMesh(const char* mesh, GameObject* par);
-	//ComponentMesh* ImportMesh(const aiMesh* mesh, GameObject* par);
 
 	void ExportScene(const char* scene);
 
-	void ExportTexture(const char* path);
-
-	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
-	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
-	std::vector<float> ExportBBox(const aiVector3D* verts, const int& num_vertex);
-	//void ExportNode(const aiScene* scene, const aiNode* node);
-
-	void SerializeSceneData();
-
-	void SerializeObjectData(const GameObject* obj, std::ofstream& file);
-
-	
-
+	void LoadFile(char* file);
+	FileType CheckExtension(std::string& ext);
+	void LoadFileType(char* file, FileType type);
 public:
+	MeshImport* mesh_i;
+	MatImport* mat_i;
 
+	std::string tex_folder;
+	std::string mesh_folder;
+	std::string mat_folder;
+	std::string cam_folder;
+	std::string obj_folder;
+
+	Timer Imp_Timer;
 
 public:
 	
@@ -80,10 +87,43 @@ public:
 
 		return ret;
 	}
-	void TabFile(const int& tabs, std::ofstream& file)
+
+	uint GetExtSize(const char* file)
 	{
-		for (int i = 0; i < tabs; i++)
-			file << "\t";
+		std::string ret = strrchr(file, '.');
+
+		return ret.length();
+	}
+
+	void SetDirectories()
+	{
+		CreateDirectory("./Library", NULL);
+		SetFileAttributes("./Library", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Meshes", NULL);
+		SetFileAttributes("./Library\\Meshes", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Materials", NULL);
+		SetFileAttributes("./Library\\Materials", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Textures", NULL);
+		SetFileAttributes("./Library\\Textures", FILE_ATTRIBUTE_HIDDEN);
+
+		CreateDirectory("./Library\\Cameras", NULL);
+		SetFileAttributes("./Library\\Cameras", FILE_ATTRIBUTE_HIDDEN);
+	}
+
+	std::string GetDir(const char* full_path)
+	{
+		if (full_path != nullptr)
+		{
+			std::string aux = strrchr(full_path, '\\/');
+			std::string path = full_path;
+			//original_load.substr(aux.length());
+			path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /
+			return path;
+		}
+		return std::string("");
 	}
 
 };

@@ -45,8 +45,6 @@ bool ModuleWindow::Init()
 		screen_size_w = DM.w;
 		screen_size_h = DM.h;
 
-		Load(nullptr);
-
 		if(fullscreen == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
@@ -194,14 +192,9 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 {
 	bool ret = false;
 
-	//JSON_Value* window_value = root_value;
-	//JSON_Value *schema = json_parse_string("{\"width\:\"\"height\":\"\"}");
-	root_value = json_parse_file("config_data.json");
-	//root_value = json_value_init_object();
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	
 	json_object_dotset_number(root_obj, "window.size.width", window_w);
-	//json_object_set_number(root_obj, "width", width);
 	json_object_dotset_number(root_obj, "window.size.height", window_h);
 	
 	json_object_dotset_boolean(root_obj, "window.options.fullscreen", this->fullscreen);
@@ -211,8 +204,6 @@ bool ModuleWindow::Save(JSON_Value* root_value)
 	json_object_dotset_number(root_obj, "window.options.brightness", this->brightness);
 
 	json_serialize_to_file(root_value, "config_data.json");
-
-	App->ui->console_win->AddLog("Window config saved");
 
 	ret = true;
 	return ret;

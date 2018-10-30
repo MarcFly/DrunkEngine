@@ -2,12 +2,19 @@
 #include "Application.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
-#include "ComponentTransform.h"
 #include "ComponentCamera.h"
 
+
 // Creation of Root Node from a file
+GameObject::GameObject()
+{
+	SetUUID();
+	//GetTransform();
+}
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
 {
+	SetUUID();
+
 	this->name = "Scene";
 	this->root = this;
 
@@ -26,6 +33,10 @@ void GameObject::Start()
 {
 	if (camera != nullptr)
 		camera->Start();
+
+	for (int i = 0; i < this->components.size(); i++)
+		this->components[i]->Start();
+
 }
 
 void GameObject::Update(float dt)
@@ -35,19 +46,23 @@ void GameObject::Update(float dt)
 	if (camera != nullptr)
 		camera->Update(dt);
 
+	for (int i = 0; i < this->components.size(); i++)
+		this->components[i]->Update();
+
 	Draw();
 
 }
 
 void GameObject::Draw()
 {
-	for (int i = 0; i < this->meshes.size(); i++)
+	for (int i = 0; i < this->components.size(); i++)
 	{
 		glPushMatrix();
 		glMultMatrixf(this->transform->global_transform.Transposed().ptr());
-		this->meshes[i]->Draw();
+		this->components[i]->Draw();
 		glPopMatrix();
 	}
+
 
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
 	{
@@ -120,7 +135,7 @@ void GameObject::DrawBB()
 
 vec GameObject::getObjectCenter()
 {
-	if (this->BoundingBody == nullptr)
+	if (this->BoundingBox == nullptr)
 		this->SetBoundBox();
 
 	float aux_x = (this->BoundingBox->maxPoint.x + this->BoundingBox->minPoint.x) / 2;
@@ -152,15 +167,20 @@ float GameObject::SetBoundBox()
 			// Setting the BB min and max points
 
 			if (this->BoundingBox->maxPoint.x < this->children[i]->BoundingBox->maxPoint.x)
-				this->BoundingBox->maxPoint.x = this->children[i]->BoundingBox->maxPoint.x;																	
+				this->BoundingBox->maxPoint.x = this->children[i]->BoundingBox->maxPoint.x;		
+
 			if (this->BoundingBox->minPoint.x > this->children[i]->BoundingBox->minPoint.x)
-				this->BoundingBox->minPoint.x = this->children[i]->BoundingBox->minPoint.x;																	
+				this->BoundingBox->minPoint.x = this->children[i]->BoundingBox->minPoint.x;	
+
 			if (this->BoundingBox->maxPoint.y < this->children[i]->BoundingBox->maxPoint.y)
-				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;																	
+				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;	
+
 			if (this->BoundingBox->minPoint.y > this->children[i]->BoundingBox->minPoint.y)
 				this->BoundingBox->minPoint.y = this->children[i]->BoundingBox->minPoint.y;
+
 			if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
-				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;												 						
+				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;	
+
 			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
 				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
 
@@ -176,8 +196,6 @@ float GameObject::SetBoundBox()
 		if (abs(this->BoundingBox->minPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.y); }
 		if (abs(this->BoundingBox->minPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.z); }
 	}
-
-
 
 	return max_distance_point;
 }
@@ -258,24 +276,27 @@ void GameObject::SetBoundBoxFromMeshes()
 {
 	this->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX), vec(INT_MIN, INT_MIN, INT_MIN));
 
-	if (this->meshes.size() > 0)
+	std::vector<Component*> cmp_meshes;
+	cmp_meshes = GetComponents(CT_Mesh);
+
+	if (cmp_meshes.size() > 0)
 	{
-		for (int i = 0; i < this->meshes.size(); i++)
+		for (int i = 0; i < cmp_meshes.size(); i++)
 		{
 			// Setting the BB min and max points
 
-			if (this->BoundingBox->maxPoint.x < this->meshes[i]->BoundingBox->maxPoint.x)
-				this->BoundingBox->maxPoint.x = this->meshes[i]->BoundingBox->maxPoint.x;
-			if (this->BoundingBox->minPoint.x > this->meshes[i]->BoundingBox->minPoint.x)
-				this->BoundingBox->minPoint.x = this->meshes[i]->BoundingBox->minPoint.x;
-			if (this->BoundingBox->maxPoint.y < this->meshes[i]->BoundingBox->maxPoint.y)
-				this->BoundingBox->maxPoint.y = this->meshes[i]->BoundingBox->maxPoint.y;
-			if (this->BoundingBox->minPoint.y > this->meshes[i]->BoundingBox->minPoint.y)
-				this->BoundingBox->minPoint.y = this->meshes[i]->BoundingBox->minPoint.y;
-			if (this->BoundingBox->maxPoint.z < this->meshes[i]->BoundingBox->maxPoint.z)
-				this->BoundingBox->maxPoint.z = this->meshes[i]->BoundingBox->maxPoint.z;
-			if (this->BoundingBox->minPoint.z > this->meshes[i]->BoundingBox->minPoint.z)
-				this->BoundingBox->minPoint.z = this->meshes[i]->BoundingBox->minPoint.z;
+			if (this->BoundingBox->maxPoint.x < cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.x)
+				this->BoundingBox->maxPoint.x = cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.x;
+			if (this->BoundingBox->minPoint.x > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.x)
+				this->BoundingBox->minPoint.x = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.x;
+			if (this->BoundingBox->maxPoint.y < cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.y)
+				this->BoundingBox->maxPoint.y = cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.y;
+			if (this->BoundingBox->minPoint.y > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.y)
+				this->BoundingBox->minPoint.y = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.y;
+			if (this->BoundingBox->maxPoint.z < cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.z)
+				this->BoundingBox->maxPoint.z = cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.z;
+			if (this->BoundingBox->minPoint.z > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.z)
+				this->BoundingBox->minPoint.z = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.z;
 		}
 	}
 }
@@ -283,12 +304,12 @@ void GameObject::SetBoundBoxFromMeshes()
 void GameObject::AdjustObjects()
 {
 	int i = 0;
-	for (i; i < this->children.size(); i++)
+	for (; i < this->children.size(); i++)
 	{
 		if (this->children[i]->to_pop == true)
 		{
-			delete this->children[i];
-			this->children[i] = nullptr;
+			//delete this->children[i];
+			//this->children[i] = nullptr;
 			break;
 		}
 	}
@@ -301,46 +322,51 @@ void GameObject::AdjustObjects()
 	this->children.pop_back();
 }
 
-void GameObject::AdjustMaterials()
+void GameObject::AdjustComponents()
 {
 	int i = 0;
-	for (i; i < this->materials.size(); i++)
+	for (; i < this->components.size(); i++)
 	{
-		if (this->materials[i]->to_pop == true)
+		if (this->components[i]->to_pop == true)
 		{
-			delete this->materials[i];
-			this->materials[i] = nullptr;
+			delete this->components[i];
+			this->components[i] = nullptr;
 			break;
 		}
 	}
 
-	for (int j = i; j < this->materials.size() - 1; j++)
+	for (int j = i; j < this->components.size() - 1; j++)
 	{
-		this->materials[j] = this->materials[j + 1];
+		this->components[j] = this->components[j + 1];
 	}
 
-	this->materials.pop_back();
+	this->components.pop_back();
 }
 
-void GameObject::AdjustMeshes()
+void GameObject::CleanUp()
 {
-	int i = 0;
-	for (i; i < this->meshes.size(); i++)
+	
+	for (int i = 0; i < this->components.size(); i++)
 	{
-		if (this->meshes[i]->to_pop == true)
-		{
-			delete this->meshes[i];
-			this->meshes[i] = nullptr;
-			break;
-		}
+		this->components[i]->CleanUp();
+		delete this->components[i];
+		this->components[i] = nullptr;
+	}
+	this->components.clear();
+
+	if (this->BoundingBox != nullptr) {
+		delete this->BoundingBox;
+		this->BoundingBox = nullptr;
 	}
 
-	for (int j = i; j < this->meshes.size() - 1; j++)
-	{
-		this->meshes[j] = this->meshes[j + 1];
-	}
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->CleanUp();
 
-	this->meshes.pop_back();
+	this->children.clear();
+
+	this->parent = nullptr;
+	this->root = nullptr;
+	this->name.clear();
 }
 
 void GameObject::CalculateGlobalTransforms()
@@ -361,51 +387,134 @@ void GameObject::CalculateGlobalTransforms()
 }
 
 void GameObject::CleanUp()
-{
+  {
 	
-
-	for (int i = 0; i < this->meshes.size(); i++)
+	for (int i = 0; i < this->components.size(); i++)
 	{
-		this->meshes[i]->CleanUp();
-		delete this->meshes[i];
-		this->meshes[i] = nullptr;
+		this->components[i]->CleanUp();
+		delete this->components[i];
+		this->components[i] = nullptr;
 	}
-	this->meshes.clear();
-
-	for (int i = 0; i < this->materials.size(); i++)
-	{
-		this->materials[i]->CleanUp();
-		delete this->materials[i];
-		this->materials[i] = nullptr;
-	}
-	this->meshes.clear();
-
-	delete this->transform;
-	this->transform = nullptr;
+	this->components.clear();
 
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
 		this->BoundingBox = nullptr;
 	}
 
-	if (this->BoundingBody != nullptr) {
-		this->BoundingBody->DelMathBody();
-		delete this->BoundingBody;
-		this->BoundingBody = nullptr;
-	}
-
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->CleanUp();
+
+	this->children.clear();
 
 	this->parent = nullptr;
 	this->root = nullptr;
 	this->name.clear();
 }
 
+void GameObject::Load(JSON_Value* go, const char* file)
+{
+	JSON_Object* curr = json_value_get_object(json_object_get_value_at(json_value_get_object(go),0));
+
+	this->UUID = json_object_dotget_number(curr, "UUID");
+	this->par_UUID = json_object_get_number(curr, "par_UUID");
+	this->name = json_object_get_string(curr, "name");
+
+	JSON_Array* get_array = json_object_get_array(curr, "components");
+
+	for (int i = 0; i < json_array_get_count(get_array); i++)
+	{
+		JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(get_array, i)),"properties");
+		JSON_Object* obj = json_value_get_object(val);
+		CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
+
+		if (type == 0)
+			bool test = true;
+
+		Component* add = NewComponent(type);
+		add->Load(obj);
+		add->parent = this;
+		this->components.push_back(add);
+	}
+}
+
+void GameObject::Save(JSON_Array* go)
+{
+	JSON_Value* append = json_value_init_object();
+	JSON_Object* curr = json_value_get_object(append);
+
+	std::string obj = "gameobject.";
+	std::string set_val;
+	
+	set_val = obj + "UUID";
+	json_object_dotset_number(curr, set_val.c_str(), UUID);
+
+	set_val = obj + "par_UUID";
+	json_object_dotset_number(curr, set_val.c_str(), par_UUID);
+
+	set_val = obj + "name";
+	json_object_dotset_string(curr, set_val.c_str(), name.c_str());
+
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* comps = json_value_get_array(set_array);
+
+	for (int i = 0; i < this->components.size(); i++)
+		this->components[i]->Save(comps);
+
+	set_val = obj + "components";
+	json_object_dotset_value(curr,set_val.c_str(), set_array);
+
+	json_array_append_value(go, append);
+
+	for(int i = 0; i < this->children.size(); i++)
+		this->children[i]->Save(go);
+
+}
+
+std::vector<uint> GameObject::GetMeshProps()
+{
+	uint ret[2] = { 0,0 };
+	std::vector<Component*> meshes;
+	meshes = GetComponents(CT_Mesh);
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		ComponentMesh* aux = meshes[i]->AsMesh();
+		ret[0] += aux->num_vertex;
+		ret[1] += aux->num_faces;
+	}
+
+	for (int i = 0; i < children.size(); i++)
+	{
+		std::vector<uint> child = children[i]->GetMeshProps();
+		ret[0] += child[0];
+		ret[1] += child[1];
+	}
+
+	std::vector<uint> ret_v;
+	ret_v.push_back(ret[0]);
+	ret_v.push_back(ret[1]);
+
+	return ret_v;
+}
+
+Component* GameObject::NewComponent(CTypes type)
+{
+	if (type == CT_Mesh)
+		return new ComponentMesh(this);
+	else if (type == CT_Material)
+		return new ComponentMaterial(this);
+	else if (type == CT_Camera)
+		return new ComponentCamera(this);
+	else if (type == CT_Transform)
+		return new ComponentTransform(this);
+	
+	return nullptr;
+}
+
 ComponentTransform * GameObject::GetParentTransform()
 {
 	if (parent != nullptr)
-		return parent->transform;
+		return parent->GetTransfomr();
 	else
 		return nullptr;
 }

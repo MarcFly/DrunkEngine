@@ -20,11 +20,8 @@ public:
 
 	bool CleanUp();
 
-	bool LoadFromFile(const char* file_path);
-
-	//bool CreatePrimitiveObject(const vec& center, PCube& sphere);
-	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
-	//bool CreatePrimitiveObject(const vec& center, PSphere& sphere);
+	bool LoadFBX(const char* file_path);
+	bool LoadSceneFile(const char* file_path);
 
 	bool LoadTextCurrentObj(const char* path, GameObject* curr_obj);
 	bool DestroyScene();
@@ -38,11 +35,17 @@ public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
+	void SaveScene();
+
+	void NewScene();
+	void DeleteScene();
+
+	void OrderScene();
+
 public:
 	GameObject* Root_Object = nullptr;
 
 	std::string scene_folder;
-	std::string tex_folder;
 
 	std::vector<GameObject*> active_objects;
 	std::vector<ComponentCamera*> active_cameras;
@@ -62,6 +65,11 @@ public:
 
 	void ObjUpdate(float dt) { Root_Object->Update(dt); };
 
+private:
+	void SetDefault()
+	{
+		scene_folder = "Assets\/";
+	}
 };
 
 #endif

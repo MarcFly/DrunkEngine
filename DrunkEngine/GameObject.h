@@ -5,18 +5,24 @@
 #include <string>
 #include "Assimp/include/scene.h"
 #include "MGL/MathGeoLib.h"
+#include "pcg-c-basic-0.9\pcg_basic.h"
+#include <Windows.h>
+#include "SDL/include/SDL_stdinc.h"
+#include <math.h>
+#include "parson/parson.h"
+#include "ComponentTransform.h"
+#include <memory>
 
+class Component;
 class ComponentMesh;
 class ComponentMaterial;
-class ComponentTransform;
 class ComponentCamera;
 class Primitive;
 
 class GameObject
 {
 public:
-	GameObject() {};
-	//GameObject(const aiScene* scene, const aiNode* obj_root, GameObject* par);
+	GameObject();
 	GameObject(const char* path, const aiScene* scene, const aiNode* root_obj, const char* file_path);
 
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);
@@ -26,33 +32,35 @@ public:
 	void Draw();
 	void DrawBB();
 
+	void Save(JSON_Array* go);
+	void Load(JSON_Value* scene, const char* file);
+
 	vec getObjectCenter();
 	float SetBoundBox();
 	void SetTransformedBoundBox();
 	void SetBoundBoxFromMeshes();
-	//void SetBoundBody();
 
+	Component* NewComponent(CTypes type);
 	void AdjustObjects();
-	void AdjustMaterials();
-	void AdjustMeshes();
+	void AdjustComponents();
 
 	void CalculateGlobalTransforms();
 
 	void CleanUp();
 
+	std::vector<unsigned int> GetMeshProps();
+
+
 public:
+	Uint32	UUID, par_UUID = UINT_FAST32_MAX;
 	std::string name;
-	ComponentTransform* transform = nullptr;
-	std::vector<ComponentMesh*> meshes;
-	std::vector<ComponentMaterial*> materials;
 
 	AABB* BoundingBox = nullptr;
-
-	Primitive* BoundingBody = nullptr; // In case we create a premade object // Temporary solution
 
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
 	std::vector<GameObject*> children;
+	std::vector<Component*> components;
 
 	bool to_pop = false;
 	bool active = false;
@@ -65,7 +73,9 @@ public:
 public:
 	ComponentCamera * camera = nullptr;
 	std::vector<ComponentCamera*> cameras;
+
 public:
+
 	void DestroyThisObject() 
 	{
 		this->CleanUp();
@@ -73,8 +83,81 @@ public:
 		parent->AdjustObjects();
 	}
 
-	void DestroyMaterial();
-	void DestroyMesh();
+	void DestroyComponent()
+	{
+		// Destroy a component
+	}
+
+	void SetUUID()
+	{
+		pcg32_random_t rng;
+		LARGE_INTEGER li;
+		QueryPerformanceFrequency(&li);
+		QueryPerformanceCounter(&li);
+		pcg32_srandom_r(&rng, li.QuadPart, (intptr_t)&rng);
+
+		UUID = pcg32_random_r(&rng);
+	}
+
+	ComponentTransform* GetTransform()
+	{
+		for (int i = 0; i < components.size(); i++)
+		{
+			if (components[i]->type == CT_Transform)
+				return components[i]->AsTransform();
+		}
+
+		components.push_back(new ComponentTransform(this));
+		return components[components.size() - 1]->AsTransform();
+	}
+
+	Component* GetComponent(CTypes id_t)
+	{
+		for (int i = 0; i < components.size(); i++)
+			if (components[i]->type == id_t)
+				return components[i];
+
+		return nullptr;
+	}
+
+	unsigned int GetCountCType(CTypes id_t)
+	{
+		unsigned int ret = 0;
+		for (int i = 0; i < components.size(); i++)
+			if (components[i]->type == id_t)
+				ret++;
+		return ret;
+	}
+
+	std::vector<Component*> GetComponents(CTypes id_t)
+	{
+		std::vector<Component*> ret;
+		for (int i = 0; i < components.size(); i++)
+			if (components[i]->type == id_t)
+			{
+				ret.push_back(components[i]);
+			}
+
+		return ret;
+	}
+
+	GameObject* GetChild(Uint32 UUID)
+	{
+		GameObject* ret = nullptr;
+
+		for (int i = 0; i < children.size(); i++)
+		{
+			if (children[i]->UUID == UUID)
+				ret = children[i];
+			else
+				ret = children[i]->GetChild(UUID);
+
+			if (ret != nullptr)
+				break;
+		}
+
+		return ret;
+	}
 };
 
 #endif

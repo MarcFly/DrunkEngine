@@ -3,14 +3,16 @@
 
 #include "MGL/MathGeoLib.h"
 #include "Assimp/include/scene.h"
+#include "Component.h"
 
 class GameObject;
 class ComponentMesh;
 
-class ComponentTransform
+class ComponentTransform : public Component
 {
 public:
-	ComponentTransform();
+	ComponentTransform() { SetBaseVals(); };
+	ComponentTransform(GameObject* par) { SetBaseVals(); parent = par; }
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 
 	~ComponentTransform() {};
@@ -24,22 +26,38 @@ public:
 
 	void RecursiveSetToUpdate(ComponentTransform* t);
 
+	void SetFromMatrix(const aiMatrix4x4* t);
+
 	void CleanUp();
 
+	void Load(JSON_Object* comp);
+	void Save(JSON_Array* comps);
+
 public:
+
+	float3 position;
+	float3 scale;
+	Quat rotate_quat;
+	float3 rotate_euler;
 
 	float4x4 local_transform;
 	float4x4 global_transform;
 
-	float3 transform_position;
-	float3 transform_scale;
-	Quat transform_rotate_quat;
-	float3 transform_rotate_euler;
-
-	GameObject* parent = nullptr;
 	ComponentMesh* mparent = nullptr;
+  bool to_update;
 
-	bool to_update = true;
+public:
+	void SetBaseVals()
+	{
+		position = { 0,0,0 }; 
+		scale = { 1,1,1 }; 
+		rotate_euler = { 0,0,0 };
+		type = CT_Transform;
+		multiple = false;
+    
+    to_update = true;
+	}
+
 };
 
 #endif

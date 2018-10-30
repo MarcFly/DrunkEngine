@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ConsoleWindow.h"
+#include "parson/parson.h"
 
 Application::Application()
 {
@@ -47,8 +48,43 @@ bool Application::Init()
 {
 	bool ret = true;
 
-	// Call Init() in all modules
+	// 
+	// After all Start we load data if there is a data file
+	PLOG("Application Load profile --------------");
+
 	std::list<Module*>::iterator item = list_modules.begin();
+
+	JSON_Value* root_v = json_parse_file(profile.c_str());
+	if (json_value_get_type(root_v) != JSONObject)
+	{
+		root_v = json_value_init_object();
+
+		json_object_set_string(json_value_get_object(root_v), "UserID", "initialized");
+		
+
+		while (item != list_modules.end() && ret == true)
+		{
+			item._Ptr->_Myval->SetDefault();
+			item._Ptr->_Myval->Save(root_v);
+			item++;
+		}
+
+		json_serialize_to_file(root_v, "config_data.json");
+
+		
+	}
+	else
+	{
+		while (item != list_modules.end() && ret == true)
+		{
+			ret = item._Ptr->_Myval->Load(root_v);
+			item++;
+		}
+	}
+
+
+	// Call Init() in all modules
+	item = list_modules.begin();
 
 	while(item != list_modules.end() && ret == true)
 	{
@@ -57,15 +93,19 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	ui->console_win->AddLog("Application Start --------------");
+	PLOG("Application Start --------------");
 
 	item = list_modules.begin();
 
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Start();
+		item._Ptr->_Myval->Save(root_v);
 		item++;
 	}
+
+	json_serialize_to_file(root_v, "config_data.json");
+
 	
 	fps_timer.Start();
 	ms_timer.Start();

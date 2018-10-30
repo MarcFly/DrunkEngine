@@ -38,4 +38,3 @@ Uint32 Timer::Read()
 	}
 }
 
-

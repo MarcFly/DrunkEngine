@@ -5,14 +5,16 @@
 #include <string>
 #include "GLEW/include/GL/glew.h"
 #include "Color.h"
+#include "Component.h"
+#include "Globals.h"
 
 class GameObject;
-
 enum TextureMode
 {
 	TM_Error = -1,
 	TM_DIFFUSE,
-	
+	TM_AMBIENT,
+
 	TM_MAX
 };
 
@@ -31,11 +33,11 @@ struct Texture
 	bool deleted = false;
 };
 
-class ComponentMaterial
+class ComponentMaterial : public Component
 {
 public:
-	ComponentMaterial() {};
-	//ComponentMaterial(CGameObject* par);
+	ComponentMaterial() { SetBaseVals(); };
+	ComponentMaterial(GameObject* par);
 
 	~ComponentMaterial() {};
 
@@ -47,16 +49,30 @@ public:
 	Texture* CheckTexRep(std::string name);
 	Texture* CheckNameRep(std::string name);
 
+	void Load(JSON_Object* comp);
+	void Save(JSON_Array* comps);
+
 public:
 
-	unsigned int NumDiffTextures = 0;
+	uint NumDiffTextures;
 	std::vector<Texture*> textures;
-	unsigned int NumProperties = 0;
-	Color default_print = {1,1,1,1};
+	uint NumProperties;
+	Color default_print;
 
-	GameObject* parent = nullptr;
+public:
+	void SetBaseVals()
+	{
+		this->type = CT_Material;
+		this->multiple = true;
 
-	bool to_pop = false;
+		this->NumDiffTextures = 0;
+		this->NumProperties = 0;
+		this->default_print = { 1,1,1,1 };
+
+		this->parent = nullptr;
+
+		this->to_pop = false;
+	}
 };
 
 #endif

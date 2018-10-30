@@ -48,6 +48,18 @@ public:
 	bool full_desktop;
 	float brightness;
 
+private:
+	void SetDefault()
+	{
+		window_h = 100;
+		window_w = 100;
+
+		brightness = 1;
+		fullscreen = false;
+		resizable = true;
+		borderless = false;
+		full_desktop = false;
+	}
 };
 
 #endif // __ModuleWindow_H__

@@ -135,34 +135,8 @@ update_status ModuleInput::PreUpdate(float dt)
 				dropped_filedir = e.drop.file;
 				// Shows directory of dropped file
 
-
-				SDL_ShowSimpleMessageBox(
-					SDL_MESSAGEBOX_INFORMATION,
-					"File dropped on window",
-					dropped_filedir,
-					App->window->window);
-
+				App->importer->LoadFile(dropped_filedir);
 				
-				
-				std::string extension = strrchr(dropped_filedir, '.');
-
-				if (extension == std::string(".fbx") || extension == std::string(".FBX"))
-					App->importer->ExportScene(dropped_filedir);
-					//App->mesh_loader->LoadFromFile(dropped_filedir);
-				else if (App->mesh_loader->Root_Object != nullptr) // In case we have no objects
-				{
-					if (extension == std::string(".png") || extension == std::string(".PNG"))
-						App->importer->ExportTexture(dropped_filedir);
-					else if (extension == std::string(".bmp") || extension == std::string(".BMP"))
-						App->importer->ExportTexture(dropped_filedir);
-					else if (extension == std::string(".jpg") || extension == std::string(".JPG"))
-						App->importer->ExportTexture(dropped_filedir);
-					/*else if (extension == std::string(".dds") || extension == std::string(".DDS"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);*/
-				}
-				else
-					App->ui->console_win->AddLog("File format not recognized!\n");
-
 				SDL_free(dropped_filedir);
 				break;
 			}
@@ -245,8 +219,6 @@ bool ModuleInput::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
-
-	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
 	json_object_dotset_number(root_obj, "controls.move_forward", controls[MOVE_FORWARD]);
@@ -260,7 +232,7 @@ bool ModuleInput::Save(JSON_Value * root_value)
 
 	json_serialize_to_file(root_value, "config_data.json");
 
-	App->ui->console_win->AddLog("Input config saved");
+	//App->ui->console_win->AddLog("Input config saved");
 
 	ret = true;
 	return ret;

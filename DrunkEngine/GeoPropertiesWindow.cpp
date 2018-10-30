@@ -24,7 +24,7 @@ void GeoPropertiesWindow::Draw()
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 		ImGui::BeginChild("Objects List", ImVec2(250, 0), true);
-		int start_val = -1;
+
 		CreateObjLeaf(App->mesh_loader->Root_Object, 0);
 
 		ImGui::EndChild();
@@ -49,21 +49,21 @@ void GeoPropertiesWindow::Draw()
 
 						ImGui::Spacing();
 
+						ComponentTransform* aux = selected_object->GetComponent(CT_Transform)->AsTransform();
 						//Pos
 						float pos[3] = { selected_object->transform->transform_position.x, selected_object->transform->transform_position.y, selected_object->transform->transform_position.z };
 						if (ImGui::DragFloat3 ("Position", pos, 0.1f))
-							selected_object->transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+							selected_object->GetTransform()->SetTransformPosition(pos[0], pos[1], pos[2]);
 
 						//Scale
 						float scale[3] = { selected_object->transform->transform_scale.x, selected_object->transform->transform_scale.y, selected_object->transform->transform_scale.z };
 						if (ImGui::DragFloat3("Scale", scale, 0.1f))
-							selected_object->transform->SetTransformScale(scale[0], scale[1], scale[2]);
+							selected_object->GetTransform()->SetTransformScale(scale[0], scale[1], scale[2]);
 
-						//Rot
-
+							//Rot
 						float rot[3] = { selected_object->transform->transform_rotate_euler.x, selected_object->transform->transform_rotate_euler.y, selected_object->transform->transform_rotate_euler.z };
 						if (ImGui::DragFloat3("Rotation", rot, 0.2f))
-							selected_object->transform->SetTransformRotation((float3)rot);
+							selected_object->GetTransform()->SetTransformRotation((float3)rot);
 
 						ImGui::Spacing();
 						ImGui::Spacing();
@@ -74,11 +74,10 @@ void GeoPropertiesWindow::Draw()
 					{
 						if (check_info)
 						{
-							total_num_vertex = 0;
-							total_num_faces = 0;
+							std::vector<uint> props = selected_object->GetMeshProps();
 
-							GetTotalProperties(selected_object, total_num_vertex, total_num_faces);
-
+							total_num_vertex = props[0];
+							total_num_faces = props[1];
 							check_info = false;
 						}
 						ImGui::Text("Total Num. Vertices: %d", total_num_vertex);
@@ -87,43 +86,45 @@ void GeoPropertiesWindow::Draw()
 
 					if (ImGui::CollapsingHeader("Texture Properties"))
 					{
-						if (selected_object->materials.size() > 0)
+						std::vector<Component*> cmp_mats;
+						cmp_mats = selected_object->GetComponents(CT_Material);
+						
+						for (int i = 0; cmp_mats[0] != nullptr && i < cmp_mats[0]->AsMaterial()->textures.size(); i++)
 						{
-							if (selected_object->materials[0]->textures.size() > 0)
+							Texture* aux = cmp_mats[0]->AsMaterial()->textures[i];
+							ImGui::Separator();
+
+							if (check_info)
+								tex_name = aux->filename.c_str();
+
+							ImGui::Image(ImTextureID(aux->id_tex), show_size);
+
+							if (strrchr(tex_name.c_str(), '\\') != nullptr)
+								tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
+
+							ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
+
+							ImGui::Text("Size: %d x %d", aux->width, aux->height);
+
+							char str[30];
+							snprintf(str, 30, "%s%d", "Use this Texture ##", i);
+
+							if (ImGui::Button(str))
 							{
-								for (int i = 0; i < selected_object->materials[0]->textures.size(); i++)
-								{
-									ImGui::Separator();
-
-									if (check_info)
-										tex_name = selected_object->materials[0]->textures[i]->filename.c_str();
-
-									ImGui::Image(ImTextureID(selected_object->materials[0]->textures[i]->id_tex), show_size);
-
-									if (strrchr(tex_name.c_str(), '\\') != nullptr)
-										tex_name = tex_name.substr(tex_name.find_last_of("\\/") + 1);
-
-									ImGui::TextWrapped("Texture File: %s", tex_name.c_str());
-
-									ImGui::Text("Size: %d x %d", selected_object->materials[0]->textures[i]->width, selected_object->materials[0]->textures[i]->height);
-
-									char str[30];
-									snprintf(str, 30, "%s%d", "Use this Texture ##", i);
-
-									if (ImGui::Button(str))
-									{
-										for (int j = 0; j < selected_object->meshes.size(); j++)
-											selected_object->meshes[j]->Material_Ind = i;
-									}
-
-									snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
-									if (ImGui::Button(str))
-										selected_object->materials[0]->DestroyTexture(i);
-
-
-								}
+								std::vector<Component*> cmp_meshes;
+								cmp_meshes = selected_object->GetComponents(CT_Mesh);
+								for (int j = 0; j < cmp_meshes.size(); j++)
+									cmp_meshes[i]->AsMesh()->Material_Ind = i;
 							}
+
+							snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
+							if (ImGui::Button(str))
+								cmp_mats[0]->AsMaterial()->DestroyTexture(i);
+
+
 						}
+							
+						
 					}
 				}
 				ImGui::EndChild();
@@ -226,19 +227,4 @@ void GeoPropertiesWindow::CreateObjLeaf(GameObject * obj, int st)
 			check_info = true;
 		}
 	}
-}
-
-void GeoPropertiesWindow::GetTotalProperties(const GameObject * obj, int &vertex, int &faces)
-{
-	for (int i = 0; i < obj->meshes.size(); i++)
-	{
-		vertex += obj->meshes[i]->num_vertex;
-		faces += obj->meshes[i]->num_faces;
-	}
-	
-	for (int i = 0; i < obj->children.size(); i++)
-	{
-		GetTotalProperties(obj->children[i], vertex, faces);
-	}
-
 }
