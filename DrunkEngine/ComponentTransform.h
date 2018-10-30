@@ -52,6 +52,7 @@ public:
 		position = { 0,0,0 }; 
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
+		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;
     

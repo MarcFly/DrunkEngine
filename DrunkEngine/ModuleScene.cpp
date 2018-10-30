@@ -80,9 +80,10 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
 		aux = new_file_path;
+		if(scene == nullptr)
+			App->ui->console_win->AddLog("Failed to Load from file %s", file_path);
 	}
-	else
-		App->ui->console_win->AddLog("Failed to Load from file %s", file_path);
+		
 
 	if (scene != nullptr)
 	{
