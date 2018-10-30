@@ -28,8 +28,8 @@ public:
 
 	vec getObjectCenter();
 	float SetBoundBox();
+	void SetTransformedBoundBox();
 	void SetBoundBoxFromMeshes();
-	void SetBBTransforms(GameObject * obj) const;
 	//void SetBoundBody();
 
 	void AdjustObjects();
