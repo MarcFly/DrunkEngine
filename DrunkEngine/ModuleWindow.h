@@ -51,8 +51,8 @@ public:
 private:
 	void SetDefault()
 	{
-		window_h = 100;
-		window_w = 100;
+		window_h = 0;
+		window_w = 0;
 
 		brightness = 1;
 		fullscreen = false;

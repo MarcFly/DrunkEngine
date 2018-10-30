@@ -117,7 +117,20 @@ public:
 	{
 		if (full_path != nullptr)
 		{
-			std::string aux = strrchr(full_path, '\\/');
+			const char* test = strrchr(full_path, '\\/');
+			const char* test1 = strchr(full_path, '\\/');
+			std::string aux = full_path;
+			if (test == NULL)
+			{
+				if (test1 != NULL)
+					aux = test1;
+				else
+				{
+					aux.substr(aux.find_first_of('\\'));
+				}
+			}
+			else
+				aux = test;
 			std::string path = full_path;
 			//original_load.substr(aux.length());
 			path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /

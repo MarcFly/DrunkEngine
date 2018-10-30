@@ -100,7 +100,7 @@ bool Application::Init()
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Start();
-		item._Ptr->_Myval->Save(root_v);
+		//item._Ptr->_Myval->Save(root_v);
 		item++;
 	}
 

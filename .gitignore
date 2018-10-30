@@ -11,6 +11,8 @@
 *.tlog
 *.lastbuildstate
 *.exe
+*.matdrnk
+*.meshdrnk
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

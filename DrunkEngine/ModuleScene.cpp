@@ -37,7 +37,7 @@ bool ModuleScene::Start()
 	//Load(nullptr);
 	//LoadFromFile("./Assets/BakerHouse.fbx");
 	LoadFBX("./Assets/Ogre.fbx");
-	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	//LoadSceneFile("Scene.json");
 
@@ -87,9 +87,16 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 	if (scene != nullptr)
 	{
-		DestroyScene();
-		Root_Object = new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
-		
+		if(getRootObj() == nullptr)
+			Root_Object = new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
+		else
+		{
+			if (App->ui->geo_properties_win->selected_object != nullptr)
+				App->ui->geo_properties_win->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->geo_properties_win->selected_object));
+			else
+				getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
+		}
+
 		aiReleaseImport(scene);
 	}
 	else

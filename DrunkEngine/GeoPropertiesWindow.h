@@ -34,7 +34,7 @@ public:
 
 	int selection_mask_checker;
 	
-	GameObject* selected_object;
+	GameObject* selected_object = nullptr;
 	std::vector<int> selection_mask_vec;
 
 	ImVec2 show_size = {128,128};

@@ -11,11 +11,11 @@ GameObject::GameObject()
 	SetUUID();
 	//GetTransform();
 }
-GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
+GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path, GameObject* par)
 {
 	SetUUID();
 
-	this->name = "Scene";
+	this->name = file_path;
 	this->root = this;
 
 	this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj, this));
@@ -24,6 +24,12 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 		this->camera = new ComponentCamera(this);
 
 	GetTransform();
+
+	if (par != nullptr)
+	{
+		parent = par;
+		root = par->root;
+	}
 
 	Start();
 }

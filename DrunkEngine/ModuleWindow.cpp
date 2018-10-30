@@ -45,6 +45,12 @@ bool ModuleWindow::Init()
 		screen_size_w = DM.w;
 		screen_size_h = DM.h;
 
+		if (window_w == 0 || window_h == 0)
+		{
+			window_w = screen_size_w - 100;
+			window_h = screen_size_h - 100;
+		}
+
 		if(fullscreen == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
@@ -157,15 +163,9 @@ bool ModuleWindow::Load(JSON_Value* root_value)
 {
 	bool ret = false;
 
-	root_value = json_parse_file("config_data.json");
+	//root_value = json_parse_file("config_data.json");
 	window_w = json_object_dotget_number(json_object(root_value), "window.size.width");
 	window_h = json_object_dotget_number(json_object(root_value), "window.size.height");
-
-	if (window_w == 0 || window_h == 0)
-	{
-		window_w = screen_size_w - 100;
-		window_h = screen_size_h - 100;
-	}
 
 	SDL_SetWindowSize(window, window_w, window_h);
 

@@ -170,7 +170,10 @@ FileType ModuleImport::CheckExtension(std::string & ext)
 void ModuleImport::LoadFileType(char * file, FileType type)
 {
 	if (type == FT_New_Object)
+	{
 		ExportScene(file);
+		App->mesh_loader->LoadFBX(file);
+	}
 	else if (type == FT_Texture)
 		mat_i->ExportTexture(file);
 	else if(type == FT_Error)
