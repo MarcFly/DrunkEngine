@@ -2,13 +2,15 @@
 #include "Assimp/include/scene.h"
 #include "GameObject.h"
 
-ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par) : parent{ par }
+ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {
 	SetBaseVals();
 
 	SetFromMatrix(t);
 
 	SetTransformRotation(rotate_quat);	
+
+	parent = par;
 }
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, ComponentMesh* par) : mparent{par}

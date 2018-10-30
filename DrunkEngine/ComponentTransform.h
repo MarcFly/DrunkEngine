@@ -12,7 +12,7 @@ class ComponentTransform : public Component
 {
 public:
 	ComponentTransform() { SetBaseVals(); };
-	ComponentTransform(GameObject* par) :parent{ par } { SetBaseVals(); }
+	ComponentTransform(GameObject* par) { SetBaseVals(); parent = par; }
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 	ComponentTransform(const aiMatrix4x4* t, ComponentMesh* par);
 
@@ -37,7 +37,6 @@ public:
 	Quat rotate_quat;
 	float3 rotate_euler;
 
-	GameObject* parent = nullptr;
 	ComponentMesh* mparent = nullptr;
 
 

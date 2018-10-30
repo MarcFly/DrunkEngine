@@ -24,7 +24,7 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 {
 	App->importer->Imp_Timer.Start();
 
-	mesh->name.clear();
+	//mesh->name.clear();
 	mesh->name = file;
 
 	std::ifstream read_file;

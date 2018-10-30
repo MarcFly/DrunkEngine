@@ -15,8 +15,10 @@ class ComponentMesh : public Component
 {
 public:
 	ComponentMesh();
-	ComponentMesh(GameObject* par) : parent{ par } {
+	ComponentMesh(GameObject* par) {
 		SetBaseVals();
+
+		parent = par;
 	};
 	//ComponentMesh(const aiMesh* mesh, GameObject* par);
 
@@ -62,7 +64,6 @@ public:
 
 	AABB* BoundingBox;
 
-	GameObject* parent;
 	GameObject* root;
 
 public:

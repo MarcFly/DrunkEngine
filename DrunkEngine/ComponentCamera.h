@@ -38,7 +38,6 @@ public:
 	void Save(JSON_Array* comps);
 
 private:
-	GameObject * parent;
 	float3 bb_frustum[8];
 
 public:

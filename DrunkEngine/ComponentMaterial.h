@@ -59,8 +59,6 @@ public:
 	uint NumProperties;
 	Color default_print;
 
-	GameObject* parent = nullptr;
-
 public:
 	void SetBaseVals()
 	{

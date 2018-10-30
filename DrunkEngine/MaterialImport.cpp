@@ -285,7 +285,6 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 	for (int i = 0; i < textures.size(); i++)
 	{
-		const char* test = textures[i].c_str();
 		memcpy(cursor, textures[i].c_str(), textures[i].length() + App->importer->GetExtSize(textures[i].c_str()));
 		cursor += textures[i].length() + App->importer->GetExtSize(textures[i].c_str());
 		memcpy(cursor, exitqueue, 2);

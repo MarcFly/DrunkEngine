@@ -3,7 +3,7 @@
   "scene": [
     {
       "gameobject": {
-        "UUID": 2616352862,
+        "UUID": 3433945035,
         "par_UUID": 4294967295,
         "name": "Scene",
         "components": []
@@ -11,8 +11,8 @@
     },
     {
       "gameobject": {
-        "UUID": 2919868140,
-        "par_UUID": 2616352862,
+        "UUID": 3005500839,
+        "par_UUID": 3433945035,
         "name": "RootNode",
         "components": [
           {
@@ -29,10 +29,10 @@
                 "z": 1
               },
               "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
               }
             }
           },
@@ -41,55 +41,34 @@
               "type": 1,
               "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
-          },
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-              }
-            }
           }
         ]
       }
     },
     {
       "gameobject": {
-        "UUID": 656676928,
-        "par_UUID": 2919868140,
+        "UUID": 3258171389,
+        "par_UUID": 3005500839,
         "name": "Sight",
         "components": [
           {
             "properties": {
               "type": 3,
               "position": {
-                "x": 0,
-                "y": 0,
+                "x": -142.81295776367188,
+                "y": 185.1181640625,
                 "z": 0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 100,
+                "y": 100,
+                "z": 100
               },
               "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
+                "w": 0.70710670948028564,
+                "x": -0.7071068286895752,
+                "y": 0,
+                "z": 0
               }
             }
           },
@@ -104,55 +83,34 @@
               "type": 1,
               "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
-          },
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": -142.81295776367188,
-                "y": 185.1181640625,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": 0.70710670948028564,
-                "x": -0.7071068286895752,
-                "y": 0,
-                "z": 0
-              }
-            }
           }
         ]
       }
     },
     {
       "gameobject": {
-        "UUID": 2027527449,
-        "par_UUID": 2919868140,
+        "UUID": 973715954,
+        "par_UUID": 3005500839,
         "name": "Bipod",
         "components": [
           {
             "properties": {
               "type": 3,
               "position": {
-                "x": 0,
-                "y": 0,
+                "x": 105.48977661132813,
+                "y": -105.18730926513672,
                 "z": 0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 100,
+                "y": 100,
+                "z": 100
               },
               "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
+                "w": 0.70710670948028564,
+                "x": -0.7071068286895752,
+                "y": 0,
+                "z": 0
               }
             }
           },
@@ -167,55 +125,34 @@
               "type": 1,
               "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
-          },
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": 105.48977661132813,
-                "y": -105.18730926513672,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": 0.70710670948028564,
-                "x": -0.7071068286895752,
-                "y": 0,
-                "z": 0
-              }
-            }
           }
         ]
       }
     },
     {
       "gameobject": {
-        "UUID": 3399289888,
-        "par_UUID": 2919868140,
+        "UUID": 1650932176,
+        "par_UUID": 3005500839,
         "name": "Cartridge",
         "components": [
           {
             "properties": {
               "type": 3,
               "position": {
-                "x": 0,
-                "y": 0,
+                "x": -72.359344482421875,
+                "y": -78.574409484863281,
                 "z": 0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 100,
+                "y": 100,
+                "z": 100
               },
               "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
+                "w": 0.70710670948028564,
+                "x": -0.7071068286895752,
+                "y": 0,
+                "z": 0
               }
             }
           },
@@ -230,55 +167,34 @@
               "type": 1,
               "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
-          },
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": -72.359344482421875,
-                "y": -78.574409484863281,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": 0.70710670948028564,
-                "x": -0.7071068286895752,
-                "y": 0,
-                "z": 0
-              }
-            }
           }
         ]
       }
     },
     {
       "gameobject": {
-        "UUID": 3918827895,
-        "par_UUID": 2919868140,
+        "UUID": 1389435766,
+        "par_UUID": 3005500839,
         "name": "Rifle",
         "components": [
           {
             "properties": {
               "type": 3,
               "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
+                "x": -180.08399963378906,
+                "y": -16.543214797973633,
+                "z": 2.7939677238464355e-07
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 100,
+                "y": 100,
+                "z": 100
               },
               "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
+                "w": 0.70710670948028564,
+                "x": -0.7071068286895752,
+                "y": 0,
+                "z": 0
               }
             }
           },
@@ -293,64 +209,16 @@
               "type": 1,
               "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
-          },
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": -180.08399963378906,
-                "y": -16.543214797973633,
-                "z": 2.7939677238464355e-07
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": 0.70710670948028564,
-                "x": -0.7071068286895752,
-                "y": 0,
-                "z": 0
-              }
-            }
           }
         ]
       }
     },
     {
       "gameobject": {
-        "UUID": 3106837900,
-        "par_UUID": 2919868140,
+        "UUID": 1654477421,
+        "par_UUID": 3005500839,
         "name": "Point",
         "components": [
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
-              }
-            }
-          },
-          {
-            "properties": {
-              "type": 1,
-              "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
-            }
-          },
           {
             "properties": {
               "type": 3,
@@ -360,9 +228,9 @@
                 "z": -409.80859375
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 100,
+                "y": 100,
+                "z": 100
               },
               "rotate_quat": {
                 "w": 1,
@@ -371,43 +239,22 @@
                 "z": 0
               }
             }
-          }
-        ]
-      }
-    },
-    {
-      "gameobject": {
-        "UUID": 2841622554,
-        "par_UUID": 2919868140,
-        "name": "Hemi",
-        "components": [
-          {
-            "properties": {
-              "type": 3,
-              "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotate_quat": {
-                "w": -431602080,
-                "x": -431602080,
-                "y": -431602080,
-                "z": -431602080
-              }
-            }
           },
           {
             "properties": {
               "type": 1,
               "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
-          },
+          }
+        ]
+      }
+    },
+    {
+      "gameobject": {
+        "UUID": 4242441759,
+        "par_UUID": 3005500839,
+        "name": "Hemi",
+        "components": [
           {
             "properties": {
               "type": 3,
@@ -417,9 +264,9 @@
                 "z": -294.0277099609375
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 100.00000762939453,
+                "y": 100.00000762939453,
+                "z": 100.00000762939453
               },
               "rotate_quat": {
                 "w": 0.9457593560218811,
@@ -427,6 +274,12 @@
                 "y": 0.0068197129294276237,
                 "z": 0.19825765490531921
               }
+            }
+          },
+          {
+            "properties": {
+              "type": 1,
+              "mat_name": ".\/Library\/Materials\/KSR-29 sniper rifle new_fbx_74_binary_Mat_0.matdrnk"
             }
           }
         ]

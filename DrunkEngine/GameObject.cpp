@@ -9,7 +9,7 @@
 GameObject::GameObject()
 {
 	SetUUID();
-	components.push_back(new ComponentTransform(this));
+	//GetTransform();
 }
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path)
 {
@@ -295,8 +295,12 @@ void GameObject::Load(JSON_Value* go, const char* file)
 		JSON_Object* obj = json_value_get_object(val);
 		CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
 
+		if (type == 0)
+			bool test = true;
+
 		Component* add = NewComponent(type);
 		add->Load(obj);
+		add->parent = this;
 		this->components.push_back(add);
 	}
 }
