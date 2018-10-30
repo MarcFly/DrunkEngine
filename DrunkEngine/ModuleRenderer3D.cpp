@@ -121,7 +121,7 @@ bool ModuleRenderer3D::Init()
 	}
 
 	// Projection matrix for
-	OnResize(App->window->window_w, App->window->window_h);
+	OnResize();
 	
 	SetTextureParams();
 	
@@ -238,9 +238,9 @@ void ModuleRenderer3D::Render(bool use_texture)
 	*/
 }
 
-void ModuleRenderer3D::OnResize(int width, int height)
+void ModuleRenderer3D::OnResize()
 {
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, App->window->window_w, App->window->window_h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 

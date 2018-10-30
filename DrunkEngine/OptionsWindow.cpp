@@ -8,6 +8,7 @@
 #include <gl/GL.h>
 #include "ModuleScene.h"
 #include "ConsoleWindow.h"
+#include "ComponentCamera.h"
 
 #include "GLEW/include/GL/wglew.h"
 
@@ -166,6 +167,31 @@ void OptionsWindow::Draw()
 				App->renderer3D->Save(nullptr);
 
 			ImGui::Separator();
+		}
+
+		if (ImGui::CollapsingHeader("Camera"))
+		{
+			ImGui::Separator();
+
+			float aux_fov = RadToDeg(App->mesh_loader->Main_Cam->frustum.verticalFov);
+			if (ImGui::SliderFloat("FOV", &aux_fov, 0.1f, 179.0f))
+			{
+				App->mesh_loader->Main_Cam->frustum.verticalFov = DegToRad(aux_fov);
+				App->mesh_loader->Main_Cam->SetAspectRatio();
+				App->renderer3D->OnResize();
+			}
+
+			if (ImGui::SliderFloat("NearPlane", &App->mesh_loader->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
+			{
+				App->mesh_loader->Main_Cam->frustum.SetViewPlaneDistances(App->mesh_loader->Main_Cam->frustum.nearPlaneDistance, App->mesh_loader->Main_Cam->frustum.farPlaneDistance);
+				App->renderer3D->OnResize();
+			}
+
+			if (ImGui::SliderFloat("FarPlane", &App->mesh_loader->Main_Cam->frustum.farPlaneDistance, 1.f, 1000.0f))
+			{
+				App->mesh_loader->Main_Cam->frustum.SetViewPlaneDistances(App->mesh_loader->Main_Cam->frustum.nearPlaneDistance, App->mesh_loader->Main_Cam->frustum.farPlaneDistance);
+				App->renderer3D->OnResize();
+			}		
 		}
 
 		if (ImGui::CollapsingHeader("Texture Parameters"))

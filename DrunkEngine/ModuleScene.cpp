@@ -41,7 +41,7 @@ bool ModuleScene::Start()
 
 	LoadSceneFile("Scene.json");
 
-	App->renderer3D->OnResize(App->window->window_w, App->window->window_h);
+	App->renderer3D->OnResize();
 
 	//SaveScene();
 

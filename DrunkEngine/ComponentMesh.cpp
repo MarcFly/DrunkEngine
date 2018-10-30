@@ -154,6 +154,7 @@ void ComponentMesh::Draw()
 
 void ComponentMesh::DrawMesh()
 {
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
