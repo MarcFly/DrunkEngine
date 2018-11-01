@@ -166,7 +166,8 @@ bool ModuleUI::MainMenu()
 			ImGui::EndMenu();
 		}
 
-		
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 		
 	}
 	ImGui::EndMainMenuBar();
