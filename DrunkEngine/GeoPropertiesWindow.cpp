@@ -46,9 +46,14 @@ void GeoPropertiesWindow::Draw()
 						if (ImGui::CollapsingHeader("Object Transform"))
 						{
 							ImGui::Spacing();
-							ImGui::Spacing();
 
-							ImGui::Checkbox("Static", &selected_object->is_static);
+							if (!selected_object->parent->is_static)
+							{
+								if (ImGui::Checkbox("Static", &selected_object->is_static))
+									selected_object->RecursiveSetStatic(selected_object, selected_object->is_static);
+							}
+							else
+								ImGui::Text("Parent is static, you cannot modify this object");
 
 							ImGui::Spacing();
 

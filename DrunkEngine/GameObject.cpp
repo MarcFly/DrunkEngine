@@ -367,6 +367,14 @@ void GameObject::CalculateGlobalTransforms()
 	}
 }
 
+void GameObject::RecursiveSetStatic(GameObject * obj, const bool bool_static)
+{
+	obj->is_static = bool_static;
+
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveSetStatic(obj->children[i], bool_static);
+}
+
 void GameObject::CleanUp()
 {
 	for (int i = 0; i < this->components.size(); i++)

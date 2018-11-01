@@ -46,6 +46,8 @@ public:
 
 	void CalculateGlobalTransforms();
 
+	void RecursiveSetStatic(GameObject* obj, const bool bool_static);
+
 	void CleanUp();
 
 	std::vector<unsigned int> GetMeshProps();
