@@ -20,14 +20,15 @@ class Octree
 		};
 
 	public:
-		Node(std::vector<GameObject*> possible_objs_in_node, Node * parent, Octree * root);
+		Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree * root);
 		~Node();
 
 		void Update();
 		void Draw();
 		void CleanUp();
 
-		void CreateNode();
+		void SetNodeVertex();
+		void CreateNodes();
 
 	public:
 		int id;
@@ -38,6 +39,7 @@ class Octree
 
 		Axis axis_to_check = Axis::Axis_NULL;
 
+		std::vector<GameObject*> objects_in_node;
 		std::vector<vec> node_vertex;	//	[0]  X  Y  Z	("-" sign indicates lower value)
 										//	[1]  X  Y -Z
 										//	[2] -X  Y -Z

@@ -45,11 +45,71 @@ void Octree::RecursiveGetStaticObjs(const GameObject * obj)
 	}
 }
 
-Octree::Node::Node(std::vector<GameObject*> possible_objs_in_node, Node * parent, Octree * root)
+Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree * root)
 {
 	this->root = root;
 	this->parent = parent;
 	id = root->nodes.size();
 
-	CreateNode();
+	this->objects_in_node = objs_in_node;
+
+	if (parent == nullptr)
+		axis_to_check = Axis::Axis_X;
+
+	else if (parent->axis_to_check == Axis::Axis_X)
+		axis_to_check = Axis::Axis_Y;
+
+	else if (parent->axis_to_check == Axis::Axis_Y)
+		axis_to_check = Axis::Axis_Z;
+
+	else if (parent->axis_to_check == Axis::Axis_Z)
+		axis_to_check = Axis::Axis_X;
+
+	SetNodeVertex();
+
+	if (root->elements_per_node < objects_in_node.size())
+		CreateNodes();
+}
+
+Octree::Node::~Node()
+{
+}
+
+void Octree::Node::Update()
+{
+	Draw();
+}
+
+void Octree::Node::Draw()
+{
+	//Draw node AABB
+}
+
+void Octree::Node::CleanUp()
+{
+	root = nullptr;
+	parent = nullptr;
+	child.clear();
+	node_vertex.clear();
+	objects_in_node.clear();
+}
+
+void Octree::Node::SetNodeVertex()
+{
+	//Set vertex positions for this node
+
+
+}
+
+void Octree::Node::CreateNodes()
+{
+	//Check if there is more than x Gameobjects in this node
+	
+
+
+	//Make two nodes out of the first one
+
+
+
+	//Add new nodes to the list
 }
