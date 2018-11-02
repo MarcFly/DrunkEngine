@@ -48,7 +48,7 @@ void Octree::RecursiveGetStaticObjs(const GameObject * obj)
 	}
 }
 
-Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree * root)
+Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree * root)
 {
 	this->root = root;
 	this->parent = parent;
@@ -66,7 +66,7 @@ Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree 
 		CreateNodes();
 }
 
-Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, AABB bounding_box)
+Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB bounding_box)
 {
 	this->root = parent->root;
 	this->parent = parent;
@@ -163,15 +163,16 @@ void Octree::Node::CleanUp()
 void Octree::Node::SetNodeVertex()
 {
 	//Set vertex positions for this node
-	vec object_center = objects_in_node[0]->getObjectCenter();
+	bounding_box.maxPoint = vec(INT_MIN,INT_MIN,INT_MIN);
+	bounding_box.minPoint = vec(INT_MAX,INT_MAX,INT_MAX);
 
-	bounding_box.maxPoint = object_center;
-	bounding_box.minPoint = object_center;
-
-	for (int i = 1; i < objects_in_node.size(); i++)
+	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		object_center = objects_in_node[i]->getObjectCenter();
-		SetVertexPos(object_center);
+		/*vec object_center = objects_in_node[i]->getObjectCenter();
+		SetVertexPos(object_center);*/
+		
+		if(objects_in_node[i]->BoundingBox != nullptr)
+			SetVertexPos(objects_in_node[i]->BoundingBox->minPoint, objects_in_node[i]->BoundingBox->maxPoint);
 	}
 }
 
@@ -277,4 +278,29 @@ void Octree::Node::SetVertexPos(const vec object_center)
 	
 	if (bounding_box.minPoint.z > object_center.z)
 		bounding_box.minPoint.z = object_center.z;
+}
+
+void Octree::Node::SetVertexPos(const vec& min, const vec& max)
+{
+	if (true)
+	{
+		if (bounding_box.maxPoint.x < max.x)
+			bounding_box.maxPoint.x = max.x;
+
+		if (bounding_box.minPoint.x > max.x)
+			bounding_box.minPoint.x = max.x;
+
+		if (bounding_box.maxPoint.y < max.y)
+			bounding_box.maxPoint.y = max.y;
+
+		if (bounding_box.minPoint.y > min.y)
+			bounding_box.minPoint.y = min.y;
+
+		if (bounding_box.maxPoint.z < min.z)
+			bounding_box.maxPoint.z = min.z;
+
+		if (bounding_box.minPoint.z > min.z)
+			bounding_box.minPoint.z = min.z;
+
+	}
 }
