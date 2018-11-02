@@ -20,7 +20,7 @@ class Octree
 		};
 
 	public:
-		Node(std::vector<GameObject*> possible_objs_in_node, Node * parent);
+		Node(std::vector<GameObject*> possible_objs_in_node, Node * parent, Octree * root);
 		~Node();
 
 		void Update();
@@ -30,11 +30,23 @@ class Octree
 		void CreateNode();
 
 	public:
+		int id;
+
+		Octree * root = nullptr;
 		Node * parent = nullptr;
 		std::vector<Node*> child;
 
 		Axis axis_to_check = Axis::Axis_NULL;
-		std::vector<vec> node_vertex;
+
+		std::vector<vec> node_vertex;	//	[0]  X  Y  Z	("-" sign indicates lower value)
+										//	[1]  X  Y -Z
+										//	[2] -X  Y -Z
+										//	[3] -X  Y  Z
+										//	[4]  X -Y  Z
+										//	[5]  X -Y -Z
+										//	[6] -X -Y -Z
+										//	[7] -X -Y  Z
+
 	};
 
 public:
@@ -44,11 +56,12 @@ public:
 	void Update();
 	void CleanUp();
 
-	GameObject* RecursiveGetStaticObjs(GameObject * obj) const;
+	void RecursiveGetStaticObjs(const GameObject * obj);
 
 public:
 	int elements_per_node;
 
+	Node * base_node = nullptr;
 	std::vector<Node*> nodes;
 	std::vector<GameObject*> static_objs;
 };

@@ -833,6 +833,9 @@
     <ClCompile Include="Component.cpp">
       <Filter>Sources\Modules\GameObject Structure</Filter>
     </ClCompile>
+    <ClCompile Include="Octree.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MGL\Math\float2.inl">

@@ -288,6 +288,7 @@
     <ClCompile Include="MGL\Time\Clock.cpp" />
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="Octree.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
