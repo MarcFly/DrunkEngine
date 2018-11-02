@@ -95,6 +95,54 @@ void Octree::Node::Update()
 void Octree::Node::Draw()
 {
 	//Draw node AABB
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	glColor3f(0.f, 1.f, 1.f);
+
+	glVertex3f(node_vertex[0].x, node_vertex[0].y, node_vertex[0].z);
+	glVertex3f(node_vertex[1].x, node_vertex[1].y, node_vertex[1].z);
+
+	glVertex3f(node_vertex[0].x, node_vertex[0].y, node_vertex[0].z);
+	glVertex3f(node_vertex[3].x, node_vertex[3].y, node_vertex[3].z);
+
+	glVertex3f(node_vertex[0].x, node_vertex[0].y, node_vertex[0].z);
+	glVertex3f(node_vertex[4].x, node_vertex[4].y, node_vertex[4].z);
+
+	glVertex3f(node_vertex[2].x, node_vertex[2].y, node_vertex[2].z);
+	glVertex3f(node_vertex[3].x, node_vertex[3].y, node_vertex[3].z);
+
+	glVertex3f(node_vertex[2].x, node_vertex[2].y, node_vertex[2].z);
+	glVertex3f(node_vertex[1].x, node_vertex[1].y, node_vertex[1].z);
+
+	glVertex3f(node_vertex[2].x, node_vertex[2].y, node_vertex[2].z);
+	glVertex3f(node_vertex[6].x, node_vertex[6].y, node_vertex[6].z);
+
+	glVertex3f(node_vertex[7].x, node_vertex[7].y, node_vertex[7].z);
+	glVertex3f(node_vertex[4].x, node_vertex[4].y, node_vertex[4].z);
+
+	glVertex3f(node_vertex[7].x, node_vertex[7].y, node_vertex[7].z);
+	glVertex3f(node_vertex[6].x, node_vertex[6].y, node_vertex[6].z);
+
+	glVertex3f(node_vertex[7].x, node_vertex[7].y, node_vertex[7].z);
+	glVertex3f(node_vertex[3].x, node_vertex[3].y, node_vertex[3].z);
+
+	glVertex3f(node_vertex[5].x, node_vertex[5].y, node_vertex[5].z);
+	glVertex3f(node_vertex[4].x, node_vertex[4].y, node_vertex[4].z);
+
+	glVertex3f(node_vertex[5].x, node_vertex[5].y, node_vertex[5].z);
+	glVertex3f(node_vertex[6].x, node_vertex[6].y, node_vertex[6].z);
+
+	glVertex3f(node_vertex[5].x, node_vertex[5].y, node_vertex[5].z);
+	glVertex3f(node_vertex[1].x, node_vertex[1].y, node_vertex[1].z);
+
+	glColor3f(0, 1, 0);
+
+	glEnd();
+
+	if (App->renderer3D->lighting)
+		glEnable(GL_LIGHTING);
 }
 
 void Octree::Node::CleanUp()
