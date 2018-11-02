@@ -66,14 +66,13 @@ Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree 
 		CreateNodes();
 }
 
-Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, std::vector<vec> node_vertex)
+Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, AABB bounding_box)
 {
 	this->root = parent->root;
 	this->parent = parent;
 	id = root->nodes.size();
 
-	for (int i = 0; i < 8; i++)
-		this->node_vertex.push_back(node_vertex[i]);
+	this->bounding_box = bounding_box;
 
 	for (int i = 0; i < objs_in_node.size(); i++)
 		this->objects_in_node.push_back(objs_in_node[i]);
@@ -109,41 +108,41 @@ void Octree::Node::Draw()
 
 	glColor3f(0.f, 1.f, 1.f);
 
-	glVertex3f(node_vertex[0].x, node_vertex[0].y, node_vertex[0].z);
-	glVertex3f(node_vertex[1].x, node_vertex[1].y, node_vertex[1].z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
 
-	glVertex3f(node_vertex[0].x, node_vertex[0].y, node_vertex[0].z);
-	glVertex3f(node_vertex[3].x, node_vertex[3].y, node_vertex[3].z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
 
-	glVertex3f(node_vertex[0].x, node_vertex[0].y, node_vertex[0].z);
-	glVertex3f(node_vertex[4].x, node_vertex[4].y, node_vertex[4].z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.minPoint.z);
 
-	glVertex3f(node_vertex[2].x, node_vertex[2].y, node_vertex[2].z);
-	glVertex3f(node_vertex[3].x, node_vertex[3].y, node_vertex[3].z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.minPoint.z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.minPoint.z);
 
-	glVertex3f(node_vertex[2].x, node_vertex[2].y, node_vertex[2].z);
-	glVertex3f(node_vertex[1].x, node_vertex[1].y, node_vertex[1].z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.minPoint.z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
 
-	glVertex3f(node_vertex[2].x, node_vertex[2].y, node_vertex[2].z);
-	glVertex3f(node_vertex[6].x, node_vertex[6].y, node_vertex[6].z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.minPoint.z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.minPoint.y, this->bounding_box.minPoint.z);
 
-	glVertex3f(node_vertex[7].x, node_vertex[7].y, node_vertex[7].z);
-	glVertex3f(node_vertex[4].x, node_vertex[4].y, node_vertex[4].z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.minPoint.z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.minPoint.y, this->bounding_box.minPoint.z);
 
-	glVertex3f(node_vertex[7].x, node_vertex[7].y, node_vertex[7].z);
-	glVertex3f(node_vertex[6].x, node_vertex[6].y, node_vertex[6].z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.minPoint.z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
 
-	glVertex3f(node_vertex[7].x, node_vertex[7].y, node_vertex[7].z);
-	glVertex3f(node_vertex[3].x, node_vertex[3].y, node_vertex[3].z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.minPoint.z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.minPoint.z);
 
-	glVertex3f(node_vertex[5].x, node_vertex[5].y, node_vertex[5].z);
-	glVertex3f(node_vertex[4].x, node_vertex[4].y, node_vertex[4].z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
 
-	glVertex3f(node_vertex[5].x, node_vertex[5].y, node_vertex[5].z);
-	glVertex3f(node_vertex[6].x, node_vertex[6].y, node_vertex[6].z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
+	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
 
-	glVertex3f(node_vertex[5].x, node_vertex[5].y, node_vertex[5].z);
-	glVertex3f(node_vertex[1].x, node_vertex[1].y, node_vertex[1].z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
+	glVertex3f(this->bounding_box.minPoint.x, this->bounding_box.minPoint.y, this->bounding_box.minPoint.z);
 
 	glColor3f(0, 1, 0);
 
@@ -158,7 +157,6 @@ void Octree::Node::CleanUp()
 	root = nullptr;
 	parent = nullptr;
 	child.clear();
-	node_vertex.clear();
 	objects_in_node.clear();
 }
 
@@ -167,8 +165,8 @@ void Octree::Node::SetNodeVertex()
 	//Set vertex positions for this node
 	vec object_center = objects_in_node[0]->getObjectCenter();
 
-	for (int i = 0; i < 8; i++)
-		node_vertex.push_back(object_center);
+	bounding_box.maxPoint = object_center;
+	bounding_box.minPoint = object_center;
 
 	for (int i = 1; i < objects_in_node.size(); i++)
 	{
@@ -184,43 +182,20 @@ void Octree::Node::CreateNodes()
 	case Axis::Axis_X:
 	{
 		//	 X Y Z / -X Y Z
-		vec center_1 = (node_vertex[0].Add(node_vertex[3])) / 2;
-
-		//	 X Y-Z / -X Y-Z 
-		vec center_2 = (node_vertex[1].Add(node_vertex[2])) / 2;
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.maxPoint.z)) / 2;
 
 		//	 X-Y-Z / -X-Y-Z
-		vec center_3 = (node_vertex[5].Add(node_vertex[6])) / 2;
+		vec center_2 = (vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
-		//	 X-Y Z / -X-Y Z 
-		vec center_4 = (node_vertex[4].Add(node_vertex[7])) / 2;
-
-		std::vector<vec> new_coords_Px;
-		std::vector<vec> new_coords_Nx;
-
-		for (int i = 0; i < 8; i++)
-		{
-			new_coords_Px.push_back(node_vertex[i]);
-			new_coords_Nx.push_back(node_vertex[i]);
-		}
-
-		new_coords_Px[3] = center_1;
-		new_coords_Px[2] = center_2;
-		new_coords_Px[6] = center_3;
-		new_coords_Px[7] = center_4;
-
-		new_coords_Nx[0] = center_1;
-		new_coords_Nx[1] = center_2;
-		new_coords_Nx[5] = center_3;
-		new_coords_Nx[4] = center_4;
+		AABB new_AABB_Px = AABB(center_2, bounding_box.maxPoint);
+		AABB new_AABB_Nx = AABB(bounding_box.minPoint, center_1);
 		
-		Node * Px = new Node(GetObjectsInNode(new_coords_Px), this, new_coords_Px);
+		Node * Px = new Node(GetObjectsInNode(new_AABB_Px), this, new_AABB_Px);
 		root->nodes.push_back(Px);
-
-		Node * Nx = new Node(GetObjectsInNode(new_coords_Nx), this, new_coords_Nx);
-		root->nodes.push_back(Nx);
-
 		child.push_back(Px);
+
+		Node * Nx = new Node(GetObjectsInNode(new_AABB_Nx), this, new_AABB_Nx);
+		root->nodes.push_back(Nx);
 		child.push_back(Nx);
 
 		break;
@@ -228,42 +203,19 @@ void Octree::Node::CreateNodes()
 	case Axis::Axis_Y:
 	{
 		//	 X Y Z /  X-Y Z
-		vec center_1 = (node_vertex[0].Add(node_vertex[4])) / 2;
-
-		//	 X Y-Z /  X-Y-Z 
-		vec center_2 = (node_vertex[1].Add(node_vertex[5])) / 2;
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z)) / 2;
 
 		//	-X Y-Z / -X-Y-Z
-		vec center_3 = (node_vertex[2].Add(node_vertex[6])) / 2;
+		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
-		//	-X Y Z / -X-Y Z 
-		vec center_4 = (node_vertex[3].Add(node_vertex[7])) / 2;
+		AABB new_AABB_Py = AABB(center_2, bounding_box.maxPoint);
+		AABB new_AABB_Ny = AABB(bounding_box.minPoint, center_1);
 
-		std::vector<vec> new_coords_Py;
-		std::vector<vec> new_coords_Ny;
-
-		for (int i = 0; i < 8; i++)
-		{
-			new_coords_Py.push_back(node_vertex[i]);
-			new_coords_Ny.push_back(node_vertex[i]);
-		}
-
-		new_coords_Py[4] = center_1;
-		new_coords_Py[5] = center_2;
-		new_coords_Py[6] = center_3;
-		new_coords_Py[7] = center_4;
-
-		new_coords_Ny[0] = center_1;
-		new_coords_Ny[1] = center_2;
-		new_coords_Ny[2] = center_3;
-		new_coords_Ny[3] = center_4;
-
-		Node * Py = new Node(GetObjectsInNode(new_coords_Py), this, new_coords_Py);
-		Node * Ny = new Node(GetObjectsInNode(new_coords_Ny), this, new_coords_Ny);
-
+		Node * Py = new Node(GetObjectsInNode(new_AABB_Py), this, new_AABB_Py);
 		root->nodes.push_back(Py);
 		child.push_back(Py);
 
+		Node * Ny = new Node(GetObjectsInNode(new_AABB_Ny), this, new_AABB_Ny);
 		root->nodes.push_back(Ny);
 		child.push_back(Ny);
 
@@ -272,43 +224,19 @@ void Octree::Node::CreateNodes()
 	case Axis::Axis_Z:
 	{
 		//	 X Y Z /  X Y-Z
-		vec center_1 = (node_vertex[0].Add(node_vertex[1])) / 2;
-
-		//	-X Y Z / -X Y-Z 
-		vec center_2 = (node_vertex[3].Add(node_vertex[2])) / 2;
-
-		//	 X-Y Z /  X-Y-Z
-		vec center_3 = (node_vertex[4].Add(node_vertex[5])) / 2;
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z)) / 2;
 
 		//	-X-Y Z / -X-Y-Z 
-		vec center_4 = (node_vertex[6].Add(node_vertex[7])) / 2;
+		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z) + bounding_box.minPoint) / 2;
 
-		std::vector<vec> new_coords_Pz;
-		std::vector<vec> new_coords_Nz;
+		AABB new_AABB_Pz = AABB(center_2, bounding_box.maxPoint);
+		AABB new_AABB_Nz = AABB(bounding_box.minPoint, center_1);
 
-		for (int i = 0; i < 8; i++)
-		{
-			new_coords_Pz.push_back(node_vertex[i]);
-			new_coords_Nz.push_back(node_vertex[i]);
-		}
-
-		new_coords_Pz[1] = center_1;
-		new_coords_Pz[2] = center_2;
-		new_coords_Pz[5] = center_3;
-		new_coords_Pz[6] = center_4;
-
-		new_coords_Nz[0] = center_1;
-		new_coords_Nz[3] = center_2;
-		new_coords_Nz[4] = center_3;
-		new_coords_Nz[7] = center_4;
-
-
-		Node * Pz = new Node(GetObjectsInNode(new_coords_Pz), this, new_coords_Pz);
-		Node * Nz = new Node(GetObjectsInNode(new_coords_Nz), this, new_coords_Nz);
-
+		Node * Pz = new Node(GetObjectsInNode(new_AABB_Pz), this, new_AABB_Pz);
 		root->nodes.push_back(Pz);
 		child.push_back(Pz);
 
+		Node * Nz = new Node(GetObjectsInNode(new_AABB_Nz), this, new_AABB_Nz);
 		root->nodes.push_back(Nz);
 		child.push_back(Nz);
 
@@ -317,14 +245,13 @@ void Octree::Node::CreateNodes()
 	}
 }
 
-std::vector<GameObject*> Octree::Node::GetObjectsInNode(std::vector<vec> new_node_vertex)
+std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB new_bounding_box)
 {
 	std::vector<GameObject*> objs_in_new_node;
-	AABB bb_node = AABB(new_node_vertex[6], new_node_vertex[0]);
 
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		if (bb_node.Contains(objects_in_node[i]->getObjectCenter()))
+		if (new_bounding_box.Contains(objects_in_node[i]->getObjectCenter()))
 			objs_in_new_node.push_back(objects_in_node[i]);
 	}
 
@@ -333,83 +260,21 @@ std::vector<GameObject*> Octree::Node::GetObjectsInNode(std::vector<vec> new_nod
 
 void Octree::Node::SetVertexPos(const vec object_center)
 {
-	//	[0]  X  Y  Z
-	if (node_vertex[0].x < object_center.x)
-		node_vertex[0].x = object_center.x;
+	if (bounding_box.maxPoint.x < object_center.x)
+		bounding_box.maxPoint.x = object_center.x;
+	
+	if (bounding_box.minPoint.x > object_center.x)
+		bounding_box.minPoint.x = object_center.x;
 
-	if (node_vertex[0].y < object_center.y)
-		node_vertex[0].y = object_center.y;
-
-	if (node_vertex[0].z < object_center.z)
-		node_vertex[0].z = object_center.z;
-
-	//	[1]  X  Y -Z
-	if (node_vertex[1].x < object_center.x)
-		node_vertex[1].x = object_center.x;
-
-	if (node_vertex[1].y < object_center.y)
-		node_vertex[1].y = object_center.y;
-
-	if (node_vertex[1].z > object_center.z)
-		node_vertex[1].z = object_center.z;
-
-	//	[2] -X  Y -Z
-	if (node_vertex[2].x > object_center.x)
-		node_vertex[2].x = object_center.x;
-
-	if (node_vertex[2].y < object_center.y)
-		node_vertex[2].y = object_center.y;
-
-	if (node_vertex[2].z > object_center.z)
-		node_vertex[2].z = object_center.z;
-
-	//	[3] -X  Y  Z
-	if (node_vertex[3].x > object_center.x)
-		node_vertex[3].x = object_center.x;
-
-	if (node_vertex[3].y < object_center.y)
-		node_vertex[3].y = object_center.y;
-
-	if (node_vertex[3].z < object_center.z)
-		node_vertex[3].z = object_center.z;
-
-	//	[4]  X -Y  Z
-	if (node_vertex[4].x < object_center.x)
-		node_vertex[4].x = object_center.x;
-
-	if (node_vertex[4].y > object_center.y)
-		node_vertex[4].y = object_center.y;
-
-	if (node_vertex[4].z < object_center.z)
-		node_vertex[4].z = object_center.z;
-
-	//	[5]  X -Y -Z
-	if (node_vertex[5].x < object_center.x)
-		node_vertex[5].x = object_center.x;
-
-	if (node_vertex[5].y > object_center.y)
-		node_vertex[5].y = object_center.y;
-
-	if (node_vertex[5].z > object_center.z)
-		node_vertex[5].z = object_center.z;
-
-	//	[6] -X -Y -Z
-	if (node_vertex[6].x > object_center.x)
-		node_vertex[6].x = object_center.x;
-
-	if (node_vertex[6].y > object_center.y)
-		node_vertex[6].y = object_center.y;
-
-	if (node_vertex[6].z > object_center.z)
-		node_vertex[6].z = object_center.z;
-
-	//	[7] -X -Y  Z
-	if (node_vertex[7].x > object_center.x)
-		node_vertex[7].x = object_center.x;
-
-	if (node_vertex[7].y > object_center.y)
-		node_vertex[7].y = object_center.y;
-
-	if (node_vertex[7].z < object_center.z)
-		node_vertex[7].z = object_center.z;
+	if (bounding_box.maxPoint.y < object_center.y)
+		bounding_box.maxPoint.y = object_center.y;
+	
+	if (bounding_box.minPoint.y > object_center.y)
+		bounding_box.minPoint.y = object_center.y;
+	
+	if (bounding_box.maxPoint.z < object_center.z)
+		bounding_box.maxPoint.z = object_center.z;
+	
+	if (bounding_box.minPoint.z > object_center.z)
+		bounding_box.minPoint.z = object_center.z;
 }

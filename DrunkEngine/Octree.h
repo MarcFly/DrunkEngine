@@ -21,7 +21,7 @@ class Octree
 
 	public:
 		Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree * root);
-		Node(std::vector<GameObject*> objs_in_node, Node * parent, std::vector<vec> node_vertex);
+		Node(std::vector<GameObject*> objs_in_node, Node * parent, AABB bounding_box);
 		~Node();
 
 		void Update();
@@ -31,7 +31,7 @@ class Octree
 		void SetNodeVertex();
 
 		void CreateNodes();
-		std::vector<GameObject*> GetObjectsInNode(std::vector<vec> new_node_vertex);
+		std::vector<GameObject*> GetObjectsInNode(AABB new_bounding_box);
 
 		void SetVertexPos(const vec object_center);
 
@@ -45,14 +45,7 @@ class Octree
 		Axis axis_to_check = Axis::Axis_NULL;
 
 		std::vector<GameObject*> objects_in_node;
-		std::vector<vec> node_vertex;	//	[0]  X  Y  Z	("-" sign indicates lower value)
-										//	[1]  X  Y -Z
-										//	[2] -X  Y -Z
-										//	[3] -X  Y  Z
-										//	[4]  X -Y  Z
-										//	[5]  X -Y -Z
-										//	[6] -X -Y -Z
-										//	[7] -X -Y  Z
+		AABB bounding_box;
 
 	};
 
