@@ -30,6 +30,8 @@ class Octree
 		void SetNodeVertex();
 		void CreateNodes();
 
+		void SetVertexPos(const vec object_center);
+
 	public:
 		int id;
 

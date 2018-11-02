@@ -98,7 +98,16 @@ void Octree::Node::SetNodeVertex()
 {
 	//Set vertex positions for this node
 
+	vec object_center = objects_in_node[0]->getObjectCenter();
 
+	for (int i = 0; i < 6; i++)
+		node_vertex.push_back(object_center);
+
+	for (int i = 1; i < objects_in_node.size(); i++)
+	{
+		object_center = objects_in_node[i]->getObjectCenter();
+		SetVertexPos(object_center);
+	}
 }
 
 void Octree::Node::CreateNodes()
@@ -112,4 +121,87 @@ void Octree::Node::CreateNodes()
 
 
 	//Add new nodes to the list
+}
+
+void Octree::Node::SetVertexPos(const vec object_center)
+{
+	//	[0]  X  Y  Z
+	if (node_vertex[0].x < object_center.x)
+		node_vertex[0].x = object_center.x;
+
+	if (node_vertex[0].y < object_center.y)
+		node_vertex[0].y = object_center.y;
+
+	if (node_vertex[0].z < object_center.z)
+		node_vertex[0].z = object_center.z;
+
+	//	[1]  X  Y -Z
+	if (node_vertex[1].x < object_center.x)
+		node_vertex[1].x = object_center.x;
+
+	if (node_vertex[1].y < object_center.y)
+		node_vertex[1].y = object_center.y;
+
+	if (node_vertex[1].z > object_center.z)
+		node_vertex[1].z = object_center.z;
+
+	//	[2] -X  Y -Z
+	if (node_vertex[2].x > object_center.x)
+		node_vertex[2].x = object_center.x;
+
+	if (node_vertex[2].y < object_center.y)
+		node_vertex[2].y = object_center.y;
+
+	if (node_vertex[2].z > object_center.z)
+		node_vertex[2].z = object_center.z;
+
+	//	[3] -X  Y  Z
+	if (node_vertex[3].x > object_center.x)
+		node_vertex[3].x = object_center.x;
+
+	if (node_vertex[3].y < object_center.y)
+		node_vertex[3].y = object_center.y;
+
+	if (node_vertex[3].z < object_center.z)
+		node_vertex[3].z = object_center.z;
+
+	//	[4]  X -Y  Z
+	if (node_vertex[4].x < object_center.x)
+		node_vertex[4].x = object_center.x;
+
+	if (node_vertex[4].y > object_center.y)
+		node_vertex[4].y = object_center.y;
+
+	if (node_vertex[4].z < object_center.z)
+		node_vertex[4].z = object_center.z;
+
+	//	[5]  X -Y -Z
+	if (node_vertex[5].x < object_center.x)
+		node_vertex[5].x = object_center.x;
+
+	if (node_vertex[5].y > object_center.y)
+		node_vertex[5].y = object_center.y;
+
+	if (node_vertex[5].z > object_center.z)
+		node_vertex[5].z = object_center.z;
+
+	//	[6] -X -Y -Z
+	if (node_vertex[6].x > object_center.x)
+		node_vertex[6].x = object_center.x;
+
+	if (node_vertex[6].y > object_center.y)
+		node_vertex[6].y = object_center.y;
+
+	if (node_vertex[6].z > object_center.z)
+		node_vertex[6].z = object_center.z;
+
+	//	[7] -X -Y  Z
+	if (node_vertex[7].x > object_center.x)
+		node_vertex[7].x = object_center.x;
+
+	if (node_vertex[7].y > object_center.y)
+		node_vertex[7].y = object_center.y;
+
+	if (node_vertex[7].z < object_center.z)
+		node_vertex[7].z = object_center.z;
 }
