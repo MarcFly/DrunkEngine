@@ -18,6 +18,7 @@ class ComponentMesh;
 class ComponentMaterial;
 class ComponentCamera;
 class Primitive;
+class Octree;
 
 class GameObject
 {
@@ -58,6 +59,8 @@ public:
 	std::string name;
 
 	AABB* BoundingBox = nullptr;
+
+	Octree* Scene_Octree = nullptr;
 
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;

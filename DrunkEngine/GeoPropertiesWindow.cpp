@@ -3,6 +3,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
+#include "Octree.h"
 
 GeoPropertiesWindow::GeoPropertiesWindow() : Window("Object Properties")
 {
@@ -144,6 +145,26 @@ void GeoPropertiesWindow::Draw()
 			else if (App->mesh_loader->active_objects.size() > 1) //objects.size() > 0)
 			{
 				ImGui::Text("+ 1 obj selected");
+			}
+
+			if (ImGui::CollapsingHeader("Octree"))
+			{
+				if (ImGui::Button("Create Octree"))
+				{
+					if (App->mesh_loader->Root_Object->Scene_Octree != nullptr)
+						App->mesh_loader->Root_Object->Scene_Octree->CleanUp();
+
+					App->mesh_loader->Root_Object->Scene_Octree = new Octree(1);
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button("Delete Octree"))
+				{
+					if (App->mesh_loader->Root_Object->Scene_Octree != nullptr)
+						App->mesh_loader->Root_Object->Scene_Octree->CleanUp();
+				}
+
 			}
 
 			//if (ImGui::Button("Select")) {}
