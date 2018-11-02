@@ -53,10 +53,24 @@ Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree 
 
 	this->objects_in_node = objs_in_node;
 
-	if (parent == nullptr)
-		axis_to_check = Axis::Axis_X;
+	axis_to_check = Axis::Axis_X;
 
-	else if (parent->axis_to_check == Axis::Axis_X)
+	SetNodeVertex();
+
+	if (root->elements_per_node < objects_in_node.size())
+		CreateNodes();
+}
+
+Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, std::vector<vec> node_vertex)
+{
+	this->root = parent->root;
+	this->parent = parent;
+	id = root->nodes.size();
+
+	this->node_vertex = node_vertex;
+	this->objects_in_node = objs_in_node;
+
+	if (parent->axis_to_check == Axis::Axis_X)
 		axis_to_check = Axis::Axis_Y;
 
 	else if (parent->axis_to_check == Axis::Axis_Y)
@@ -64,8 +78,6 @@ Octree::Node::Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree 
 
 	else if (parent->axis_to_check == Axis::Axis_Z)
 		axis_to_check = Axis::Axis_X;
-
-	SetNodeVertex();
 
 	if (root->elements_per_node < objects_in_node.size())
 		CreateNodes();
@@ -97,7 +109,6 @@ void Octree::Node::CleanUp()
 void Octree::Node::SetNodeVertex()
 {
 	//Set vertex positions for this node
-
 	vec object_center = objects_in_node[0]->getObjectCenter();
 
 	for (int i = 0; i < 6; i++)
@@ -112,15 +123,138 @@ void Octree::Node::SetNodeVertex()
 
 void Octree::Node::CreateNodes()
 {
-	//Check if there is more than x Gameobjects in this node
-	
+	switch (axis_to_check)
+	{
+	case Axis::Axis_X:
+	{
+		//	 X Y Z / -X Y Z
+		vec center_1 = (node_vertex[0] + node_vertex[3]) / 2;
+
+		//	 X Y-Z / -X Y-Z 
+		vec center_2 = (node_vertex[1] + node_vertex[2]) / 2;
+
+		//	 X-Y-Z / -X-Y-Z
+		vec center_3 = (node_vertex[5] + node_vertex[6]) / 2;
+
+		//	 X-Y Z / -X-Y Z 
+		vec center_4 = (node_vertex[4] + node_vertex[7]) / 2;
+
+		std::vector<vec> new_coords_Px = node_vertex;
+		std::vector<vec> new_coords_Nx = node_vertex;
+
+		new_coords_Px[3] = center_1;
+		new_coords_Px[2] = center_2;
+		new_coords_Px[6] = center_3;
+		new_coords_Px[7] = center_4;
+
+		new_coords_Nx[0] = center_1;
+		new_coords_Nx[1] = center_2;
+		new_coords_Nx[5] = center_3;
+		new_coords_Nx[4] = center_4;
+		
+		Node * Px = new Node(GetObjectsInNode(new_coords_Px), this, new_coords_Px);
+		Node * Nx = new Node(GetObjectsInNode(new_coords_Nx), this, new_coords_Nx);
+
+		root->nodes.push_back(Px);
+		root->nodes.push_back(Nx);
+
+		child.push_back(Px);
+		child.push_back(Nx);
+
+		break;
+	}
+	case Axis::Axis_Y:
+	{
+		//	 X Y Z /  X-Y Z
+		vec center_1 = (node_vertex[0] + node_vertex[4]) / 2;
+
+		//	 X Y-Z /  X-Y-Z 
+		vec center_2 = (node_vertex[1] + node_vertex[5]) / 2;
+
+		//	-X Y-Z / -X-Y-Z
+		vec center_3 = (node_vertex[2] + node_vertex[6]) / 2;
+
+		//	-X Y Z / -X-Y Z 
+		vec center_4 = (node_vertex[3] + node_vertex[7]) / 2;
+
+		std::vector<vec> new_coords_Py = node_vertex;
+		std::vector<vec> new_coords_Ny = node_vertex;
+
+		new_coords_Py[4] = center_1;
+		new_coords_Py[5] = center_2;
+		new_coords_Py[6] = center_3;
+		new_coords_Py[7] = center_4;
+
+		new_coords_Ny[0] = center_1;
+		new_coords_Ny[1] = center_2;
+		new_coords_Ny[2] = center_3;
+		new_coords_Ny[3] = center_4;
+
+		Node * Py = new Node(GetObjectsInNode(new_coords_Py), this, new_coords_Py);
+		Node * Ny = new Node(GetObjectsInNode(new_coords_Ny), this, new_coords_Ny);
+
+		root->nodes.push_back(Py);
+		root->nodes.push_back(Ny);
+
+		child.push_back(Py);
+		child.push_back(Ny);
+
+		break;
+	}
+	case Axis::Axis_Z:
+	{
+		//	 X Y Z /  X Y-Z
+		vec center_1 = (node_vertex[0] + node_vertex[1]) / 2;
+
+		//	-X Y Z / -X Y-Z 
+		vec center_2 = (node_vertex[3] + node_vertex[2]) / 2;
+
+		//	 X-Y Z /  X-Y-Z
+		vec center_3 = (node_vertex[4] + node_vertex[5]) / 2;
+
+		//	-X-Y Z / -X-Y-Z 
+		vec center_4 = (node_vertex[6] + node_vertex[7]) / 2;
+
+		std::vector<vec> new_coords_Pz = node_vertex;
+		std::vector<vec> new_coords_Nz = node_vertex;
+
+		new_coords_Pz[1] = center_1;
+		new_coords_Pz[2] = center_2;
+		new_coords_Pz[5] = center_3;
+		new_coords_Pz[6] = center_4;
+
+		new_coords_Nz[0] = center_1;
+		new_coords_Nz[3] = center_2;
+		new_coords_Nz[4] = center_3;
+		new_coords_Nz[7] = center_4;
 
 
-	//Make two nodes out of the first one
+		Node * Pz = new Node(GetObjectsInNode(new_coords_Pz), this, new_coords_Pz);
+		Node * Nz = new Node(GetObjectsInNode(new_coords_Nz), this, new_coords_Nz);
 
+		root->nodes.push_back(Pz);
+		root->nodes.push_back(Nz);
 
+		child.push_back(Pz);
+		child.push_back(Nz);
 
-	//Add new nodes to the list
+		break;
+	}
+	}
+}
+
+std::vector<GameObject*> Octree::Node::GetObjectsInNode(std::vector<vec> new_node_vertex)
+{
+	std::vector<GameObject*> objs_in_new_node;
+	AABB bb_node = AABB(new_node_vertex[6], new_node_vertex[0]);
+
+	for (int i = 0; i < objects_in_node.size(); i++)
+	{
+		if (bb_node.Contains(objects_in_node[i]->getObjectCenter()))
+			objs_in_new_node.push_back(objects_in_node[i]);
+	}
+
+	return objs_in_new_node;
 }
 
 void Octree::Node::SetVertexPos(const vec object_center)

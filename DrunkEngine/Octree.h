@@ -21,6 +21,7 @@ class Octree
 
 	public:
 		Node(std::vector<GameObject*> objs_in_node, Node * parent, Octree * root);
+		Node(std::vector<GameObject*> objs_in_node, Node * parent, std::vector<vec> node_vertex);
 		~Node();
 
 		void Update();
@@ -28,7 +29,9 @@ class Octree
 		void CleanUp();
 
 		void SetNodeVertex();
+
 		void CreateNodes();
+		std::vector<GameObject*> GetObjectsInNode(std::vector<vec> new_node_vertex);
 
 		void SetVertexPos(const vec object_center);
 
