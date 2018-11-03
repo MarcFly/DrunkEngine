@@ -33,7 +33,7 @@ public:
 	virtual void Init() {};
 	virtual void Start() {};
 	virtual void PreUpdate() {};
-	virtual void Update() {};
+	virtual void Update(const float dt) {};
  	virtual void Draw() {};
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};

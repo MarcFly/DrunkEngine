@@ -77,10 +77,6 @@ public:
 	ComponentTransform * GetParentTransform();
 
 public:
-	ComponentCamera * camera = nullptr;
-	std::vector<ComponentCamera*> cameras;
-
-public:
 
 	void DestroyThisObject() 
 	{

@@ -62,7 +62,7 @@ void ComponentCamera::Start()
 	// Start
 }
 
-bool ComponentCamera::Update(float dt)
+void ComponentCamera::Update(const float dt)
 {
 	float speed = MOV_SPEED * dt;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
@@ -70,8 +70,6 @@ bool ComponentCamera::Update(float dt)
 
 	MoveTest(speed);
 	CalculateViewMatrix();
-
-	return true;
 }
 
 void ComponentCamera::Draw()

@@ -14,7 +14,7 @@ public:
 	virtual ~ComponentCamera();
 
 	void Start();
-	bool Update(float dt);
+	void Update(const float dt);
 	void Draw();
 	void CleanUp();;
 
