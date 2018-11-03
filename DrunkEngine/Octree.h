@@ -31,7 +31,7 @@ class Octree
 		void SetNodeVertex();
 
 		void CreateNodes();
-		std::vector<GameObject*> GetObjectsInNode(AABB new_bounding_box);
+		std::vector<GameObject*> GetObjectsInNode(AABB& new_bounding_box);
 
 		void SetVertexPos(const vec object_center);
 		void SetVertexPos(const vec& min, const vec& max);

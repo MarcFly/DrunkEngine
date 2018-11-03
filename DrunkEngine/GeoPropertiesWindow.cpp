@@ -154,7 +154,7 @@ void GeoPropertiesWindow::Draw()
 					if (App->mesh_loader->Root_Object->Scene_Octree != nullptr)
 						App->mesh_loader->Root_Object->Scene_Octree->CleanUp();
 
-					App->mesh_loader->Root_Object->Scene_Octree = new Octree(1);
+					App->mesh_loader->Root_Object->Scene_Octree = new Octree(2);
 				}
 
 				ImGui::SameLine();

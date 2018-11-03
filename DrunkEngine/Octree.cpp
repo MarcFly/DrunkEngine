@@ -246,7 +246,7 @@ void Octree::Node::CreateNodes()
 	}
 }
 
-std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB new_bounding_box)
+std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB& new_bounding_box)
 {
 	std::vector<GameObject*> objs_in_new_node;
 
@@ -287,8 +287,8 @@ void Octree::Node::SetVertexPos(const vec& min, const vec& max)
 		if (bounding_box.maxPoint.x < max.x)
 			bounding_box.maxPoint.x = max.x;
 
-		if (bounding_box.minPoint.x > max.x)
-			bounding_box.minPoint.x = max.x;
+		if (bounding_box.minPoint.x > min.x)
+			bounding_box.minPoint.x = min.x;
 
 		if (bounding_box.maxPoint.y < max.y)
 			bounding_box.maxPoint.y = max.y;
@@ -296,8 +296,8 @@ void Octree::Node::SetVertexPos(const vec& min, const vec& max)
 		if (bounding_box.minPoint.y > min.y)
 			bounding_box.minPoint.y = min.y;
 
-		if (bounding_box.maxPoint.z < min.z)
-			bounding_box.maxPoint.z = min.z;
+		if (bounding_box.maxPoint.z < max.z)
+			bounding_box.maxPoint.z = max.z;
 
 		if (bounding_box.minPoint.z > min.z)
 			bounding_box.minPoint.z = min.z;
