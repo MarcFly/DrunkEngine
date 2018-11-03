@@ -37,8 +37,10 @@ void GameObject::Start()
 	for (int i = 0; i < this->components.size(); i++)
 		this->components[i]->Start();
 
-	SetBoundBox();
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->Start();
 
+	SetBoundBox();
 }
 
 void GameObject::Update(float dt)
@@ -60,24 +62,18 @@ void GameObject::Update(float dt)
 
 void GameObject::Draw()
 {
-	for (int i = 0; i < this->components.size(); i++)
-	{
-		glPushMatrix();
-		glMultMatrixf(this->GetTransform()->global_transform.Transposed().ptr());
+	for (int i = 0; i < this->components.size(); i++)		
 		this->components[i]->Draw();
-		glPopMatrix();
-	}
 
+	if (this->BoundingBox != nullptr && this->GetTransform()->to_update)
+	{
+		SetTransformedBoundBox();
+		this->GetTransform()->to_update = false;
+	}
 
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
-	{
-		if (this->GetTransform()->to_update)
-		{
-			SetTransformedBoundBox();
-			//this->transform->to_update = false;
-		}
 		this->DrawBB();
-	}
+
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Draw();
@@ -91,41 +87,41 @@ void GameObject::DrawBB()
 
 	glColor3f(0.f, 1.f, 0.f);
 
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->maxPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->maxPoint.z);
 
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->maxPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->maxPoint.z);
 
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->maxPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->minPoint.z);
 
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->minPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->minPoint.z);
 
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->minPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->maxPoint.z);
 
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->minPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->minPoint.z);
 
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->minPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->minPoint.z);
 
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->minPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->maxPoint.z);
 
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->minPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->minPoint.z);
 
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->maxPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->maxPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->maxPoint.y, this->BBTransformed->maxPoint.z);
 
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
-	glVertex3f(this->BoundingBox->maxPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->maxPoint.z);
+	glVertex3f(this->BBTransformed->maxPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->maxPoint.z);
 
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->maxPoint.z);
-	glVertex3f(this->BoundingBox->minPoint.x, this->BoundingBox->minPoint.y, this->BoundingBox->minPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->maxPoint.z);
+	glVertex3f(this->BBTransformed->minPoint.x, this->BBTransformed->minPoint.y, this->BBTransformed->minPoint.z);
 
 	glColor3f(0, 1, 0);
 
@@ -186,6 +182,7 @@ float GameObject::SetBoundBox()
 			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
 				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
 
+			this->children[i]->BBTransformed = this->children[i]->BoundingBox;
 		}
 	}
 
@@ -233,6 +230,8 @@ void GameObject::SetTransformedBoundBox()
 				this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
 			if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
 				this->BoundingBox->minPoint.z = auxBB.minPoint.z;
+
+			BBTransformed = BoundingBox;
 		}
 		
 	}
@@ -262,6 +261,7 @@ void GameObject::SetTransformedBoundBox()
 			if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
 				this->BoundingBox->minPoint.z = auxBB.minPoint.z;
 
+			BBTransformed = BoundingBox;
 		}
 	}
 

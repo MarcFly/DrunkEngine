@@ -65,15 +65,17 @@ void ComponentTransform::SetLocalTransform()
 
 	local_transform = local_pos * (float4x4)rotate_quat * local_scale;
 
-	to_update = true;
+	this->RecursiveSetToUpdate(this);
 }
 
 void ComponentTransform::RecursiveSetToUpdate(ComponentTransform * t)
 {
 	t->to_update = true;
 
-	if (t->parent != nullptr && t->parent->GetParentTransform() != nullptr)
-		RecursiveSetToUpdate(t->parent->GetParentTransform());
+	for (int i = 0; i < t->parent->children.size(); i++)
+	{
+		RecursiveSetToUpdate(t->parent->children[i]->GetTransform());
+	}
 }
 
 void ComponentTransform::CleanUp()

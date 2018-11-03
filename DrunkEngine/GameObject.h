@@ -60,6 +60,7 @@ public:
 	std::string name;
 
 	AABB* BoundingBox = nullptr;
+	AABB* BBTransformed = nullptr;
 
 	Octree* Scene_Octree = nullptr;
 

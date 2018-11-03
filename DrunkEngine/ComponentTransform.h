@@ -11,8 +11,7 @@ class ComponentMesh;
 class ComponentTransform : public Component
 {
 public:
-	ComponentTransform() { SetBaseVals(); };
-	ComponentTransform(GameObject* par) { SetBaseVals(); parent = par; }
+	ComponentTransform(GameObject* par) { parent = par; SetBaseVals();  }
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 
 	~ComponentTransform() {};

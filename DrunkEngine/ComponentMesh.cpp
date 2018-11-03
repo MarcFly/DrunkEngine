@@ -126,7 +126,10 @@ void ComponentMesh::SetMeshBoundBox()
 
 void ComponentMesh::Draw()
 {
-	if (App->scene->active_cameras.size() > 0 && isMeshInsideFrustum(App->scene->active_cameras[0], this->BoundingBox))
+	glPushMatrix();
+	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
+
+	if (App->scene->active_cameras.size() > 0 && isMeshInsideFrustum(App->scene->active_cameras[0], this->parent->BBTransformed))
 	{
 		if (index != nullptr && vertex != nullptr)
 		{
@@ -150,6 +153,8 @@ void ComponentMesh::Draw()
 				this->DrawNormals();
 		}
 	}
+
+	glPopMatrix();
 }
 
 void ComponentMesh::DrawMesh()
@@ -257,6 +262,7 @@ bool ComponentMesh::isMeshInsideFrustum(const ComponentCamera * cam, const AABB 
 	int iTotalIn = 0;
 	Plane planes[6];
 	cam->frustum.GetPlanes(planes);
+
 	bounding_box->GetCornerPoints(vCorner); // get the corners of the box into the vCorner array
 	// test all 8 corners against the 6 sides
 	// if all points are behind 1 specific plane, we are out
