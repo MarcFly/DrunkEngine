@@ -2,7 +2,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 #include "ComponentCamera.h"
 
 #define MOV_SPEED 4.0f
@@ -67,18 +67,18 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN)
 	{
-		vec aux = App->mesh_loader->Root_Object->getObjectCenter();
+		vec aux = App->scene->Root_Object->getObjectCenter();
 		main_camera->LookAt(vec(aux.x,aux.y,aux.z)); // TODO Change to selected obj for assignment 2
 	}
 	main_camera->Position += newPos;
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		if (App->mesh_loader->Root_Object != nullptr)
+		if (App->scene->Root_Object != nullptr)
 			main_camera->Reference = vec(0.0f, 0.0f, 0.0f);
 		else
 		{
-			vec aux = App->mesh_loader->Root_Object->getObjectCenter();
+			vec aux = App->scene->Root_Object->getObjectCenter();
 			main_camera->Reference = {aux.x, aux.y, aux.z}; // TODO Change to selected obj for assignment 2
 		}
 		main_camera->Rotate();

@@ -18,11 +18,13 @@ class ComponentMesh;
 class ComponentMaterial;
 class ComponentCamera;
 class Primitive;
+class Octree;
 
 class GameObject
 {
 public:
 	GameObject();
+	GameObject(GameObject* par) : parent{par} {};
 	GameObject(const char* path, const aiScene* scene, const aiNode* root_obj, const char* file_path, GameObject* par = nullptr);
 
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);
@@ -46,6 +48,8 @@ public:
 
 	void CalculateGlobalTransforms();
 
+	void RecursiveSetStatic(GameObject* obj, const bool bool_static);
+
 	void CleanUp();
 
 	std::vector<unsigned int> GetMeshProps();
@@ -57,6 +61,8 @@ public:
 
 	AABB* BoundingBox = nullptr;
 
+	Octree* Scene_Octree = nullptr;
+
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
 	std::vector<GameObject*> children;
@@ -64,15 +70,12 @@ public:
 
 	bool to_pop = false;
 	bool active = false;
+	bool is_static = false;
 
 	float max_distance_point = 0;
 
 public:
 	ComponentTransform * GetParentTransform();
-
-public:
-	ComponentCamera * camera = nullptr;
-	std::vector<ComponentCamera*> cameras;
 
 public:
 

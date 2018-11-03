@@ -1,7 +1,7 @@
 #include "ComponentMaterial.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ModuleImport.h"

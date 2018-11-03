@@ -11,7 +11,7 @@ Application::Application()
 	//physics = new ModulePhysics3D(this);
 	importer = new ModuleImport();
 	ui = new ModuleUI(this);
-	mesh_loader = new ModuleScene(this);
+	scene = new ModuleScene(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -23,7 +23,7 @@ Application::Application()
 	AddModule(input);
 	//AddModule(physics);
 	AddModule(importer);
-	AddModule(mesh_loader);
+	AddModule(scene);
 	AddModule(ui);
 
 	// Renderer last!

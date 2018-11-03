@@ -129,7 +129,7 @@
     <ClInclude Include="DevIL\include\IL\ilu_region.h" />
     <ClInclude Include="DevIL\include\IL\il_wrap.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
-    <ClInclude Include="GeoPropertiesWindow.h" />
+    <ClInclude Include="Inspector.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
     <ClInclude Include="GLEW\include\GL\glew.h" />
     <ClInclude Include="GLEW\include\GL\glxew.h" />
@@ -206,6 +206,7 @@
     <ClInclude Include="MGL\Math\TransformOps.h" />
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
+    <ClInclude Include="Octree.h" />
     <ClInclude Include="OptionsWindow.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -243,7 +244,7 @@
     <ClCompile Include="ConsoleWindow.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
-    <ClCompile Include="GeoPropertiesWindow.cpp" />
+    <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
     <ClCompile Include="MaterialImport.cpp" />
     <ClCompile Include="MeshImport.cpp" />
@@ -287,6 +288,7 @@
     <ClCompile Include="MGL\Time\Clock.cpp" />
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="Octree.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />

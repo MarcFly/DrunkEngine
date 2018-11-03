@@ -14,7 +14,7 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -46,7 +46,7 @@ bool ModuleUI::Init()
 	windows.push_back(about_win = new AboutWindow());
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow());
-	windows.push_back(geo_properties_win = new GeoPropertiesWindow());
+	windows.push_back(geo_properties_win = new Inspector());
 
 	App->input->UpdateShortcuts();
 
@@ -166,7 +166,8 @@ bool ModuleUI::MainMenu()
 			ImGui::EndMenu();
 		}
 
-		
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 		
 	}
 	ImGui::EndMainMenuBar();

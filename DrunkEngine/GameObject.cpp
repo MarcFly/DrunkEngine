@@ -3,7 +3,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-
+#include "Octree.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -16,14 +16,7 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 	SetUUID();
 
 	this->name = file_path;
-	this->root = this;
-
-	this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj, this));
-
-	if (this->parent == nullptr)
-		this->camera = new ComponentCamera(this);
-
-	GetTransform();
+	this->root = this;	
 
 	if (par != nullptr)
 	{
@@ -31,28 +24,35 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 		root = par->root;
 	}
 
+	for (int i = 0; i < root_obj->mNumChildren; i++)
+		this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj->mChildren[i], this));
+
+	GetTransform();
+
 	Start();
 }
 
 void GameObject::Start()
 {
-	if (camera != nullptr)
-		camera->Start();
-
 	for (int i = 0; i < this->components.size(); i++)
 		this->components[i]->Start();
+
+	SetBoundBox();
 
 }
 
 void GameObject::Update(float dt)
 {
-	App->mesh_loader->getRootObj()->CalculateGlobalTransforms();
-
-	if (camera != nullptr)
-		camera->Update(dt);
+	App->scene->getRootObj()->CalculateGlobalTransforms();
 
 	for (int i = 0; i < this->components.size(); i++)
-		this->components[i]->Update();
+		this->components[i]->Update(dt);
+
+	for (int i = 0; i < this->children.size(); i++)
+		this->children[i]->Update(dt);
+
+	if (Scene_Octree != nullptr)
+		Scene_Octree->Update();
 
 	Draw();
 
@@ -81,9 +81,6 @@ void GameObject::Draw()
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Draw();
-		
-	if (camera != nullptr)
-		camera->Draw();
 }
 
 void GameObject::DrawBB()
@@ -365,6 +362,14 @@ void GameObject::CalculateGlobalTransforms()
 			(*it)->CalculateGlobalTransforms();
 		}
 	}
+}
+
+void GameObject::RecursiveSetStatic(GameObject * obj, const bool bool_static)
+{
+	obj->is_static = bool_static;
+
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveSetStatic(obj->children[i], bool_static);
 }
 
 void GameObject::CleanUp()

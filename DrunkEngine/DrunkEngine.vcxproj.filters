@@ -564,9 +564,6 @@
     <ClInclude Include="DevIL\include\IL\ilut_config.h">
       <Filter>Sources\Tools\DevIL\include\IL</Filter>
     </ClInclude>
-    <ClInclude Include="GeoPropertiesWindow.h">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Sources\Modules\GameObject Structure</Filter>
     </ClInclude>
@@ -596,6 +593,12 @@
     </ClInclude>
     <ClInclude Include="Component.h">
       <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Octree.h">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Inspector.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -797,9 +800,6 @@
     <ClCompile Include="ConsoleWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
-    <ClCompile Include="GeoPropertiesWindow.cpp">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleScene.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
@@ -829,6 +829,12 @@
     </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="Octree.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="Inspector.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

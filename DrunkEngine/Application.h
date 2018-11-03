@@ -26,7 +26,7 @@ public:
 	//ModulePhysics3D* physics;
 	ModuleImport* importer;
 	ModuleUI* ui;
-	ModuleScene* mesh_loader;
+	ModuleScene* scene;
 
 	std::string profile = "config_data.json";
 

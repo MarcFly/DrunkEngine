@@ -8,7 +8,7 @@
 #include "Assimp/include/cfileio.h"
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 #include "ModuleWindow.h"
 #include "ComponentCamera.h"
 
@@ -37,7 +37,7 @@ bool ModuleScene::Start()
 	//Load(nullptr);
 	//LoadFromFile("./Assets/BakerHouse.fbx");
 	LoadFBX("./Assets/Ogre.fbx");
-	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	//LoadSceneFile("Scene.json");
 
@@ -87,15 +87,14 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 	if (scene != nullptr)
 	{
-		if(getRootObj() == nullptr)
-			Root_Object = new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
+		if (getRootObj() == nullptr)
+			NewScene();
+		
+		if (App->ui->geo_properties_win->selected_object != nullptr)
+			App->ui->geo_properties_win->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->geo_properties_win->selected_object));
 		else
-		{
-			if (App->ui->geo_properties_win->selected_object != nullptr)
-				App->ui->geo_properties_win->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->geo_properties_win->selected_object));
-			else
-				getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
-		}
+			getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
+		
 
 		aiReleaseImport(scene);
 	}
@@ -154,8 +153,8 @@ bool ModuleScene::Load(JSON_Value * root_value)
 
 	default_load = scene_folder + default_load;
 
-	if (getRootObj() == nullptr)
-		NewScene();
+	/*if (getRootObj() == nullptr)
+		NewScene();*/
 			
 	ret = true;
 	return ret;
@@ -213,7 +212,7 @@ void ModuleScene::NewScene()
 	DeleteScene();
 
 	Root_Object = new GameObject();
-	GameObject* MainCam = new GameObject();
+	GameObject* MainCam = new GameObject(Root_Object);
 	MainCam->name = "Main Camera";
 	MainCam->components.push_back(new ComponentCamera(MainCam));
 	getRootObj()->children.push_back(MainCam);

@@ -13,14 +13,14 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	if (par != nullptr)
 	{
 		this->parent = par;
-		App->mesh_loader->active_cameras.push_back(this);
+		App->scene->active_cameras.push_back(this);
 	}
 	else
-		App->mesh_loader->SetmainCam(this);
+		App->scene->SetmainCam(this);
 
 	CalculateViewMatrix();
 
-	id = App->mesh_loader->active_cameras.size();
+	id = App->scene->active_cameras.size();
 
 	X = vec(1.0f, 0.0f, 0.0f);
 	Y = vec(0.0f, 1.0f, 0.0f);
@@ -62,7 +62,7 @@ void ComponentCamera::Start()
 	// Start
 }
 
-bool ComponentCamera::Update(float dt)
+void ComponentCamera::Update(const float dt)
 {
 	float speed = MOV_SPEED * dt;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
@@ -70,8 +70,6 @@ bool ComponentCamera::Update(float dt)
 
 	MoveTest(speed);
 	CalculateViewMatrix();
-
-	return true;
 }
 
 void ComponentCamera::Draw()

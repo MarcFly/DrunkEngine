@@ -1,22 +1,28 @@
-#ifndef _GEOPROPERTIES_WINDOW_
-#define _GEOPROPERTIES_WINDOW_
+#ifndef _INSPECTOR_WINDOW_
+#define _INSPECTOR_WINDOW_
 
 #include "Window.h"
 #include "ModuleScene.h"
 
 class GameObject;
 
-class GeoPropertiesWindow: public Window
+class Inspector: public Window
 {
 public:
-	GeoPropertiesWindow();
-	virtual ~GeoPropertiesWindow();
+	Inspector();
+	virtual ~Inspector();
 
 	void Draw() override;
 
 	void CheckMeshInfo();
 
 	void CreateObjLeaf(GameObject* obj, int st);
+
+	void ComponentInspector(Component* component);
+	void MeshInspector(ComponentMesh* mesh);
+	void MatInspector(ComponentMaterial* mat);
+	void CamInspector(ComponentCamera* cam);
+	void TransformInspector(ComponentTransform* transform);
 
 	//void GetTotalProperties(GameObject* obj, int &vertex, int &faces);
 

@@ -173,23 +173,23 @@ void OptionsWindow::Draw()
 		{
 			ImGui::Separator();
 
-			float aux_fov = RadToDeg(App->mesh_loader->Main_Cam->frustum.verticalFov);
+			float aux_fov = RadToDeg(App->scene->Main_Cam->frustum.verticalFov);
 			if (ImGui::SliderFloat("FOV", &aux_fov, 0.1f, 179.0f))
 			{
-				App->mesh_loader->Main_Cam->frustum.verticalFov = DegToRad(aux_fov);
-				App->mesh_loader->Main_Cam->SetAspectRatio();
+				App->scene->Main_Cam->frustum.verticalFov = DegToRad(aux_fov);
+				App->scene->Main_Cam->SetAspectRatio();
 				App->renderer3D->OnResize();
 			}
 
-			if (ImGui::SliderFloat("NearPlane", &App->mesh_loader->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
+			if (ImGui::SliderFloat("NearPlane", &App->scene->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
 			{
-				App->mesh_loader->Main_Cam->frustum.SetViewPlaneDistances(App->mesh_loader->Main_Cam->frustum.nearPlaneDistance, App->mesh_loader->Main_Cam->frustum.farPlaneDistance);
+				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
 				App->renderer3D->OnResize();
 			}
 
-			if (ImGui::SliderFloat("FarPlane", &App->mesh_loader->Main_Cam->frustum.farPlaneDistance, 1.f, 1000.0f))
+			if (ImGui::SliderFloat("FarPlane", &App->scene->Main_Cam->frustum.farPlaneDistance, 1.f, 1000.0f))
 			{
-				App->mesh_loader->Main_Cam->frustum.SetViewPlaneDistances(App->mesh_loader->Main_Cam->frustum.nearPlaneDistance, App->mesh_loader->Main_Cam->frustum.farPlaneDistance);
+				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
 				App->renderer3D->OnResize();
 			}		
 		}
@@ -217,7 +217,7 @@ void OptionsWindow::Draw()
 			ImGui::Separator();
 
 			if (ImGui::Button("Save Changes"))
-				App->mesh_loader->Save(nullptr);
+				App->scene->Save(nullptr);
 
 			ImGui::Separator();
 		}
@@ -582,14 +582,14 @@ void OptionsWindow::Draw()
 				ShellExecute(NULL, "open", "http://glew.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
 
 			ImGui::SameLine();
-			ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%D) ", App->mesh_loader->GetDevILVer() / 100, App->mesh_loader->GetDevILVer() / 10 - 10 * (App->mesh_loader->GetDevILVer() / 100), App->mesh_loader->GetDevILVer() - 10 * (App->mesh_loader->GetDevILVer() / 10));
+			ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%D) ", App->scene->GetDevILVer() / 100, App->scene->GetDevILVer() / 10 - 10 * (App->scene->GetDevILVer() / 100), App->scene->GetDevILVer() - 10 * (App->scene->GetDevILVer() / 10));
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())
 				ShellExecute(NULL, "open", "http://openil.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
 
 			ImGui::SameLine();
-			ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", App->mesh_loader->GetAssimpMajorVer(), App->mesh_loader->GetAssimpMinorVer(), App->mesh_loader->GetAssimpVersionRevision());
+			ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", App->scene->GetAssimpMajorVer(), App->scene->GetAssimpMinorVer(), App->scene->GetAssimpVersionRevision());
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())

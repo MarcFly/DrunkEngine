@@ -1,7 +1,7 @@
 #include "ModuleImport.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 #include "ComponentCamera.h"
 #include "MeshImport.h"
 #include "MaterialImport.h"
@@ -100,7 +100,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	for (int i = 0; i < obj_node->mNumChildren; i++)
 		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 	ret->GetTransform()->SetFromMatrix(&obj_node->mTransformation);
-	App->mesh_loader->Main_Cam->LookToObj(ret, ret->SetBoundBox());
+	App->scene->Main_Cam->LookToObj(ret, ret->SetBoundBox());
 
 	return ret;
 }
@@ -117,7 +117,7 @@ void ModuleImport::ExportScene(const char* file_path)
 		std::string new_file_path = file_path;
 		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
-		new_file_path = App->mesh_loader->scene_folder + new_file_path;
+		new_file_path = App->scene->scene_folder + new_file_path;
 
 		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
 		aux = new_file_path;
@@ -172,7 +172,7 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 	if (type == FT_New_Object)
 	{
 		ExportScene(file);
-		App->mesh_loader->LoadFBX(file);
+		App->scene->LoadFBX(file);
 	}
 	else if (type == FT_Texture)
 		mat_i->ExportTexture(file);

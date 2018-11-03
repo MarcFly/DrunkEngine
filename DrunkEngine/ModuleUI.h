@@ -18,7 +18,7 @@ class RandomGenWindow;
 class GEOMWindow;
 class OpenGLOptions;
 class ConsoleWindow;
-class GeoPropertiesWindow;
+class Inspector;
 
 class ModuleUI : public Module
 {
@@ -45,7 +45,7 @@ public:
 	GEOMWindow* geometry_win = nullptr;
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
-	GeoPropertiesWindow* geo_properties_win = nullptr;
+	Inspector* geo_properties_win = nullptr;
 
 private:
 	bool show_demo_window;
