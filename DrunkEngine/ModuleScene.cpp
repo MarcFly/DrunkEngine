@@ -87,15 +87,14 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 	if (scene != nullptr)
 	{
-		if(getRootObj() == nullptr)
-			Root_Object = new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str());
+		if (getRootObj() == nullptr)
+			NewScene();
+		
+		if (App->ui->geo_properties_win->selected_object != nullptr)
+			App->ui->geo_properties_win->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->geo_properties_win->selected_object));
 		else
-		{
-			if (App->ui->geo_properties_win->selected_object != nullptr)
-				App->ui->geo_properties_win->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->geo_properties_win->selected_object));
-			else
-				getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
-		}
+			getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
+		
 
 		aiReleaseImport(scene);
 	}
@@ -154,8 +153,8 @@ bool ModuleScene::Load(JSON_Value * root_value)
 
 	default_load = scene_folder + default_load;
 
-	if (getRootObj() == nullptr)
-		NewScene();
+	/*if (getRootObj() == nullptr)
+		NewScene();*/
 			
 	ret = true;
 	return ret;
