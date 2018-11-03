@@ -212,6 +212,7 @@ void ModuleScene::NewScene()
 	DeleteScene();
 
 	Root_Object = new GameObject();
+	Root_Object->name = "NewScene";
 	GameObject* MainCam = new GameObject(Root_Object);
 	MainCam->name = "Main Camera";
 	MainCam->components.push_back(new ComponentCamera(MainCam));
