@@ -8,7 +8,7 @@
 #include "Assimp/include/cfileio.h"
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 #include "ModuleWindow.h"
 #include "ComponentCamera.h"
 

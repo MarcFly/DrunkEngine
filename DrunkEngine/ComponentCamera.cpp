@@ -13,14 +13,14 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	if (par != nullptr)
 	{
 		this->parent = par;
-		App->mesh_loader->active_cameras.push_back(this);
+		App->scene->active_cameras.push_back(this);
 	}
 	else
-		App->mesh_loader->SetmainCam(this);
+		App->scene->SetmainCam(this);
 
 	CalculateViewMatrix();
 
-	id = App->mesh_loader->active_cameras.size();
+	id = App->scene->active_cameras.size();
 
 	X = vec(1.0f, 0.0f, 0.0f);
 	Y = vec(0.0f, 1.0f, 0.0f);

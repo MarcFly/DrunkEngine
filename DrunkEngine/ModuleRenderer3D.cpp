@@ -142,13 +142,13 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->mesh_loader->Main_Cam->GetViewMatrix());
+	glLoadMatrixf(App->scene->Main_Cam->GetViewMatrix());
 
 	RenderGrid();
 
 	// Something Something lights
 	// Set light pos
-	lights[0].SetPos(App->mesh_loader->Main_Cam->Position.x, App->mesh_loader->Main_Cam->Position.y, App->mesh_loader->Main_Cam->Position.z);
+	lights[0].SetPos(App->scene->Main_Cam->Position.x, App->scene->Main_Cam->Position.y, App->scene->Main_Cam->Position.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -159,7 +159,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
-	App->mesh_loader->ObjUpdate(dt);
+	App->scene->ObjUpdate(dt);
 	/*if (faces)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -198,15 +198,15 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::Render(bool use_texture)
 {
 	/*
-	for (int i = 0; i < App->mesh_loader->Objects.size(); i++)
+	for (int i = 0; i < App->scene->Objects.size(); i++)
 	{
-		for(int j = 0; j < App->mesh_loader->Objects[i].meshes.size(); j++)
+		for(int j = 0; j < App->scene->Objects[i].meshes.size(); j++)
 		{ 
 			// Draw elements
-			ComponentMesh* mesh = &App->mesh_loader->Objects[i].meshes[j];
+			ComponentMesh* mesh = &App->scene->Objects[i].meshes[j];
 
 			if (faces)
-				App->mesh_loader->DrawMesh(mesh, use_texture);
+				App->scene->DrawMesh(mesh, use_texture);
 
 			// Draw Normals
 			if (render_normals)
@@ -245,8 +245,8 @@ void ModuleRenderer3D::OnResize()
 	glLoadIdentity();
 
 	//From cameracomp
-	if (App->mesh_loader->Main_Cam != nullptr)
-		ProjectionMatrix = App->mesh_loader->Main_Cam->frustum.ProjectionMatrix();
+	if (App->scene->Main_Cam != nullptr)
+		ProjectionMatrix = App->scene->Main_Cam->frustum.ProjectionMatrix();
 	//ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 
 	glLoadMatrixf(&ProjectionMatrix[0][0]);

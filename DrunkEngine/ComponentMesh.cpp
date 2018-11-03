@@ -1,7 +1,7 @@
 #include "ComponentMesh.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
@@ -126,7 +126,7 @@ void ComponentMesh::SetMeshBoundBox()
 
 void ComponentMesh::Draw()
 {
-	if (App->mesh_loader->active_cameras.size() > 0 && isMeshInsideFrustum(App->mesh_loader->active_cameras[0], this->BoundingBox))
+	if (App->scene->active_cameras.size() > 0 && isMeshInsideFrustum(App->scene->active_cameras[0], this->BoundingBox))
 	{
 		if (index != nullptr && vertex != nullptr)
 		{

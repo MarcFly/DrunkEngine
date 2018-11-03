@@ -43,7 +43,7 @@ void GameObject::Start()
 
 void GameObject::Update(float dt)
 {
-	App->mesh_loader->getRootObj()->CalculateGlobalTransforms();
+	App->scene->getRootObj()->CalculateGlobalTransforms();
 
 	for (int i = 0; i < this->components.size(); i++)
 		this->components[i]->Update(dt);

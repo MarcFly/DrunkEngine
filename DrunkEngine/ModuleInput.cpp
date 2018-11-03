@@ -8,7 +8,7 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "Inspector.h"
 
 #define MAX_KEYS 300
 

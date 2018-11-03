@@ -8,7 +8,7 @@ Octree::Octree(int elements_per_node)
 
 	this->elements_per_node = elements_per_node;
 
-	RecursiveGetStaticObjs(App->mesh_loader->Root_Object);
+	RecursiveGetStaticObjs(App->scene->Root_Object);
 
 	if (static_objs.size() > 0)
 	{
