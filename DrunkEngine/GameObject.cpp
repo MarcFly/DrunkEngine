@@ -495,11 +495,3 @@ Component* GameObject::NewComponent(CTypes type)
 	
 	return nullptr;
 }
-
-ComponentTransform * GameObject::GetParentTransform()
-{
-	if (parent != nullptr)
-		return parent->GetTransform();
-	else
-		return nullptr;
-}

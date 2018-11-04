@@ -76,9 +76,6 @@ public:
 	float max_distance_point = 0;
 
 public:
-	ComponentTransform * GetParentTransform();
-
-public:
 
 	void DestroyThisObject() 
 	{
