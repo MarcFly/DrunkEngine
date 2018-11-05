@@ -81,6 +81,9 @@ update_status ModuleCamera3D::Update(float dt)
 	}
 	main_camera->Position += newPos;
 
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+		MousePicking();
+
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
 		vec aux = vec(0.0f, 0.0f, 0.0f);
@@ -143,4 +146,25 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 
 	ret = true;
 	return ret;
+}
+
+void ModuleCamera3D::MousePicking()
+{
+	LineSegment picking = main_camera->frustum.UnProjectLineSegment(App->input->GetMouseX(), App->input->GetMouseY());
+
+	for (int i = 0; i < App->scene->active_objects.size(); i++)
+		App->scene->active_objects.pop_back();
+
+	for (int i = 0; i < App->scene->getRootObj()->children.size(); i++)
+	{
+		GameObject* test = App->scene->getRootObj()->children[i];
+		if (test->isInsideFrustum(main_camera, test->GetBB()))
+		{
+			if (picking.Intersects(*test->GetBB()))
+			{
+				App->scene->active_objects.push_back(test);
+				break;
+			}
+		}
+	}
 }

@@ -34,7 +34,7 @@ public:
 	void DrawMeshWire();
 	void DrawNormals();
 
-	bool isMeshInsideFrustum(const ComponentCamera * cam, const AABB* bounding_box);
+	
 
 	void CleanUp();
 

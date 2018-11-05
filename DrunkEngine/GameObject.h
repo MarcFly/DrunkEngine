@@ -46,6 +46,7 @@ public:
 	void AdjustObjects();
 	void AdjustComponents();
 
+	bool isInsideFrustum(const ComponentCamera * cam, const AABB* bounding_box);
 	void CalculateGlobalTransforms();
 
 	void RecursiveSetStatic(GameObject* obj, const bool bool_static);

@@ -223,7 +223,7 @@ void ModuleScene::NewScene()
 
 void ModuleScene::CreateMainCam()
 {
-	if (Main_Cam == nullptr)
+	if (Main_Cam->parent == nullptr)
 	{
 		GameObject* MainCam = new GameObject(Root_Object);
 		MainCam->name = "Main Camera";
