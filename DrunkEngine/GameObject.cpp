@@ -71,7 +71,7 @@ void GameObject::Draw()
 		this->GetTransform()->to_update = false;
 	}
 
-	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
+	if (this->BBTransformed != nullptr && (App->renderer3D->bounding_box || this->active))
 		this->DrawBB();
 
 
