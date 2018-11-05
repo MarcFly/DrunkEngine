@@ -90,6 +90,9 @@ update_status ModuleCamera3D::Update(float dt)
 			aux += App->scene->active_objects[i]->getObjectCenter();
 		}
 
+		if (App->scene->active_objects.size() > 0)
+			aux = aux / App->scene->active_objects.size();
+
 		main_camera->Reference = aux;
 
 		main_camera->Rotate();
