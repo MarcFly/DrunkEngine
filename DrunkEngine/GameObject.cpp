@@ -241,7 +241,6 @@ void GameObject::SetTransformedBoundBox()
 		for (int i = 0; i < this->children.size(); i++)
 		{
 			math::AABB auxBB = *this->children[i]->BoundingBox;
-			auxBB.TransformAsAABB(this->children[i]->GetTransform()->global_transform);
 
 			// Setting the BB min and max points with transforms
 
@@ -257,8 +256,6 @@ void GameObject::SetTransformedBoundBox()
 				this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
 			if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
 				this->BoundingBox->minPoint.z = auxBB.minPoint.z;
-
-			BoundingBox = BoundingBox;
 		}
 	}
 
