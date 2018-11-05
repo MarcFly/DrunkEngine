@@ -24,7 +24,7 @@ class GameObject
 {
 public:
 	GameObject();
-	GameObject(GameObject* par) : parent{par} {};
+	GameObject(GameObject* par, const char* name, CTypes type);
 	GameObject(const char* path, const aiScene* scene, const aiNode* root_obj, const char* file_path, GameObject* par = nullptr);
 
 	void CreateThisObj(const aiScene* scene, const aiNode* obj);
