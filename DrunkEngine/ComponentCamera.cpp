@@ -26,7 +26,6 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	Y = vec(0.0f, 1.0f, 0.0f);
 	Z = vec(0.0f, 0.0f, 1.0f);
 
-	Position = vec(0.0f, 0.0f, 5.0f);
 	Reference = vec(0.0f, 0.0f, 0.0f);
 
 	frustum.nearPlaneDistance = 0.5f;
@@ -45,7 +44,7 @@ ComponentCamera::ComponentCamera(GameObject * par)
 
 	frustum.pos = float3::zero;
 
-	frustum.Translate(Position);
+	frustum.Translate(vec(0.0f, 0.0f, 5.0f));
 
 	frustum.GetCornerPoints(bb_frustum);
 
@@ -130,7 +129,7 @@ void ComponentCamera::CleanUp()
 
 void ComponentCamera::Look(const vec &Position, const vec &Reference, bool RotateAroundReference)
 {
-	this->Position = Position;
+	this->frustum.pos = Position;
 	this->Reference = Reference;
 
 	float3 aux = Position - Reference;
@@ -141,8 +140,8 @@ void ComponentCamera::Look(const vec &Position, const vec &Reference, bool Rotat
 
 	if (!RotateAroundReference)
 	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
+		this->Reference = this->frustum.pos;
+		this->frustum.pos += Z * 0.05f;
 	}
 
 
@@ -154,7 +153,7 @@ void ComponentCamera::LookAt(const vec &Spot)
 {
 	Reference = Spot;
 
-	float3 aux = Position - Reference;
+	float3 aux = frustum.pos - Reference;
 	Z = aux.Normalized();
 	aux = float3(0.0f, 1.0f, 0.0f).Cross(Z);
 	X = aux.Normalized();
@@ -167,7 +166,7 @@ void ComponentCamera::LookAt(const vec &Spot)
 // -----------------------------------------------------------------
 void ComponentCamera::Move(const vec &Movement)
 {
-	Position += Movement;
+	frustum.pos += Movement;
 	Reference += Movement;
 
 	CalculateViewMatrix();
@@ -176,7 +175,7 @@ void ComponentCamera::Move(const vec &Movement)
 // -----------------------------------------------------------------
 void ComponentCamera::Transport(const vec &Movement)
 {
-	Position = Movement;
+	frustum.pos = Movement;
 
 	CalculateViewMatrix();
 }
@@ -213,8 +212,8 @@ void ComponentCamera::Rotate()
 
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		Position -= Reference;
-		Position = Reference + Z * Position.Length();
+		frustum.pos -= Reference;
+		frustum.pos = Reference + Z * frustum.pos.Length();
 	}
 }
 
@@ -237,7 +236,7 @@ float * ComponentCamera::GetViewMatrix()
 
 void ComponentCamera::CalculateViewMatrix()
 {
-	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f);
+	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(frustum.pos), -Y.Dot(frustum.pos), -Z.Dot(frustum.pos), 1.0f);
 
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }

@@ -79,7 +79,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		main_camera->LookAt(aux);
 	}
-	main_camera->Position += newPos;
+	main_camera->frustum.pos += newPos;
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 		MousePicking();
@@ -102,7 +102,7 @@ update_status ModuleCamera3D::Update(float dt)
 	}
 	else
 	{
-		main_camera->Reference = main_camera->Position;
+		main_camera->Reference = main_camera->frustum.pos;
 		main_camera->Reference += newPos;
 	}
 	// Mouse motion ----------------

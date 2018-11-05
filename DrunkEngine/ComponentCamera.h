@@ -47,7 +47,7 @@ public:
 	float4x4 ViewMatrix, ViewMatrixInverse;
 
 	vec X, Y, Z;
-	vec Position, Reference;
+	vec Reference;
 
 	Frustum frustum;
 

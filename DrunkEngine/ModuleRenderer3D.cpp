@@ -148,7 +148,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	// Something Something lights
 	// Set light pos
-	lights[0].SetPos(App->scene->Main_Cam->Position.x, App->scene->Main_Cam->Position.y, App->scene->Main_Cam->Position.z);
+	lights[0].SetPos(App->scene->Main_Cam->frustum.pos.x, App->scene->Main_Cam->frustum.pos.y, App->scene->Main_Cam->frustum.pos.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
