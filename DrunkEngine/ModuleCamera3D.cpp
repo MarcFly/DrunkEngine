@@ -67,20 +67,31 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN)
 	{
-		vec aux = App->scene->Root_Object->getObjectCenter();
-		main_camera->LookAt(vec(aux.x,aux.y,aux.z)); // TODO Change to selected obj for assignment 2
+		vec aux = vec(0.0f, 0.0f, 0.0f);
+
+		for (int i = 0; i < App->scene->active_objects.size(); i++)
+		{
+			aux += App->scene->active_objects[i]->getObjectCenter();
+		}
+		
+		if (App->scene->active_objects.size() > 0)
+			aux = aux / App->scene->active_objects.size();
+
+		main_camera->LookAt(aux);
 	}
 	main_camera->Position += newPos;
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		if (App->scene->Root_Object != nullptr)
-			main_camera->Reference = vec(0.0f, 0.0f, 0.0f);
-		else
+		vec aux = vec(0.0f, 0.0f, 0.0f);
+
+		for (int i = 0; i < App->scene->active_objects.size(); i++)
 		{
-			vec aux = App->scene->Root_Object->getObjectCenter();
-			main_camera->Reference = {aux.x, aux.y, aux.z}; // TODO Change to selected obj for assignment 2
+			aux += App->scene->active_objects[i]->getObjectCenter();
 		}
+
+		main_camera->Reference = aux;
+
 		main_camera->Rotate();
 	}
 	else

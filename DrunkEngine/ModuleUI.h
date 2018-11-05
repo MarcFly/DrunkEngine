@@ -9,7 +9,7 @@
 // Module for IMGUI use and implementation
 // Includes for imgui when necessary...
 
-#define NUM_WINDOWS 7
+#define NUM_WINDOWS 10
 
 class Window;
 class OptionsWindow;
@@ -40,7 +40,7 @@ public:
 	//void AddLog();
 
 public:
-	//NUM WINDOWS == 7
+	//NUM WINDOWS == 10
 	OptionsWindow* options_win = nullptr;
 	AboutWindow* about_win = nullptr;
 	RandomGenWindow* random_win = nullptr;
@@ -61,9 +61,6 @@ public:
 	const ImVec4 clear_color = { 0.45f, 0.55f, 0.60f, 1.00f };
 
 public:
-	void ProcessEvent(SDL_Event* event)
-	{
-		ImGui_ImplSDL2_ProcessEvent(event);
-	}
+	void ProcessEvent(SDL_Event* event) { ImGui_ImplSDL2_ProcessEvent(event); }
 
 };

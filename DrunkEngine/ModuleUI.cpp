@@ -120,14 +120,26 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();				
 
+			if (ImGui::MenuItem("Save Scene"))
+			{
+				//TODOA2
+				//Save scene
+			}
+
+			if (ImGui::MenuItem("Load Scene"))
+			{
+				//TODOA2
+				//Load Scene
+			}
+
+			if (ImGui::MenuItem("Import..."))
+			{
+				//TODOA2
+				//Import from windows
+			}
+
 			if (ImGui::MenuItem("Show/Hide Windows"))
 				ShowHideWindows();
-
-			if (ImGui::MenuItem("About..."))
-				about_win->SwitchActive();
-
-			if (ImGui::MenuItem("Go to Github"))
-				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
 
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
@@ -163,6 +175,12 @@ bool ModuleUI::MainMenu()
 		{
 			if (ImGui::MenuItem("Examples"))
 				show_demo_window = !show_demo_window;
+
+			if (ImGui::MenuItem("About..."))
+				about_win->SwitchActive();
+
+			if (ImGui::MenuItem("Go to Github"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
 
 			if (ImGui::MenuItem("Download Latest"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
