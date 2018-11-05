@@ -603,6 +603,9 @@
     <ClInclude Include="OctreeWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectPropertiesWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -840,6 +843,9 @@
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
     <ClCompile Include="OctreeWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPropertiesWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>

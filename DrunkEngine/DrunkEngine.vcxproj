@@ -206,6 +206,7 @@
     <ClInclude Include="MGL\Math\TransformOps.h" />
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
+    <ClInclude Include="ObjectPropertiesWindow.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="OctreeWindow.h" />
     <ClInclude Include="OptionsWindow.h" />
@@ -289,6 +290,7 @@
     <ClCompile Include="MGL\Time\Clock.cpp" />
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="ObjectPropertiesWindow.cpp" />
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="OctreeWindow.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />

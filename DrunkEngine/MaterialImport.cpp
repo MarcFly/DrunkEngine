@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "ObjectPropertiesWindow.h"
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
@@ -200,7 +200,7 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, con
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		App->ui->geo_properties_win->CheckMeshInfo();
+		App->ui->obj_properties_win->CheckMeshInfo();
 
 		text_timer.LogTime("Tex finish Load");
 		text_timer.Start();

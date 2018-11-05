@@ -14,23 +14,9 @@ public:
 
 	void Draw() override;
 
-	void CheckMeshInfo();
-
 	void CreateObjLeaf(GameObject* obj, int st);
 
-	void ComponentInspector(Component* component);
-	void MeshInspector(ComponentMesh* mesh);
-	void MatInspector(ComponentMaterial* mat);
-	void CamInspector(ComponentCamera* cam);
-	void TransformInspector(ComponentTransform* transform);
-
-	//void GetTotalProperties(GameObject* obj, int &vertex, int &faces);
-
 public:
-	int total_num_vertex;
-	int total_num_faces;
-
-	std::string tex_name;
 
 	bool check_info;
 	bool selected_mask;

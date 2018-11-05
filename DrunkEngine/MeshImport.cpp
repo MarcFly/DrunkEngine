@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "ObjectPropertiesWindow.h"
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
@@ -89,7 +89,7 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 
 		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", mesh->num_vertex, mesh->num_index, mesh->num_faces);
 
-		App->ui->geo_properties_win->CheckMeshInfo();
+		App->ui->obj_properties_win->CheckMeshInfo();
 	}
 	else
 	{

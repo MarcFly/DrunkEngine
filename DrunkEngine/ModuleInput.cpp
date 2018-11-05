@@ -168,7 +168,7 @@ void ModuleInput::UpdateShortcuts()
 {
 	App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
 	App->ui->console_win->SetShortCut((SDL_Scancode)controls[CONSOLE_MENU]);
-	App->ui->geo_properties_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
+	App->ui->inspector->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
 	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
 }
 

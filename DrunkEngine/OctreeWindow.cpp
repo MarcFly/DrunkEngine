@@ -29,12 +29,11 @@ void OctreeWindow::Draw()
 
 		ImGui::SameLine();
 
-		if (ImGui::Button("Delete Octree"))
+		if (ImGui::Button("Destroy Octree"))
 		{
 			if (App->scene->Root_Object->Scene_Octree != nullptr)
 				App->scene->Root_Object->Scene_Octree->CleanUp();
-		}
-
-		ImGui::End();
+		}		
 	}
+	ImGui::End();
 }

@@ -16,6 +16,7 @@
 #include "ConsoleWindow.h"
 #include "Inspector.h"
 #include "OctreeWindow.h"
+#include "ObjectPropertiesWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -47,8 +48,9 @@ bool ModuleUI::Init()
 	windows.push_back(about_win = new AboutWindow());
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow());
-	windows.push_back(geo_properties_win = new Inspector());
+	windows.push_back(inspector = new Inspector());
 	windows.push_back(octree_win = new OctreeWindow());
+	windows.push_back(obj_properties_win = new ObjectPropertiesWindow());
 
 	App->input->UpdateShortcuts();
 
@@ -142,8 +144,11 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Test Objects"))
 				geometry_win->SwitchActive();*/
 
-			if (ImGui::MenuItem("Objects Properties"))
-				geo_properties_win->SwitchActive();
+			if (ImGui::MenuItem("Inspector"))
+				inspector->SwitchActive();
+
+			if (ImGui::MenuItem("Object Properties"))
+				obj_properties_win->SwitchActive();
 
 			if (ImGui::MenuItem("Octree"))
 				octree_win->SwitchActive();			

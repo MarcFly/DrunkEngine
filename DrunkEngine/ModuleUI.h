@@ -20,6 +20,7 @@ class OpenGLOptions;
 class ConsoleWindow;
 class Inspector;
 class OctreeWindow;
+class ObjectPropertiesWindow;
 
 class ModuleUI : public Module
 {
@@ -46,9 +47,9 @@ public:
 	GEOMWindow* geometry_win = nullptr;
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
-	Inspector* geo_properties_win = nullptr;
+	Inspector* inspector = nullptr;
 	OctreeWindow* octree_win = nullptr;
-
+	ObjectPropertiesWindow* obj_properties_win = nullptr;
 private:
 	bool show_demo_window;
 	std::vector<Window *> windows;

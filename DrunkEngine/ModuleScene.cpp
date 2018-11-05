@@ -90,8 +90,8 @@ bool ModuleScene::LoadFBX(const char* file_path)
 		if (getRootObj() == nullptr)
 			NewScene();
 		
-		if (App->ui->geo_properties_win->selected_object != nullptr)
-			App->ui->geo_properties_win->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->geo_properties_win->selected_object));
+		if (App->ui->inspector->selected_object != nullptr)
+			App->ui->inspector->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->inspector->selected_object));
 		else
 			getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
 		
