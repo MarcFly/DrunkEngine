@@ -47,10 +47,12 @@ ComponentCamera::ComponentCamera(GameObject * par)
 
 	frustum.Translate(Position);
 
-	frustum.GetCornerPoints(bb_frustum);
+	SetbbFrustum();
 
-	original_v_fov = frustum.verticalFov;
-	original_h_fov = frustum.horizontalFov;
+	// If scale is compatible whith camera
+
+	//original_v_fov = frustum.verticalFov;
+	//original_h_fov = frustum.horizontalFov;
 
 	mesh_multiplier = 1;
 
@@ -77,7 +79,7 @@ void ComponentCamera::Update(const float dt)
 		TransformRot(parent->GetTransform()->rotate_quat);
 		TransformScale(parent->GetTransform()->scale);
 
-		frustum.GetCornerPoints(bb_frustum);
+		SetbbFrustum();
 
 		parent->GetTransform()->update_camera_transform = false;
 	}
@@ -350,8 +352,13 @@ void ComponentCamera::TransformRot(Quat rot)
 
 void ComponentCamera::TransformScale(float3 scale)
 {
-	//frustum.verticalFov = original_v_fov * scale.y;
-	//frustum.horizontalFov = original_h_fov * scale.x;
+	//frustum.verticalFov = DegToRad(RadToDeg(original_v_fov) * scale.y);
+	//frustum.horizontalFov = DegToRad(RadToDeg(original_h_fov) * scale.x);
+}
+
+void ComponentCamera::SetbbFrustum()
+{
+	frustum.GetCornerPoints(bb_frustum);
 }
 
 void ComponentCamera::Load(JSON_Object* comp)

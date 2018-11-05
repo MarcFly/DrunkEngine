@@ -36,6 +36,7 @@ public:
 	void TransformRot(Quat rot);
 	void TransformScale(float3 scale);
 
+	void SetbbFrustum();
 
 	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
@@ -54,9 +55,8 @@ public:
 
 	Frustum frustum;
 
-private:
-	float original_v_fov;
-	float original_h_fov;
+	//float original_v_fov;		If scale is compatible whith camera
+	//float original_h_fov;
 
 public:
 	void SetBaseVals()
