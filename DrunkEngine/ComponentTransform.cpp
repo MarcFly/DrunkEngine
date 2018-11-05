@@ -70,7 +70,8 @@ void ComponentTransform::SetLocalTransform()
 
 void ComponentTransform::RecursiveSetToUpdate(ComponentTransform * t)
 {
-	t->to_update = true;
+	t->update_bouding_box = true;
+	t->update_camera_transform = true;
 
 	for (int i = 0; i < t->parent->children.size(); i++)
 	{

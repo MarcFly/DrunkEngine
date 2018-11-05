@@ -65,10 +65,10 @@ void GameObject::Draw()
 	for (int i = 0; i < this->components.size(); i++)		
 		this->components[i]->Draw();
 
-	if (this->BoundingBox != nullptr && this->GetTransform()->to_update)
+	if (this->BoundingBox != nullptr && this->GetTransform()->update_bouding_box)
 	{
 		SetTransformedBoundBox();
-		this->GetTransform()->to_update = false;
+		this->GetTransform()->update_bouding_box = false;
 	}
 
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))

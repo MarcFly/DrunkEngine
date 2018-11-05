@@ -49,6 +49,9 @@ ComponentCamera::ComponentCamera(GameObject * par)
 
 	frustum.GetCornerPoints(bb_frustum);
 
+	original_v_fov = frustum.verticalFov;
+	original_h_fov = frustum.horizontalFov;
+
 	mesh_multiplier = 1;
 
 }
@@ -68,7 +71,17 @@ void ComponentCamera::Update(const float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 2 * MOV_SPEED * dt;
 
-	MoveTest(speed);
+	if (parent->GetTransform()->update_camera_transform)
+	{
+		TransformPos(parent->GetTransform()->position);
+		TransformRot(parent->GetTransform()->rotate_quat);
+		TransformScale(parent->GetTransform()->scale);
+
+		frustum.GetCornerPoints(bb_frustum);
+
+		parent->GetTransform()->update_camera_transform = false;
+	}
+
 	CalculateViewMatrix();
 }
 
@@ -242,62 +255,62 @@ void ComponentCamera::CalculateViewMatrix()
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }
 
-void ComponentCamera::MoveTest(float speed)
-{
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
-	{
-		frustum.verticalFov += 0.0015;
-		frustum.GetCornerPoints(bb_frustum);
-		SetAspectRatio();
-	}
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
-	{
-		frustum.verticalFov -= 0.0015;
-		frustum.GetCornerPoints(bb_frustum);
-		SetAspectRatio();
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-	{
-		frustum.pos -= Z * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-	{
-		frustum.pos += Z * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-	{
-		frustum.pos += X * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-	{
-		frustum.pos -= X * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
-	{
-		frustum.pos -= Y * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
-	{
-		frustum.pos += Y * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
-	{
-		frustum.pos += Y * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
-	{
-		frustum.pos -= Y * speed;
-		frustum.GetCornerPoints(bb_frustum);
-	}
-}
+//void ComponentCamera::MoveTest(float speed)
+//{
+//	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+//	{
+//		frustum.verticalFov += 0.0015;
+//		frustum.GetCornerPoints(bb_frustum);
+//		SetAspectRatio();
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
+//	{
+//		frustum.verticalFov -= 0.0015;
+//		frustum.GetCornerPoints(bb_frustum);
+//		SetAspectRatio();
+//	}
+//
+//	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+//	{
+//		frustum.pos -= Z * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+//	{
+//		frustum.pos += Z * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+//	{
+//		frustum.pos += X * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+//	{
+//		frustum.pos -= X * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
+//	{
+//		frustum.pos -= Y * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
+//	{
+//		frustum.pos += Y * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
+//	{
+//		frustum.pos += Y * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
+//	{
+//		frustum.pos -= Y * speed;
+//		frustum.GetCornerPoints(bb_frustum);
+//	}
+//}
 
 void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 {
@@ -307,6 +320,38 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	LookAt(vec(aux.x, aux.y, aux.z));
 
 	mesh_multiplier = vertex_aux / 4;
+}
+
+void ComponentCamera::TransformPos(float3 pos)
+{
+	frustum.pos = pos;
+}
+
+void ComponentCamera::TransformRot(Quat rot)
+{
+
+	float3 new_rot = rot.ToEulerXYZ();
+
+	frustum.SetFront(float3::unitZ);
+	frustum.SetUp(float3::unitY);
+
+	Quat rotation_y = Quat::RotateY(new_rot.y);
+	frustum.SetFront(rotation_y.Mul(frustum.Front()).Normalized());
+	frustum.SetUp(rotation_y.Mul(frustum.Up()).Normalized());
+
+	Quat rotation_x = Quat::RotateAxisAngle(frustum.WorldRight(), new_rot.x);
+	frustum.SetFront(rotation_x.Mul(frustum.Front()).Normalized());
+	frustum.SetUp(rotation_x.Mul(frustum.Up()).Normalized());
+
+	Quat rotation_z = Quat::RotateZ(new_rot.z);
+	frustum.SetFront(rotation_z.Mul(frustum.Front()).Normalized());
+	frustum.SetUp(rotation_z.Mul(frustum.Up()).Normalized());
+}
+
+void ComponentCamera::TransformScale(float3 scale)
+{
+	//frustum.verticalFov = original_v_fov * scale.y;
+	//frustum.horizontalFov = original_h_fov * scale.x;
 }
 
 void ComponentCamera::Load(JSON_Object* comp)

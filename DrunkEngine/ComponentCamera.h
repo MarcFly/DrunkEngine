@@ -30,9 +30,12 @@ public:
 	void CalculateViewMatrix();
 	float* GetViewMatrix();
 
-	void MoveTest(float speed);
-
 	void LookToObj(GameObject* obj, float vertex_aux);
+
+	void TransformPos(float3 pos);
+	void TransformRot(Quat rot);
+	void TransformScale(float3 scale);
+
 
 	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
@@ -50,6 +53,10 @@ public:
 	vec Position, Reference;
 
 	Frustum frustum;
+
+private:
+	float original_v_fov;
+	float original_h_fov;
 
 public:
 	void SetBaseVals()
