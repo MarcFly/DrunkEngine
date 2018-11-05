@@ -15,6 +15,7 @@
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
 #include "Inspector.h"
+#include "OctreeWindow.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -47,6 +48,7 @@ bool ModuleUI::Init()
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow());
 	windows.push_back(geo_properties_win = new Inspector());
+	windows.push_back(octree_win = new OctreeWindow());
 
 	App->input->UpdateShortcuts();
 
@@ -141,7 +143,10 @@ bool ModuleUI::MainMenu()
 				geometry_win->SwitchActive();*/
 
 			if (ImGui::MenuItem("Objects Properties"))
-				geo_properties_win->SwitchActive();			
+				geo_properties_win->SwitchActive();
+
+			if (ImGui::MenuItem("Octree"))
+				octree_win->SwitchActive();			
 
 			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
 				console_win->SwitchActive();		

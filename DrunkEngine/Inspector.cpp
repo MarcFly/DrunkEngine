@@ -3,7 +3,6 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
-#include "Octree.h"
 
 Inspector::Inspector() : Window("Object Properties")
 {
@@ -56,26 +55,6 @@ void Inspector::Draw()
 			else if (App->scene->active_objects.size() > 1) //objects.size() > 0)
 			{
 				ImGui::Text("+ 1 obj selected");
-			}
-
-			if (ImGui::CollapsingHeader("Octree"))
-			{
-				if (ImGui::Button("Create Octree"))
-				{
-					if (App->scene->Root_Object->Scene_Octree != nullptr)
-						App->scene->Root_Object->Scene_Octree->CleanUp();
-
-					App->scene->Root_Object->Scene_Octree = new Octree(2);
-				}
-
-				ImGui::SameLine();
-
-				if (ImGui::Button("Delete Octree"))
-				{
-					if (App->scene->Root_Object->Scene_Octree != nullptr)
-						App->scene->Root_Object->Scene_Octree->CleanUp();
-				}
-
 			}
 
 			//if (ImGui::Button("Select")) {}

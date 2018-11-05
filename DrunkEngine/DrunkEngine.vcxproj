@@ -207,6 +207,7 @@
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
     <ClInclude Include="Octree.h" />
+    <ClInclude Include="OctreeWindow.h" />
     <ClInclude Include="OptionsWindow.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -289,6 +290,7 @@
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="OctreeWindow.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />

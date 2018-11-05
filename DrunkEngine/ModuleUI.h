@@ -19,6 +19,7 @@ class GEOMWindow;
 class OpenGLOptions;
 class ConsoleWindow;
 class Inspector;
+class OctreeWindow;
 
 class ModuleUI : public Module
 {
@@ -46,6 +47,7 @@ public:
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
 	Inspector* geo_properties_win = nullptr;
+	OctreeWindow* octree_win = nullptr;
 
 private:
 	bool show_demo_window;

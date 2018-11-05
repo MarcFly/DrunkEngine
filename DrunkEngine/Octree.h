@@ -37,6 +37,7 @@ class Octree
 		void SetVertexPos(const vec& min, const vec& max);
 	public:
 		int id;
+		int subdivision;
 
 		Octree * root = nullptr;
 		Node * parent = nullptr;
@@ -50,7 +51,7 @@ class Octree
 	};
 
 public:
-	Octree(int elements_per_node);
+	Octree(int elements_per_node, int max_subdivisions);
 	~Octree();
 
 	void Update();
@@ -60,6 +61,7 @@ public:
 
 public:
 	int elements_per_node;
+	int max_subdivisions;
 
 	Node * base_node = nullptr;
 	std::vector<Node*> nodes;

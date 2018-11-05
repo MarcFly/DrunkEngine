@@ -1,12 +1,13 @@
 #include "Octree.h"
 #include "Application.h"
 
-Octree::Octree(int elements_per_node)
+Octree::Octree(int elements_per_node, int max_subdivisions)
 {
 	static_objs.clear();
 	nodes.clear();
 
 	this->elements_per_node = elements_per_node;
+	this->max_subdivisions = max_subdivisions;
 
 	RecursiveGetStaticObjs(App->scene->Root_Object);
 
@@ -40,10 +41,12 @@ void Octree::RecursiveGetStaticObjs(const GameObject * obj)
 {
 	for (int i = 0; i < obj->children.size(); i++)
 	{
+		if (obj->children[i]->children.size() > 0)
+			RecursiveGetStaticObjs(obj->children[i]);
+
 		if (obj->children[i]->is_static)
 		{
 			static_objs.push_back(obj->children[i]);
-			RecursiveGetStaticObjs(obj->children[i]);
 		}
 	}
 }
@@ -53,6 +56,7 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree
 	this->root = root;
 	this->parent = parent;
 	id = root->nodes.size();
+	subdivision = 1;
 	root->nodes.push_back(this);
 
 	for (int i = 0; i < objs_in_node.size(); i++)
@@ -62,7 +66,7 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree
 
 	SetNodeVertex();
 
-	if (root->elements_per_node < objects_in_node.size())
+	if (root->elements_per_node < objects_in_node.size() && subdivision < root->max_subdivisions)
 		CreateNodes();
 }
 
@@ -71,6 +75,7 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB b
 	this->root = parent->root;
 	this->parent = parent;
 	id = root->nodes.size();
+	subdivision = 1 + parent->subdivision;
 
 	this->bounding_box = bounding_box;
 
@@ -86,7 +91,7 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB b
 	else if (parent->axis_to_check == Axis::Axis_Z)
 		axis_to_check = Axis::Axis_X;
 
-	if (root->elements_per_node < objects_in_node.size())
+	if (root->elements_per_node < objects_in_node.size() && subdivision < root->max_subdivisions)
 		CreateNodes();
 }
 
