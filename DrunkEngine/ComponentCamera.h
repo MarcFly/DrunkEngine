@@ -55,7 +55,7 @@ public:
 	void SetBaseVals()
 	{
 		type = CT_Camera;
-		multiple = true;
+		multiple = false;
 		parent = nullptr;
 	}
 };

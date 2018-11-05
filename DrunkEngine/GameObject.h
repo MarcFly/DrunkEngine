@@ -76,6 +76,14 @@ public:
 
 public:
 
+	AABB* GetBB()
+	{
+		if (BoundingBox == nullptr)
+			SetBoundBox();
+
+		return BoundingBox;
+	}
+
 	void DestroyThisObject() 
 	{
 		this->CleanUp();

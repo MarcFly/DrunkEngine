@@ -48,7 +48,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
-	if(ImGui::IsMouseHoveringAnyWindow())
+	if(ImGui::IsMouseHoveringAnyWindow() || App->ui->CheckDataWindows())
 		return UPDATE_CONTINUE;
 
 	vec newPos(0, 0, 0);

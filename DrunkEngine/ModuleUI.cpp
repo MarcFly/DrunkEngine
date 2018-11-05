@@ -17,6 +17,7 @@
 #include "Inspector.h"
 #include "OctreeWindow.h"
 #include "ObjectPropertiesWindow.h"
+#include "LoadSaveWindows.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
@@ -51,6 +52,9 @@ bool ModuleUI::Init()
 	windows.push_back(inspector = new Inspector());
 	windows.push_back(octree_win = new OctreeWindow());
 	windows.push_back(obj_properties_win = new ObjectPropertiesWindow());
+	windows.push_back(savescene_win = new SaveSceneWindow());
+	windows.push_back(loadscene_win = new LoadSceneWindow());
+	windows.push_back(import_win = new ImportWindow());
 
 	App->input->UpdateShortcuts();
 
@@ -72,7 +76,7 @@ update_status ModuleUI::PreUpdate(float dt)
 	{
 		Window* windows = (*it);
 
-		if (App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
+		if (!CheckDataWindows() && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
 			windows->SwitchActive();
 
 		if (windows->IsActive())
@@ -122,20 +126,17 @@ bool ModuleUI::MainMenu()
 
 			if (ImGui::MenuItem("Save Scene"))
 			{
-				//TODOA2
-				//Save scene
+				savescene_win->SwitchActive();
 			}
 
 			if (ImGui::MenuItem("Load Scene"))
 			{
-				//TODOA2
-				//Load Scene
+				loadscene_win->SwitchActive();
 			}
 
 			if (ImGui::MenuItem("Import..."))
 			{
-				//TODOA2
-				//Import from windows
+				import_win->SwitchActive();
 			}
 
 			if (ImGui::MenuItem("Show/Hide Windows"))
@@ -236,4 +237,21 @@ void ModuleUI::ShowHideWindows()
 	}
 
 	show_demo_window = false;
+}
+
+bool ModuleUI::CheckDataWindows()
+{
+	bool ret = false;
+
+	ret = savescene_win->IsActive();
+	if (ret)
+		return ret;
+	ret = loadscene_win->IsActive();
+	if (ret)
+		return ret;
+	ret = import_win->IsActive();
+	if (ret)
+		return ret;
+
+	return ret;
 }

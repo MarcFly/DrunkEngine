@@ -54,8 +54,8 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 		mesh->num_index = ranges[1];
 		if (mesh->num_index > 0)
 		{
-			mesh->index = new GLuint[mesh->num_index * 3];
-			memcpy(mesh->index, cursor, mesh->num_index * 3 * sizeof(GLuint));
+			mesh->index = new GLuint[mesh->num_index ];
+			memcpy(mesh->index, cursor, mesh->num_index * sizeof(GLuint)); // Tried takign out the *3?
 		}
 		cursor += ((mesh->num_index) * sizeof(GLuint));
 

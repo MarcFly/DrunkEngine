@@ -81,6 +81,7 @@ public:
 		normal = tex_coords = vertex = nullptr;
 		BoundingBox = nullptr;
 		parent = root = nullptr;
+		multiple = false;
 
 		to_pop = false;
 	}

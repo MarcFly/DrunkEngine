@@ -31,11 +31,12 @@ public:
 	void SetActiveFalse();
 
 	void SetmainCam(ComponentCamera * cam);
+	void CreateMainCam();
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
-	void SaveScene();
+	void SaveScene(const char* filename = "");
 
 	void NewScene();
 	void DeleteScene();
