@@ -51,7 +51,6 @@ update_status ModuleCamera3D::Update(float dt)
 	if(ImGui::IsMouseHoveringAnyWindow() || App->ui->CheckDataWindows())
 		return UPDATE_CONTINUE;
 
-	vec newPos(0, 0, 0);
 	float speed = MOV_SPEED * dt * main_camera->mesh_multiplier;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
@@ -102,7 +101,6 @@ update_status ModuleCamera3D::Update(float dt)
 	else
 	{
 		main_camera->Reference = main_camera->frustum.pos;
-		main_camera->Reference += newPos;
 	}
 	// Mouse motion ----------------
 	// TODO: Requires mouse reset properly without affecting MouseMotion

@@ -18,7 +18,6 @@ public:
 	void Draw();
 	void CleanUp();;
 
-	void Look(const vec &Position, const vec &Reference, bool RotateAroundReference);
 	void LookAt(const vec &Spot);
 	void Move(const vec &Movement);
 	void MoveZ(const float mov);

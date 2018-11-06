@@ -83,11 +83,12 @@ void ComponentCamera::Update(const float dt)
 		parent->GetTransform()->update_camera_transform = false;
 	}
 
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
-	{
-		Rotate();
-		SetbbFrustum();
-	}
+	// To rotate Component Cameras (not editor camera)
+	//if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	//{
+	//	Rotate();
+	//	SetbbFrustum();
+	//}
 
 	CalculateViewMatrix();
 }
@@ -148,71 +149,15 @@ void ComponentCamera::CleanUp()
 	// Cleanup
 }
 
-void ComponentCamera::Look(const vec &Position, const vec &Reference, bool RotateAroundReference)
-{
-	this->frustum.pos = Position;
-	this->Reference = Reference;
-
-	float3 aux = Position - Reference;
-	Z = aux.Normalized();
-	aux = float3(0.0f, 1.0f, 0.0f).Cross(Z);
-	X = aux.Normalized();
-	Y = Z.Cross(X);
-
-	if (!RotateAroundReference)
-	{
-		this->Reference = this->frustum.pos;
-		this->frustum.pos += Z * 0.05f;
-	}
-
-
-	CalculateViewMatrix();
-}
-
 // -----------------------------------------------------------------
-void ComponentCamera::LookAt(const vec &Spot)
+void ComponentCamera::LookAt(const vec &spot)
 {
-	Reference = Spot;
+	float3 look_to = spot - frustum.pos;
 
-	float3 aux = frustum.pos - Reference;
-	Z = aux.Normalized();
-	aux = float3(0.0f, 1.0f, 0.0f).Cross(Z);
-	X = aux.Normalized();
-	Y = Z.Cross(X);
+	float3x3 direction_matrix = float3x3::LookAt(frustum.Front(), look_to.Normalized(), frustum.Up(), float3::unitY);
 
-	CalculateViewMatrix();
-}
-
-void ComponentCamera::MoveZ(const float mov)
-{
-	if (mov < 0)
-	{
-		float3 aux = float3::zero;
-		aux = frustum.Front() * mov;
-		frustum.Translate(aux);
-	}
-	if (mov > 0)
-	{
-		float3 aux = float3::zero;
-		aux = frustum.Front() * mov;
-		frustum.Translate(aux);
-	}
-}
-
-void ComponentCamera::MoveX(const float mov)
-{
-	if (mov < 0)
-	{
-		float3 aux = float3::zero;
-		aux = frustum.WorldRight() * mov;
-		frustum.Translate(aux);
-	}
-	if (mov > 0)
-	{
-		float3 aux = float3::zero;
-		aux = frustum.WorldRight() * mov;
-		frustum.Translate(aux);
-	}
+	frustum.SetFront(direction_matrix.MulDir(frustum.Front()).Normalized());
+	frustum.SetUp(direction_matrix.MulDir(frustum.Up()).Normalized());
 }
 
 // -----------------------------------------------------------------
@@ -255,6 +200,42 @@ void ComponentCamera::Move(const vec &Movement)
 		float3 aux = float3::zero;
 		aux = frustum.WorldRight() * Movement.z;
 		frustum.Translate(aux);
+	}
+}
+
+void ComponentCamera::MoveZ(const float mov)
+{
+	if (mov < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * mov;
+		frustum.Translate(aux);
+		frustum.SetFront(frustum.Front());
+	}
+	if (mov > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * mov;
+		frustum.Translate(aux);
+		frustum.SetFront(frustum.Front());
+	}
+}
+
+void ComponentCamera::MoveX(const float mov)
+{
+	if (mov < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.WorldRight() * mov;
+		frustum.Translate(aux);
+		frustum.SetUp(frustum.Up());
+	}
+	if (mov > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.WorldRight() * mov;
+		frustum.Translate(aux);
+		frustum.SetUp(frustum.Up());
 	}
 }
 
@@ -303,63 +284,6 @@ void ComponentCamera::CalculateViewMatrix()
 	ViewMatrix = ViewMatrix.Transposed();
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }
-
-//void ComponentCamera::MoveTest(float speed)
-//{
-//	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
-//	{
-//		frustum.verticalFov += 0.0015;
-//		frustum.GetCornerPoints(bb_frustum);
-//		SetAspectRatio();
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_REPEAT)
-//	{
-//		frustum.verticalFov -= 0.0015;
-//		frustum.GetCornerPoints(bb_frustum);
-//		SetAspectRatio();
-//	}
-//
-//	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-//	{
-//		frustum.pos -= Z * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-//	{
-//		frustum.pos += Z * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-//	{
-//		frustum.pos += X * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-//	{
-//		frustum.pos -= X * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
-//	{
-//		frustum.pos -= Y * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
-//	{
-//		frustum.pos += Y * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
-//	{
-//		frustum.pos += Y * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
-//	{
-//		frustum.pos -= Y * speed;
-//		frustum.GetCornerPoints(bb_frustum);
-//	}
-//}
 
 void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 {
