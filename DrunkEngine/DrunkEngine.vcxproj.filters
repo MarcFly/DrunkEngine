@@ -594,12 +594,6 @@
     <ClInclude Include="Component.h">
       <Filter>Sources\Modules\GameObject Structure</Filter>
     </ClInclude>
-    <ClInclude Include="Octree.h">
-      <Filter>Sources\Modules\GameObject Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="OctreeWindow.h">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectPropertiesWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
@@ -607,6 +601,12 @@
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
     <ClInclude Include="Inspector.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="KdTree.h">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="KdTreeWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -839,12 +839,6 @@
     <ClCompile Include="Component.cpp">
       <Filter>Sources\Modules\GameObject Structure</Filter>
     </ClCompile>
-    <ClCompile Include="Octree.cpp">
-      <Filter>Sources\Modules\GameObject Structure</Filter>
-    </ClCompile>
-    <ClCompile Include="OctreeWindow.cpp">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectPropertiesWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
@@ -852,6 +846,12 @@
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
     <ClCompile Include="Inspector.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="KdTree.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="KdTreeWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>

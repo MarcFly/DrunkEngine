@@ -18,7 +18,7 @@ class ComponentMesh;
 class ComponentMaterial;
 class ComponentCamera;
 class Primitive;
-class Octree;
+class KDTree;
 
 class GameObject
 {
@@ -62,7 +62,7 @@ public:
 
 	AABB* BoundingBox = nullptr;
 
-	Octree* Scene_Octree = nullptr;
+	KDTree* Scene_KdTree = nullptr;
 
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
@@ -71,7 +71,7 @@ public:
 
 	bool to_pop = false;
 	bool active = false;
-	bool is_static = false;
+	bool is_static = true;
 
 	float max_distance_point = 0;
 

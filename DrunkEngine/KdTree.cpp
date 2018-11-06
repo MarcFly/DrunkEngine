@@ -1,7 +1,7 @@
-#include "Octree.h"
+#include "KDTree.h"
 #include "Application.h"
 
-Octree::Octree(int elements_per_node, int max_subdivisions)
+KDTree::KDTree(int elements_per_node, int max_subdivisions)
 {
 	static_objs.clear();
 	nodes.clear();
@@ -18,17 +18,17 @@ Octree::Octree(int elements_per_node, int max_subdivisions)
 	}
 }
 
-Octree::~Octree()
+KDTree::~KDTree()
 {
 }
 
-void Octree::Update()
+void KDTree::Update()
 {
 	for (int i = 0; i < nodes.size(); i++)
 		nodes[i]->Update();
 }
 
-void Octree::CleanUp()
+void KDTree::CleanUp()
 {
 	for (int i = 0; i < nodes.size(); i++)
 		nodes[i]->CleanUp();
@@ -37,7 +37,7 @@ void Octree::CleanUp()
 	nodes.clear();
 }
 
-void Octree::RecursiveGetStaticObjs(const GameObject * obj)
+void KDTree::RecursiveGetStaticObjs(const GameObject * obj)
 {
 	for (int i = 0; i < obj->children.size(); i++)
 	{
@@ -51,7 +51,7 @@ void Octree::RecursiveGetStaticObjs(const GameObject * obj)
 	}
 }
 
-Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree * root)
+KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, KDTree * root)
 {
 	this->root = root;
 	this->parent = parent;
@@ -70,7 +70,7 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree
 		CreateNodes();
 }
 
-Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB bounding_box)
+KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB bounding_box)
 {
 	this->root = parent->root;
 	this->parent = parent;
@@ -95,16 +95,16 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB b
 		CreateNodes();
 }
 
-Octree::Node::~Node()
+KDTree::Node::~Node()
 {
 }
 
-void Octree::Node::Update()
+void KDTree::Node::Update()
 {
 	Draw();
 }
 
-void Octree::Node::Draw()
+void KDTree::Node::Draw()
 {
 	//Draw node AABB
 	glDisable(GL_LIGHTING);
@@ -164,7 +164,7 @@ void Octree::Node::Draw()
 		glEnable(GL_LIGHTING);
 }
 
-void Octree::Node::CleanUp()
+void KDTree::Node::CleanUp()
 {
 	root = nullptr;
 	parent = nullptr;
@@ -172,7 +172,7 @@ void Octree::Node::CleanUp()
 	objects_in_node.clear();
 }
 
-void Octree::Node::SetNodeVertex()
+void KDTree::Node::SetNodeVertex()
 {
 	//Set vertex positions for this node
 	bounding_box.maxPoint = vec(INT_MIN,INT_MIN,INT_MIN);
@@ -188,7 +188,7 @@ void Octree::Node::SetNodeVertex()
 	}
 }
 
-void Octree::Node::CreateNodes()
+void KDTree::Node::CreateNodes()
 {
 	switch (axis_to_check)
 	{
@@ -258,7 +258,7 @@ void Octree::Node::CreateNodes()
 	}
 }
 
-std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB& new_bounding_box)
+std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
 {
 	std::vector<GameObject*> objs_in_new_node;
 
@@ -271,7 +271,7 @@ std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB& new_bounding_box)
 	return objs_in_new_node;
 }
 
-void Octree::Node::SetVertexPos(const vec object_center)
+void KDTree::Node::SetVertexPos(const vec object_center)
 {
 	if (bounding_box.maxPoint.x < object_center.x)
 		bounding_box.maxPoint.x = object_center.x;
@@ -292,7 +292,7 @@ void Octree::Node::SetVertexPos(const vec object_center)
 		bounding_box.minPoint.z = object_center.z;
 }
 
-void Octree::Node::SetVertexPos(const vec& min, const vec& max)
+void KDTree::Node::SetVertexPos(const vec& min, const vec& max)
 {
 	if (true)
 	{
@@ -317,7 +317,7 @@ void Octree::Node::SetVertexPos(const vec& min, const vec& max)
 	}
 }
 
-float Octree::Node::GetKdTreeCut(Axis axis)
+float KDTree::Node::GetKdTreeCut(Axis axis)
 {
 	vec cut = vec::zero;
 

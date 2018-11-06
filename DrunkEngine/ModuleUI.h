@@ -9,7 +9,7 @@
 // Module for IMGUI use and implementation
 // Includes for imgui when necessary...
 
-#define NUM_WINDOWS 10
+#define NUM_WINDOWS 13
 
 class Window;
 class OptionsWindow;
@@ -19,7 +19,7 @@ class GEOMWindow;
 class OpenGLOptions;
 class ConsoleWindow;
 class Inspector;
-class OctreeWindow;
+class KDTreeWindow;
 class ObjectPropertiesWindow;
 class SaveSceneWindow;
 class LoadSceneWindow;
@@ -53,7 +53,7 @@ public:
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
 	Inspector* inspector = nullptr;
-	OctreeWindow* octree_win = nullptr;
+	KDTreeWindow* octree_win = nullptr;
 	ObjectPropertiesWindow* obj_properties_win = nullptr;
 
 	// Data Windows
