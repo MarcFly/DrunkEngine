@@ -34,7 +34,7 @@ public:
 	void DrawMeshWire();
 	void DrawNormals();
 
-	bool isMeshInsideFrustum(const ComponentCamera * cam, const AABB* bounding_box);
+	
 
 	void CleanUp();
 
@@ -81,6 +81,7 @@ public:
 		normal = tex_coords = vertex = nullptr;
 		BoundingBox = nullptr;
 		parent = root = nullptr;
+		multiple = false;
 
 		to_pop = false;
 	}

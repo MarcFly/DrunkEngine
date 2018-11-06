@@ -109,6 +109,8 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 bool ModuleScene::LoadSceneFile(const char* file_path)
 {
+	DestroyScene();
+	NewScene();
 	JSON_Value* scene = json_parse_file(file_path);
 	JSON_Object* obj_g = json_value_get_object(scene);
 	JSON_Array* gos = json_object_get_array(obj_g, "scene");
@@ -119,6 +121,8 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 		getRootObj()->children.push_back(new GameObject());
 		getRootObj()->children[getRootObj()->children.size() - 1]->Load(val, file_path);
 	}
+
+	CreateMainCam();
 
 	OrderScene();
 
@@ -162,9 +166,7 @@ bool ModuleScene::Load(JSON_Value * root_value)
 
 bool ModuleScene::Save(JSON_Value * root_value)
 {
-	bool ret = false;
-
-	
+	bool ret = false;	
 
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	// Write Module Scene config data to root_obj
@@ -179,13 +181,13 @@ bool ModuleScene::Save(JSON_Value * root_value)
 	return ret;
 }
 
-void ModuleScene::SaveScene()
+void ModuleScene::SaveScene(const char* filename)
 {
-	std::string Save_scene = "";
+	getRootObj()->name = filename;
 
 	if (getRootObj() != nullptr)
 	{
-		Save_scene = getRootObj()->name + ".json";
+		std::string Save_scene = getRootObj()->name + ".drnk";
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
 		if (scene == nullptr)
 		{
@@ -213,7 +215,7 @@ void ModuleScene::NewScene()
 
 	Root_Object = new GameObject();
 	Root_Object->name = "NewScene";
-	GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
+  GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
 	getRootObj()->children.push_back(MainCam);
 }
 

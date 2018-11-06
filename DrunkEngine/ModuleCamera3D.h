@@ -22,6 +22,9 @@ public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
+	void MousePicking();
+	bool TestIntersect(GameObject* obj, LineSegment& ray, std::vector<GameObject*>& intersected);
+	float TestTris(LineSegment local, ComponentMesh* mesh);
 public:	
 	Color background;
 	ComponentCamera * main_camera;

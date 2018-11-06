@@ -68,6 +68,7 @@ public:
 		this->NumDiffTextures = 0;
 		this->NumProperties = 0;
 		this->default_print = { 1,1,1,1 };
+		this->multiple = true;
 
 		this->parent = nullptr;
 

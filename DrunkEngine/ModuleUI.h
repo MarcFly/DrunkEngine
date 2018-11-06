@@ -21,6 +21,9 @@ class ConsoleWindow;
 class Inspector;
 class OctreeWindow;
 class ObjectPropertiesWindow;
+class SaveSceneWindow;
+class LoadSceneWindow;
+class ImportWindow;
 
 class ModuleUI : public Module
 {
@@ -37,6 +40,8 @@ public:
 	bool MainMenu();
 
 	void ShowHideWindows();
+
+	bool CheckDataWindows();
 	//void AddLog();
 
 public:
@@ -50,11 +55,18 @@ public:
 	Inspector* inspector = nullptr;
 	OctreeWindow* octree_win = nullptr;
 	ObjectPropertiesWindow* obj_properties_win = nullptr;
+
+	// Data Windows
+	SaveSceneWindow* savescene_win = nullptr;
+	LoadSceneWindow* loadscene_win = nullptr;
+	ImportWindow * import_win = nullptr;
+
 private:
 	bool show_demo_window;
 	std::vector<Window *> windows;
 
 	bool active_windows[NUM_WINDOWS]; //UPDATE WITH NUM WINDOWS
+
 
 public:
 

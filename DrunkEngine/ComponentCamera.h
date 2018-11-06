@@ -51,7 +51,7 @@ public:
 	float4x4 ViewMatrix, ViewMatrixInverse;
 
 	vec X, Y, Z;
-	vec Position, Reference;
+	vec Reference;
 
 	Frustum frustum;
 
@@ -62,7 +62,7 @@ public:
 	void SetBaseVals()
 	{
 		type = CT_Camera;
-		multiple = true;
+		multiple = false;
 		parent = nullptr;
 	}
 };

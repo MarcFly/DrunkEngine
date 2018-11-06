@@ -48,7 +48,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
-	if(ImGui::IsMouseHoveringAnyWindow())
+	if(ImGui::IsMouseHoveringAnyWindow() || App->ui->CheckDataWindows())
 		return UPDATE_CONTINUE;
 
 	vec newPos(0, 0, 0);
@@ -79,7 +79,10 @@ update_status ModuleCamera3D::Update(float dt)
 
 		main_camera->LookAt(aux);
 	}
-	main_camera->Position += newPos;
+	main_camera->frustum.pos += newPos;
+
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+		MousePicking();
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
@@ -99,7 +102,7 @@ update_status ModuleCamera3D::Update(float dt)
 	}
 	else
 	{
-		main_camera->Reference = main_camera->Position;
+		main_camera->Reference = main_camera->frustum.pos;
 		main_camera->Reference += newPos;
 	}
 	// Mouse motion ----------------
@@ -142,5 +145,75 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 	//App->ui->console_win->AddLog("Camera position saved");
 
 	ret = true;
+	return ret;
+}
+
+void ModuleCamera3D::MousePicking()
+{
+	float x = ((App->input->GetMouseX() / (float)App->window->window_w) * 2.0f) - 1.0f;
+	float y = ((App->input->GetMouseY() / (float)App->window->window_h) * -2.0f) + 1.0f;
+	LineSegment picking = (main_camera->frustum.UnProjectLineSegment(x,y));
+
+	while(App->scene->active_objects.size() > 0)
+		App->scene->active_objects.pop_back();
+
+	std::vector<GameObject*> intersected;
+
+	TestIntersect(App->scene->Root_Object, picking, intersected);	
+
+	float dist = INT_MAX;
+	for (int i = 0; i < intersected.size(); i++)
+	{
+		float new_dist = TestTris(picking, intersected[i]->GetComponent(CT_Mesh)->AsMesh());
+		if (new_dist < dist)
+		{
+			dist = new_dist;
+			while(App->scene->active_objects.size() > 0)
+				App->scene->active_objects.pop_back();
+			App->scene->active_objects.push_back(intersected[i]);
+		}
+	}
+	if(intersected.size() == 0)
+		while (App->scene->active_objects.size() > 0)
+			App->scene->active_objects.pop_back();
+
+}
+
+bool ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vector<GameObject*>& intersected)
+{
+	bool ret = false;
+
+	if (obj->isInsideFrustum(main_camera, obj->GetBB()))
+		if (obj->GetComponent(CT_Mesh) != nullptr && ray.Intersects(*obj->GetBB()))
+			ret = true;
+		else
+			for (int i = 0; i < obj->children.size(); i++) 
+			{
+				ret = TestIntersect(obj->children[i], ray, intersected);
+				if (ret)
+					intersected.push_back(obj->children[i]);
+			}
+
+	return ret;
+}
+
+float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
+{
+	float ret = INT_MAX;
+	float4x4* global = &mesh->parent->GetTransform()->global_transform;
+	local.Transform(*global);
+
+	for (int i = 0; i < mesh->num_faces / 3; i++)
+	{
+		vec vertex1 = { mesh->vertex[mesh->index[i * 3]], mesh->vertex[mesh->index[i * 3] + 1], mesh->vertex[mesh->index[i * 3] + 2] };
+		vec vertex2 = { mesh->vertex[mesh->index[i * 3 + 1]], mesh->vertex[mesh->index[i * 3 + 1] + 1], mesh->vertex[mesh->index[i * 3 + 1] + 2] };
+		vec vertex3 = { mesh->vertex[mesh->index[i * 3 + 2]], mesh->vertex[mesh->index[i * 3 + 2] + 1], mesh->vertex[mesh->index[i * 3 + 2] + 2] };
+		Triangle test = Triangle(vertex1,vertex2,vertex3);
+		float new_dist = INT_MAX;
+		local.Intersects(test, &new_dist, nullptr);
+		if (new_dist < ret)
+			ret = new_dist;
+	}
+
 	return ret;
 }
