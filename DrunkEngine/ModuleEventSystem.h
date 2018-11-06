@@ -1,8 +1,7 @@
-#ifndef _MODULEEVENTSYSTEM_H_
-#define _MODULEEVENTSYSTEM_H_
+#ifndef _MODULE_EVENTSYSTEM_H_
+#define _MODULE_EVENTSYSTEM_H_
 
 #include "Module.h"
-#include "Globals.h"
 
 enum EventType
 {
@@ -45,11 +44,9 @@ public:
 	~ModuleEventSystem();
 
 	bool Start();
-	//update_status Update(float dt);
-	//bool CleanUp();
-	//
-	//bool Load(JSON_Value* root_value);
-	//bool Save(JSON_Value* root_value);
-}
 
-#endif // !_MODULEEVENTSYSTEM_H_
+public:
+
+};
+
+#endif // !_MODULE_EVENTSYSTEM_H_
