@@ -48,7 +48,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
-	if(ImGui::IsMouseHoveringAnyWindow() || App->ui->CheckDataWindows() || ImGui::IsAnyWindowFocused())
+	if(App->ui->CheckDataWindows() || ImGui::IsMouseHoveringAnyWindow())
 		return UPDATE_CONTINUE;
 	
 	float speed = MOV_SPEED * dt * main_camera->mesh_multiplier;
@@ -79,7 +79,7 @@ update_status ModuleCamera3D::Update(float dt)
 		main_camera->LookAt(aux);
 	}
 
-	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 		MousePicking();
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
@@ -156,7 +156,8 @@ void ModuleCamera3D::MousePicking()
 
 	std::vector<GameObject*> intersected;
 
-	TestIntersect(App->scene->Root_Object, picking, intersected);	
+	for(int i = 0; i < App->scene->getRootObj()->children.size(); i++)
+		TestIntersect(App->scene->getRootObj()->children[i], picking, intersected);	
 
 	float dist = INT_MAX;
 	for (int i = 0; i < intersected.size(); i++)
@@ -164,9 +165,8 @@ void ModuleCamera3D::MousePicking()
 		float new_dist = TestTris(picking, intersected[i]->GetComponent(CT_Mesh)->AsMesh());
 		if (new_dist < dist)
 		{
+			App->scene->SetActiveFalse();
 			dist = new_dist;
-			while(App->scene->active_objects.size() > 0)
-				App->scene->active_objects.pop_back();
 			App->scene->active_objects.push_back(intersected[i]);
 			intersected[i]->active = true;
 		}
@@ -191,7 +191,7 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 {
 	float ret = INT_MAX;
 	float4x4* global = &mesh->parent->GetTransform()->global_transform;
-	local.Transform(*global);
+	local.Transform(global->Inverted());
 
 	for (int i = 0; i < mesh->num_faces / 3; i++)
 	{

@@ -58,7 +58,10 @@ void GameObject::Start()
 		this->children[i]->Start();
 
 	if (this->parent != nullptr)
+	{
 		SetBoundBox();
+		SetTransformedBoundBox();
+	}
 }
 
 void GameObject::Update(float dt)

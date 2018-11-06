@@ -16,7 +16,7 @@ void SaveSceneWindow::Draw()
 
 	GetSaveFileName(&ofn);
 	if (fileName[0] != '\0')
-		App->scene->LoadSceneFile(fileName);
+		App->scene->SaveScene(&fileName[0]);
 
 	SetInactive();
 }
