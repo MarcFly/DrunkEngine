@@ -83,6 +83,12 @@ void ComponentCamera::Update(const float dt)
 		parent->GetTransform()->update_camera_transform = false;
 	}
 
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	{
+		Rotate();
+		SetbbFrustum();
+	}
+
 	CalculateViewMatrix();
 }
 
@@ -181,10 +187,44 @@ void ComponentCamera::LookAt(const vec &Spot)
 // -----------------------------------------------------------------
 void ComponentCamera::Move(const vec &Movement)
 {
-	frustum.pos += Movement;
 	Reference += Movement;
 
-	CalculateViewMatrix();
+	if (Movement.x < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * -Movement.x;
+		frustum.Translate(aux);
+	}
+	if (Movement.x > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * Movement.x;
+		frustum.Translate(aux);
+	}
+	if (Movement.y < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * -Movement.y;
+		frustum.Translate(aux);
+	}
+	if (Movement.y > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * Movement.y;
+		frustum.Translate(aux);
+	}
+	if (Movement.z < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.WorldRight() * -Movement.z;
+		frustum.Translate(aux);
+	}
+	if (Movement.z > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.WorldRight() * Movement.z;
+		frustum.Translate(aux);
+	}
 }
 
 // -----------------------------------------------------------------
@@ -197,39 +237,16 @@ void ComponentCamera::Transport(const vec &Movement)
 
 void ComponentCamera::Rotate()
 {
-	int dx = -App->input->GetMouseXMotion();
-	int dy = -App->input->GetMouseYMotion();
+	float dx = -App->input->GetMouseXMotion() * MOUSE_SENSIBILITY;
+	float dy = -App->input->GetMouseYMotion() * MOUSE_SENSIBILITY;
 
-	if (dx != 0)
-	{
-		float DeltaX = (float)dx * MOUSE_SENSIBILITY;
+	Quat rot_x = Quat::RotateY(dx);
+	frustum.SetFront(rot_x.Mul(frustum.Front()).Normalized());
+	frustum.SetUp(rot_x.Mul(frustum.Up()).Normalized());
 
-		X = RotateAngle(X, DeltaX, float3(0.0f, 1.0f, 0.0f));
-		Y = RotateAngle(Y, DeltaX, float3(0.0f, 1.0f, 0.0f));
-		Z = RotateAngle(Z, DeltaX, float3(0.0f, 1.0f, 0.0f));
-
-	}
-
-	if (dy != 0)
-	{
-		float DeltaY = (float)dy * MOUSE_SENSIBILITY;
-
-		Y = RotateAngle(Y, DeltaY, X);
-		Z = RotateAngle(Z, DeltaY, X);
-
-		if (Y.y < 0.0f)
-		{
-			Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-			Y = Z.Cross(X);
-		}
-
-	}
-
-	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
-	{
-		frustum.pos -= Reference;
-		frustum.pos = Reference + Z * frustum.pos.Length();
-	}
+	Quat rot_y = Quat::RotateAxisAngle(frustum.WorldRight(), dy);
+	frustum.SetFront(rot_y.Mul(frustum.Front()).Normalized());
+	frustum.SetUp(rot_y.Mul(frustum.Up()).Normalized());
 }
 
 float3 ComponentCamera::RotateAngle(const float3 &u, float angle, const float3 &v)
@@ -251,8 +268,8 @@ float * ComponentCamera::GetViewMatrix()
 
 void ComponentCamera::CalculateViewMatrix()
 {
-	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(frustum.pos), -Y.Dot(frustum.pos), -Z.Dot(frustum.pos), 1.0f);
-
+	ViewMatrix = this->frustum.ViewMatrix();
+	ViewMatrix = ViewMatrix.Transposed();
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }
 

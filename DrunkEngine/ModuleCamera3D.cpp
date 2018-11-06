@@ -56,14 +56,14 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
 
-	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) newPos -= main_camera->Z * speed;
-	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) newPos += main_camera->Z * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->Move(-main_camera->Z * speed);
+	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->Move(main_camera->Z * speed);
 
-	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) newPos -= main_camera->X * speed;
-	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) newPos += main_camera->X * speed;
+	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->Move(-main_camera->X * speed);
+	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->Move(main_camera->X * speed);
 
-	if (App->input->GetMouseZ() < 0) newPos += main_camera->Z * speed * MOUSE_WHEEL_SPEED;
-	if (App->input->GetMouseZ() > 0) newPos -= main_camera->Z * speed * MOUSE_WHEEL_SPEED;
+	if (App->input->GetMouseZ() < 0) main_camera->Move(main_camera->Z * speed * MOUSE_WHEEL_SPEED);
+	if (App->input->GetMouseZ() > 0) main_camera->Move(-main_camera->Z * speed * MOUSE_WHEEL_SPEED);
 
 	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN)
 	{
@@ -79,7 +79,6 @@ update_status ModuleCamera3D::Update(float dt)
 
 		main_camera->LookAt(aux);
 	}
-	main_camera->frustum.pos += newPos;
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 		MousePicking();
