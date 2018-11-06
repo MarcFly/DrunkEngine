@@ -65,18 +65,28 @@ void ComponentTransform::SetLocalTransform()
 
 	local_transform = local_pos * (float4x4)rotate_quat * local_scale;
 
-	this->RecursiveSetToUpdate(this);
+	RecursiveSetChildrenToUpdate(this);
+	RecursiveSetParentToUpdate(this);
 }
 
-void ComponentTransform::RecursiveSetToUpdate(ComponentTransform * t)
+void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
 {
 	t->update_bouding_box = true;
 	t->update_camera_transform = true;
 
 	for (int i = 0; i < t->parent->children.size(); i++)
 	{
-		RecursiveSetToUpdate(t->parent->children[i]->GetTransform());
+		RecursiveSetChildrenToUpdate(t->parent->children[i]->GetTransform());
 	}
+}
+
+void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
+{
+	t->update_bouding_box = true;
+	t->update_camera_transform = true;
+
+	if (t->parent->parent != nullptr)
+		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
 }
 
 void ComponentTransform::CleanUp()

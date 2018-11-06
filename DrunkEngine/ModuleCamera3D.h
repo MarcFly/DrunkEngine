@@ -25,6 +25,9 @@ public:
 	void MousePicking();
 	void TestIntersect(GameObject* obj, LineSegment& ray, std::vector<GameObject*>& intersected);
 	float TestTris(LineSegment local, ComponentMesh* mesh);
+
+	void DrawRay(vec a, vec b);
+
 public:	
 	Color background;
 	ComponentCamera * main_camera;
@@ -33,6 +36,7 @@ private:
 	int win_w;
 	int win_h;
 
+	LineSegment picking = LineSegment(vec::zero, vec::zero);
 };
 
 #endif

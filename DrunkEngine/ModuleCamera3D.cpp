@@ -123,6 +123,8 @@ update_status ModuleCamera3D::Update(float dt)
 		App->renderer3D->OnResize();
 	}
 
+	DrawRay(picking.a, picking.b);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -147,9 +149,9 @@ bool ModuleCamera3D::Save(JSON_Value* root_value)
 
 void ModuleCamera3D::MousePicking()
 {
-	float x = ((App->input->GetMouseX() / (float)App->window->window_w) * 2.0f) - 1.0f;
-	float y = ((App->input->GetMouseY() / (float)App->window->window_h) * -2.0f) + 1.0f;
-	LineSegment picking = (main_camera->frustum.UnProjectLineSegment(x,y));
+	float x = ((ImGui::GetMousePos().x / (float)App->window->window_w) * 2.0f) - 1.0f;
+	float y = 1 - ((ImGui::GetMousePos().y / (float)App->window->window_h) * 2.0f);
+	picking = (main_camera->frustum.UnProjectLineSegment(x,y));
 
 	App->scene->SetActiveFalse();
 	//App->ui->inspector->selection_mask_vec.clear();
@@ -177,7 +179,9 @@ void ModuleCamera3D::MousePicking()
 void ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vector<GameObject*>& intersected)
 {
 	if (obj->isInsideFrustum(main_camera, obj->GetBB()))
-		if (ray.Intersects(*obj->GetBB()))
+	{
+		AABB* seeBB = obj->GetBB();
+		if (ray.Intersects(*seeBB))
 		{
 			if (obj->GetComponent(CT_Mesh) != nullptr)
 				intersected.push_back(obj);
@@ -185,6 +189,7 @@ void ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vect
 			for (int i = 0; i < obj->children.size(); i++)
 				TestIntersect(obj->children[i], ray, intersected);
 		}
+	}
 }
 
 float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
@@ -193,18 +198,36 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 	float4x4* global = &mesh->parent->GetTransform()->global_transform;
 	local.Transform(global->Inverted());
 
-	for (int i = 0; i < mesh->num_faces / 3; i++)
+	int count_hits = 0;
+	for (int i = 0; i < mesh->num_index;)
 	{
-		vec vertex1 = { mesh->vertex[mesh->index[i * 3]], mesh->vertex[mesh->index[i * 3] + 1], mesh->vertex[mesh->index[i * 3] + 2] };
-		vec vertex2 = { mesh->vertex[mesh->index[i * 3 + 1]], mesh->vertex[mesh->index[i * 3 + 1] + 1], mesh->vertex[mesh->index[i * 3 + 1] + 2] };
-		vec vertex3 = { mesh->vertex[mesh->index[i * 3 + 2]], mesh->vertex[mesh->index[i * 3 + 2] + 1], mesh->vertex[mesh->index[i * 3 + 2] + 2] };
-		Triangle test = Triangle(vertex1,vertex2,vertex3);
+		vec vertex1 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
+		vec vertex2 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
+		vec vertex3 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
+		Triangle test = Triangle(vertex1, vertex2, vertex3);
 		float new_dist = INT_MAX;
 		bool check = local.Intersects(test, &new_dist, nullptr);
 		new_dist = vec(((vertex1 + vertex2 + vertex3) / 3.0f) - local.a).Length();
 		if (check && new_dist < ret)
+		{
 			ret = new_dist;
+			count_hits++;
+		}
 	}
-
 	return ret;
+}
+
+void ModuleCamera3D::DrawRay(vec a, vec b)
+{
+	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+	glColor3f(1.f, 1.f, 1.f);
+
+	glVertex3f(a.x, a.y, a.z);
+	glVertex3f(b.x, b.y, b.z);
+
+	glEnd();
+
+	if (App->renderer3D->lighting)
+		glEnable(GL_LIGHTING);
 }
