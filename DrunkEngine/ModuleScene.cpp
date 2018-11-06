@@ -95,6 +95,7 @@ bool ModuleScene::LoadFBX(const char* file_path)
 		else
 			getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
 		
+		CreateMainCam();
 
 		aiReleaseImport(scene);
 	}
@@ -154,9 +155,6 @@ bool ModuleScene::Load(JSON_Value * root_value)
 	std::string default_load = json_object_dotget_string(obj, "scene.default_load");
 
 	default_load = scene_folder + default_load;
-
-	/*if (getRootObj() == nullptr)
-		NewScene();*/
 			
 	ret = true;
 	return ret;
@@ -181,7 +179,7 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 void ModuleScene::SaveScene(const char* filename)
 {
-	getRootObj()->name = filename;
+	getRootObj()->name = App->importer->GetFileName(filename);
 
 	if (getRootObj() != nullptr)
 	{
@@ -213,7 +211,10 @@ void ModuleScene::NewScene()
 
 	Root_Object = new GameObject();
 	Root_Object->name = "NewScene";
+}
 
+void ModuleScene::CreateMainCam()
+{
 	if (Main_Cam->parent == nullptr)
 	{
 		GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);

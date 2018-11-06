@@ -69,9 +69,12 @@ public:
 
 		ret = ret.substr(ret.find_last_of("\\/") + 1);
 
-		std::string aux = strrchr(ret.c_str(), '.');
-		ret.erase(ret.length() - aux.length()).c_str();
-
+		const char* test = strrchr(ret.c_str(), '.');
+		if (test != NULL && test != nullptr)
+		{
+			std::string aux = test;
+			ret.erase(ret.length() - aux.length()).c_str();
+		}
 		return ret;
 	}
 

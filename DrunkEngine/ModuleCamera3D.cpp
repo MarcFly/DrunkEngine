@@ -181,7 +181,7 @@ void ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vect
 	if (obj->isInsideFrustum(main_camera, obj->GetBB()))
 	{
 		AABB* seeBB = obj->GetBB();
-		if (ray.Intersects(*seeBB))
+		if (ray.ToRay().Intersects(*seeBB))
 		{
 			if (obj->GetComponent(CT_Mesh) != nullptr)
 				intersected.push_back(obj);
@@ -206,7 +206,7 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 		vec vertex3 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
 		Triangle test = Triangle(vertex1, vertex2, vertex3);
 		float new_dist = INT_MAX;
-		bool check = local.Intersects(test, &new_dist, nullptr);
+		bool check = local.ToRay().Intersects(test, &new_dist, nullptr);
 		new_dist = vec(((vertex1 + vertex2 + vertex3) / 3.0f) - local.a).Length();
 		if (check && new_dist < ret)
 		{

@@ -57,7 +57,7 @@ public:
 
 
 public:
-	Uint32	UUID, par_UUID = UINT_FAST32_MAX;
+	Uint32	UUID = UINT_FAST32_MAX, par_UUID = UINT_FAST32_MAX;
 	std::string name;
 
 	AABB* BoundingBox = nullptr;

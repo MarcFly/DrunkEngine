@@ -38,6 +38,7 @@ public:
 	void SaveScene(const char* filename = "");
 
 	void NewScene();
+	void CreateMainCam();
 	void DeleteScene();
 
 	void OrderScene();
