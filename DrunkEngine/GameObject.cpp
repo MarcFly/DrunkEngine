@@ -3,7 +3,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-#include "Octree.h"
+#include "KdTree.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -71,8 +71,8 @@ void GameObject::Update(float dt)
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Update(dt);
 
-	if (Scene_Octree != nullptr)
-		Scene_Octree->Update();
+	if (Scene_KdTree != nullptr)
+		Scene_KdTree->Update();
 
 	Draw();
 

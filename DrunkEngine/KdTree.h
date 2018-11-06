@@ -1,12 +1,12 @@
-#ifndef _OCTREE_H_
-#define _OCTREE_H_
+#ifndef _KDTree_H_
+#define _KDTree_H_
 
 #include <vector>
 #include "Globals.h"
 
 class GameObject;
 
-class Octree
+class KDTree
 {
 	class Node
 	{
@@ -20,7 +20,7 @@ class Octree
 		};
 
 	public:
-		Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree * root);
+		Node(std::vector<GameObject*>& objs_in_node, Node * parent, KDTree * root);
 		Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB bounding_box);
 		~Node();
 
@@ -35,11 +35,14 @@ class Octree
 
 		void SetVertexPos(const vec object_center);
 		void SetVertexPos(const vec& min, const vec& max);
+
+		float GetKdTreeCut(Axis axis);
+
 	public:
 		int id;
 		int subdivision;
 
-		Octree * root = nullptr;
+		KDTree * root = nullptr;
 		Node * parent = nullptr;
 		std::vector<Node*> child;
 
@@ -51,8 +54,8 @@ class Octree
 	};
 
 public:
-	Octree(int elements_per_node, int max_subdivisions);
-	~Octree();
+	KDTree(int elements_per_node, int max_subdivisions);
+	~KDTree();
 
 	void Update();
 	void CleanUp();

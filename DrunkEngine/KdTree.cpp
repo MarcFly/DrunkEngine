@@ -1,7 +1,7 @@
-#include "Octree.h"
+#include "KDTree.h"
 #include "Application.h"
 
-Octree::Octree(int elements_per_node, int max_subdivisions)
+KDTree::KDTree(int elements_per_node, int max_subdivisions)
 {
 	static_objs.clear();
 	nodes.clear();
@@ -18,17 +18,17 @@ Octree::Octree(int elements_per_node, int max_subdivisions)
 	}
 }
 
-Octree::~Octree()
+KDTree::~KDTree()
 {
 }
 
-void Octree::Update()
+void KDTree::Update()
 {
 	for (int i = 0; i < nodes.size(); i++)
 		nodes[i]->Update();
 }
 
-void Octree::CleanUp()
+void KDTree::CleanUp()
 {
 	for (int i = 0; i < nodes.size(); i++)
 		nodes[i]->CleanUp();
@@ -37,7 +37,7 @@ void Octree::CleanUp()
 	nodes.clear();
 }
 
-void Octree::RecursiveGetStaticObjs(const GameObject * obj)
+void KDTree::RecursiveGetStaticObjs(const GameObject * obj)
 {
 	for (int i = 0; i < obj->children.size(); i++)
 	{
@@ -51,7 +51,7 @@ void Octree::RecursiveGetStaticObjs(const GameObject * obj)
 	}
 }
 
-Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree * root)
+KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, KDTree * root)
 {
 	this->root = root;
 	this->parent = parent;
@@ -70,7 +70,7 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, Octree
 		CreateNodes();
 }
 
-Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB bounding_box)
+KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB bounding_box)
 {
 	this->root = parent->root;
 	this->parent = parent;
@@ -95,23 +95,30 @@ Octree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB b
 		CreateNodes();
 }
 
-Octree::Node::~Node()
+KDTree::Node::~Node()
 {
 }
 
-void Octree::Node::Update()
+void KDTree::Node::Update()
 {
 	Draw();
 }
 
-void Octree::Node::Draw()
+void KDTree::Node::Draw()
 {
 	//Draw node AABB
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_LINES);
 
-	glColor3f(0.f, 1.f, 1.f);
+	if (axis_to_check == Axis_X)
+		glColor3f(0.f, 1.f, 1.f);
+
+	else if (axis_to_check == Axis_Y)
+		glColor3f(1.f, 1.f, 0.f);
+
+	else if (axis_to_check == Axis_Z)
+		glColor3f(1.f, 0.f, 1.f);
 
 	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
 	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
@@ -157,7 +164,7 @@ void Octree::Node::Draw()
 		glEnable(GL_LIGHTING);
 }
 
-void Octree::Node::CleanUp()
+void KDTree::Node::CleanUp()
 {
 	root = nullptr;
 	parent = nullptr;
@@ -165,7 +172,7 @@ void Octree::Node::CleanUp()
 	objects_in_node.clear();
 }
 
-void Octree::Node::SetNodeVertex()
+void KDTree::Node::SetNodeVertex()
 {
 	//Set vertex positions for this node
 	bounding_box.maxPoint = vec(INT_MIN,INT_MIN,INT_MIN);
@@ -181,77 +188,57 @@ void Octree::Node::SetNodeVertex()
 	}
 }
 
-void Octree::Node::CreateNodes()
+void KDTree::Node::CreateNodes()
 {
-	switch (axis_to_check)
-	{
-	case Axis::Axis_X:
+	vec center_1;
+	vec center_2;
+	AABB new_AABB_Node1;
+	AABB new_AABB_Node2;
+
+	if (axis_to_check == Axis_X)
 	{
 		//	 X Y Z / -X Y Z
 		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.maxPoint.z)) / 2;
-
 		//	 X-Y-Z / -X-Y-Z
 		vec center_2 = (vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
-		AABB new_AABB_Px = AABB(center_2, bounding_box.maxPoint);
-		AABB new_AABB_Nx = AABB(bounding_box.minPoint, center_1);
-		
-		Node * Px = new Node(GetObjectsInNode(new_AABB_Px), this, new_AABB_Px);
-		root->nodes.push_back(Px);
-		child.push_back(Px);
-
-		Node * Nx = new Node(GetObjectsInNode(new_AABB_Nx), this, new_AABB_Nx);
-		root->nodes.push_back(Nx);
-		child.push_back(Nx);
-
-		break;
+		new_AABB_Node1 = AABB(vec(GetKdTreeCut(axis_to_check), center_2.y, center_2.z), bounding_box.maxPoint);
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(GetKdTreeCut(axis_to_check), center_1.y, center_1.z));
 	}
-	case Axis::Axis_Y:
+
+	else if (axis_to_check == Axis_Y)
 	{
 		//	 X Y Z /  X-Y Z
 		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z)) / 2;
-
 		//	-X Y-Z / -X-Y-Z
 		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
-		AABB new_AABB_Py = AABB(center_2, bounding_box.maxPoint);
-		AABB new_AABB_Ny = AABB(bounding_box.minPoint, center_1);
-
-		Node * Py = new Node(GetObjectsInNode(new_AABB_Py), this, new_AABB_Py);
-		root->nodes.push_back(Py);
-		child.push_back(Py);
-
-		Node * Ny = new Node(GetObjectsInNode(new_AABB_Ny), this, new_AABB_Ny);
-		root->nodes.push_back(Ny);
-		child.push_back(Ny);
-
-		break;
+		new_AABB_Node1 = AABB(vec(center_2.x, GetKdTreeCut(axis_to_check), center_2.z), bounding_box.maxPoint);
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, GetKdTreeCut(axis_to_check), center_1.z));
 	}
-	case Axis::Axis_Z:
+
+	else  // Axis_Z
 	{
 		//	 X Y Z /  X Y-Z
 		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z)) / 2;
-
 		//	-X-Y Z / -X-Y-Z 
 		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z) + bounding_box.minPoint) / 2;
 
-		AABB new_AABB_Pz = AABB(center_2, bounding_box.maxPoint);
-		AABB new_AABB_Nz = AABB(bounding_box.minPoint, center_1);
-
-		Node * Pz = new Node(GetObjectsInNode(new_AABB_Pz), this, new_AABB_Pz);
-		root->nodes.push_back(Pz);
-		child.push_back(Pz);
-
-		Node * Nz = new Node(GetObjectsInNode(new_AABB_Nz), this, new_AABB_Nz);
-		root->nodes.push_back(Nz);
-		child.push_back(Nz);
-
-		break;
+		new_AABB_Node1 = AABB(vec(center_2.x, center_2.y, GetKdTreeCut(axis_to_check)), bounding_box.maxPoint);
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, center_1.y, GetKdTreeCut(axis_to_check)));
 	}
-	}
+
+	Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
+	root->nodes.push_back(Node1);
+	child.push_back(Node1);
+
+	Node * Node2 = new Node(GetObjectsInNode(new_AABB_Node2), this, new_AABB_Node2);
+	root->nodes.push_back(Node2);
+	child.push_back(Node2);
+
 }
 
-std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB& new_bounding_box)
+std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
 {
 	std::vector<GameObject*> objs_in_new_node;
 
@@ -264,7 +251,7 @@ std::vector<GameObject*> Octree::Node::GetObjectsInNode(AABB& new_bounding_box)
 	return objs_in_new_node;
 }
 
-void Octree::Node::SetVertexPos(const vec object_center)
+void KDTree::Node::SetVertexPos(const vec object_center)
 {
 	if (bounding_box.maxPoint.x < object_center.x)
 		bounding_box.maxPoint.x = object_center.x;
@@ -285,7 +272,7 @@ void Octree::Node::SetVertexPos(const vec object_center)
 		bounding_box.minPoint.z = object_center.z;
 }
 
-void Octree::Node::SetVertexPos(const vec& min, const vec& max)
+void KDTree::Node::SetVertexPos(const vec& min, const vec& max)
 {
 	if (true)
 	{
@@ -307,5 +294,29 @@ void Octree::Node::SetVertexPos(const vec& min, const vec& max)
 		if (bounding_box.minPoint.z > min.z)
 			bounding_box.minPoint.z = min.z;
 
+	}
+}
+
+float KDTree::Node::GetKdTreeCut(Axis axis)
+{
+	vec cut = vec::zero;
+
+	for (int i = 0; i < this->objects_in_node.size(); i++)
+	{
+		cut += this->objects_in_node[i]->getObjectCenter();
+	}
+
+	cut = cut / this->objects_in_node.size();
+
+	switch (axis)
+	{
+	case Axis::Axis_X:
+		return cut.x;
+
+	case Axis::Axis_Y:
+		return cut.y;
+
+	case Axis::Axis_Z:
+		return cut.z;
 	}
 }
