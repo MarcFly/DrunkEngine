@@ -111,7 +111,14 @@ void Octree::Node::Draw()
 
 	glBegin(GL_LINES);
 
-	glColor3f(0.f, 1.f, 1.f);
+	if (axis_to_check == Axis_X)
+		glColor3f(0.f, 1.f, 1.f);
+
+	else if (axis_to_check == Axis_Y)
+		glColor3f(1.f, 1.f, 0.f);
+
+	else if (axis_to_check == Axis_Z)
+		glColor3f(1.f, 0.f, 1.f);
 
 	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.maxPoint.y, this->bounding_box.maxPoint.z);
 	glVertex3f(this->bounding_box.maxPoint.x, this->bounding_box.minPoint.y, this->bounding_box.maxPoint.z);
@@ -188,10 +195,10 @@ void Octree::Node::CreateNodes()
 	case Axis::Axis_X:
 	{
 		//	 X Y Z / -X Y Z
-		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.maxPoint.z)) / 2;
+		vec center_1 = (bounding_box.maxPoint + vec(GetKdTreeCut(Axis::Axis_X), bounding_box.maxPoint.y, bounding_box.maxPoint.z)) / 2;
 
 		//	 X-Y-Z / -X-Y-Z
-		vec center_2 = (vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
+		vec center_2 = (vec(GetKdTreeCut(Axis::Axis_X), bounding_box.minPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
 		AABB new_AABB_Px = AABB(center_2, bounding_box.maxPoint);
 		AABB new_AABB_Nx = AABB(bounding_box.minPoint, center_1);
@@ -209,10 +216,10 @@ void Octree::Node::CreateNodes()
 	case Axis::Axis_Y:
 	{
 		//	 X Y Z /  X-Y Z
-		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z)) / 2;
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, GetKdTreeCut(Axis::Axis_Y), bounding_box.maxPoint.z)) / 2;
 
 		//	-X Y-Z / -X-Y-Z
-		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
+		vec center_2 = (vec(bounding_box.minPoint.x, GetKdTreeCut(Axis::Axis_Y), bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
 		AABB new_AABB_Py = AABB(center_2, bounding_box.maxPoint);
 		AABB new_AABB_Ny = AABB(bounding_box.minPoint, center_1);
@@ -230,10 +237,10 @@ void Octree::Node::CreateNodes()
 	case Axis::Axis_Z:
 	{
 		//	 X Y Z /  X Y-Z
-		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z)) / 2;
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.maxPoint.y, GetKdTreeCut(Axis::Axis_Z))) / 2;
 
 		//	-X-Y Z / -X-Y-Z 
-		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z) + bounding_box.minPoint) / 2;
+		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, GetKdTreeCut(Axis::Axis_Z)) + bounding_box.minPoint) / 2;
 
 		AABB new_AABB_Pz = AABB(center_2, bounding_box.maxPoint);
 		AABB new_AABB_Nz = AABB(bounding_box.minPoint, center_1);
@@ -307,5 +314,29 @@ void Octree::Node::SetVertexPos(const vec& min, const vec& max)
 		if (bounding_box.minPoint.z > min.z)
 			bounding_box.minPoint.z = min.z;
 
+	}
+}
+
+float Octree::Node::GetKdTreeCut(Axis axis)
+{
+	vec cut = vec::zero;
+
+	for (int i = 0; i < this->objects_in_node.size(); i++)
+	{
+		cut += this->objects_in_node[i]->getObjectCenter();
+	}
+
+	cut = cut / this->objects_in_node.size();
+
+	switch (axis)
+	{
+	case Axis::Axis_X:
+		return cut.x;
+
+	case Axis::Axis_Y:
+		return cut.y;
+
+	case Axis::Axis_Z:
+		return cut.z;
 	}
 }

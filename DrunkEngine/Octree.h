@@ -35,6 +35,9 @@ class Octree
 
 		void SetVertexPos(const vec object_center);
 		void SetVertexPos(const vec& min, const vec& max);
+
+		float GetKdTreeCut(Axis axis);
+
 	public:
 		int id;
 		int subdivision;
