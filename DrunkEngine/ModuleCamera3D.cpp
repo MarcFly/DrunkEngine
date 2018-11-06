@@ -168,6 +168,7 @@ void ModuleCamera3D::MousePicking()
 			while(App->scene->active_objects.size() > 0)
 				App->scene->active_objects.pop_back();
 			App->scene->active_objects.push_back(intersected[i]);
+			intersected[i]->active = true;
 		}
 	}
 
