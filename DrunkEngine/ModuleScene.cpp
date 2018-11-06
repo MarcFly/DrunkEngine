@@ -122,8 +122,6 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 		getRootObj()->children[getRootObj()->children.size() - 1]->Load(val, file_path);
 	}
 
-	CreateMainCam();
-
 	OrderScene();
 
 	return true;
@@ -215,8 +213,12 @@ void ModuleScene::NewScene()
 
 	Root_Object = new GameObject();
 	Root_Object->name = "NewScene";
-  GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
-	getRootObj()->children.push_back(MainCam);
+
+	if (Main_Cam->parent == nullptr)
+	{
+		GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
+		getRootObj()->children.push_back(MainCam);
+	}
 }
 
 void ModuleScene::DeleteScene()

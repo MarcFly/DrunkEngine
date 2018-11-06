@@ -31,7 +31,6 @@ public:
 	void SetActiveFalse();
 
 	void SetmainCam(ComponentCamera * cam);
-	void CreateMainCam();
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
