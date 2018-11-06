@@ -71,7 +71,7 @@ public:
 
 	bool to_pop = false;
 	bool active = false;
-	bool is_static = true;
+	bool is_static = false;
 
 	float max_distance_point = 0;
 

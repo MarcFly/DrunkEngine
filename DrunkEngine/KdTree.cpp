@@ -190,72 +190,52 @@ void KDTree::Node::SetNodeVertex()
 
 void KDTree::Node::CreateNodes()
 {
-	switch (axis_to_check)
-	{
-	case Axis::Axis_X:
+	vec center_1;
+	vec center_2;
+	AABB new_AABB_Node1;
+	AABB new_AABB_Node2;
+
+	if (axis_to_check == Axis_X)
 	{
 		//	 X Y Z / -X Y Z
-		vec center_1 = (bounding_box.maxPoint + vec(GetKdTreeCut(Axis::Axis_X), bounding_box.maxPoint.y, bounding_box.maxPoint.z)) / 2;
-
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.maxPoint.z)) / 2;
 		//	 X-Y-Z / -X-Y-Z
-		vec center_2 = (vec(GetKdTreeCut(Axis::Axis_X), bounding_box.minPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
+		vec center_2 = (vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
-		AABB new_AABB_Px = AABB(center_2, bounding_box.maxPoint);
-		AABB new_AABB_Nx = AABB(bounding_box.minPoint, center_1);
-		
-		Node * Px = new Node(GetObjectsInNode(new_AABB_Px), this, new_AABB_Px);
-		root->nodes.push_back(Px);
-		child.push_back(Px);
-
-		Node * Nx = new Node(GetObjectsInNode(new_AABB_Nx), this, new_AABB_Nx);
-		root->nodes.push_back(Nx);
-		child.push_back(Nx);
-
-		break;
+		new_AABB_Node1 = AABB(vec(GetKdTreeCut(axis_to_check), center_2.y, center_2.z), bounding_box.maxPoint);
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(GetKdTreeCut(axis_to_check), center_1.y, center_1.z));
 	}
-	case Axis::Axis_Y:
+
+	else if (axis_to_check == Axis_Y)
 	{
 		//	 X Y Z /  X-Y Z
-		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, GetKdTreeCut(Axis::Axis_Y), bounding_box.maxPoint.z)) / 2;
-
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z)) / 2;
 		//	-X Y-Z / -X-Y-Z
-		vec center_2 = (vec(bounding_box.minPoint.x, GetKdTreeCut(Axis::Axis_Y), bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
+		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
-		AABB new_AABB_Py = AABB(center_2, bounding_box.maxPoint);
-		AABB new_AABB_Ny = AABB(bounding_box.minPoint, center_1);
-
-		Node * Py = new Node(GetObjectsInNode(new_AABB_Py), this, new_AABB_Py);
-		root->nodes.push_back(Py);
-		child.push_back(Py);
-
-		Node * Ny = new Node(GetObjectsInNode(new_AABB_Ny), this, new_AABB_Ny);
-		root->nodes.push_back(Ny);
-		child.push_back(Ny);
-
-		break;
+		new_AABB_Node1 = AABB(vec(center_2.x, GetKdTreeCut(axis_to_check), center_2.z), bounding_box.maxPoint);
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, GetKdTreeCut(axis_to_check), center_1.z));
 	}
-	case Axis::Axis_Z:
+
+	else  // Axis_Z
 	{
 		//	 X Y Z /  X Y-Z
-		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.maxPoint.y, GetKdTreeCut(Axis::Axis_Z))) / 2;
-
+		vec center_1 = (bounding_box.maxPoint + vec(bounding_box.maxPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z)) / 2;
 		//	-X-Y Z / -X-Y-Z 
-		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, GetKdTreeCut(Axis::Axis_Z)) + bounding_box.minPoint) / 2;
+		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z) + bounding_box.minPoint) / 2;
 
-		AABB new_AABB_Pz = AABB(center_2, bounding_box.maxPoint);
-		AABB new_AABB_Nz = AABB(bounding_box.minPoint, center_1);
-
-		Node * Pz = new Node(GetObjectsInNode(new_AABB_Pz), this, new_AABB_Pz);
-		root->nodes.push_back(Pz);
-		child.push_back(Pz);
-
-		Node * Nz = new Node(GetObjectsInNode(new_AABB_Nz), this, new_AABB_Nz);
-		root->nodes.push_back(Nz);
-		child.push_back(Nz);
-
-		break;
+		new_AABB_Node1 = AABB(vec(center_2.x, center_2.y, GetKdTreeCut(axis_to_check)), bounding_box.maxPoint);
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, center_1.y, GetKdTreeCut(axis_to_check)));
 	}
-	}
+
+	Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
+	root->nodes.push_back(Node1);
+	child.push_back(Node1);
+
+	Node * Node2 = new Node(GetObjectsInNode(new_AABB_Node2), this, new_AABB_Node2);
+	root->nodes.push_back(Node2);
+	child.push_back(Node2);
+
 }
 
 std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
