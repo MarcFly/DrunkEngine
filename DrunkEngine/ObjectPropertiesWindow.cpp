@@ -2,7 +2,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
-
+#include "ComponentCamera.h"
 
 
 ObjectPropertiesWindow::ObjectPropertiesWindow() : Window("Object Properties")
@@ -119,17 +119,40 @@ void ObjectPropertiesWindow::MatInspector(ComponentMaterial* mat)
 			snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
 			if (ImGui::Button(str))
 				mat->DestroyTexture(i);
-
-
 		}
-
-
 	}
 }
 
 void ObjectPropertiesWindow::CamInspector(ComponentCamera* cam)
 {
+	if (ImGui::CollapsingHeader("Camera"))
+	{
+		ImGui::Spacing();
+		
+		//float aux_fov = RadToDeg(cam->original_v_fov);  If scale is compatible whith camera
+		float aux_fov = RadToDeg(cam->frustum.verticalFov);
+		if (ImGui::DragFloat("FOV", &aux_fov, 1.0f, 0.0, 179))
+		{
+			//cam->original_v_fov = DegToRad(aux_fov);	If scale is compatible whith camera
+			cam->frustum.verticalFov = DegToRad(aux_fov);
+			cam->SetbbFrustum();
+			cam->SetAspectRatio();
+		}
 
+		if (ImGui::SliderFloat("NearPlane", &cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
+		{
+			cam->frustum.SetViewPlaneDistances(cam->frustum.nearPlaneDistance, cam ->frustum.farPlaneDistance);
+			cam->SetbbFrustum();
+			cam->SetAspectRatio();
+		}
+
+		if (ImGui::SliderFloat("FarPlane", &cam->frustum.farPlaneDistance, 1.f, 1000.0f))
+		{
+			cam->frustum.SetViewPlaneDistances(cam->frustum.nearPlaneDistance, cam->frustum.farPlaneDistance);
+			cam->SetbbFrustum();
+			cam->SetAspectRatio();
+		}
+	}
 }
 
 void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)

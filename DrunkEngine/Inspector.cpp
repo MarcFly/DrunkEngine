@@ -46,7 +46,7 @@ void Inspector::CreateObjLeaf(GameObject * obj, int st)
 			{
 				App->scene->active_objects.push_back(obj);
 				obj->active = true;
-				obj->GetTransform()->to_update = true;
+				obj->GetTransform()->update_bouding_box = true;
 			}
 		}
 		else if (ImGui::IsItemClicked())
@@ -54,7 +54,7 @@ void Inspector::CreateObjLeaf(GameObject * obj, int st)
 			App->scene->SetActiveFalse();
 			App->scene->active_objects.push_back(obj);
 			obj->active = true;
-			obj->GetTransform()->to_update = true;
+			obj->GetTransform()->update_bouding_box = true;
 
 			selected_object = App->scene->active_objects[0];
 			check_info = true;

@@ -11,6 +11,23 @@ GameObject::GameObject()
 	SetUUID();
 	//GetTransform();
 }
+GameObject::GameObject(GameObject * par, const char* name, CTypes type)
+{
+	this->name = name;
+	this->root = this;
+
+	if (par != nullptr)
+	{	
+		this->parent = par;
+		root = par->root;
+	}
+	GetTransform();
+
+	if (type == CT_Camera)
+		this->components.push_back(new ComponentCamera(this));
+
+	Start();
+}
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path, GameObject* par)
 {
 	SetUUID();
@@ -40,7 +57,8 @@ void GameObject::Start()
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Start();
 
-	SetBoundBox();
+	if (this->parent != nullptr)
+		SetBoundBox();
 }
 
 void GameObject::Update(float dt)
@@ -65,10 +83,10 @@ void GameObject::Draw()
 	for (int i = 0; i < this->components.size(); i++)		
 		this->components[i]->Draw();
 
-	if (this->BoundingBox != nullptr && this->GetTransform()->to_update)
+	if (this->BoundingBox != nullptr && this->GetTransform()->update_bouding_box)
 	{
 		SetTransformedBoundBox();
-		this->GetTransform()->to_update = false;
+		this->GetTransform()->update_bouding_box = false;
 	}
 
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
@@ -208,26 +226,35 @@ void GameObject::SetTransformedBoundBox()
 		std::vector<Component*> cmp_meshes;
 		cmp_meshes = GetComponents(CT_Mesh);
 
-		
-		for (int i = 0; i < cmp_meshes.size(); i++)
+		if (cmp_meshes.size() > 0)
 		{
-			math::AABB auxBB = *cmp_meshes[i]->AsMesh()->BoundingBox;
-			auxBB.TransformAsAABB(cmp_meshes[i]->AsMesh()->parent->GetTransform()->global_transform);
 
-			// Setting the BB min and max points
 
-			if (this->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
-				this->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
-			if (this->BoundingBox->minPoint.x > auxBB.minPoint.x)
-				this->BoundingBox->minPoint.x = auxBB.minPoint.x;
-			if (this->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
-				this->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
-			if (this->BoundingBox->minPoint.y > auxBB.minPoint.y)
-				this->BoundingBox->minPoint.y = auxBB.minPoint.y;
-			if (this->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
-				this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
-			if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
-				this->BoundingBox->minPoint.z = auxBB.minPoint.z;
+			for (int i = 0; i < cmp_meshes.size(); i++)
+			{
+				math::AABB auxBB = *cmp_meshes[i]->AsMesh()->BoundingBox;
+				auxBB.TransformAsAABB(cmp_meshes[i]->AsMesh()->parent->GetTransform()->global_transform);
+
+				// Setting the BB min and max points
+
+				if (this->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
+					this->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
+				if (this->BoundingBox->minPoint.x > auxBB.minPoint.x)
+					this->BoundingBox->minPoint.x = auxBB.minPoint.x;
+				if (this->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
+					this->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
+				if (this->BoundingBox->minPoint.y > auxBB.minPoint.y)
+					this->BoundingBox->minPoint.y = auxBB.minPoint.y;
+				if (this->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
+					this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
+				if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
+					this->BoundingBox->minPoint.z = auxBB.minPoint.z;
+			}
+		}
+		else
+		{
+			this->BoundingBox->maxPoint = this->GetTransform()->position + float3(1, 1, 1);
+			this->BoundingBox->minPoint = this->GetTransform()->position + float3(-1, -1, -1);
 		}
 		
 	}
@@ -296,6 +323,11 @@ void GameObject::SetBoundBoxFromMeshes()
 			if (this->BoundingBox->minPoint.z > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.z)
 				this->BoundingBox->minPoint.z = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.z;
 		}
+	}
+	else
+	{
+		this->BoundingBox->maxPoint = this->GetTransform()->position + float3(1, 1, 1);
+		this->BoundingBox->minPoint = this->GetTransform()->position + float3(-1, -1, -1);
 	}
 }
 

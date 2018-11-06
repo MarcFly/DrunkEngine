@@ -43,7 +43,8 @@ public:
 	float4x4 global_transform;
 
 	ComponentMesh* mparent = nullptr;
-  bool to_update;
+	bool update_bouding_box;
+	bool update_camera_transform;
 
 public:
 	void SetBaseVals()
@@ -55,7 +56,8 @@ public:
 		type = CT_Transform;
 		multiple = false;
     
-    to_update = true;
+		update_bouding_box = true;
+		update_camera_transform = true;
 	}
 
 };

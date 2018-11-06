@@ -175,11 +175,9 @@ void Octree::Node::SetNodeVertex()
 	{
 		/*vec object_center = objects_in_node[i]->getObjectCenter();
 		SetVertexPos(object_center);*/
-		
-		if(objects_in_node[i]->BoundingBox != nullptr)
-			SetVertexPos(objects_in_node[i]->BoundingBox->minPoint, objects_in_node[i]->BoundingBox->maxPoint);
-		else
-			SetVertexPos(objects_in_node[i]->GetTransform()->position);
+
+		SetVertexPos(objects_in_node[i]->BoundingBox->minPoint, objects_in_node[i]->BoundingBox->maxPoint);
+
 	}
 }
 

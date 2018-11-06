@@ -104,8 +104,6 @@ bool ModuleScene::LoadFBX(const char* file_path)
 		ret = false;
 	}
 
-	CreateMainCam();
-
 	return ret;
 }
 
@@ -168,9 +166,7 @@ bool ModuleScene::Load(JSON_Value * root_value)
 
 bool ModuleScene::Save(JSON_Value * root_value)
 {
-	bool ret = false;
-
-	
+	bool ret = false;	
 
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	// Write Module Scene config data to root_obj
@@ -219,17 +215,8 @@ void ModuleScene::NewScene()
 
 	Root_Object = new GameObject();
 	Root_Object->name = "NewScene";
-}
-
-void ModuleScene::CreateMainCam()
-{
-	if (Main_Cam->parent == nullptr)
-	{
-		GameObject* MainCam = new GameObject(Root_Object);
-		MainCam->name = "Main Camera";
-		MainCam->components.push_back(new ComponentCamera(MainCam));
-		getRootObj()->children.push_back(MainCam);
-	}
+  GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
+	getRootObj()->children.push_back(MainCam);
 }
 
 void ModuleScene::DeleteScene()

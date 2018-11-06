@@ -30,9 +30,13 @@ public:
 	void CalculateViewMatrix();
 	float* GetViewMatrix();
 
-	void MoveTest(float speed);
-
 	void LookToObj(GameObject* obj, float vertex_aux);
+
+	void TransformPos(float3 pos);
+	void TransformRot(Quat rot);
+	void TransformScale(float3 scale);
+
+	void SetbbFrustum();
 
 	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
@@ -50,6 +54,9 @@ public:
 	vec Reference;
 
 	Frustum frustum;
+
+	//float original_v_fov;		If scale is compatible whith camera
+	//float original_h_fov;
 
 public:
 	void SetBaseVals()
