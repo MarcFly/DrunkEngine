@@ -183,6 +183,37 @@ void ComponentCamera::LookAt(const vec &Spot)
 	CalculateViewMatrix();
 }
 
+void ComponentCamera::MoveZ(const float mov)
+{
+	if (mov < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * mov;
+		frustum.Translate(aux);
+	}
+	if (mov > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.Front() * mov;
+		frustum.Translate(aux);
+	}
+}
+
+void ComponentCamera::MoveX(const float mov)
+{
+	if (mov < 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.WorldRight() * mov;
+		frustum.Translate(aux);
+	}
+	if (mov > 0)
+	{
+		float3 aux = float3::zero;
+		aux = frustum.WorldRight() * mov;
+		frustum.Translate(aux);
+	}
+}
 
 // -----------------------------------------------------------------
 void ComponentCamera::Move(const vec &Movement)

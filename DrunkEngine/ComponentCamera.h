@@ -21,6 +21,8 @@ public:
 	void Look(const vec &Position, const vec &Reference, bool RotateAroundReference);
 	void LookAt(const vec &Spot);
 	void Move(const vec &Movement);
+	void MoveZ(const float mov);
+	void MoveX(const float mov);
 	void Transport(const vec &Movement);
 	void Rotate();
 	float3 RotateAngle(const float3 &u, float angle, const float3 &v);

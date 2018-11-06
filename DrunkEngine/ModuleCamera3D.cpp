@@ -56,14 +56,14 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
 
-	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->Move(-main_camera->Z * speed);
-	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->Move(main_camera->Z * speed);
+	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->MoveZ(speed);
+	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->MoveZ(-speed);
 
-	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->Move(-main_camera->X * speed);
-	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->Move(main_camera->X * speed);
+	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->MoveX(-speed);
+	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->MoveX(speed);
 
-	if (App->input->GetMouseZ() < 0) main_camera->Move(main_camera->Z * speed * MOUSE_WHEEL_SPEED);
-	if (App->input->GetMouseZ() > 0) main_camera->Move(-main_camera->Z * speed * MOUSE_WHEEL_SPEED);
+	if (App->input->GetMouseZ() < 0) main_camera->MoveZ(-speed * MOUSE_WHEEL_SPEED);
+	if (App->input->GetMouseZ() > 0) main_camera->MoveZ(speed * MOUSE_WHEEL_SPEED);
 
 	if (App->input->GetKey(App->input->controls[FOCUS_CAMERA]) == KEY_DOWN)
 	{
