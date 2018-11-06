@@ -79,7 +79,7 @@ update_status ModuleCamera3D::Update(float dt)
 		main_camera->LookAt(aux);
 	}
 
-	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 		MousePicking();
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
@@ -151,8 +151,8 @@ void ModuleCamera3D::MousePicking()
 	float y = ((App->input->GetMouseY() / (float)App->window->window_h) * -2.0f) + 1.0f;
 	LineSegment picking = (main_camera->frustum.UnProjectLineSegment(x,y));
 
-	while(App->scene->active_objects.size() > 0)
-		App->scene->active_objects.pop_back();
+	App->scene->active_objects.clear();
+	App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
 
@@ -170,28 +170,20 @@ void ModuleCamera3D::MousePicking()
 			App->scene->active_objects.push_back(intersected[i]);
 		}
 	}
-	if(intersected.size() == 0)
-		while (App->scene->active_objects.size() > 0)
-			App->scene->active_objects.pop_back();
 
 }
 
-bool ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vector<GameObject*>& intersected)
+void ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vector<GameObject*>& intersected)
 {
-	bool ret = false;
-
 	if (obj->isInsideFrustum(main_camera, obj->GetBB()))
-		if (obj->GetComponent(CT_Mesh) != nullptr && ray.Intersects(*obj->GetBB()))
-			ret = true;
-		else
-			for (int i = 0; i < obj->children.size(); i++) 
-			{
-				ret = TestIntersect(obj->children[i], ray, intersected);
-				if (ret)
-					intersected.push_back(obj->children[i]);
-			}
+		if (ray.Intersects(*obj->GetBB()))
+		{
+			if (obj->GetComponent(CT_Mesh) != nullptr)
+				intersected.push_back(obj);
 
-	return ret;
+			for (int i = 0; i < obj->children.size(); i++)
+				TestIntersect(obj->children[i], ray, intersected);
+		}
 }
 
 float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
@@ -207,8 +199,9 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 		vec vertex3 = { mesh->vertex[mesh->index[i * 3 + 2]], mesh->vertex[mesh->index[i * 3 + 2] + 1], mesh->vertex[mesh->index[i * 3 + 2] + 2] };
 		Triangle test = Triangle(vertex1,vertex2,vertex3);
 		float new_dist = INT_MAX;
-		local.Intersects(test, &new_dist, nullptr);
-		if (new_dist < ret)
+		bool check = local.Intersects(test, &new_dist, nullptr);
+		new_dist = vec(((vertex1 + vertex2 + vertex3) / 3.0f) - local.a).Length();
+		if (check && new_dist < ret)
 			ret = new_dist;
 	}
 
