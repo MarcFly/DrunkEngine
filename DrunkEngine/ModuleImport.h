@@ -129,7 +129,8 @@ public:
 					aux = test1;
 				else
 				{
-					aux.substr(aux.find_first_of('\\'));
+					int last = aux.find_last_of('\\');
+					aux.erase(last+1);
 				}
 			}
 			else

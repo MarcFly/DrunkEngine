@@ -31,10 +31,12 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 	read_file.open(file, std::ios::binary);
 
 	std::streampos end = read_file.seekg(0, read_file.end).tellg();
-	read_file.seekg(0, read_file.beg);
+	
 
 	if (end > 1024)
 	{
+		read_file.seekg(0, read_file.beg);
+
 		char* data = new char[end];
 		read_file.read(data, sizeof(char)*end);
 		char* cursor = data;
@@ -96,6 +98,8 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 		delete mesh;
 		mesh = nullptr;
 	}
+
+	read_file.close();
 
 	App->importer->Imp_Timer.LogTime("Mesh");
 
