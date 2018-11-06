@@ -12,9 +12,9 @@
 //#include "ModulePhysics3D.h"
 #include "ModuleScene.h"
 #include "ModuleImport.h"
+#include "ModuleEventSystem.h"
 
 #include "ModuleUI.h"
-
 
 class Application
 {
@@ -27,6 +27,7 @@ public:
 	ModuleImport* importer;
 	ModuleUI* ui;
 	ModuleScene* scene;
+	ModuleEventSystem* eventSys;
 
 	std::string profile = "config_data.json";
 
@@ -53,14 +54,14 @@ public:
 	float GetDt();
 	void Cap_FPS(const int& cap);
 
+	void BroadcastEvent(const Event& event);
+
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
-	void Frame_Metrics();
-
-	
+	void Frame_Metrics();	
 };
 
 extern Application* App;

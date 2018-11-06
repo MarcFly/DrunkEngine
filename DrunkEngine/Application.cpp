@@ -12,6 +12,7 @@ Application::Application()
 	importer = new ModuleImport();
 	ui = new ModuleUI(this);
 	scene = new ModuleScene(this);
+	eventSys = new ModuleEventSystem(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -28,6 +29,8 @@ Application::Application()
 
 	// Renderer last!
 	AddModule(renderer3D);
+
+	AddModule(eventSys);
 
 	App = this;
 }
@@ -222,6 +225,12 @@ void Application::Frame_Metrics()
 void Application::Cap_FPS(const int& cap) 
 {
 	fps_cap = cap;
+}
+
+void Application::BroadcastEvent(const Event & event)
+{
+	//for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); ++it)
+	//	(*it)->ReceiveEvent(event);
 }
 
 float Application::GetDt()
