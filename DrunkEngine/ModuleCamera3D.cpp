@@ -48,9 +48,9 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
-	if(ImGui::IsMouseHoveringAnyWindow() || App->ui->CheckDataWindows())
+	if(ImGui::IsMouseHoveringAnyWindow() || App->ui->CheckDataWindows() || ImGui::IsAnyWindowFocused())
 		return UPDATE_CONTINUE;
-
+	
 	float speed = MOV_SPEED * dt * main_camera->mesh_multiplier;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
@@ -151,8 +151,8 @@ void ModuleCamera3D::MousePicking()
 	float y = ((App->input->GetMouseY() / (float)App->window->window_h) * -2.0f) + 1.0f;
 	LineSegment picking = (main_camera->frustum.UnProjectLineSegment(x,y));
 
-	App->scene->active_objects.clear();
-	App->ui->inspector->selection_mask_vec.clear();
+	App->scene->SetActiveFalse();
+	//App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
 
