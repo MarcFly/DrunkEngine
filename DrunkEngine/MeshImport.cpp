@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <experimental/filesystem>
 
 void MeshImport::Init()
 {
@@ -24,19 +25,17 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 {
 	App->importer->Imp_Timer.Start();
 
-	//mesh->name.clear();
+
 	mesh->name = file;
 
 	std::ifstream read_file;
-	read_file.open(file, std::ios::binary);
-
-	std::streampos end = read_file.seekg(0, read_file.end).tellg();
+	read_file.open(mesh->name.c_str(), std::ios::in || std::ios::binary);
 	
+	std::streampos end = read_file.seekg(0, read_file.end).tellg();
+	read_file.seekg(0, read_file.beg);
 
 	if (end > 1024)
 	{
-		read_file.seekg(0, read_file.beg);
-
 		char* data = new char[end];
 		read_file.read(data, sizeof(char)*end);
 		char* cursor = data;

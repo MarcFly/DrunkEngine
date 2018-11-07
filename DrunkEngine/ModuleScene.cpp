@@ -14,9 +14,13 @@
 
 #include "ModuleRenderer3D.h"
 
+#include <experimental/filesystem>
+
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/Release/ILU.lib")
+
+
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -215,7 +219,7 @@ void ModuleScene::NewScene()
 
 void ModuleScene::CreateMainCam()
 {
-	if (Main_Cam->parent == nullptr)
+	if (active_cameras.size() > 0)
 	{
 		GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
 		getRootObj()->children.push_back(MainCam);

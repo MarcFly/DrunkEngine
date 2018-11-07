@@ -11,7 +11,7 @@ void SaveSceneWindow::Draw()
 	ofn.lpstrFilter = "DrunkEngine Scenes (*.drnk*)\0*.drnk*\0";
 	ofn.lpstrFile = fileName;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
 	ofn.lpstrDefExt = "";
 
 	GetSaveFileName(&ofn);
@@ -31,7 +31,7 @@ void LoadSceneWindow::Draw()
 	ofn.lpstrFilter = "DrunkEngine Scenes (*.drnk*)\0*.drnk*\0";
 	ofn.lpstrFile = fileName;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
 	ofn.lpstrDefExt = "";
 
 	GetOpenFileName(&ofn);
@@ -43,6 +43,7 @@ void LoadSceneWindow::Draw()
 
 void ImportWindow::Draw()
 {
+
 	OPENFILENAME ofn;
 	char fileName[MAX_PATH] = "";
 	ZeroMemory(&ofn, sizeof(ofn));
@@ -51,7 +52,7 @@ void ImportWindow::Draw()
 	ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
 	ofn.lpstrFile = fileName;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
 	ofn.lpstrDefExt = "";
 
 	GetOpenFileName(&ofn);
