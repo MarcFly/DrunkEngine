@@ -85,24 +85,34 @@ void OptionsWindow::Draw()
 		}
 		if (ImGui::CollapsingHeader("Window"))
 		{		
+			bool screen_modified = false;
+
+			int win_w, win_h;
+			SDL_GetWindowSize(App->window->window, &win_w, &win_h);
 
 			if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0.0f, 1.0f))
 				App->window->SetBrightness(App->window->brightness);
 
-			if (ImGui::SliderInt("Width", &App->window->window_w, 400, App->window->screen_size_w - 1) && !App->window->fullscreen)
+			if (ImGui::SliderInt("Width", &win_w, 400, App->window->screen_size_w - 1) && !App->window->fullscreen && !App->window->full_desktop)
+			{
 				SDL_SetWindowSize(App->window->window, App->window->window_w, App->window->window_h);
+				screen_modified = true;
+			}
 
-			if (ImGui::SliderInt("Height", &App->window->window_h, 400, App->window->screen_size_h - 1) && !App->window->fullscreen)
+			if (ImGui::SliderInt("Height", &win_h, 400, App->window->screen_size_h - 1) && !App->window->fullscreen && !App->window->full_desktop)
+			{
 				SDL_SetWindowSize(App->window->window, App->window->window_w, App->window->window_h);
-
+				screen_modified = true;
+			}
 
 			ImGui::Text("Refresh rate: %d", 0);
 
 			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreen))
 			{				
 				App->window->SetFullscreen(App->window->fullscreen);
-				//SDL_GetRendererOutputSize(SDL_GetRenderer(App->window->window), &width, &height);
+				screen_modified = true;
 			}
+
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Resizable", &App->window->resizable))
 				App->window->SetResizable(App->window->resizable);
@@ -112,7 +122,10 @@ void OptionsWindow::Draw()
 
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Full Desktop", &App->window->full_desktop))
+			{
 				App->window->SetFullDesktop(App->window->full_desktop);
+				screen_modified = true;
+			}
 
 			ImGui::Separator();
 
@@ -120,6 +133,14 @@ void OptionsWindow::Draw()
 				App->window->Save(nullptr);
 
 			ImGui::Separator();
+
+			if (screen_modified)
+			{
+				Event ev(EventType::Window_Resize, Event::UnionUsed::UsePoint2d);
+				ev.point2d.x = win_w;
+				ev.point2d.y = win_h;
+				App->eventSys->BroadcastEvent(ev);
+			}
 		}
 
 		if (ImGui::CollapsingHeader("Render Options"))
@@ -186,7 +207,6 @@ void OptionsWindow::Draw()
 			if (ImGui::SliderFloat("NearPlane", &App->scene->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
 			{
 				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
-				App->scene->Main_Cam->SetAspectRatio();
 				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
 				App->eventSys->BroadcastEvent(ev);
 			}

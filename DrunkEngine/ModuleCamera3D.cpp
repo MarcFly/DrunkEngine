@@ -28,9 +28,6 @@ bool ModuleCamera3D::Start()
 	main_camera->Move(vec(10.0f, 10.0f, 5.0f));
 	main_camera->LookAt(vec(0.0f, 0.0f, 0.0f));
 
-	win_w = App->window->window_w;
-	win_h = App->window->window_h;
-
 	App->eventSys->Subscribe(EventType::Window_Resize, this);
 
 	return ret;
@@ -115,15 +112,6 @@ update_status ModuleCamera3D::Update(float dt)
 
 	// Recalculate matrix -------------
 	main_camera->CalculateViewMatrix();
-
-	SDL_GetWindowSize(App->window->window, &win_w, &win_h);
-	if (win_w != App->window->window_w || win_h != App->window->window_h)
-	{
-		Event ev(EventType::Window_Resize, Event::UnionUsed::UsePoint2d);
-		ev.point2d.x = win_w;
-		ev.point2d.y = win_h;
-		App->eventSys->BroadcastEvent(ev);
-	}
 
 	DrawRay(picking.a, picking.b);
 

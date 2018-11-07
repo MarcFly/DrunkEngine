@@ -37,9 +37,6 @@ public:
 	ComponentCamera * main_camera;
 
 private:
-	int win_w;
-	int win_h;
-
 	LineSegment picking = LineSegment(vec::zero, vec::zero);
 };
 
