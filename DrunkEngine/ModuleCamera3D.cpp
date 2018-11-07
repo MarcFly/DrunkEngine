@@ -9,7 +9,7 @@
 #define MOUSE_SENSIBILITY 0.01f
 #define MOUSE_WHEEL_SPEED 6.0f
 
-ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
+ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled, Type_Camera3D)
 {
 	background = Color(0.1f, 0.1f, 0.1f, 1.0f);
 }
@@ -30,6 +30,8 @@ bool ModuleCamera3D::Start()
 
 	win_w = App->window->window_w;
 	win_h = App->window->window_h;
+
+	App->eventSys->Subscribe(EventType::Window_Resize, this);
 
 	return ret;
 }
@@ -117,10 +119,10 @@ update_status ModuleCamera3D::Update(float dt)
 	SDL_GetWindowSize(App->window->window, &win_w, &win_h);
 	if (win_w != App->window->window_w || win_h != App->window->window_h)
 	{
-		App->window->window_w = win_w;
-		App->window->window_h = win_h;
-		main_camera->SetAspectRatio();
-		App->renderer3D->OnResize();
+		Event ev(EventType::Window_Resize, Event::UnionUsed::UsePoint2d);
+		ev.point2d.x = win_w;
+		ev.point2d.y = win_h;
+		App->eventSys->BroadcastEvent(ev);
 	}
 
 	DrawRay(picking.a, picking.b);
@@ -230,4 +232,26 @@ void ModuleCamera3D::DrawRay(vec a, vec b)
 
 	if (App->renderer3D->lighting)
 		glEnable(GL_LIGHTING);
+}
+
+void ModuleCamera3D::RecieveEvent(const Event & event)
+{
+	switch (event.type)
+	{
+	case EventType::Camera_Modified:
+	{
+		break;
+	}
+	case EventType::Window_Resize:
+	{
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void ModuleCamera3D::SetMainCamAspectRatio()
+{
+	main_camera->SetAspectRatio();
 }

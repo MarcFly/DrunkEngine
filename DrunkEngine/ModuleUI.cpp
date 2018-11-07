@@ -24,7 +24,7 @@
 
 using namespace std;
 
-ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled)
+ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled, Type_UI)
 {
 	ImGui::CreateContext();
 }

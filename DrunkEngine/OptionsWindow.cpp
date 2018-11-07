@@ -9,6 +9,7 @@
 #include "ModuleScene.h"
 #include "ConsoleWindow.h"
 #include "ComponentCamera.h"
+#include "ModuleEventSystem.h"
 
 #include "GLEW/include/GL/wglew.h"
 
@@ -178,19 +179,23 @@ void OptionsWindow::Draw()
 			{
 				App->scene->Main_Cam->frustum.verticalFov = DegToRad(aux_fov);
 				App->scene->Main_Cam->SetAspectRatio();
-				App->renderer3D->OnResize();
+				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
+				App->eventSys->BroadcastEvent(ev);
 			}
 
 			if (ImGui::SliderFloat("NearPlane", &App->scene->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
 			{
 				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
-				App->renderer3D->OnResize();
+				App->scene->Main_Cam->SetAspectRatio();
+				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
+				App->eventSys->BroadcastEvent(ev);
 			}
 
 			if (ImGui::SliderFloat("FarPlane", &App->scene->Main_Cam->frustum.farPlaneDistance, 1.f, 1000.0f))
 			{
 				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
-				App->renderer3D->OnResize();
+				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
+				App->eventSys->BroadcastEvent(ev);
 			}		
 		}
 

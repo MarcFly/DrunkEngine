@@ -28,6 +28,10 @@ public:
 
 	void DrawRay(vec a, vec b);
 
+	void RecieveEvent(const Event & event);
+
+	void SetMainCamAspectRatio();
+
 public:	
 	Color background;
 	ComponentCamera * main_camera;

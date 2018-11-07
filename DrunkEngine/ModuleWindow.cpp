@@ -4,7 +4,7 @@
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
 
-ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
+ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled, Type_Window)
 {
 	window = NULL;
 	screen_surface = NULL;
@@ -85,6 +85,9 @@ bool ModuleWindow::Init()
 		}
 	}
 
+	App->eventSys->Subscribe(EventType::Window_Resize, this);
+	App->eventSys->Subscribe(EventType::Camera_Modified, this);
+
 	return ret;
 }
 
@@ -157,6 +160,25 @@ void ModuleWindow::SetBrightness(float brightness)
 	SDL_SetWindowBrightness(this->window, this->brightness);
 }
 
+void ModuleWindow::RecieveEvent(const Event & event)
+{
+	switch (event.type)
+	{
+	case EventType::Camera_Modified:
+	{
+		break;
+	}
+	case EventType::Window_Resize:
+	{
+		window_w = event.point2d.x;
+		window_h = event.point2d.y;
+		App->camera->SetMainCamAspectRatio();
+		break;
+	}
+	default:
+		break;
+	}
+}
 
 // SAVE & LOAD ----------------------------------------------------------------------------------------
 bool ModuleWindow::Load(JSON_Value* root_value)

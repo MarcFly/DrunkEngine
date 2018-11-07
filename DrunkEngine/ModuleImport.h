@@ -31,7 +31,7 @@ enum FileType
 
 class ModuleImport : public Module {
 public:
-	ModuleImport() {};
+	ModuleImport(bool start_enabled = true);
 	
 	~ModuleImport() {};
 
