@@ -7,6 +7,7 @@
 
 class Application;
 struct PhysBody3D;
+struct Event;
 
 class Module
 {
@@ -51,8 +52,7 @@ public:
 		return true; 
 	}
 
-	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-	{}
+	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2) {}
 
 	virtual bool Load(JSON_Value* root_value)
 	{
@@ -66,6 +66,7 @@ public:
 
 	virtual void SetDefault() {};
 
+	virtual void RecieveEvent(const Event & event) {}
 };
 
 #endif // !_MODULE_H_

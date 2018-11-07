@@ -157,8 +157,10 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 	
+	EventSystemBroadcast();
+
 	std::list<Module*>::iterator item = list_modules.begin();
-	
+
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		ret = item._Ptr->_Myval->PreUpdate(dt);
@@ -222,15 +224,14 @@ void Application::Frame_Metrics()
 
 }
 
+void Application::EventSystemBroadcast()
+{
+	eventSys->SendBroadcastedEvents();
+}
+
 void Application::Cap_FPS(const int& cap) 
 {
 	fps_cap = cap;
-}
-
-void Application::BroadcastEvent(const Event & event)
-{
-	//for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); ++it)
-	//	(*it)->ReceiveEvent(event);
 }
 
 float Application::GetDt()

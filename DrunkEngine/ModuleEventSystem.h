@@ -3,6 +3,8 @@
 
 #include "Module.h"
 
+class GameObject;
+
 enum EventType
 {
 	GameObject_Detroyed,
@@ -31,10 +33,20 @@ struct Event
 		{
 			int x, y;
 		} pint2d;
+
+		struct
+		{
+			GameObject * ptr
+		} game_object;
 	};
 
 	Event(EventType type) : type(type) {}
+};
 
+struct Subscriptor
+{
+	std::vector<EventType> sub_events;
+	Module * module;
 };
 
 class ModuleEventSystem : public Module
@@ -43,10 +55,13 @@ public:
 	ModuleEventSystem(bool start_enabled = true);
 	~ModuleEventSystem();
 
-	bool Start();
+	void BroadcastEvent(const Event & event);
+	void SendBroadcastedEvents();
+	void Subscribe(EventType event, Module * module);
 
-public:
-
+private:
+	std::vector<Subscriptor*> subscriptors;
+	std::vector<const Event*> queue_of_events;
 };
 
 #endif // !_MODULE_EVENTSYSTEM_H_

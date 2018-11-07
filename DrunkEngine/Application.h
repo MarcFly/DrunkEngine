@@ -54,14 +54,14 @@ public:
 	float GetDt();
 	void Cap_FPS(const int& cap);
 
-	void BroadcastEvent(const Event& event);
-
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
-	void Frame_Metrics();	
+	void Frame_Metrics();
+
+	void EventSystemBroadcast();
 };
 
 extern Application* App;

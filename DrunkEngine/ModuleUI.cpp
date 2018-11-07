@@ -82,7 +82,7 @@ update_status ModuleUI::PreUpdate(float dt)
 		if (windows->IsActive())
 			windows->Draw();
 	}
-
+	
 	return UPDATE_CONTINUE;
 }
 
