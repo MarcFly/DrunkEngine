@@ -39,8 +39,8 @@ bool ModuleScene::Start()
 	bool ret = true;
 
 	//Load(nullptr);
-	LoadFBX("./Assets/BakerHouse.fbx");
-	//LoadFBX("./Assets/Ogre.fbx");
+	//LoadFBX("./Assets/Street environment_V01.FBX");
+	LoadFBX("./Assets/Ogre.fbx");
 	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 
 	//LoadSceneFile("Scene.json");
@@ -219,7 +219,7 @@ void ModuleScene::NewScene()
 
 void ModuleScene::CreateMainCam()
 {
-	if (active_cameras.size() > 0)
+	if (active_cameras.size() < 1)
 	{
 		GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
 		getRootObj()->children.push_back(MainCam);

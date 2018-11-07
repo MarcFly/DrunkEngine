@@ -131,10 +131,12 @@ public:
 				{
 					int last = aux.find_last_of('\\');
 					aux.erase(last+1);
+					return aux;
 				}
 			}
 			else
 				aux = test;
+
 			std::string path = full_path;
 			//original_load.substr(aux.length());
 			path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /

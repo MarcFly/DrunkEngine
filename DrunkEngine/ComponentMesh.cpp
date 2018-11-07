@@ -129,7 +129,7 @@ void ComponentMesh::Draw()
 	glPushMatrix();
 	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
-	if (App->scene->active_cameras.size() > 0 && this->parent->isInsideFrustum(App->scene->active_cameras[0], this->parent->GetBB()))
+	if (App->scene->active_cameras.size() > 0 && this->parent->isInsideFrustum(App->scene->Main_Cam, this->parent->GetBB()))
 	{
 		if (index != nullptr && vertex != nullptr)
 		{
