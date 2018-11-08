@@ -80,11 +80,11 @@ public:
 	
 	void SetDirectories()
 	{
-		CreateHiddenDir("\\Library");
-		CreateHiddenDir("\\Library\\Meshes");
-		CreateHiddenDir("\\Library\\Materials");
-		CreateHiddenDir("\\Library\\Textures");
-		CreateHiddenDir("\\Library\\Cameras");
+		CreateHiddenDir(".\\Library");
+		CreateHiddenDir(".\\Library\\Meshes");
+		CreateHiddenDir(".\\Library\\Materials");
+		CreateHiddenDir(".\\Library\\Textures");
+		CreateHiddenDir(".\\Library\\Cameras");
 	}
 
 

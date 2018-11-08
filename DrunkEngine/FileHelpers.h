@@ -15,6 +15,6 @@ std::string GetFileName(const char* file);
 
 Uint32 GetUUID();
 
-char* MD5NUID(std::string str);
+std::string GetHexID(const char* data);
 
 #endif

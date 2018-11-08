@@ -210,7 +210,7 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 	memcpy(cursor, &mesh->mMaterialIndex, sizeof(uint));
 
 	std::ofstream write_file;
-	std::string filename = "\\Library\\Meshes\\";
+	std::string filename = ".\\Library\\Meshes\\";
 	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
 	filename.append(".meshdrnk");
 

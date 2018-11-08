@@ -19,7 +19,7 @@ struct LibraryResource
 	ResourceTypes type;
 	std::string file;
 	uint UseCount = 0;
-	Uint32 UUID = UINT_FAST32_MAX;
+	char HexID[64];
 	bool to_pop = false;
 	Resource* Asset = nullptr;
 	

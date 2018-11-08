@@ -1,5 +1,6 @@
 #include "FileHelpers.h"
 #include "Globals.h"
+#include "Libs/picosha2.h"
 
 std::string GetDir(const char* full_path)
 {
@@ -68,30 +69,12 @@ Uint32 GetUUID()
 	return pcg32_random_r(&rng);
 }
 
-char* MD5NUID(std::string str) {
-	int n;
-	MD5_CTX c;
-	unsigned char digest[16];
-	char *out = (char*)malloc(33);
 
-	MD5_Init(&c);
+std::string GetHexID(const char* data) 
+{
+	std::vector<unsigned char> hash(picosha2::k_digest_size);
+	std::string str = data;
+	picosha2::hash256(str.begin(), str.end(), hash.begin(), hash.end());
 
-	while (str.length() > 0) {
-		if (str.length > 512) {
-			MD5_Update(&c, str.c_str(), 512);
-		}
-		else {
-			MD5_Update(&c, str.c_str(), str.length);
-		}
-		str.length -= 512;
-		str += 512;
-	}
-
-	MD5_Final(digest, &c);
-
-	for (n = 0; n < 16; ++n) {
-		snprintf(&(out[n * 2]), 16 * 2, "%02x", (unsigned int)digest[n]);
-	}
-
-	return out;
+	return picosha2::bytes_to_hex_string(hash.begin(), hash.end()).c_str();;
 }
