@@ -211,7 +211,7 @@ void OptionsWindow::Draw()
 				App->eventSys->BroadcastEvent(ev);
 			}
 
-			if (ImGui::SliderFloat("FarPlane", &App->scene->Main_Cam->frustum.farPlaneDistance, 1.f, 1000.0f))
+			if (ImGui::SliderFloat("FarPlane", &App->scene->Main_Cam->frustum.farPlaneDistance, 200.f, 2000.0f))
 			{
 				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
 				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);

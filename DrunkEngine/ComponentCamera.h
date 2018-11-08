@@ -32,6 +32,7 @@ public:
 	float* GetViewMatrix();
 
 	void LookToObj(GameObject* obj, float vertex_aux);
+	void ComponentCamera::LookToActiveObjs(vec look_to);
 
 	void TransformPos(float3 pos);
 	void TransformRot(Quat rot);
