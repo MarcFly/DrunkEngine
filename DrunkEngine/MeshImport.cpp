@@ -29,15 +29,16 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 	mesh->name = file;
 
 	std::ifstream read_file;
-	read_file.open(mesh->name.c_str(), std::ios::in || std::ios::binary);
-	
+	read_file.open(mesh->name.c_str(), std::fstream::in | std::fstream::binary);
+
 	std::streampos end = read_file.seekg(0, read_file.end).tellg();
+	int size = end;
 	read_file.seekg(0, read_file.beg);
 
-	if (end > 1024)
+	if (size > 1024)
 	{
-		char* data = new char[end];
-		read_file.read(data, sizeof(char)*end);
+		char* data = new char[size];
+		read_file.read(data, sizeof(char)*size);
 		char* cursor = data;
 
 		uint ranges[5];
@@ -50,7 +51,7 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->vertex = new GLfloat[mesh->num_vertex * 3];
 			memcpy(mesh->vertex, cursor, mesh->num_vertex * 3 * sizeof(GLfloat));
 		}
-		cursor += ((mesh->num_vertex * 3) * sizeof(GLfloat));
+		cursor += (mesh->num_vertex * 3 * sizeof(GLfloat));
 
 		mesh->num_index = ranges[1];
 		if (mesh->num_index > 0)
@@ -58,7 +59,7 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->index = new GLuint[mesh->num_index ];
 			memcpy(mesh->index, cursor, mesh->num_index * sizeof(GLuint)); // Tried takign out the *3?
 		}
-		cursor += ((mesh->num_index) * sizeof(GLuint));
+		cursor += (mesh->num_index * sizeof(GLuint));
 
 		mesh->num_normal = ranges[2] / 3;
 		if (mesh->num_normal > 0)
@@ -66,9 +67,10 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->normal = new GLfloat[mesh->num_normal * 3];
 			memcpy(mesh->normal, cursor, mesh->num_normal * 3 * sizeof(GLfloat));
 		}
-		cursor += ((mesh->num_normal * 3) * sizeof(GLfloat));
 
-		mesh->num_faces = mesh->num_index; // /2 when we save normals properly
+		cursor += (mesh->num_normal * 3 * sizeof(GLfloat));
+
+		mesh->num_faces = mesh->num_index / 3; // /2 when we save normals properly
 
 		mesh->num_uvs = ranges[3] / 3;
 		if (mesh->num_uvs > 0)
@@ -76,15 +78,15 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->tex_coords = new GLfloat[mesh->num_uvs * 3];
 			memcpy(mesh->tex_coords, cursor, mesh->num_uvs * sizeof(GLfloat) * 3);
 		}
-		GLfloat* seeuv = mesh->tex_coords;
-		for(int i = 0; i < mesh->num_uvs *3; i++)
-		{
-			seeuv++;
-			if (i % 50 == 0)
-			bool test = true;
-		}
-		cursor += (mesh->num_uvs * 3 * sizeof(GLfloat));
-		
+		GLfloat* aids = mesh->tex_coords;
+		for (int i = 0; i < mesh->num_uvs * 3; i++, aids++)
+			if (*aids == -431602080.) {
+				bool aidsi = true;
+				break;
+			}
+
+		cursor += (ranges[3] * sizeof(GLfloat));
+
 		float bbox[6]; // Bounding Box size always 6
 		memcpy(bbox, cursor, sizeof(bbox));
 		mesh->BoundingBox = new AABB(vec(bbox[0], bbox[1], bbox[2]), vec(bbox[3], bbox[4], bbox[5]));
@@ -122,13 +124,16 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 
 	uint buf_size = 0;
 
-	uint vertex_size = (mesh->mNumVertices * 3); buf_size += sizeof(GLfloat)*vertex_size;
+	uint vertex_size = (mesh->mNumVertices * 3); 
+	buf_size += sizeof(GLfloat)*vertex_size;
 	uint index_size = 0;
 	uint normal_size = 0;
 	if (mesh->HasFaces())
 	{
-		index_size = (mesh->mNumFaces * 3); buf_size += sizeof(GLuint)*index_size;
-		normal_size = (mesh->mNumFaces * 3 * 2); buf_size += sizeof(GLfloat)*normal_size;
+		index_size = (mesh->mNumFaces * 3); 
+		buf_size += sizeof(GLuint)*index_size;
+		normal_size = (mesh->mNumFaces * 2 * 3); 
+		buf_size += sizeof(GLfloat)*normal_size;
 	}
 	
 	uint uv_size = 0; 
@@ -141,7 +146,7 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 
 	uint size_size = sizeof(uint) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	buf_size += (size_size + sizeof(float)*BBox_size + sizeof(uint)/*MatIndex*/);
+	buf_size += (size_size + sizeof(float)*BBox_size + sizeof(unsigned int)/*MatIndex*/);
 
 	char* data = new char[buf_size];
 	char* cursor = data;
@@ -168,7 +173,7 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 	if (vertex_aux.size() > 0)
 	{
 		memcpy(cursor, &vertex_aux[0], sizeof(GLfloat)*vertex_size);
-		cursor += sizeof(GLfloat)*vertex_size;
+		cursor += (sizeof(GLfloat)*vertex_size);
 	}
 
 	std::vector<GLuint> index_aux;
@@ -184,44 +189,32 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 	if (index_aux.size() > 0)
 	{
 		memcpy(cursor, &index_aux[0], sizeof(GLuint)*index_size);
-		cursor += sizeof(GLuint)*index_size;
+		cursor += (sizeof(GLuint)*index_size);
 	}
 	if (normal_aux.size() > 0)
 	{
 		memcpy(cursor, &normal_aux[0], sizeof(GLfloat)*normal_size);
-		cursor += sizeof(GLfloat)*normal_size;
+		cursor += (sizeof(GLfloat)*normal_size);
 	}
 
-	std::vector<GLfloat> uv_aux;
-	for (uint j = 0; j < uv_size/3; j++)
+	if (uv_size > 0)
 	{
-		uv_aux.push_back(mesh->mTextureCoords[0][j].x);
-		uv_aux.push_back(mesh->mTextureCoords[0][j].y);
-		uv_aux.push_back(mesh->mTextureCoords[0][j].z);
-		if (j % 383 == 0)
-			bool check = true;
-	}
-
-	if (uv_aux.size() > 0)
-	{
-		memcpy(cursor, &uv_aux[0], sizeof(GLfloat)*uv_size);
-		cursor += sizeof(GLfloat)*uv_size;
+		memcpy(cursor, &mesh->mTextureCoords[0][0], sizeof(GLfloat)*uv_size);
+		cursor += (sizeof(GLfloat)*uv_size);
 	}
 
 	std::vector<float> test = ExportBBox(mesh->mVertices, mesh->mNumVertices);
-	float arr[6] = {test[0], test[1], test[2],test[3], test[4], test[5]};
-	memcpy(cursor, &arr[0], sizeof(arr));
-	cursor += sizeof(arr);
+	memcpy(cursor, &test[0], sizeof(float)*6);
+	cursor += (sizeof(float)*6);
 
 	memcpy(cursor, &mesh->mMaterialIndex, sizeof(uint));
-	cursor += sizeof(uint);
 
 	std::ofstream write_file;
 	std::string filename = "./Library/Meshes/";
 	filename += App->importer->GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
 	filename.append(".meshdrnk");
 
-	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
+	write_file.open(filename.c_str(), std::fstream::out | std::fstream::binary);
 
 	write_file.write(data, buf_size);
 

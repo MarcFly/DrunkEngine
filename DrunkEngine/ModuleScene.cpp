@@ -40,9 +40,9 @@ bool ModuleScene::Start()
 
 	//Load(nullptr);
 	//LoadFBX("./Assets/Street environment_V01.FBX");
-	LoadFBX("./Assets/Ogre.fbx");
+	//LoadFBX("./Assets/Ogre.fbx");
 	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
-
+	LoadFBX("./Assets/Cube3d.fbx");
 	//LoadSceneFile("Scene.json");
 
 	App->renderer3D->OnResize();
