@@ -12,6 +12,7 @@ Application::Application()
 	importer = new ModuleImport();
 	ui = new ModuleUI(this);
 	scene = new ModuleScene(this);
+	eventSys = new ModuleEventSystem(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -28,6 +29,8 @@ Application::Application()
 
 	// Renderer last!
 	AddModule(renderer3D);
+
+	AddModule(eventSys);
 
 	App = this;
 }
@@ -154,8 +157,10 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 	
+	EventSystemBroadcast();
+
 	std::list<Module*>::iterator item = list_modules.begin();
-	
+
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		ret = item._Ptr->_Myval->PreUpdate(dt);
@@ -217,6 +222,11 @@ void Application::Frame_Metrics()
 
 	ms_timer.Start();
 
+}
+
+void Application::EventSystemBroadcast()
+{
+	eventSys->SendBroadcastedEvents();
 }
 
 void Application::Cap_FPS(const int& cap) 

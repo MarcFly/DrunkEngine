@@ -77,6 +77,8 @@ public:
 
 	void InitCheckTex();
 
+	void RecieveEvent(const Event & event);
+
 public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);

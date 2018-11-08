@@ -28,14 +28,15 @@ public:
 
 	void DrawRay(vec a, vec b);
 
+	void RecieveEvent(const Event & event);
+
+	void SetMainCamAspectRatio();
+
 public:	
 	Color background;
 	ComponentCamera * main_camera;
 
 private:
-	int win_w;
-	int win_h;
-
 	LineSegment picking = LineSegment(vec::zero, vec::zero);
 };
 

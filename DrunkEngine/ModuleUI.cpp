@@ -24,7 +24,7 @@
 
 using namespace std;
 
-ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled)
+ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled, Type_UI)
 {
 	ImGui::CreateContext();
 }
@@ -82,7 +82,7 @@ update_status ModuleUI::PreUpdate(float dt)
 		if (windows->IsActive())
 			windows->Draw();
 	}
-
+	
 	return UPDATE_CONTINUE;
 }
 
