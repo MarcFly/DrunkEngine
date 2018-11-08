@@ -13,7 +13,7 @@
 
 #define GRID_SIZE 10
 
-ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
+ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled, Type_Render3D)
 {
 	InitCheckTex();
 }
@@ -117,7 +117,6 @@ bool ModuleRenderer3D::Init()
 
 		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
-		
 	}
 
 	// Projection matrix for
@@ -125,6 +124,9 @@ bool ModuleRenderer3D::Init()
 	
 	SetTextureParams();
 	
+	App->eventSys->Subscribe(EventType::Window_Resize, this);
+	App->eventSys->Subscribe(EventType::Camera_Modified, this);
+
 	return ret;
 }
 
@@ -166,8 +168,7 @@ update_status ModuleRenderer3D::Update(float dt)
 
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
-{
-	
+{	
 	SDL_GL_SwapWindow(App->window->window);
 
 	return UPDATE_CONTINUE;
@@ -266,6 +267,25 @@ void ModuleRenderer3D::InitCheckTex()
 			checkTexture[i][j][2] = (GLubyte)c;
 			checkTexture[i][j][3] = (GLubyte)255;
 		}
+	}
+}
+
+void ModuleRenderer3D::RecieveEvent(const Event & event)
+{
+	switch (event.type)
+	{
+	case EventType::Camera_Modified:
+	{
+		OnResize();
+		break;
+	}
+	case EventType::Window_Resize:
+	{
+		OnResize();
+		break;
+	}
+	default:
+		break;
 	}
 }
 

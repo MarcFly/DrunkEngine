@@ -20,9 +20,7 @@
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/Release/ILU.lib")
 
-
-
-ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
+ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled, Type_Scene)
 {
 
 }
@@ -48,6 +46,9 @@ bool ModuleScene::Start()
 	App->renderer3D->OnResize();
 
 	//SaveScene();
+
+	App->eventSys->Subscribe(EventType::Window_Resize, this);
+	App->eventSys->Subscribe(EventType::Camera_Modified, this);
 
 	return ret;
 }
@@ -274,5 +275,22 @@ void ModuleScene::OrderScene()
 				get->children.push_back(obj);
 			i--;
 		}
+	}
+}
+
+void ModuleScene::RecieveEvent(const Event & event)
+{
+	switch (event.type)
+	{
+	case EventType::Camera_Modified:
+	{
+		break;
+	}
+	case EventType::Window_Resize:
+	{
+		break;
+	}
+	default:
+		break;
 	}
 }

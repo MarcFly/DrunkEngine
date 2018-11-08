@@ -29,6 +29,8 @@ public:
 	void SetFullDesktop(bool full_desktop);
 	void SetBrightness(float brightness);
 
+	void RecieveEvent(const Event & event);
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window;

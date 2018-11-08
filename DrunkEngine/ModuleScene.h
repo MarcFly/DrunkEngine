@@ -43,6 +43,8 @@ public:
 
 	void OrderScene();
 
+	void RecieveEvent(const Event & event);
+
 public:
 	GameObject* Root_Object = nullptr;
 

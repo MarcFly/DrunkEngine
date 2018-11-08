@@ -17,6 +17,11 @@
 
 void CallLog(const char* str, char* usrData);
 
+ModuleImport::ModuleImport(bool start_enabled) : Module(start_enabled, Type_Import)
+{
+
+}
+
 bool ModuleImport::Init()
 {
 	SetDirectories();

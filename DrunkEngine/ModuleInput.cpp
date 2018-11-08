@@ -12,7 +12,7 @@
 
 #define MAX_KEYS 300
 
-ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled)
+ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled, Type_Input)
 {
 	keyboard = new KEY_STATE[MAX_KEYS];
 	memset(keyboard, KEY_IDLE, sizeof(KEY_STATE) * MAX_KEYS);
@@ -123,8 +123,16 @@ update_status ModuleInput::PreUpdate(float dt)
 
 			case SDL_WINDOWEVENT:
 			{
-				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
-					App->renderer3D->OnResize();
+				if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					int win_w, win_h;
+					SDL_GetWindowSize(App->window->window, &win_w, &win_h);
+
+					Event ev(EventType::Window_Resize, Event::UnionUsed::UsePoint2d);
+					ev.point2d.x = win_w;
+					ev.point2d.y = win_h;
+					App->eventSys->BroadcastEvent(ev);
+				}
 				break;
 			}
 
