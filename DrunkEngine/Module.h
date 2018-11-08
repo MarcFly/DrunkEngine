@@ -19,6 +19,7 @@ enum TypeModule
 	Type_Window,
 	Type_UI,
 	Type_Import,
+	Type_GameObj,
 	Type_Null
 };
 

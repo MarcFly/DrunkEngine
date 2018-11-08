@@ -140,6 +140,7 @@
     <ClInclude Include="LoadSaveWindows.h" />
     <ClInclude Include="MaterialImport.h" />
     <ClInclude Include="MeshImport.h" />
+    <ClInclude Include="ModuleGameObject.h" />
     <ClInclude Include="ModuleImport.h" />
     <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
@@ -292,6 +293,7 @@
     <ClCompile Include="MGL\SysInfo\SystemInfo.cpp" />
     <ClCompile Include="MGL\Time\Clock.cpp" />
     <ClCompile Include="ModuleEventSystem.cpp" />
+    <ClCompile Include="ModuleGameObject.cpp" />
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="ObjectPropertiesWindow.cpp" />

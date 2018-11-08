@@ -13,6 +13,7 @@
 #include "ModuleScene.h"
 #include "ModuleImport.h"
 #include "ModuleEventSystem.h"
+#include "ModuleGameObject.h"
 
 #include "ModuleUI.h"
 
@@ -28,6 +29,7 @@ public:
 	ModuleUI* ui;
 	ModuleScene* scene;
 	ModuleEventSystem* eventSys;
+	ModuleGameObject* gameObj;
 
 	std::string profile = "config_data.json";
 

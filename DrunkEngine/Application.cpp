@@ -13,6 +13,7 @@ Application::Application()
 	ui = new ModuleUI(this);
 	scene = new ModuleScene(this);
 	eventSys = new ModuleEventSystem(this);
+	gameObj = new ModuleGameObject(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -25,6 +26,7 @@ Application::Application()
 	//AddModule(physics);
 	AddModule(importer);
 	AddModule(scene);
+	AddModule(gameObj);
 	AddModule(ui);
 
 	// Renderer last!
