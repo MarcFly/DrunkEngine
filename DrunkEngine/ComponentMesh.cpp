@@ -243,12 +243,12 @@ void ComponentMesh::DrawNormals()
 
 	for (int k = 0; k < this->num_normal / 2; k++)
 	{
-		glVertex3f(this->normal[k * 2], this->normal[k * 2 + 1], this->normal[k * 2 + 2]);
+		glVertex3f(this->normal[k * 6], this->normal[k * 6 + 1], this->normal[k * 6 + 2]);
 
-		vec norm(this->normal[k * 2 + 3] - this->normal[k * 2], this->normal[k * 2 + 4] - this->normal[k * 3 + 1], this->normal[k * 2 + 5] - this->normal[k * 2 + 2]);
+		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 3 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
 		norm = norm.Mul(App->renderer3D->normal_length);
 
-		glVertex3f(this->normal[k * 2] + norm.x, this->normal[k * 2 + 1] + norm.y, this->normal[k * 2 + 2] + norm.z);
+		glVertex3f(this->normal[k * 6] + norm.x, this->normal[k * 6 + 1] + norm.y, this->normal[k * 6 + 2] + norm.z);
 	}
 	glColor3f(0, 1, 0);
 	glEnd();

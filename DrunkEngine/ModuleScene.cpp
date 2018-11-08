@@ -41,8 +41,8 @@ bool ModuleScene::Start()
 	//Load(nullptr);
 	//LoadFBX("./Assets/Street environment_V01.FBX");
 	//LoadFBX("./Assets/Ogre.fbx");
-	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
-	LoadFBX("./Assets/Cube3d.fbx");
+	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	//LoadFBX("./Assets/Cube3d.fbx");
 	//LoadSceneFile("Scene.json");
 
 	App->renderer3D->OnResize();
@@ -70,7 +70,7 @@ bool ModuleScene::LoadFBX(const char* file_path)
 {
 	bool ret = true;
 
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast);  // for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast); 
 
 	std::string aux = file_path;
 
