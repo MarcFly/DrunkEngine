@@ -7,10 +7,7 @@
 
 // Creation of Root Node from a file
 GameObject::GameObject()
-{
-	SetUUID();
-	//GetTransform();
-}
+{}
 GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 {
 	this->name = name;
@@ -30,13 +27,12 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 }
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path, GameObject* par)
 {
-	SetUUID();
-
 	this->name = file_path;
 	this->root = this;	
 
 	if (par != nullptr)
 	{
+		SetUUID();
 		parent = par;
 		root = par->root;
 	}

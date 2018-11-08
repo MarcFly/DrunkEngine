@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <experimental/filesystem>
 
 void MeshImport::Init()
 {
@@ -24,19 +25,20 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 {
 	App->importer->Imp_Timer.Start();
 
-	//mesh->name.clear();
+
 	mesh->name = file;
 
 	std::ifstream read_file;
-	read_file.open(file, std::ios::binary);
+	read_file.open(mesh->name.c_str(), std::fstream::in | std::fstream::binary);
 
 	std::streampos end = read_file.seekg(0, read_file.end).tellg();
+	int size = end;
 	read_file.seekg(0, read_file.beg);
 
-	if (end > 1024)
+	if (size > 1024)
 	{
-		char* data = new char[end];
-		read_file.read(data, sizeof(char)*end);
+		char* data = new char[size];
+		read_file.read(data, sizeof(char)*size);
 		char* cursor = data;
 
 		uint ranges[5];
@@ -49,7 +51,7 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->vertex = new GLfloat[mesh->num_vertex * 3];
 			memcpy(mesh->vertex, cursor, mesh->num_vertex * 3 * sizeof(GLfloat));
 		}
-		cursor += ((mesh->num_vertex * 3) * sizeof(GLfloat));
+		cursor += (mesh->num_vertex * 3 * sizeof(GLfloat));
 
 		mesh->num_index = ranges[1];
 		if (mesh->num_index > 0)
@@ -57,7 +59,7 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->index = new GLuint[mesh->num_index ];
 			memcpy(mesh->index, cursor, mesh->num_index * sizeof(GLuint)); // Tried takign out the *3?
 		}
-		cursor += ((mesh->num_index) * sizeof(GLuint));
+		cursor += (mesh->num_index * sizeof(GLuint));
 
 		mesh->num_normal = ranges[2] / 3;
 		if (mesh->num_normal > 0)
@@ -65,9 +67,10 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->normal = new GLfloat[mesh->num_normal * 3];
 			memcpy(mesh->normal, cursor, mesh->num_normal * 3 * sizeof(GLfloat));
 		}
-		cursor += ((mesh->num_normal * 3) * sizeof(GLfloat));
 
-		mesh->num_faces = mesh->num_index; // /2 when we save normals properly
+		cursor += (mesh->num_normal * 3 * sizeof(GLfloat));
+
+		mesh->num_faces = mesh->num_index / 3; // /2 when we save normals properly
 
 		mesh->num_uvs = ranges[3] / 3;
 		if (mesh->num_uvs > 0)
@@ -75,6 +78,13 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->tex_coords = new GLfloat[mesh->num_uvs * 3];
 			memcpy(mesh->tex_coords, cursor, mesh->num_uvs * sizeof(GLfloat) * 3);
 		}
+		GLfloat* aids = mesh->tex_coords;
+		for (int i = 0; i < mesh->num_uvs * 3; i++, aids++)
+			if (*aids == -431602080.) {
+				bool aidsi = true;
+				break;
+			}
+
 		cursor += (ranges[3] * sizeof(GLfloat));
 
 		float bbox[6]; // Bounding Box size always 6
@@ -97,6 +107,8 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 		mesh = nullptr;
 	}
 
+	read_file.close();
+
 	App->importer->Imp_Timer.LogTime("Mesh");
 
 	return mesh;
@@ -110,27 +122,42 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 {
 	aiMesh* mesh = scene->mMeshes[mesh_id];
 
-	uint vertex_size = sizeof(GLfloat)*(mesh->mNumVertices * 3);
-	uint index_size = sizeof(GLuint)*(mesh->mNumFaces * 3);
-	uint normal_size = sizeof(GLfloat)*(mesh->mNumFaces * 3 * 2);
-	uint uv_size = sizeof(float)*(mesh->mNumVertices * 3);
-	uint BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
-	uint Mat_index = sizeof(unsigned int); // The material index 
+	uint buf_size = 0;
+
+	uint vertex_size = (mesh->mNumVertices * 3); 
+	buf_size += sizeof(GLfloat)*vertex_size;
+	uint index_size = 0;
+	uint normal_size = 0;
+	if (mesh->HasFaces())
+	{
+		index_size = (mesh->mNumFaces * 3); 
+		buf_size += sizeof(GLuint)*index_size;
+		normal_size = (mesh->mNumFaces * 2 * 3); 
+		buf_size += sizeof(GLfloat)*normal_size;
+	}
+	
+	uint uv_size = 0; 
+	if(mesh->HasTextureCoords(0)) // We only load one UV channel for now
+		uv_size = (mesh->mNumVertices * 3);
+	buf_size += sizeof(GLfloat)*uv_size;
+
+	uint BBox_size = 3 * 2; // 2 Vertex of 3 float each
+	uint Mat_index = 0; // The material index 
 
 	uint size_size = sizeof(uint) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	uint buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + Mat_index;
+	buf_size += (size_size + sizeof(float)*BBox_size + sizeof(unsigned int)/*MatIndex*/);
 
 	char* data = new char[buf_size];
 	char* cursor = data;
 
 	uint ranges[5] =
 	{
-		vertex_size / sizeof(GLfloat),
-		index_size / sizeof(GLuint),
-		normal_size / sizeof(GLfloat),
-		uv_size / sizeof(float),
-		BBox_size / sizeof(GLfloat)
+		vertex_size,
+		index_size,
+		normal_size,
+		uv_size,
+		BBox_size
 	};
 
 	memcpy(cursor, ranges, sizeof(ranges));
@@ -143,8 +170,11 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 		vertex_aux.push_back(mesh->mVertices[j].y);
 		vertex_aux.push_back(mesh->mVertices[j].z);
 	}
-	memcpy(cursor, &vertex_aux[0], vertex_size);
-	cursor += vertex_size;
+	if (vertex_aux.size() > 0)
+	{
+		memcpy(cursor, &vertex_aux[0], sizeof(GLfloat)*vertex_size);
+		cursor += (sizeof(GLfloat)*vertex_size);
+	}
 
 	std::vector<GLuint> index_aux;
 	std::vector<GLfloat> normal_aux;
@@ -156,40 +186,39 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 
 		ExportIndexNormals(j, normal_aux, index_aux, vertex_aux);
 	}
-	memcpy(cursor, &index_aux[0], index_size);
-	cursor += index_size;
-
-	memcpy(cursor, &normal_aux[0], normal_size);
-	cursor += normal_size;
-
-	std::vector<float> uv_aux;
-	for (uint j = 0; j < mesh->mNumVertices; j++)
+	if (index_aux.size() > 0)
 	{
-		uv_aux.push_back(mesh->mTextureCoords[0][j].x);
-		uv_aux.push_back(mesh->mTextureCoords[0][j].y);
-		uv_aux.push_back(mesh->mTextureCoords[0][j].z);
+		memcpy(cursor, &index_aux[0], sizeof(GLuint)*index_size);
+		cursor += (sizeof(GLuint)*index_size);
+	}
+	if (normal_aux.size() > 0)
+	{
+		memcpy(cursor, &normal_aux[0], sizeof(GLfloat)*normal_size);
+		cursor += (sizeof(GLfloat)*normal_size);
 	}
 
-	memcpy(cursor, &uv_aux[0], uv_size);
-	cursor += uv_size;
+	if (uv_size > 0)
+	{
+		memcpy(cursor, &mesh->mTextureCoords[0][0], sizeof(GLfloat)*uv_size);
+		cursor += (sizeof(GLfloat)*uv_size);
+	}
 
 	std::vector<float> test = ExportBBox(mesh->mVertices, mesh->mNumVertices);
-	memcpy(cursor, &test[0], sizeof(float) * 6);
-	cursor += sizeof(float) * 6;
+	memcpy(cursor, &test[0], sizeof(float)*6);
+	cursor += (sizeof(float)*6);
 
-	memcpy(cursor, &mesh->mMaterialIndex, Mat_index);
+	memcpy(cursor, &mesh->mMaterialIndex, sizeof(uint));
 
 	std::ofstream write_file;
 	std::string filename = "./Library/Meshes/";
 	filename += App->importer->GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
 	filename.append(".meshdrnk");
 
-	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
+	write_file.open(filename.c_str(), std::fstream::out | std::fstream::binary);
 
 	write_file.write(data, buf_size);
 
 	write_file.close();
-
 }
 
 void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex)

@@ -162,18 +162,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::Update(float dt)
 {
 	App->scene->ObjUpdate(dt);
-	/*if (faces)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		Render(true);
-	}
-
-	if (wireframe)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glColor3f(0, 0, 0);
-		Render(false);
-	}*/
 
 	return UPDATE_CONTINUE;
 }
@@ -198,45 +186,7 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::Render(bool use_texture)
 {
-	/*
-	for (int i = 0; i < App->scene->Objects.size(); i++)
-	{
-		for(int j = 0; j < App->scene->Objects[i].meshes.size(); j++)
-		{ 
-			// Draw elements
-			ComponentMesh* mesh = &App->scene->Objects[i].meshes[j];
-
-			if (faces)
-				App->scene->DrawMesh(mesh, use_texture);
-
-			// Draw Normals
-			if (render_normals)
-			{
-				glBegin(GL_LINES);
-				glColor3f(0.0f, 1.0f, 0.0f);
-
-				for (int k = 0; k < mesh->num_normal / 6; k++)
-				{
-					glVertex3f(mesh->normal[k * 6], mesh->normal[k * 6 + 1], mesh->normal[k * 6 + 2]);
-
-					vec norm(mesh->normal[k * 6 + 3] - mesh->normal[k * 6], mesh->normal[k * 6 + 4] - mesh->normal[k * 6 + 1], mesh->normal[k * 6 + 5] - mesh->normal[k * 6 + 2]);
-					norm = norm.Mul(normal_length);
-
-					glVertex3f(mesh->normal[k * 6] + norm.x, mesh->normal[k * 6 + 1] + norm.y, mesh->normal[k * 6 + 2] + norm.z);
-				}
-
-				glEnd();
-			}
-
-			glDisableClientState(GL_VERTEX_ARRAY);
-
-			if (bounding_box)
-				RenderBoundBox(mesh);
-		}
-
-		
-	}
-	*/
+	
 }
 
 void ModuleRenderer3D::OnResize()

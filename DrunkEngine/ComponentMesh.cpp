@@ -129,7 +129,7 @@ void ComponentMesh::Draw()
 	glPushMatrix();
 	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
-	if (App->scene->active_cameras.size() > 0 && this->parent->isInsideFrustum(App->scene->active_cameras[0], this->parent->GetBB()))
+	if (App->scene->active_cameras.size() > 0 && this->parent->isInsideFrustum(App->scene->Main_Cam, this->parent->GetBB()))
 	{
 		if (index != nullptr && vertex != nullptr)
 		{
@@ -241,11 +241,11 @@ void ComponentMesh::DrawNormals()
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
 
-	for (int k = 0; k < this->num_normal / 6; k++)
+	for (int k = 0; k < this->num_normal / 2; k++)
 	{
 		glVertex3f(this->normal[k * 6], this->normal[k * 6 + 1], this->normal[k * 6 + 2]);
 
-		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 6 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
+		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 3 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
 		norm = norm.Mul(App->renderer3D->normal_length);
 
 		glVertex3f(this->normal[k * 6] + norm.x, this->normal[k * 6 + 1] + norm.y, this->normal[k * 6 + 2] + norm.z);

@@ -67,13 +67,14 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
-		std::string filename = "./Library/Meshes/";
+		std::string filename = "Library\\Meshes\\";
 		filename += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
 		filename.append(".meshdrnk");
 		ComponentMesh* aux = new ComponentMesh(ret);
-		ComponentMesh* test = mesh_i->ImportMesh(filename.c_str(), aux);
-		if (test == nullptr)
+		if (mesh_i->ImportMesh(filename.c_str(), aux) == nullptr)
 		{
+			aux = nullptr;
+			aux = new ComponentMesh(ret);
 			mesh_i->ExportMesh(scene, obj_node->mMeshes[i],path);
 			mesh_i->ImportMesh(filename.c_str(), aux);
 		}
@@ -85,13 +86,14 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	}
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
-		std::string filename = "./Library/Materials/";
+		std::string filename = "Library\\Materials\\";
 		filename += GetFileName(path) + "_Mat_" + std::to_string(i);
 		filename.append(".matdrnk");
 		ComponentMaterial* aux = new ComponentMaterial(ret);
-		ComponentMaterial* test = mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str());
-		if (test == nullptr)
+		if (mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str()) == nullptr)
 		{
+			aux = nullptr;
+			aux = new ComponentMaterial(ret);
 			mat_i->ExportMat(scene, i, path);
 			mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str());
 		}
@@ -113,7 +115,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 void ModuleImport::ExportScene(const char* file_path)
 {
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast); // for better looks i guess: aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_MaxQuality);
 	std::string aux = file_path;
 
 	if (scene == nullptr)
@@ -128,7 +130,7 @@ void ModuleImport::ExportScene(const char* file_path)
 		aux = new_file_path;
 	}
 	else
-		App->ui->console_win->AddLog("Failed to Load from file %s", file_path);
+		App->ui->console_win->AddLog("Succesful Load from file %s", file_path);
 
 	if (scene->HasMeshes())
 		for (int i = 0; i < scene->mNumMeshes; i++)
@@ -176,7 +178,7 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 {
 	if (type == FT_New_Object)
 	{
-		ExportScene(file);
+		//ExportScene(file);
 		App->scene->LoadFBX(file);
 	}
 	else if (type == FT_Texture)

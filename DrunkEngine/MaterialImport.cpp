@@ -280,15 +280,18 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	memcpy(cursor, exitqueue, 2);
 	cursor += 2;
 
-	memcpy(cursor, &texture_ranges[0], sizeof(uint)*texture_ranges.size());
-	cursor += sizeof(uint) * texture_ranges.size();
-
-	for (int i = 0; i < textures.size(); i++)
+	if (texture_ranges.size() > 0)
 	{
-		memcpy(cursor, textures[i].c_str(), textures[i].length() + App->importer->GetExtSize(textures[i].c_str()));
-		cursor += textures[i].length() + App->importer->GetExtSize(textures[i].c_str());
-		memcpy(cursor, exitqueue, 2);
-		cursor += 2;
+		memcpy(cursor, &texture_ranges[0], sizeof(uint)*texture_ranges.size());
+		cursor += sizeof(uint) * texture_ranges.size();
+
+		for (int i = 0; i < textures.size(); i++)
+		{
+			memcpy(cursor, textures[i].c_str(), textures[i].length() + App->importer->GetExtSize(textures[i].c_str()));
+			cursor += textures[i].length() + App->importer->GetExtSize(textures[i].c_str());
+			memcpy(cursor, exitqueue, 2);
+			cursor += 2;
+		}
 	}
 
 	std::ofstream write_file;

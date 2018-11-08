@@ -69,9 +69,12 @@ public:
 
 		ret = ret.substr(ret.find_last_of("\\/") + 1);
 
-		std::string aux = strrchr(ret.c_str(), '.');
-		ret.erase(ret.length() - aux.length()).c_str();
-
+		const char* test = strrchr(ret.c_str(), '.');
+		if (test != NULL && test != nullptr)
+		{
+			std::string aux = test;
+			ret.erase(ret.length() - aux.length()).c_str();
+		}
 		return ret;
 	}
 
@@ -126,11 +129,14 @@ public:
 					aux = test1;
 				else
 				{
-					aux.substr(aux.find_first_of('\\'));
+					int last = aux.find_last_of('\\');
+					aux.erase(last+1);
+					return aux;
 				}
 			}
 			else
 				aux = test;
+
 			std::string path = full_path;
 			//original_load.substr(aux.length());
 			path.erase(path.length() - aux.length() + 1); // + 1 because we can find / but it will ask to erase it for length, +1 will not erase /
