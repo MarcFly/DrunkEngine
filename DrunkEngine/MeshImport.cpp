@@ -76,6 +76,13 @@ ComponentMesh* MeshImport::ImportMesh(const char* file, ComponentMesh* mesh)
 			mesh->tex_coords = new GLfloat[mesh->num_uvs * 3];
 			memcpy(mesh->tex_coords, cursor, mesh->num_uvs * sizeof(GLfloat) * 3);
 		}
+		GLfloat* seeuv = mesh->tex_coords;
+		for(int i = 0; i < mesh->num_uvs *3; i++)
+		{
+			seeuv++;
+			if (i % 50 == 0)
+			bool test = true;
+		}
 		cursor += (mesh->num_uvs * 3 * sizeof(GLfloat));
 		
 		float bbox[6]; // Bounding Box size always 6
@@ -134,7 +141,7 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 
 	uint size_size = sizeof(uint) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	buf_size += size_size + sizeof(float)*BBox_size + sizeof(uint)/*MatIndex*/;
+	buf_size += (size_size + sizeof(float)*BBox_size + sizeof(uint)/*MatIndex*/);
 
 	char* data = new char[buf_size];
 	char* cursor = data;
@@ -185,12 +192,14 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 		cursor += sizeof(GLfloat)*normal_size;
 	}
 
-	std::vector<float> uv_aux;
+	std::vector<GLfloat> uv_aux;
 	for (uint j = 0; j < uv_size/3; j++)
 	{
 		uv_aux.push_back(mesh->mTextureCoords[0][j].x);
 		uv_aux.push_back(mesh->mTextureCoords[0][j].y);
 		uv_aux.push_back(mesh->mTextureCoords[0][j].z);
+		if (j % 383 == 0)
+			bool check = true;
 	}
 
 	if (uv_aux.size() > 0)
