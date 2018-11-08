@@ -245,7 +245,7 @@ void ComponentMesh::DrawNormals()
 	{
 		glVertex3f(this->normal[k * 6], this->normal[k * 6 + 1], this->normal[k * 6 + 2]);
 
-		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 3 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
+		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 6 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
 		norm = norm.Mul(App->renderer3D->normal_length);
 
 		glVertex3f(this->normal[k * 6] + norm.x, this->normal[k * 6 + 1] + norm.y, this->normal[k * 6 + 2] + norm.z);

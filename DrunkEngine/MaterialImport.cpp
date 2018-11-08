@@ -81,7 +81,7 @@ ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat
 			if (check == nullptr)
 			{
 				std::string filename = "./Library/Textures/";
-				filename += App->importer->GetFileName(aux);
+				filename += GetFileName(aux);
 				filename.append(".dds");
 
 				ExportTexture(aux, Dir);
@@ -238,7 +238,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 	// allocating a uint for size
 	buf_size += sizeof(uint);
-	std::string dir = App->importer->GetDir(path);
+	std::string dir = GetDir(path);
 	buf_size += dir.length() + 2; // \0
 
 	std::vector<uint> texture_ranges;
@@ -250,7 +250,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 		
 		textures.push_back(path.C_Str());
 
-		buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
+		buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 		
 		texture_ranges.push_back(textures[i].length() + 2);
 	}
@@ -287,8 +287,8 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 		for (int i = 0; i < textures.size(); i++)
 		{
-			memcpy(cursor, textures[i].c_str(), textures[i].length() + App->importer->GetExtSize(textures[i].c_str()));
-			cursor += textures[i].length() + App->importer->GetExtSize(textures[i].c_str());
+			memcpy(cursor, textures[i].c_str(), textures[i].length() + GetExtSize(textures[i].c_str()));
+			cursor += textures[i].length() + GetExtSize(textures[i].c_str());
 			memcpy(cursor, exitqueue, 2);
 			cursor += 2;
 		}
@@ -296,7 +296,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 	std::ofstream write_file;
 	std::string filename = "./Library/Materials/";
-	filename += App->importer->GetFileName(path) + "_Mat_" + std::to_string(mat_id);
+	filename += GetFileName(path) + "_Mat_" + std::to_string(mat_id);
 	filename.append(".matdrnk");
 
 	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
@@ -321,7 +321,7 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 		std::string new_file_path = path;
 		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
-		new_file_path = App->importer->GetDir(full_path) + new_file_path;
+		new_file_path = GetDir(full_path) + new_file_path;
 
 		check = ilLoadImage(new_file_path.c_str());
 
@@ -346,7 +346,7 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 			data = new ILubyte[size];
 
 			std::string export_path = "./Library/Textures/";
-			export_path.append(App->importer->GetFileName(path).c_str());
+			export_path.append(GetFileName(path).c_str());
 			export_path.append(".dds");
 
 			if (ilSaveL(IL_DDS, data, size) > 0)
@@ -393,7 +393,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 		{
 			textures.push_back(mat->textures[i]->filename.c_str());
 
-			buf_size += textures[i].length() + App->importer->GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
+			buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 
 			texture_ranges.push_back(textures[i].length() + 2);
 		}

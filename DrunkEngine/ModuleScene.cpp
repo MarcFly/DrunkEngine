@@ -11,10 +11,8 @@
 #include "Inspector.h"
 #include "ModuleWindow.h"
 #include "ComponentCamera.h"
-
 #include "ModuleRenderer3D.h"
-
-#include <experimental/filesystem>
+#include "FileHelpers.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
@@ -38,8 +36,8 @@ bool ModuleScene::Start()
 
 	//Load(nullptr);
 	//LoadFBX("./Assets/Street environment_V01.FBX");
-	//LoadFBX("./Assets/Ogre.fbx");
-	LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
+	LoadFBX("./Assets/Ogre.fbx");
+	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 	//LoadFBX("./Assets/Cube3d.fbx");
 	//LoadSceneFile("Scene.json");
 
@@ -184,7 +182,7 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 void ModuleScene::SaveScene(const char* filename)
 {
-	getRootObj()->name = App->importer->GetFileName(filename);
+	getRootObj()->name = GetFileName(filename);
 
 	if (getRootObj() != nullptr)
 	{

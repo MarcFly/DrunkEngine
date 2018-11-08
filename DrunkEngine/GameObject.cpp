@@ -32,7 +32,7 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 
 	if (par != nullptr)
 	{
-		SetUUID();
+		UUID = GetUUID();
 		parent = par;
 		root = par->root;
 	}

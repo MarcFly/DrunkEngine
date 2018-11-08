@@ -128,6 +128,7 @@
     <ClInclude Include="DevIL\include\IL\ilut_config.h" />
     <ClInclude Include="DevIL\include\IL\ilu_region.h" />
     <ClInclude Include="DevIL\include\IL\il_wrap.h" />
+    <ClInclude Include="FileHelpers.h" />
     <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
     <ClInclude Include="Inspector.h" />
@@ -234,6 +235,8 @@
     <ClInclude Include="PhysBody3D.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RandomGenWindow.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -247,6 +250,7 @@
     <ClCompile Include="ComponentMesh.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="ConsoleWindow.cpp" />
+    <ClCompile Include="FileHelpers.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="Inspector.cpp" />
@@ -319,6 +323,8 @@
     <ClCompile Include="PhysBody3D.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RandomGenWindow.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

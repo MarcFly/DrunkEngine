@@ -5,13 +5,12 @@
 #include <string>
 #include "Assimp/include/scene.h"
 #include "MGL/MathGeoLib.h"
-#include "pcg-c-basic-0.9\pcg_basic.h"
 #include <Windows.h>
-#include "SDL/include/SDL_stdinc.h"
 #include <math.h>
 #include "parson/parson.h"
 #include "ComponentTransform.h"
 #include <memory>
+#include "FileHelpers.h"
 
 class Component;
 class ComponentMesh;
@@ -95,17 +94,6 @@ public:
 	void DestroyComponent()
 	{
 		// Destroy a component
-	}
-
-	void SetUUID()
-	{
-		pcg32_random_t rng;
-		LARGE_INTEGER li;
-		QueryPerformanceFrequency(&li);
-		QueryPerformanceCounter(&li);
-		pcg32_srandom_r(&rng, li.QuadPart, (intptr_t)&rng);
-
-		UUID = pcg32_random_r(&rng);
 	}
 
 	ComponentTransform* GetTransform()
