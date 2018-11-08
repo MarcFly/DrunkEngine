@@ -107,7 +107,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	for (int i = 0; i < obj_node->mNumChildren; i++)
 		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 	ret->GetTransform()->SetFromMatrix(&obj_node->mTransformation);
-	App->scene->Main_Cam->LookToObj(ret, ret->SetBoundBox());
+	App->gameObj->Main_Cam->LookToObj(ret, ret->SetBoundBox());
 
 	return ret;
 }

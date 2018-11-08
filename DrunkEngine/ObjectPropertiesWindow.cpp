@@ -20,21 +20,21 @@ void ObjectPropertiesWindow::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
-		if (App->scene->active_objects.size() == 1) //objects.size() > 0)
+		if (App->gameObj->active_objects.size() == 1) //objects.size() > 0)
 		{
-			ImGui::Text("%s", App->scene->active_objects[0]->name.c_str());
+			ImGui::Text("%s", App->gameObj->active_objects[0]->name.c_str());
 
-			if (App->scene->active_objects[0]->parent != nullptr)
+			if (App->gameObj->active_objects[0]->parent != nullptr)
 			{
-				for (int i = 0; i < App->scene->active_objects[0]->components.size(); i++)
+				for (int i = 0; i < App->gameObj->active_objects[0]->components.size(); i++)
 				{
-					ComponentInspector(App->scene->active_objects[0]->components[i]);
+					ComponentInspector(App->gameObj->active_objects[0]->components[i]);
 				}
 
 			}
 		}
 
-		else if (App->scene->active_objects.size() > 1) //objects.size() > 0)
+		else if (App->gameObj->active_objects.size() > 1) //objects.size() > 0)
 		{
 			ImGui::Text("+ 1 obj selected");
 		}
@@ -161,10 +161,10 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 	{
 		ImGui::Spacing();
 
-		if (!App->scene->active_objects[0]->parent->is_static)
+		if (!App->gameObj->active_objects[0]->parent->is_static)
 		{
 			if (ImGui::Checkbox("Static", &transform->parent->is_static))
-				App->scene->active_objects[0]->RecursiveSetStatic(transform->parent, transform->parent->is_static);
+				App->gameObj->active_objects[0]->RecursiveSetStatic(transform->parent, transform->parent->is_static);
 		}
 		else
 			ImGui::Text("Parent is static, you cannot modify this object");

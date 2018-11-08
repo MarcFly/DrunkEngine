@@ -67,13 +67,13 @@ update_status ModuleCamera3D::Update(float dt)
 	{
 		vec aux = vec(0.0f, 0.0f, 0.0f);
 
-		for (int i = 0; i < App->scene->active_objects.size(); i++)
+		for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 		{
-			aux += App->scene->active_objects[i]->getObjectCenter();
+			aux += App->gameObj->active_objects[i]->getObjectCenter();
 		}
 		
-		if (App->scene->active_objects.size() > 0)
-			aux = aux / App->scene->active_objects.size();
+		if (App->gameObj->active_objects.size() > 0)
+			aux = aux / App->gameObj->active_objects.size();
 
 		main_camera->LookToActiveObjs(aux);
 	}
@@ -85,13 +85,13 @@ update_status ModuleCamera3D::Update(float dt)
 	{
 		vec aux = vec(0.0f, 0.0f, 0.0f);
 
-		for (int i = 0; i < App->scene->active_objects.size(); i++)
+		for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 		{
-			aux += App->scene->active_objects[i]->getObjectCenter();
+			aux += App->gameObj->active_objects[i]->getObjectCenter();
 		}
 
-		if (App->scene->active_objects.size() > 0)
-			aux = aux / App->scene->active_objects.size();
+		if (App->gameObj->active_objects.size() > 0)
+			aux = aux / App->gameObj->active_objects.size();
 
 		main_camera->Reference = aux;
 
@@ -113,7 +113,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Recalculate matrix -------------
 	main_camera->CalculateViewMatrix();
 
-	DrawRay(picking.a, picking.b);
+	//DrawRay(picking.a, picking.b);
 
 	return UPDATE_CONTINUE;
 }
@@ -143,13 +143,13 @@ void ModuleCamera3D::MousePicking()
 	float y = 1 - ((ImGui::GetMousePos().y / (float)App->window->window_h) * 2.0f);
 	picking = (main_camera->frustum.UnProjectLineSegment(x,y));
 
-	App->scene->SetActiveFalse();
+	App->gameObj->SetActiveFalse();
 	//App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
 
-	for(int i = 0; i < App->scene->getRootObj()->children.size(); i++)
-		TestIntersect(App->scene->getRootObj()->children[i], picking, intersected);	
+	for(int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
+		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);
 
 	float dist = INT_MAX;
 	for (int i = 0; i < intersected.size(); i++)
@@ -157,9 +157,9 @@ void ModuleCamera3D::MousePicking()
 		float new_dist = TestTris(picking, intersected[i]->GetComponent(CT_Mesh)->AsMesh());
 		if (new_dist < dist)
 		{
-			App->scene->SetActiveFalse();
+			App->gameObj->SetActiveFalse();
 			dist = new_dist;
-			App->scene->active_objects.push_back(intersected[i]);
+			App->gameObj->active_objects.push_back(intersected[i]);
 			intersected[i]->active = true;
 		}
 	}

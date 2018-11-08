@@ -144,13 +144,13 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->scene->Main_Cam->GetViewMatrix());
+	glLoadMatrixf(App->gameObj->Main_Cam->GetViewMatrix());
 
 	RenderGrid();
 
 	// Something Something lights
 	// Set light pos
-	lights[0].SetPos(App->scene->Main_Cam->frustum.pos.x, App->scene->Main_Cam->frustum.pos.y, App->scene->Main_Cam->frustum.pos.z);
+	lights[0].SetPos(App->gameObj->Main_Cam->frustum.pos.x, App->gameObj->Main_Cam->frustum.pos.y, App->gameObj->Main_Cam->frustum.pos.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -161,7 +161,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // Do the render of Objects
 update_status ModuleRenderer3D::Update(float dt)
 {
-	App->scene->ObjUpdate(dt);
+	//App->gameObj->ObjUpdate(dt);
 
 	return UPDATE_CONTINUE;
 }
@@ -196,8 +196,8 @@ void ModuleRenderer3D::OnResize()
 	glLoadIdentity();
 
 	//From cameracomp
-	if (App->scene->Main_Cam != nullptr)
-		ProjectionMatrix = App->scene->Main_Cam->frustum.ProjectionMatrix();
+	if (App->gameObj->Main_Cam != nullptr)
+		ProjectionMatrix = App->gameObj->Main_Cam->frustum.ProjectionMatrix();
 	//ProjectionMatrix = ProjectionMatrix.perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 
 	glLoadMatrixf(&ProjectionMatrix[0][0]);
