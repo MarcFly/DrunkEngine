@@ -292,7 +292,7 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	vec aux = obj->getObjectCenter();
 	LookAt(vec(aux.x, aux.y, aux.z));
 
-	mesh_multiplier = vertex_aux / 4;
+	mesh_multiplier = vertex_aux / 4 + 1;
 }
 
 void ComponentCamera::LookToActiveObjs(vec look_to)
