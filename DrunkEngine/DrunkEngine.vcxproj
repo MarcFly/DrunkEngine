@@ -236,7 +236,7 @@
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RandomGenWindow.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ModuleResourceManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -324,7 +324,7 @@
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RandomGenWindow.cpp" />
     <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ModuleResourceManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

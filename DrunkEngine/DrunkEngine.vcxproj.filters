@@ -621,9 +621,6 @@
     <ClInclude Include="ModuleGameObject.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Sources\Modules\ResourceManager</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Sources\Modules\ResourceManager</Filter>
     </ClInclude>
@@ -635,6 +632,9 @@
     </ClInclude>
     <ClInclude Include="MeshImport.h">
       <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleResourceManager.h">
+      <Filter>Sources\Modules\ResourceManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -881,9 +881,6 @@
     <ClCompile Include="ModuleGameObject.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Sources\Modules\ResourceManager</Filter>
-    </ClCompile>
     <ClCompile Include="Resource.cpp">
       <Filter>Sources\Modules\ResourceManager</Filter>
     </ClCompile>
@@ -895,6 +892,9 @@
     </ClCompile>
     <ClCompile Include="MeshImport.cpp">
       <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleResourceManager.cpp">
+      <Filter>Sources\Modules\ResourceManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

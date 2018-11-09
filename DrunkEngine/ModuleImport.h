@@ -51,6 +51,7 @@ public:
 	void LoadFile(char* file);
 	FileType CheckExtension(std::string& ext);
 	void LoadFileType(char* file, FileType type);
+
 public:
 	MeshImport* mesh_i;
 	MatImport* mat_i;
@@ -81,10 +82,10 @@ public:
 	void SetDirectories()
 	{
 		CreateHiddenDir(".\\Library");
-		CreateHiddenDir(".\\Library\\Meshes");
+		/*CreateHiddenDir(".\\Library\\Meshes");
 		CreateHiddenDir(".\\Library\\Materials");
 		CreateHiddenDir(".\\Library\\Textures");
-		CreateHiddenDir(".\\Library\\Cameras");
+		CreateHiddenDir(".\\Library\\Cameras");*/
 	}
 
 

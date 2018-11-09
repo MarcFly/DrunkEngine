@@ -80,7 +80,7 @@ ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat
 
 			if (check == nullptr)
 			{
-				std::string filename = "./Library/Textures/";
+				std::string filename = ".\\Library\\";
 				filename += GetFileName(aux);
 				filename.append(".dds");
 
@@ -156,7 +156,7 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, con
 			std::string new_file_path = path;
 			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
-			new_file_path = "./Library/Textures/" + new_file_path; // Have to set new directories
+			new_file_path = ".\\Library\\" + new_file_path; // Have to set new directories
 
 			check = ilLoadImage(new_file_path.c_str());
 			if (check)
@@ -295,7 +295,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	}
 
 	std::ofstream write_file;
-	std::string filename = "./Library/Materials/";
+	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mat_" + std::to_string(mat_id);
 	filename.append(".matdrnk");
 
@@ -345,7 +345,7 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 		{
 			data = new ILubyte[size];
 
-			std::string export_path = "./Library/Textures/";
+			std::string export_path = ".\\Library\\";
 			export_path.append(GetFileName(path).c_str());
 			export_path.append(".dds");
 
@@ -382,7 +382,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 
 	// allocating a uint for size
 	buf_size += sizeof(uint);
-	std::string dir = "./Library/Textures/";
+	std::string dir = ".\\Library\\";
 	buf_size += dir.length() + 2;
 
 	std::vector<uint> texture_ranges;
