@@ -4,6 +4,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "ModuleScene.h"
+#include "KdTree.h"
 
 #include "glmath/glmath.h"
 
@@ -21,9 +22,10 @@ public:
 
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
-
+	
 	void MousePicking();
-	void TestIntersect(GameObject* obj, LineSegment& ray, std::vector<GameObject*>& intersected);
+	void TestIntersect(const std::vector<GameObject*>& objs, const LineSegment & ray, std::vector<GameObject*>& intersected);
+	void TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check);
 	float TestTris(LineSegment local, ComponentMesh* mesh);
 
 	void DrawRay(vec a, vec b);

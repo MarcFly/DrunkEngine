@@ -62,14 +62,13 @@ public:
 
 	AABB* BoundingBox = nullptr;
 
-	KDTree* Scene_KdTree = nullptr;
-
 	GameObject* parent = nullptr;
 	GameObject* root = nullptr;
 	std::vector<GameObject*> children;
 	std::vector<Component*> components;
 
 	bool to_pop = false;
+	bool static_pop = false;
 	bool active = false;
 	bool is_static = false;
 

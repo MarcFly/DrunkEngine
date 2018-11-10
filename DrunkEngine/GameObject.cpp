@@ -3,7 +3,6 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-#include "KdTree.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -18,10 +17,13 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 		this->parent = par;
 		root = par->root;
 	}
+
 	GetTransform();
 
 	if (type == CT_Camera)
 		this->components.push_back(new ComponentCamera(this));
+
+	App->gameObj->objects_in_scene.push_back(this);
 
 	Start();
 }
@@ -41,6 +43,8 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 		this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj->mChildren[i], this));
 
 	GetTransform();
+
+	App->gameObj->objects_in_scene.push_back(this);
 
 	Start();
 }
@@ -69,9 +73,6 @@ void GameObject::Update(float dt)
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Update(dt);
-
-	if (Scene_KdTree != nullptr)
-		Scene_KdTree->Update();
 
 	Draw();
 

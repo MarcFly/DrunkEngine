@@ -4,6 +4,7 @@
 #include "ConsoleWindow.h"
 #include "Inspector.h"
 #include "ComponentCamera.h"
+#include "KdTree.h"
 
 #define MOV_SPEED 4.0f
 #define MOUSE_SENSIBILITY 0.01f
@@ -147,9 +148,18 @@ void ModuleCamera3D::MousePicking()
 	//App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
+	std::vector<GameObject*> objects_to_check;	// TODO Make a list without static objs
 
-	for(int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
-		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);
+	/*for(int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
+		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);*/
+
+	if (App->gameObj->GetSceneKDTree() != nullptr)
+	{
+		for (int i = 0; i < App->gameObj->GetSceneKDTree()->base_node->child.size(); i++)
+			TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node->child[i], picking, objects_to_check);
+	}
+
+	TestIntersect(objects_to_check, picking, intersected);
 
 	float dist = INT_MAX;
 	for (int i = 0; i < intersected.size(); i++)
@@ -166,20 +176,27 @@ void ModuleCamera3D::MousePicking()
 
 }
 
-void ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vector<GameObject*>& intersected)
+void ModuleCamera3D::TestIntersect(const std::vector<GameObject*>& objs, const LineSegment & ray, std::vector<GameObject*>& intersected)
 {
-	if (obj->isInsideFrustum(main_camera, obj->GetBB()))
+	for (int i = 0; i < objs.size(); i++)
 	{
-		AABB* seeBB = obj->GetBB();
-		if (ray.ToRay().Intersects(*seeBB))
+		if (ray.ToRay().Intersects(*objs[i]->GetBB()))
 		{
-			if (obj->GetComponent(CT_Mesh) != nullptr)
-				intersected.push_back(obj);
-
-			for (int i = 0; i < obj->children.size(); i++)
-				TestIntersect(obj->children[i], ray, intersected);
+			if (objs[i]->GetComponent(CT_Mesh) != nullptr)
+				intersected.push_back(objs[i]);
 		}
 	}
+}
+
+void ModuleCamera3D::TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check)
+{
+	
+
+	for (int i = 0; i < objects_to_check.size(); i++)
+	{
+
+	}
+
 }
 
 float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)

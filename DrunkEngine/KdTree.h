@@ -8,6 +8,7 @@ class GameObject;
 
 class KDTree
 {
+public:
 	class Node
 	{
 	public:

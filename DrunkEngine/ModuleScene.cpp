@@ -59,7 +59,7 @@ bool ModuleScene::CleanUp()
 
 	PLOG("Destroying all objects");
 
-	ret = DestroyScene();
+	ret = App->gameObj->CleanUp();
 
 	// detach log streamW
 	aiDetachAllLogStreams();
@@ -98,7 +98,7 @@ bool ModuleScene::LoadFBX(const char* file_path)
 		if (App->ui->inspector->selected_object != nullptr)
 			App->ui->inspector->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->inspector->selected_object));
 		else
-			App->gameObj->getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->gameObj->Root_Object));
+			App->gameObj->getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->gameObj->getRootObj()));
 		
 		App->gameObj->CreateMainCam();
 
@@ -115,7 +115,7 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 bool ModuleScene::LoadSceneFile(const char* file_path)
 {
-	DestroyScene();
+	App->gameObj->CleanUp();
 	App->gameObj->NewScene();
 	JSON_Value* scene = json_parse_file(file_path);
 	JSON_Object* obj_g = json_value_get_object(scene);
@@ -202,23 +202,6 @@ void ModuleScene::SaveScene(const char* filename)
 int ModuleScene::GetDevILVer()
 {
 	return IL_VERSION;
-}
-
-bool ModuleScene::DestroyScene()
-{
-	bool ret = true;
-
-	if (App->gameObj->Root_Object != nullptr)
-	{
-		App->gameObj->Root_Object->CleanUp();
-
-		delete App->gameObj->Root_Object;
-		App->gameObj->Root_Object = nullptr;
-	}
-
-	App->gameObj->active_cameras.clear();
-
-	return ret;
 }
 
 void ModuleScene::OrderScene()

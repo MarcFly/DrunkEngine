@@ -16,7 +16,7 @@ void Inspector::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
-		CreateObjLeaf(App->gameObj->Root_Object, 0);
+		CreateObjLeaf(App->gameObj->getRootObj(), 0);
 	}
 	ImGui::End();
 }

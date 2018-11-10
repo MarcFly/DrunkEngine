@@ -164,7 +164,14 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 		if (!App->gameObj->active_objects[0]->parent->is_static)
 		{
 			if (ImGui::Checkbox("Static", &transform->parent->is_static))
+			{
 				App->gameObj->active_objects[0]->RecursiveSetStatic(transform->parent, transform->parent->is_static);
+
+				if (&transform->parent->is_static)
+					App->gameObj->SetToStaticObjects(transform->parent);
+				else
+					App->gameObj->DeleteFromStaticObjects(transform->parent);
+			}
 		}
 		else
 			ImGui::Text("Parent is static, you cannot modify this object");

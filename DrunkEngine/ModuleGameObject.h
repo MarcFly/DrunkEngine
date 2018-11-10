@@ -3,6 +3,8 @@
 
 #include "Module.h"
 
+class KDTree;
+
 class ModuleGameObject : public Module
 {
 public:
@@ -21,13 +23,33 @@ public:
 	void CreateMainCam();
 	void DeleteScene();
 
+	void SetSceneObjects(GameObject * obj);
+
+	void SetToStaticObjects(GameObject * obj);
+	void DeleteFromStaticObjects(GameObject * obj);
+	void AdjustVectorList();
+
+	//KD Tree
+	void SetSceneKDTree(const int elements_per_node, const int max_subdivisions);
+	KDTree * GetSceneKDTree() const;
+
+	//Root Obj
+	void SetRootObject(GameObject * root);
+	GameObject * GetRootObject() const;
+
 public:
-	GameObject * Root_Object = nullptr;
 
 	std::string scene_folder;
 
 	std::vector<GameObject*> active_objects;
 	std::vector<ComponentCamera*> active_cameras;
+
+	std::vector<GameObject*> objects_in_scene;
+	std::vector<GameObject*> static_objects_in_scene;
+
+private:
+	GameObject * Root_Object = nullptr;
+	KDTree* Scene_KdTree = nullptr;
 
 public:
 	GameObject * getRootObj() const { return Root_Object; };

@@ -9,7 +9,7 @@ KDTree::KDTree(int elements_per_node, int max_subdivisions)
 	this->elements_per_node = elements_per_node;
 	this->max_subdivisions = max_subdivisions;
 
-	RecursiveGetStaticObjs(App->gameObj->Root_Object);
+	RecursiveGetStaticObjs(App->gameObj->getRootObj());
 
 	if (static_objs.size() > 0)
 	{
