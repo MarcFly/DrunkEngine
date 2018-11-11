@@ -39,6 +39,8 @@ public:
 
 		float GetKdTreeCut(Axis axis);
 
+		std::vector<GameObject*> GetObjsInNode(Node * node);
+
 	public:
 		int id;
 		int subdivision;
@@ -66,6 +68,8 @@ public:
 public:
 	int elements_per_node;
 	int max_subdivisions;
+
+	bool to_draw;
 
 	Node * base_node = nullptr;
 	std::vector<Node*> nodes;

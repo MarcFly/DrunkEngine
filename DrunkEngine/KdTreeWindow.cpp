@@ -22,9 +22,10 @@ void KDTreeWindow::Draw()
 		if (ImGui::Button("Create K-D Tree"))
 		{
 			if (App->gameObj->GetSceneKDTree() != nullptr)
-				App->gameObj->GetSceneKDTree()->CleanUp();
+				App->gameObj->DeleteSceneKDTree();
 
-			App->gameObj->SetSceneKDTree(elements_per_node, max_subdivisions);
+			if (App->gameObj->static_objects_in_scene.size() > 0)
+				App->gameObj->SetSceneKDTree(elements_per_node, max_subdivisions);
 		}
 
 		ImGui::SameLine();
@@ -32,8 +33,14 @@ void KDTreeWindow::Draw()
 		if (ImGui::Button("Destroy K-D Tree"))
 		{
 			if (App->gameObj->GetSceneKDTree() != nullptr)
-				App->gameObj->GetSceneKDTree()->CleanUp();
-		}		
+				App->gameObj->DeleteSceneKDTree();
+		}
+
+		ImGui::SameLine();
+
+		if (App->gameObj->GetSceneKDTree() != nullptr)
+			ImGui::Checkbox("Render K-D Tree", &App->gameObj->GetSceneKDTree()->to_draw);
+
 	}
 	ImGui::End();
 }

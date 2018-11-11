@@ -6,6 +6,8 @@ KDTree::KDTree(int elements_per_node, int max_subdivisions)
 	static_objs.clear();
 	nodes.clear();
 
+	to_draw = false;
+
 	this->elements_per_node = elements_per_node;
 	this->max_subdivisions = max_subdivisions;
 
@@ -101,7 +103,8 @@ KDTree::Node::~Node()
 
 void KDTree::Node::Update()
 {
-	Draw();
+	if (root->to_draw)
+		Draw();
 }
 
 void KDTree::Node::Draw()
@@ -319,4 +322,14 @@ float KDTree::Node::GetKdTreeCut(Axis axis)
 	case Axis::Axis_Z:
 		return cut.z;
 	}
+}
+
+std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
+{
+	std::vector<GameObject*> vec_objs;
+
+	for (int i = 0; i < node->objects_in_node.size(); i++)
+		vec_objs.push_back(node->objects_in_node[i]);
+
+	return vec_objs;
 }

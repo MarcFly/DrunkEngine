@@ -175,6 +175,12 @@ KDTree * ModuleGameObject::GetSceneKDTree() const
 	return Scene_KdTree;
 }
 
+void ModuleGameObject::DeleteSceneKDTree()
+{
+	Scene_KdTree->CleanUp();
+	Scene_KdTree = nullptr;
+}
+
 void ModuleGameObject::SetRootObject(GameObject * root)
 {
 	Root_Object = root;

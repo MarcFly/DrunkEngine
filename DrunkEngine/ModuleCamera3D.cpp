@@ -148,7 +148,12 @@ void ModuleCamera3D::MousePicking()
 	//App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
-	std::vector<GameObject*> objects_to_check;	// TODO Make a list without static objs
+	std::vector<GameObject*> objects_to_check;
+
+	if (App->gameObj->GetSceneKDTree() != nullptr)
+		objects_to_check = App->gameObj->non_static_objects_in_scene;
+	else
+		objects_to_check = App->gameObj->objects_in_scene;
 
 	/*for(int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
 		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);*/
@@ -191,12 +196,22 @@ void ModuleCamera3D::TestIntersect(const std::vector<GameObject*>& objs, const L
 void ModuleCamera3D::TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check)
 {
 	
-
-	for (int i = 0; i < objects_to_check.size(); i++)
+	if (node->child.size() != 0)
 	{
-
+		for (int i = 0; i < node->child.size(); i++)
+		{
+			TreeTestIntersect(node->child[i], ray, objects_to_check);
+		}
 	}
 
+	else
+	{
+		if (ray.Intersects(node->bounding_box))
+		{
+			for (int i = 0; i < node->objects_in_node.size(); i++)
+				objects_to_check.push_back(node->objects_in_node[i]);
+		}
+	}
 }
 
 float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
