@@ -92,7 +92,7 @@ KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB b
 	else if (parent->axis_to_check == Axis::Axis_Z)
 		axis_to_check = Axis::Axis_X;
 
-	if (root->elements_per_node < objects_in_node.size() && subdivision < root->max_subdivisions && !CheckNodeRepeat())
+	if (root->elements_per_node < objects_in_node.size() && subdivision < root->max_subdivisions)
 		CreateNodes();
 }
 
@@ -226,14 +226,16 @@ void KDTree::Node::CreateNodes()
 		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, center_1.y, GetKdTreeCut(axis_to_check)));
 	}
 
-	Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
-	root->nodes.push_back(Node1);
-	child.push_back(Node1);
+	if (!CheckNodeRepeat(new_AABB_Node1) && !CheckNodeRepeat(new_AABB_Node2))
+	{
+		Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
+		root->nodes.push_back(Node1);
+		child.push_back(Node1);
 
-	Node * Node2 = new Node(GetObjectsInNode(new_AABB_Node2), this, new_AABB_Node2);
-	root->nodes.push_back(Node2);
-	child.push_back(Node2);
-
+		Node * Node2 = new Node(GetObjectsInNode(new_AABB_Node2), this, new_AABB_Node2);
+		root->nodes.push_back(Node2);
+		child.push_back(Node2);
+	}
 }
 
 std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
@@ -308,19 +310,19 @@ std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
 	return vec_objs;
 }
 
-bool KDTree::Node::CheckNodeRepeat()
+bool KDTree::Node::CheckNodeRepeat(AABB new_bb)
 {
 	bool ret = false;
 	
-	//Check if last equal Axis (X-X, Y-Y, Z-Z) is the same as the current one
+	//Check if this node is the same as the new one
 
 	if (subdivision > 3)
-		if (bounding_box.maxPoint.x == parent->parent->parent->bounding_box.maxPoint.x &&
-			bounding_box.maxPoint.y == parent->parent->parent->bounding_box.maxPoint.y &&
-			bounding_box.maxPoint.z == parent->parent->parent->bounding_box.maxPoint.z &&
-			bounding_box.minPoint.x == parent->parent->parent->bounding_box.minPoint.x &&
-			bounding_box.minPoint.y == parent->parent->parent->bounding_box.minPoint.y &&
-			bounding_box.minPoint.z == parent->parent->parent->bounding_box.minPoint.z)
+		if (bounding_box.maxPoint.x == new_bb.maxPoint.x &&
+			bounding_box.maxPoint.y == new_bb.maxPoint.y &&
+			bounding_box.maxPoint.z == new_bb.maxPoint.z &&
+			bounding_box.minPoint.x == new_bb.minPoint.x &&
+			bounding_box.minPoint.y == new_bb.minPoint.y &&
+			bounding_box.minPoint.z == new_bb.minPoint.z)
 			ret = true;
 
 	return ret;

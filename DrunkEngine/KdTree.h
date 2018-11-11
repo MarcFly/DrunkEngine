@@ -40,7 +40,7 @@ public:
 
 		std::vector<GameObject*> GetObjsInNode(Node * node);
 
-		bool CheckNodeRepeat();
+		bool CheckNodeRepeat(AABB new_bb);
 
 	public:
 		int id;
