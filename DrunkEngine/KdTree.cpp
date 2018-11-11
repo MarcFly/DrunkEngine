@@ -44,7 +44,7 @@ void KDTree::RecursiveGetStaticObjs(const GameObject * obj)
 		if (obj->children[i]->children.size() > 0)
 			RecursiveGetStaticObjs(obj->children[i]);
 
-		if (obj->children[i]->is_static)
+		if (obj->children[i]->is_static && (obj->children[i]->GetComponent(CTypes::CT_Camera) != nullptr || obj->children[i]->GetComponent(CTypes::CT_Mesh) != nullptr))
 		{
 			static_objs.push_back(obj->children[i]);
 		}
@@ -244,7 +244,7 @@ std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
 
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		if (new_bounding_box.Contains(objects_in_node[i]->getObjectCenter()))
+		if (new_bounding_box.Intersects(*objects_in_node[i]->BoundingBox))
 			objs_in_new_node.push_back(objects_in_node[i]);
 	}
 
