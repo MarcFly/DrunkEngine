@@ -16,7 +16,6 @@ KDTree::KDTree(int elements_per_node, int max_subdivisions)
 	if (static_objs.size() > 0)
 	{
 		base_node = new Node(static_objs, nullptr, this);
-		nodes.push_back(base_node);
 	}
 }
 
@@ -93,7 +92,7 @@ KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, AABB b
 	else if (parent->axis_to_check == Axis::Axis_Z)
 		axis_to_check = Axis::Axis_X;
 
-	if (root->elements_per_node < objects_in_node.size() && subdivision < root->max_subdivisions)
+	if (root->elements_per_node < objects_in_node.size() && subdivision < root->max_subdivisions && !CheckNodeRepeat())
 		CreateNodes();
 }
 
@@ -183,11 +182,7 @@ void KDTree::Node::SetNodeVertex()
 
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		/*vec object_center = objects_in_node[i]->getObjectCenter();
-		SetVertexPos(object_center);*/
-
 		SetVertexPos(objects_in_node[i]->BoundingBox->minPoint, objects_in_node[i]->BoundingBox->maxPoint);
-
 	}
 }
 
@@ -254,27 +249,6 @@ std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
 	return objs_in_new_node;
 }
 
-void KDTree::Node::SetVertexPos(const vec object_center)
-{
-	if (bounding_box.maxPoint.x < object_center.x)
-		bounding_box.maxPoint.x = object_center.x;
-	
-	if (bounding_box.minPoint.x > object_center.x)
-		bounding_box.minPoint.x = object_center.x;
-
-	if (bounding_box.maxPoint.y < object_center.y)
-		bounding_box.maxPoint.y = object_center.y;
-	
-	if (bounding_box.minPoint.y > object_center.y)
-		bounding_box.minPoint.y = object_center.y;
-	
-	if (bounding_box.maxPoint.z < object_center.z)
-		bounding_box.maxPoint.z = object_center.z;
-	
-	if (bounding_box.minPoint.z > object_center.z)
-		bounding_box.minPoint.z = object_center.z;
-}
-
 void KDTree::Node::SetVertexPos(const vec& min, const vec& max)
 {
 	if (true)
@@ -332,4 +306,22 @@ std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
 		vec_objs.push_back(node->objects_in_node[i]);
 
 	return vec_objs;
+}
+
+bool KDTree::Node::CheckNodeRepeat()
+{
+	bool ret = false;
+	
+	//Check if last equal Axis (X-X, Y-Y, Z-Z) is the same as the current one
+
+	if (subdivision > 3)
+		if (bounding_box.maxPoint.x == parent->parent->parent->bounding_box.maxPoint.x &&
+			bounding_box.maxPoint.y == parent->parent->parent->bounding_box.maxPoint.y &&
+			bounding_box.maxPoint.z == parent->parent->parent->bounding_box.maxPoint.z &&
+			bounding_box.minPoint.x == parent->parent->parent->bounding_box.minPoint.x &&
+			bounding_box.minPoint.y == parent->parent->parent->bounding_box.minPoint.y &&
+			bounding_box.minPoint.z == parent->parent->parent->bounding_box.minPoint.z)
+			ret = true;
+
+	return ret;
 }

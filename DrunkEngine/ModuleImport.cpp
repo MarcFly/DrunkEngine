@@ -65,7 +65,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	App->gameObj->non_static_objects_in_scene.push_back(ret);
 
 	ret->name = obj_node->mName.C_Str();
-
+	
 	// Sequential Import for FBX Only, will create the components one by one
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)

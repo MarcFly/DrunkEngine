@@ -34,12 +34,13 @@ public:
 		void CreateNodes();
 		std::vector<GameObject*> GetObjectsInNode(AABB& new_bounding_box);
 
-		void SetVertexPos(const vec object_center);
 		void SetVertexPos(const vec& min, const vec& max);
 
 		float GetKdTreeCut(Axis axis);
 
 		std::vector<GameObject*> GetObjsInNode(Node * node);
+
+		bool CheckNodeRepeat();
 
 	public:
 		int id;
