@@ -27,7 +27,9 @@ public:
 
 	void SetToStaticObjects(GameObject * obj);
 	void DeleteFromStaticObjects(GameObject * obj);
-	void AdjustVectorList();
+	void AdjustStaticList();
+
+	void SetNonStaticList();
 
 	//KD Tree
 	void SetSceneKDTree(const int elements_per_node, const int max_subdivisions);
@@ -46,6 +48,7 @@ public:
 
 	std::vector<GameObject*> objects_in_scene;
 	std::vector<GameObject*> static_objects_in_scene;
+	std::vector<GameObject*> non_static_objects_in_scene;
 
 private:
 	GameObject * Root_Object = nullptr;

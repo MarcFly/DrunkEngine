@@ -24,6 +24,7 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 		this->components.push_back(new ComponentCamera(this));
 
 	App->gameObj->objects_in_scene.push_back(this);
+	App->gameObj->non_static_objects_in_scene.push_back(this);
 
 	Start();
 }
@@ -45,6 +46,7 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 	GetTransform();
 
 	App->gameObj->objects_in_scene.push_back(this);
+	App->gameObj->non_static_objects_in_scene.push_back(this);
 
 	Start();
 }

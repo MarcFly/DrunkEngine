@@ -167,7 +167,7 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 			{
 				App->gameObj->active_objects[0]->RecursiveSetStatic(transform->parent, transform->parent->is_static);
 
-				if (&transform->parent->is_static)
+				if (transform->parent->is_static)
 					App->gameObj->SetToStaticObjects(transform->parent);
 				else
 					App->gameObj->DeleteFromStaticObjects(transform->parent);

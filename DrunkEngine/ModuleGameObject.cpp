@@ -39,6 +39,8 @@ bool ModuleGameObject::CleanUp()
 	active_objects.clear();
 	active_cameras.clear();
 	objects_in_scene.clear();
+	static_objects_in_scene.clear();
+	non_static_objects_in_scene.clear();
 
 	return ret;
 }
@@ -107,6 +109,8 @@ void ModuleGameObject::SetToStaticObjects(GameObject * obj)
 	{
 		SetToStaticObjects(obj->children[i]);
 	}
+
+	SetNonStaticList();
 }
 
 void ModuleGameObject::DeleteFromStaticObjects(GameObject * obj)
@@ -116,7 +120,7 @@ void ModuleGameObject::DeleteFromStaticObjects(GameObject * obj)
 		if (static_objects_in_scene[i] == obj)
 		{
 			static_objects_in_scene[i]->static_pop = true;
-			AdjustVectorList();
+			AdjustStaticList();
 			break;
 		}
 	}
@@ -125,9 +129,11 @@ void ModuleGameObject::DeleteFromStaticObjects(GameObject * obj)
 	{
 		DeleteFromStaticObjects(obj->children[i]);
 	}
+
+	SetNonStaticList();
 }
 
-void ModuleGameObject::AdjustVectorList()
+void ModuleGameObject::AdjustStaticList()
 {
 	int i = 0;
 	for (; i < static_objects_in_scene.size(); i++)
@@ -146,6 +152,17 @@ void ModuleGameObject::AdjustVectorList()
 	}
 
 	static_objects_in_scene.pop_back();
+}
+
+void ModuleGameObject::SetNonStaticList()
+{
+	non_static_objects_in_scene.clear();
+
+	for (int i = 0; i < objects_in_scene.size(); i++)
+	{
+		if (!objects_in_scene[i]->is_static)
+			non_static_objects_in_scene.push_back(objects_in_scene[i]);
+	}
 }
 
 void ModuleGameObject::SetSceneKDTree(const int elements_per_node, const int max_subdivisions)
