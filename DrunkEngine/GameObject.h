@@ -11,6 +11,7 @@
 #include "ComponentTransform.h"
 #include <memory>
 #include "FileHelpers.h"
+#include "ModuleResourceManager.h"
 
 class Component;
 class ComponentMesh;
@@ -57,6 +58,7 @@ public:
 
 public:
 	Uint32	UUID = UINT_FAST32_MAX, par_UUID = UINT_FAST32_MAX;
+	GUID UID;
 	std::string name;
 
 	AABB* BoundingBox = nullptr;
@@ -138,13 +140,13 @@ public:
 		return ret;
 	}
 
-	GameObject* GetChild(Uint32 UUID)
+	GameObject* GetChild(GUID UUID)
 	{
 		GameObject* ret = nullptr;
 
 		for (int i = 0; i < children.size(); i++)
 		{
-			if (children[i]->UUID == UUID)
+			if (children[i]->UID == UUID)
 				ret = children[i];
 			else
 				ret = children[i]->GetChild(UUID);

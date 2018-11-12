@@ -25,6 +25,7 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 
 	Start();
 }
+
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path, GameObject* par)
 {
 	this->name = file_path;
@@ -33,6 +34,7 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 	if (par != nullptr)
 	{
 		UUID = GetUUID();
+		UID = GUID()
 		parent = par;
 		root = par->root;
 	}

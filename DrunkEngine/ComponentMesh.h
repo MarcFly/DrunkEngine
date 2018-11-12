@@ -10,7 +10,7 @@
 
 class GameObject;
 class ComponentCamera;
-
+struct ResourceMesh;
 class ComponentMesh : public Component
 {
 public:
@@ -42,45 +42,21 @@ public:
 	void Save(JSON_Array* comps);
 
 public:
-	GLuint id_index; // index in VRAM
-	GLuint num_index;
-	GLuint* index;
-
-	GLuint id_vertex; // unique vertex in VRAM
-	GLuint num_vertex;
-	GLfloat* vertex;
-
-	GLuint id_uvs;
-	GLuint num_uvs;
-	GLfloat* tex_coords;
-
-	GLuint id_normal;
-	GLuint num_normal;
-	GLfloat* normal;
-
-	GLuint Material_Ind;
-
-	GLuint num_faces;
-
+	ResourceMesh* r_mesh;
+	GUID Material_Ind;
 	AABB* BoundingBox;
 
-	GameObject* root;
-
 public:
-	void SetTextTo(const int& Mat_ind) { this->Material_Ind = Mat_ind; };
+	void SetTextTo(const GUID& nUID);
+	void SetTextTo(ResourceMesh* nMesh);
 
 	void SetBaseVals()
 	{
 		type = CT_Mesh;
 		multiple = true;
 
-		id_index = id_normal = id_vertex = id_uvs = 0;
-		num_faces = num_index = num_normal = num_uvs = num_vertex = 0;
-
-		index = nullptr;
-		normal = tex_coords = vertex = nullptr;
 		BoundingBox = nullptr;
-		parent = root = nullptr;
+
 		multiple = false;
 
 		to_pop = false;

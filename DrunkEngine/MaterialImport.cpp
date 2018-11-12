@@ -8,6 +8,8 @@
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
+#include "ResourceMaterial.h"
+#include "ResourceTexture.h"
 
 #include <fstream>
 #include <iostream>
@@ -23,8 +25,10 @@ void MatImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat, const char* Dir)
+ResourceMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat, const char* Dir)
 {
+	ResourceMaterial* r_mat = new ResourceMaterial();
+
 	App->importer->Imp_Timer.Start();
 
 	mat->name = file;
@@ -44,13 +48,13 @@ ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat
 
 		float color[4];
 		memcpy(&color[0], cursor, sizeof(color));
-		mat->default_print.Set(color[0], color[1], color[2], color[3]);
+		r_mat->default_print.Set(color[0], color[1], color[2], color[3]);
 		cursor += sizeof(color);
 
-		memcpy(&mat->NumProperties, cursor, sizeof(uint));
+		memcpy(&r_mat->NumProperties, cursor, sizeof(uint));
 		cursor += sizeof(uint);
 
-		memcpy(&mat->NumDiffTextures, cursor, sizeof(uint));
+		memcpy(&r_mat->NumDiffTextures, cursor, sizeof(uint));
 		cursor += sizeof(uint);
 		
 		uint dir_size;
@@ -62,7 +66,7 @@ ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat
 		cursor += dir_size;
 
 		std::vector<uint> texture_ranges;
-		for (int i = 0; i < mat->NumDiffTextures; i++)
+		for (int i = 0; i < r_mat->NumDiffTextures; i++)
 		{
 			uint size;
 			memcpy(&size, cursor, sizeof(uint));
@@ -71,12 +75,12 @@ ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat
 		}
 
 
-		for (int i = 0; i < mat->NumDiffTextures; i++)
+		for (int i = 0; i < r_mat->NumDiffTextures; i++)
 		{
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
- 			Texture* check = ImportTexture(aux, mat);
+ 			ResourceTexture* check = ImportTexture(aux);
 
 			if (check == nullptr)
 			{
@@ -85,38 +89,40 @@ ComponentMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat
 				filename.append(".dds");
 
 				ExportTexture(aux, Dir);
-				check = ImportTexture(filename.c_str(), mat, Dir);
+				check = ImportTexture(filename.c_str(), Dir);
 			}
 			if (check != nullptr)
 			{
-				mat->textures.push_back(check);
+				r_mat->textures.push_back(check);
 			}
 			cursor += texture_ranges[i];
 		}
 
 		App->importer->Imp_Timer.LogTime("Texture");
 
-		App->ui->console_win->AddLog("New Material with %d textures loaded.", mat->textures.size());
+		App->ui->console_win->AddLog("New Material with %d textures loaded.", r_mat->textures.size());
 
+		mat->r_mat = r_mat;
 	}
 	else
 	{
 		delete mat;
 		mat = nullptr;
+		delete r_mat;
+		r_mat = nullptr;
 	}
 
 	App->importer->Imp_Timer.LogTime("Material Import");
 
-	return mat;
+	return r_mat;
 
 }
 
-Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, const char* Dir)
+ResourceTexture* MatImport::ImportTexture(const char * path, const char* Dir)
 {
 	Timer text_timer;
 
-	Texture* ret = new Texture;
-	ret->mparent = par;
+	ResourceTexture* ret = new ResourceTexture();
 
 	bool check_rep = false;
 
@@ -127,14 +133,6 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, con
 	}
 	else
 		ret->filename = path;
-
-	Texture* test = par->CheckTexRep(ret->filename.c_str());
-
-	if (test != nullptr)
-		check_rep = true;
-
-	text_timer.LogTime("Repetition Check");
-	text_timer.Start();
 
 	if (!check_rep)
 	{
@@ -204,14 +202,6 @@ Texture* MatImport::ImportTexture(const char * path, ComponentMaterial* par, con
 
 		text_timer.LogTime("Tex finish Load");
 		text_timer.Start();
-	}
-	else
-	{
-
-		App->ui->console_win->AddLog("Setting Reference to already Loaded Texture...");
-		ret = test;
-		if (ret->mparent != par)
-			ret->referenced_mats.push_back(par);
 	}
 
 	return ret;
@@ -371,12 +361,12 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 
 void MatImport::ExportMat(const ComponentMaterial* mat)
 {
-	uint prop_size = mat->NumProperties;
-	uint text_size = mat->NumDiffTextures;
+	uint prop_size = mat->r_mat->NumProperties;
+	uint text_size = mat->r_mat->NumDiffTextures;
 
 	uint buf_size = sizeof(uint) * 2;
 
-	float color[4] = { mat->default_print.r,mat->default_print.g,mat->default_print.b,1 };
+	float color[4] = { mat->r_mat->default_print.r,mat->r_mat->default_print.g,mat->r_mat->default_print.b,1 };
 
 	buf_size += sizeof(color);
 
@@ -389,9 +379,9 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 	std::vector<std::string> textures; // Only Diffuse for now
 	for (int i = 0; i < text_size; i++)
 	{
-		if (mat->textures[i] != nullptr)
+		if (mat->r_mat->textures[i] != nullptr)
 		{
-			textures.push_back(mat->textures[i]->filename.c_str());
+			textures.push_back(mat->r_mat->textures[i]->filename.c_str());
 
 			buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 

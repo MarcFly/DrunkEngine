@@ -11,6 +11,7 @@
 #include "Component.h"
 #include "MaterialImport.h"
 #include "MeshImport.h"
+#include "ModuleResourceManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -64,39 +65,42 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	ret->name = obj_node->mName.C_Str();
 
 	// Sequential Import for FBX Only, will create the components one by one
+	std::string filename = ".\\Library\\";
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
-		std::string filename = ".\\Library\\";
-		filename += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
-		filename.append(".meshdrnk");
-		//Component* aux_c = App->resources->GetRes(filename.c_str());
+		std::string meshname = filename;
+		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
+		meshname.append(".meshdrnk");
+		GUID fID(IsImported(meshname.c_str()).c_str());
 		ComponentMesh* aux = new ComponentMesh(ret);
-		if (mesh_i->ImportMesh(filename.c_str(), aux) == nullptr)
+		if (App->resources->InLibrary(fID))
 		{
-			aux = nullptr;
-			aux = new ComponentMesh(ret);
-			mesh_i->ExportMesh(scene, obj_node->mMeshes[i],path);
-			mesh_i->ImportMesh(filename.c_str(), aux);
+			mesh_i->ImportMesh(fID, aux);
 		}
-		if (aux != nullptr)
+		else
 		{
-			aux->parent = ret;
-			ret->components.push_back(aux);
+			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);
+			//App->resources->;
+			mesh_i->ImportMesh(fID, aux);
 		}
+		
+		aux->parent = ret;
+		ret->components.push_back(aux);
+		
 	}
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
-		std::string filename = ".\\Library\\";
-		filename += GetFileName(path) + "_Mat_" + std::to_string(i);
-		filename.append(".matdrnk");
+		std::string matname = filename;
+		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+		matname.append(".matdrnk");
 		ComponentMaterial* aux = new ComponentMaterial(ret);
-		if (mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str()) == nullptr)
+		if (mat_i->ImportMat(matname.c_str(), aux, GetDir(path).c_str()) == nullptr)
 		{
 			aux = nullptr;
 			aux = new ComponentMaterial(ret);
 			mat_i->ExportMat(scene, i, path);
-			mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str());
+			mat_i->ImportMat(matname.c_str(), aux, GetDir(path).c_str());
 		}
 		if (aux != nullptr)
 		{
@@ -188,6 +192,23 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 		App->ui->console_win->AddLog("File format not recognized!\n");
 	else
 		App->ui->console_win->AddLog("Wtf did you drop?\n");
+}
+
+std::string ModuleImport::IsImported(const char * file)
+{
+	std::string ret = "";
+
+	std::ifstream read;
+	read.open(file, std::fstream::in || std::ios::binary);
+	int size = read.seekg(read.end, 0).tellg();
+	if (size != -1)
+	{
+		char* data = new char[size];
+		ret = GUID(data).HexID;
+	}
+	read.seekg(read.beg, 0);
+	read.close();
+	return ret;
 }
 
 void CallLog(const char* str, char* usrData)

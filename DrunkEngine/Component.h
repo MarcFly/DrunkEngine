@@ -3,6 +3,7 @@
 
 #include "parson/parson.h"
 #include <string>
+#include "ModuleResourceManager.h"
 
 class GameObject;
 class ComponentMaterial;
@@ -48,7 +49,7 @@ public:
 	}
 
 public:
-	
+	GUID UID;
 	CTypes type;
 	bool multiple;
 	GameObject* parent;

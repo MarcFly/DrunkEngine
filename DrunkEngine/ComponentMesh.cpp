@@ -6,6 +6,9 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 #include "MeshImport.h"
+#include "ResourceMesh.h"
+#include "ResourceMaterial.h"
+#include "ResourceTexture.h"
 
 ComponentMesh::ComponentMesh()
 {
@@ -19,9 +22,9 @@ bool ComponentMesh::SetTexCoords(const aiMesh * mesh)
 	// Set TexCoordinates
 	if (mesh->HasTextureCoords(0))
 	{
-		this->num_uvs = this->num_vertex;
-		this->tex_coords = new float[this->num_uvs * 3];
-		memcpy(this->tex_coords, mesh->mTextureCoords[0], this->num_uvs * sizeof(float) * 3);
+		r_mesh->num_uvs = r_mesh->num_vertex;
+		r_mesh->tex_coords = new float[r_mesh->num_uvs * 3];
+		memcpy(r_mesh->tex_coords, mesh->mTextureCoords[0], r_mesh->num_uvs * sizeof(float) * 3);
 	}
 	else
 		App->ui->console_win->AddLog("No texture coordinates to be set");
@@ -33,23 +36,23 @@ void ComponentMesh::SetNormals(const int& index)
 {
 	float aux[9];
 
-	aux[0] = this->vertex[this->index[index * 3] * 3];
-	aux[1] = this->vertex[(this->index[index * 3] * 3) + 1];
-	aux[2] = this->vertex[(this->index[index * 3] * 3) + 2];
-	aux[3] = this->vertex[(this->index[(index * 3) + 1] * 3)];
-	aux[4] = this->vertex[(this->index[(index * 3) + 1] * 3) + 1];
-	aux[5] = this->vertex[(this->index[(index * 3) + 1] * 3) + 2];
-	aux[6] = this->vertex[(this->index[(index * 3) + 2] * 3)];
-	aux[7] = this->vertex[(this->index[(index * 3) + 2] * 3) + 1];
-	aux[8] = this->vertex[(this->index[(index * 3) + 2] * 3) + 2];
+	aux[0] = r_mesh->vertex[r_mesh->index[index * 3] * 3];
+	aux[1] = r_mesh->vertex[(r_mesh->index[index * 3] * 3) + 1];
+	aux[2] = r_mesh->vertex[(r_mesh->index[index * 3] * 3) + 2];
+	aux[3] = r_mesh->vertex[(r_mesh->index[(index * 3) + 1] * 3)];
+	aux[4] = r_mesh->vertex[(r_mesh->index[(index * 3) + 1] * 3) + 1];
+	aux[5] = r_mesh->vertex[(r_mesh->index[(index * 3) + 1] * 3) + 2];
+	aux[6] = r_mesh->vertex[(r_mesh->index[(index * 3) + 2] * 3)];
+	aux[7] = r_mesh->vertex[(r_mesh->index[(index * 3) + 2] * 3) + 1];
+	aux[8] = r_mesh->vertex[(r_mesh->index[(index * 3) + 2] * 3) + 2];
 
 	float p1 = (aux[0] + aux[3] + aux[6]) / 3;
 	float p2 = (aux[1] + aux[4] + aux[7]) / 3;
 	float p3 = (aux[2] + aux[5] + aux[8]) / 3;
 
-	this->normal[index * 6] = p1;
-	this->normal[index * 6 + 1] = p2;
-	this->normal[index * 6 + 2] = p3;
+	r_mesh->normal[index * 6] = p1;
+	r_mesh->normal[index * 6 + 1] = p2;
+	r_mesh->normal[index * 6 + 2] = p3;
 
 	vec v1(aux[0], aux[1], aux[2]);
 	vec v2(aux[3], aux[4], aux[5]);
@@ -58,41 +61,41 @@ void ComponentMesh::SetNormals(const int& index)
 	vec norm = (v2 - v1).Cross(v3 - v1);
 	norm.Normalize();
 
-	this->normal[index * 6 + 3] = p1 + norm.x;
-	this->normal[index * 6 + 4] = p2 + norm.y;
-	this->normal[index * 6 + 5] = p3 + norm.z;
+	r_mesh->normal[index * 6 + 3] = p1 + norm.x;
+	r_mesh->normal[index * 6 + 4] = p2 + norm.y;
+	r_mesh->normal[index * 6 + 5] = p3 + norm.z;
 }
 
 void ComponentMesh::GenBuffers()
 {
 	// Vertex Buffer
-	if (this->num_vertex > 0)
+	if (r_mesh->num_vertex > 0)
 	{
-		glGenBuffers(1, &this->id_vertex);
-		glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_vertex * 3, this->vertex, GL_STATIC_DRAW);
+		glGenBuffers(1, &r_mesh->id_vertex);
+		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_vertex * 3, r_mesh->vertex, GL_STATIC_DRAW);
 	}
 
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Index Buffer
-	if (this->num_index > 0)
+	if (r_mesh->num_index > 0)
 	{
-	glGenBuffers(1, &this->id_index);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->num_index, this->index, GL_STATIC_DRAW);
+	glGenBuffers(1, &r_mesh->id_index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * r_mesh->num_index, r_mesh->index, GL_STATIC_DRAW);
 	}
 	// **Unbind Buffer**
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
 	// Texture Coordinates / UVs Buffer
-	if (this->num_uvs > 0)
+	if (r_mesh->num_uvs > 0)
 	{
-		glGenBuffers(1, &this->id_uvs);
-		glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->num_uvs * 3, this->tex_coords, GL_STATIC_DRAW);
+		glGenBuffers(1, &r_mesh->id_uvs);
+		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_uvs * 3, r_mesh->tex_coords, GL_STATIC_DRAW);
 	}
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -102,24 +105,22 @@ void ComponentMesh::SetMeshBoundBox()
 {
 	float max_x = INT_MIN, max_y = INT_MIN, max_z = INT_MIN, min_x = INT_MAX, min_y = INT_MAX, min_z = INT_MAX;
 
-	for (int i = 0; i < this->num_vertex; i++)
+	for (int i = 0; i < r_mesh->num_vertex; i++)
 	{
-		if (max_x < this->vertex[i * 3])
-			max_x = this->vertex[i * 3];
-		if (min_x > this->vertex[i * 3])
-			min_x = this->vertex[i * 3];
-		if (max_y < this->vertex[i * 3 + 1])
-			max_y = this->vertex[i * 3 + 1];
-		if (min_y > this->vertex[i * 3 + 1])
-			min_y = this->vertex[i * 3 + 1];
-		if (max_z < this->vertex[i * 3 + 2])
-			max_z = this->vertex[i * 3 + 2];
-		if (min_z > this->vertex[i * 3 + 2])
-			min_z = this->vertex[i * 3 + 2];
+		if (max_x < r_mesh->vertex[i * 3])
+			max_x = r_mesh->vertex[i * 3];
+		if (min_x > r_mesh->vertex[i * 3])
+			min_x = r_mesh->vertex[i * 3];
+		if (max_y < r_mesh->vertex[i * 3 + 1])
+			max_y = r_mesh->vertex[i * 3 + 1];
+		if (min_y > r_mesh->vertex[i * 3 + 1])
+			min_y = r_mesh->vertex[i * 3 + 1];
+		if (max_z < r_mesh->vertex[i * 3 + 2])
+			max_z = r_mesh->vertex[i * 3 + 2];
+		if (min_z > r_mesh->vertex[i * 3 + 2])
+			min_z = r_mesh->vertex[i * 3 + 2];
 	}
 
-	//if (this->BoundingBox != nullptr)
-	//	delete this->BoundingBox;
 
 	this->BoundingBox = new AABB(vec(min_x, min_y, min_z), vec(max_x, max_y, max_z));
 }
@@ -131,7 +132,7 @@ void ComponentMesh::Draw()
 
 	if (App->scene->active_cameras.size() > 0 && this->parent->isInsideFrustum(App->scene->Main_Cam, this->parent->GetBB()))
 	{
-		if (index != nullptr && vertex != nullptr)
+		if (r_mesh->index != nullptr && r_mesh->vertex != nullptr)
 		{
 			if (App->renderer3D->faces)
 			{
@@ -161,46 +162,52 @@ void ComponentMesh::DrawMesh()
 {
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
+	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
 
-	if (this->Material_Ind != -1 && tex_coords != nullptr)
+	if (r_mesh->tex_coords != nullptr)
 	{
-		std::vector<Component*> cmp_mats;
-		cmp_mats = parent->GetComponents(CT_Material);
-		ComponentMaterial* mat = nullptr;
-
-		for (int i = 0; i < cmp_mats.size(); i++)
+		ResourceMaterial* r_mat = nullptr;
+		if (Material_Ind != -1)
 		{
-			mat = cmp_mats[i]->AsMaterial();
-			if (mat != nullptr && mat->count_number == this->Material_Ind)
-				break;
+			int cmp_count = 0;
+			for (int i = 0; i < parent->components.size(); i++)
+				if (parent->components[i]->AsMaterial() != nullptr)
+				{
+					if (cmp_count == i)
+					{
+						r_mat = parent->components[i]->AsMaterial()->r_mat;
+						break;
+					}
+					else
+						cmp_count++;
+				}
 		}
 
-		if (mat != nullptr)
+		if (r_mat != nullptr)
 		{
-			Color c = mat->default_print;
+			Color c = r_mat->default_print;
 			glColor4f(c.r, c.g, c.b, c.a);
 
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
-			if (mat->textures.size() > 0)
+			if (r_mat->textures.size() > 0)
 			{
-				for (int i = 0; i < mat->textures.size(); i++)
+				for (int i = 0; i < r_mat->textures.size(); i++)
 				{
 					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-					glBindBuffer(GL_ARRAY_BUFFER, this->id_uvs);
+					glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
 					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-					glBindTexture(GL_TEXTURE_2D, mat->textures[i]->id_tex);
+					glBindTexture(GL_TEXTURE_2D, r_mat->textures[i]->id_tex);
 				}
 			}
 		}
 		else
 		{
-			this->Material_Ind = -1;
+			Material_Ind = -1;
 			App->ui->console_win->AddLog("Tried to render non-existing Material!");
 		}
 	}
@@ -210,7 +217,7 @@ void ComponentMesh::DrawMesh()
 	}
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, this->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -221,15 +228,15 @@ void ComponentMesh::DrawMesh()
 void ComponentMesh::DrawMeshWire()
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, this->id_vertex);
+	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id_index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
 
 	glColor3f(1, 1, 1);
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, this->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -241,14 +248,14 @@ void ComponentMesh::DrawNormals()
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
 
-	for (int k = 0; k < this->num_normal / 2; k++)
+	for (int k = 0; k < r_mesh->num_normal / 2; k++)
 	{
-		glVertex3f(this->normal[k * 6], this->normal[k * 6 + 1], this->normal[k * 6 + 2]);
+		glVertex3f(r_mesh->normal[k * 6], r_mesh->normal[k * 6 + 1], r_mesh->normal[k * 6 + 2]);
 
-		vec norm(this->normal[k * 6 + 3] - this->normal[k * 6], this->normal[k * 6 + 4] - this->normal[k * 6 + 1], this->normal[k * 6 + 5] - this->normal[k * 6 + 2]);
+		vec norm(r_mesh->normal[k * 6 + 3] - r_mesh->normal[k * 6], r_mesh->normal[k * 6 + 4] - r_mesh->normal[k * 6 + 1], r_mesh->normal[k * 6 + 5] - r_mesh->normal[k * 6 + 2]);
 		norm = norm.Mul(App->renderer3D->normal_length);
 
-		glVertex3f(this->normal[k * 6] + norm.x, this->normal[k * 6 + 1] + norm.y, this->normal[k * 6 + 2] + norm.z);
+		glVertex3f(r_mesh->normal[k * 6] + norm.x, r_mesh->normal[k * 6 + 1] + norm.y, r_mesh->normal[k * 6 + 2] + norm.z);
 	}
 	glColor3f(0, 1, 0);
 	glEnd();
@@ -258,14 +265,14 @@ void ComponentMesh::DrawNormals()
 
 void ComponentMesh::CleanUp()
 {
-	glDeleteBuffers(1, &this->id_index);
-	glDeleteBuffers(1, &this->id_uvs);
-	glDeleteBuffers(1, &this->id_vertex);
+	glDeleteBuffers(1, &r_mesh->id_index);
+	glDeleteBuffers(1, &r_mesh->id_uvs);
+	glDeleteBuffers(1, &r_mesh->id_vertex);
 
-	delete this->index; this->index = nullptr;
-	delete this->normal; this->normal = nullptr;
-	delete this->tex_coords; this->tex_coords = nullptr;
-	delete this->vertex; this->vertex = nullptr;
+	delete r_mesh->index; r_mesh->index = nullptr;
+	delete r_mesh->normal; r_mesh->normal = nullptr;
+	delete r_mesh->tex_coords; r_mesh->tex_coords = nullptr;
+	delete r_mesh->vertex; r_mesh->vertex = nullptr;
 
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
@@ -273,7 +280,6 @@ void ComponentMesh::CleanUp()
 	}
 
 	this->parent = nullptr;
-	this->root = nullptr;
 }
 
 void ComponentMesh::Load(JSON_Object* comp)
