@@ -71,14 +71,44 @@ struct DGUID
 	bool operator==(const DGUID cmp_id)const
 	{
 		bool ret = false;
-		for (int i = 0; i < 64 && ret == false; i++)
-			ret = cmp_id.HexID[i] < HexID[i];
-		return ret;
+		std::vector<uint> f = TrueComp();
+		std::vector<uint> s = cmp_id.TrueComp();
+		int victor = 0;
+		for (int i = 0; i < 64; i++)
+			if (HexID[i] < cmp_id.HexID[i])
+			{
+				ret = HexID[i] == cmp_id.HexID[i];
+				victor++;
+			}
+		if (ret)
+			return !ret;
+
+		if (victor > 32)
+			return true;
+		else if (victor < 32)
+			return false;
+		else
+		{
+			int cs_cmp = (CheckSum() - cmp_id.CheckSum());
+			if (cs_cmp > 0)
+				return true;
+			else
+				return false;
+		}
+
 	}
 	int CheckSum() const {
 		int ret = 0;
 		for(int i = 0; i < 64; i++)
 			ret += HexID[i];
+		return ret;
+	}
+	std::vector<uint> TrueComp() const
+	{
+		std::vector<uint> ret;
+		for (int i = 0; i < 64; i++)
+			ret.push_back(HexID[i] + 1000 * HexID[i + 1]);
+
 		return ret;
 	}
 };
