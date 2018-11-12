@@ -44,6 +44,7 @@ public:
 public:
 	ResourceMesh* r_mesh;
 	DGUID Material_Ind;
+	uint mat_ind;
 	AABB* BoundingBox;
 
 public:
@@ -60,6 +61,8 @@ public:
 		multiple = false;
 
 		to_pop = false;
+
+		mat_ind = -1;
 	}
 };
 

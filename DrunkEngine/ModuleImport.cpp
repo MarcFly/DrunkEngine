@@ -14,6 +14,7 @@
 #include "ModuleResourceManager.h"
 #include "Resource.h"
 #include "ResourceMesh.h"
+#include "ResourceMaterial.h"
 
 #include <fstream>
 #include <iostream>
@@ -100,13 +101,15 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			std::string matname = filename;
 			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 			matname.append(".matdrnk");
-			DGUID fID(IsImported(matname.c_str()).c_str());
-			if(App->resources->InLibrary(fID))
+			DGUID mfID(IsImported(matname.c_str()).c_str());
+			if(!App->resources->InLibrary(mfID))
 			{ 
-				ComponentMaterial* aux_mat = new ComponentMaterial(ret);
-				mat_i->LinkMat(fID, aux_mat);
-				ret->components.push_back(aux_mat);
+				MetaMat* map_mat = new MetaMat();
+				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
 			}
+			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
+			mat_i->LinkMat(fID, aux_mat);
+			ret->components.push_back(aux_mat);
 		}
 
 		ret->components.push_back(aux);

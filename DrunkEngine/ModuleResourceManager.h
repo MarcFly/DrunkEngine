@@ -19,15 +19,17 @@ public:
 	
 
 public:
-	std::map<DGUID, MetaResource*> Library;
-	std::string non_id = "12AE32CB1EC02D01EDA3581B127C1FEE3B0DC53572ED6BAF239721A03D82E126";
-public:
+	std::map<DGUID, MetaResource*, std::equal_to<DGUID>> Library;
+	
 	bool InLibrary(DGUID& check)
 	{
-		if (check == non_id || check.HexID[0] == '\0')
+		if (check.HexID[0] == '\0')
 			return false;
 		else
-			return (Library.find(check) != Library.end());
+		{
+			std::map<DGUID, MetaResource*>::iterator it = Library.find(check);
+			return (it != Library.end());
+		}
 	}
 
 };

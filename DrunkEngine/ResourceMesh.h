@@ -41,6 +41,7 @@ public:
 	~MetaMesh() {};
 
 	DGUID Material_ind;
+	uint mat_ind;
 
 	// More Load Options
 	void LoadMetaFile(const char* file)

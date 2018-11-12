@@ -26,6 +26,10 @@ struct DGUID
 {
 	char HexID[64];
 
+	bool last_comp = true;
+
+	DGUID* me = this;
+
 	DGUID()
 	{
 		HexID[0] = '\0';
@@ -55,10 +59,26 @@ struct DGUID
 	bool operator==(DGUID cmp_id)
 	{
 		return (std::string(cmp_id.HexID) == std::string(HexID));
-	}
-	bool operator<(DGUID const& cmp_id) const
+	}	
+	bool operator<(const DGUID cmp_id) const
 	{
-		bool ret = !(std::string(cmp_id.HexID) == std::string(HexID));
+		/*bool ret = false;
+		for (int i = 0; i < 64 && ret == false; i++)
+			ret = cmp_id.HexID[i] < HexID[i];
+		return !ret;*/
+		return cmp_id.CheckSum() < CheckSum();
+	}
+	bool operator==(const DGUID cmp_id)const
+	{
+		bool ret = false;
+		for (int i = 0; i < 64 && ret == false; i++)
+			ret = cmp_id.HexID[i] < HexID[i];
+		return ret;
+	}
+	int CheckSum() const {
+		int ret = 0;
+		for(int i = 0; i < 64; i++)
+			ret += HexID[i];
 		return ret;
 	}
 };
@@ -66,6 +86,7 @@ struct DGUID
 union Resource
 {
 	Resource() {};
+	Resource(MetaResource* parent) : par{parent} {};
 	struct mesh
 	{
 		ResourceMesh* ptr = nullptr;
@@ -90,7 +111,7 @@ public:
 class MetaResource
 {
 public:
-	MetaResource() {};
+	MetaResource() { Asset.par = this; };
 	virtual ~MetaResource() {};
 
 	ResourceTypes type;

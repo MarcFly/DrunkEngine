@@ -236,10 +236,12 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	std::vector<std::string> textures; // Only Diffuse for now
 	for (int i = 0; i < text_size; i++)
 	{
-		aiString path;
-		mat->GetTexture(aiTextureType_DIFFUSE, i, &path);
+		aiString aipath;
+		mat->GetTexture(aiTextureType_DIFFUSE, i, &aipath);
 		
-		textures.push_back(path.C_Str());
+		ExportTexture(aipath.C_Str(), path);
+
+		textures.push_back(aipath.C_Str());
 
 		buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 		
@@ -298,9 +300,6 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	write_file.write(data, buf_size);
 
 	write_file.close();
-
-	for (int i = 0; i < textures.size(); i++)
-		ExportTexture(textures[i].c_str());
 	
 }
 
@@ -311,7 +310,8 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 	ilGenImages(1, &id_Image);
 	ilBindImage(id_Image);
 
-	bool check = ilLoadImage(path);
+	std::string libpath = ".\\Library\\" + GetFileName(path) + ".dds";
+	bool check = ilLoadImage(libpath.c_str());
 
 	if (!check) // Check from obj directory
 	{
