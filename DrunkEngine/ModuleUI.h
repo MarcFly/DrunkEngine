@@ -37,6 +37,8 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void RenderImGui();
+
 	bool MainMenu();
 
 	void ShowHideWindows();

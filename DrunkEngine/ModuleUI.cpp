@@ -61,14 +61,18 @@ bool ModuleUI::Init()
 	for (int i = 0; i < NUM_WINDOWS; i++)
 		active_windows[i] = false;
 
+	ImGuizmo::Enable(true);
+
 	return ret;
 }
 
 update_status ModuleUI::PreUpdate(float dt)
 {
+	
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 
 	MainMenu();
 
@@ -83,13 +87,13 @@ update_status ModuleUI::PreUpdate(float dt)
 			windows->Draw();
 	}
 	
+	
+
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleUI::PostUpdate(float dt)
 {
-	ImGui::Render();
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	return UPDATE_CONTINUE;
 }
 
@@ -111,6 +115,12 @@ bool ModuleUI::CleanUp()
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+void ModuleUI::RenderImGui()
+{
+	ImGui::Render();
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
 
 bool ModuleUI::MainMenu()

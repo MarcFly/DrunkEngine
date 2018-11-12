@@ -55,12 +55,14 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
 
-	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->MoveZ(speed);
-	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->MoveZ(-speed);
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	{
+		if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->MoveZ(speed);
+		if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->MoveZ(-speed);
 
-	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->MoveX(-speed);
-	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->MoveX(speed);
-
+		if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->MoveX(-speed);
+		if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->MoveX(speed);
+	}
 	if (App->input->GetMouseZ() < 0) main_camera->MoveZ(-speed * MOUSE_WHEEL_SPEED);
 	if (App->input->GetMouseZ() > 0) main_camera->MoveZ(speed * MOUSE_WHEEL_SPEED);
 
@@ -79,7 +81,7 @@ update_status ModuleCamera3D::Update(float dt)
 		main_camera->LookToActiveObjs(aux);
 	}
 
-	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !ImGuizmo::IsUsing() && !ImGuizmo::IsOver())
 		MousePicking();
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)

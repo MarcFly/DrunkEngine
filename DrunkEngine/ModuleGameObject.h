@@ -2,6 +2,7 @@
 #define _MODULE_GAMEOBJECT_H_
 
 #include "Module.h"
+#include "ImGuizmo/ImGuizmo.h"
 
 class KDTree;
 
@@ -11,6 +12,8 @@ public:
 	ModuleGameObject(bool start_enabled = true);
 	~ModuleGameObject();
 
+	bool Init();
+	update_status PreUpdate(float dt);
 	update_status Update(float dt);
 	bool CleanUp();
 
@@ -40,6 +43,8 @@ public:
 	void SetRootObject(GameObject * root);
 	GameObject * GetRootObject() const;
 
+	void ManageGuizmo();
+
 public:
 
 	std::string scene_folder;
@@ -59,6 +64,10 @@ public:
 	GameObject * getRootObj() const { return Root_Object; };
 	ComponentCamera * Main_Cam = nullptr;
 
+public:
+	//ImGuizmo
+	ImGuizmo::OPERATION mCurrentGizmoOperation;
+	ImGuizmo::MODE mCurrentGizmoMode;
 	
 };
 
