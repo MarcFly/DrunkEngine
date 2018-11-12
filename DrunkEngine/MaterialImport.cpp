@@ -25,13 +25,26 @@ void MatImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-ResourceMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat, const char* Dir)
+void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
+{
+}
+
+ResourceTexture* MatImport::LinkTexture(DGUID fID)
+{
+	MetaTexture* meta = (MetaTexture*)App->resources->Library.at(fID);
+	if (!meta->Asset.IsLoaded())
+		meta->Asset.LoadToMem();
+
+	meta->UseCount++;
+
+	return meta->Asset.texture.ptr;
+}
+
+ResourceMaterial* MatImport::LoadMat(const char* file)
 {
 	ResourceMaterial* r_mat = new ResourceMaterial();
 
 	App->importer->Imp_Timer.Start();
-
-	mat->name = file;
 
 	// Default Material Color
 	std::ifstream read_file;
@@ -80,21 +93,15 @@ ResourceMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat,
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
- 			ResourceTexture* check = ImportTexture(aux);
-
-			if (check == nullptr)
+			std::string filename = ".\\Library\\";
+			filename += GetFileName(aux);
+			filename.append(".dds");
+			DGUID tfID(App->importer->IsImported(aux).c_str());
+			if (App->resources->InLibrary(tfID))
 			{
-				std::string filename = ".\\Library\\";
-				filename += GetFileName(aux);
-				filename.append(".dds");
-
-				ExportTexture(aux, Dir);
-				check = ImportTexture(filename.c_str(), Dir);
-			}
-			if (check != nullptr)
-			{
-				r_mat->textures.push_back(check);
-			}
+				ResourceTexture* tex = LinkTexture(tfID);
+				r_mat->textures.push_back(tex);
+			}			
 			cursor += texture_ranges[i];
 		}
 
@@ -102,12 +109,9 @@ ResourceMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat,
 
 		App->ui->console_win->AddLog("New Material with %d textures loaded.", r_mat->textures.size());
 
-		mat->r_mat = r_mat;
 	}
 	else
 	{
-		delete mat;
-		mat = nullptr;
 		delete r_mat;
 		r_mat = nullptr;
 	}
@@ -118,13 +122,11 @@ ResourceMaterial* MatImport::ImportMat(const char* file, ComponentMaterial* mat,
 
 }
 
-ResourceTexture* MatImport::ImportTexture(const char * path, const char* Dir)
+ResourceTexture* MatImport::LoadTexture(const char * path)
 {
 	Timer text_timer;
 
 	ResourceTexture* ret = new ResourceTexture();
-
-	bool check_rep = false;
 
 	if (strrchr(path, '\\') != nullptr)
 	{
@@ -134,75 +136,74 @@ ResourceTexture* MatImport::ImportTexture(const char * path, const char* Dir)
 	else
 		ret->filename = path;
 
-	if (!check_rep)
-	{
-		// Load Tex parameters and data to vram?
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glGenTextures(1, &ret->id_tex);
-		glBindTexture(GL_TEXTURE_2D, ret->id_tex);
+	
+	// Load Tex parameters and data to vram?
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &ret->id_tex);
+	glBindTexture(GL_TEXTURE_2D, ret->id_tex);
 
-		App->renderer3D->GenTexParams();
+	App->renderer3D->GenTexParams();
 
-		ILuint id_Image;
-		ilGenImages(1, &id_Image);
-		ilBindImage(id_Image);
+	ILuint id_Image;
+	ilGenImages(1, &id_Image);
+	ilBindImage(id_Image);
 
-		bool check = ilLoadImage(path);
+	bool check = ilLoadImage(path);
 		
-		if (!check) // Check from imported textures folder
-		{
-			std::string new_file_path = path;
-			new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+	if (!check) // Check from imported textures folder
+	{
+		std::string new_file_path = path;
+		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
-			new_file_path = ".\\Library\\" + new_file_path; // Have to set new directories
+		new_file_path = ".\\Library\\" + new_file_path; // Have to set new directories
 
-			check = ilLoadImage(new_file_path.c_str());
-			if (check)
-				App->ui->console_win->AddLog("Texture found in Imported Directories");
-		}
-
-		text_timer.LogTime("Texture Load");
-		text_timer.Start();
-
+		check = ilLoadImage(new_file_path.c_str());
 		if (check)
-		{
-			ILinfo Info;
-
-			iluGetImageInfo(&Info);
-			if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
-				iluFlipImage();
-
-			check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-			ret->width = Info.Width;
-			ret->height = Info.Height;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-
-			App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, ret->width, ret->height);
-
-			text_timer.LogTime("Tex full Load");
-			text_timer.Start();
-
-		}
-
-		else
-		{
-			App->ui->console_win->AddLog("Failed to load image from path %s", path);
-
-			glDeleteTextures(1, &ret->id_tex);
-			delete ret;
-			ret = nullptr;
-		}
-
-		ilDeleteImages(1, &id_Image);
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		App->ui->obj_properties_win->CheckMeshInfo();
-
-		text_timer.LogTime("Tex finish Load");
-		text_timer.Start();
+			App->ui->console_win->AddLog("Texture found in Imported Directories");
 	}
+
+	text_timer.LogTime("Texture Load");
+	text_timer.Start();
+
+	if (check)
+	{
+		ILinfo Info;
+
+		iluGetImageInfo(&Info);
+		if (Info.Origin == IL_ORIGIN_UPPER_LEFT)
+			iluFlipImage();
+
+		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+		ret->width = Info.Width;
+		ret->height = Info.Height;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+
+		App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, ret->width, ret->height);
+
+		text_timer.LogTime("Tex full Load");
+		text_timer.Start();
+
+	}
+
+	else
+	{
+		App->ui->console_win->AddLog("Failed to load image from path %s", path);
+
+		glDeleteTextures(1, &ret->id_tex);
+		delete ret;
+		ret = nullptr;
+	}
+
+	ilDeleteImages(1, &id_Image);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	App->ui->obj_properties_win->CheckMeshInfo();
+
+	text_timer.LogTime("Tex finish Load");
+	text_timer.Start();
+	
 
 	return ret;
 }
@@ -287,6 +288,9 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	std::ofstream write_file;
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mat_" + std::to_string(mat_id);
+
+	ExportMeta(scene, mat_id, filename, data);
+
 	filename.append(".matdrnk");
 
 	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
@@ -294,6 +298,9 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	write_file.write(data, buf_size);
 
 	write_file.close();
+
+	for (int i = 0; i < textures.size(); i++)
+		ExportTexture(textures[i].c_str());
 	
 }
 
@@ -337,6 +344,9 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 
 			std::string export_path = ".\\Library\\";
 			export_path.append(GetFileName(path).c_str());
+
+			ExportMetaTex(export_path);
+
 			export_path.append(".dds");
 
 			if (ilSaveL(IL_DDS, data, size) > 0)
@@ -433,4 +443,50 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 
 	write_file.close();
 
+}
+
+//--------------------------------------
+
+void MatImport::ExportMeta(const aiScene* scene, const int& mat_id, std::string path, char* data)
+{
+	std::string meta_name = path + ".meta";
+	JSON_Value* meta_file = json_parse_file(path.c_str());
+	meta_file = json_value_init_object();
+
+	JSON_Object* meta_obj = json_value_get_object(meta_file);
+
+	json_object_dotset_string(meta_obj, "File", std::string(path + ".matdrnk").c_str());
+
+	json_serialize_to_file(meta_file, meta_name.c_str());
+}
+void MatImport::LoadMeta(const char* file, MetaMat* meta)
+{
+	meta->type = RT_Texture;
+
+	JSON_Value* meta_file = json_parse_file(file);
+	JSON_Object* meta_obj = json_value_get_object(meta_file);
+
+	meta->file = json_object_dotget_string(meta_obj, "File");
+}
+
+void MatImport::ExportMetaTex(std::string path)
+{
+	std::string meta_name = path + ".meta";
+	JSON_Value* meta_file = json_parse_file(path.c_str());
+	meta_file = json_value_init_object();
+
+	JSON_Object* meta_obj = json_value_get_object(meta_file);
+
+	json_object_dotset_string(meta_obj, "File", std::string(path + ".dds").c_str());
+
+	json_serialize_to_file(meta_file, meta_name.c_str());
+}
+void MatImport::LoadMetaTex(const char* file, MetaTexture* meta)
+{
+	meta->type = RT_Texture;
+
+	JSON_Value* meta_file = json_parse_file(file);
+	JSON_Object* meta_obj = json_value_get_object(meta_file);
+
+	meta->file = json_object_dotget_string(meta_obj, "File");
 }

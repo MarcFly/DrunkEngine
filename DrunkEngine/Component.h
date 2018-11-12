@@ -49,7 +49,7 @@ public:
 	}
 
 public:
-	GUID UID;
+	DGUID UID;
 	CTypes type;
 	bool multiple;
 	GameObject* parent;

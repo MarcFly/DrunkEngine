@@ -1,6 +1,10 @@
 #ifndef _RESOURCE_
 #define _RESOURCE_
 
+#include <string>
+#include "Globals.h"
+#include "FileHelpers.h"
+
 class GameObject;
 class ResourceMesh;
 struct ResourceMaterial;
@@ -18,35 +22,49 @@ enum ResourceTypes
 	RT_MAX
 };
 
-struct GUID
+struct DGUID
 {
 	char HexID[64];
 
-	GUID()
+	DGUID()
 	{
 		HexID[0] = '\0';
 	}
-	GUID(const char* hex)
+	DGUID(const char* data)
 	{
-		memcpy(HexID, hex, 64);
+		if (data == nullptr || std::string(data) == "")
+			HexID[0] = '\0';
+		else
+			memcpy(&HexID[0], GetHexID(data).c_str(), 64);		
+	}
+
+	const char* operator=(const char* hex)
+	{
+		memcpy(&HexID[0], hex, 64);
+		return HexID;
 	}
 
 	bool operator==(const char* cmp_id)
 	{
 		return (std::string(cmp_id) == std::string(HexID));
 	}
-	bool operator==(std::string& cmp_id)
+	bool operator==(std::string cmp_id)
 	{
 		return (cmp_id == std::string(HexID));
 	}
-	bool operator==(const GUID& cmp_id)
+	bool operator==(DGUID cmp_id)
 	{
 		return (std::string(cmp_id.HexID) == std::string(HexID));
+	}
+	bool operator<(DGUID const& cmp_id) const
+	{
+		return false;
 	}
 };
 
 union Resource
 {
+	Resource() {};
 	struct mesh
 	{
 		ResourceMesh* ptr = nullptr;
@@ -71,14 +89,16 @@ public:
 class MetaResource
 {
 public:
-	MetaResource();
-	~MetaResource();
+	MetaResource() {};
+	virtual ~MetaResource() {};
 
 	ResourceTypes type;
 	std::string file;
 	uint UseCount = 0;
 	bool to_pop = false;
 	Resource Asset;
+
+	virtual void LoadMetaFile(const char* path) {};
 };
 
 #endif

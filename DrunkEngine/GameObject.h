@@ -58,7 +58,7 @@ public:
 
 public:
 	Uint32	UUID = UINT_FAST32_MAX, par_UUID = UINT_FAST32_MAX;
-	GUID UID;
+	DGUID UID;
 	std::string name;
 
 	AABB* BoundingBox = nullptr;
@@ -140,13 +140,13 @@ public:
 		return ret;
 	}
 
-	GameObject* GetChild(GUID UUID)
+	GameObject* GetChild(Uint32 UUID)
 	{
 		GameObject* ret = nullptr;
 
 		for (int i = 0; i < children.size(); i++)
 		{
-			if (children[i]->UID == UUID)
+			if (children[i]->UUID == UUID)
 				ret = children[i];
 			else
 				ret = children[i]->GetChild(UUID);

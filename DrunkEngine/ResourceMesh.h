@@ -4,9 +4,10 @@
 #include "GLEW/include/GL/glew.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
+#include "MeshImport.h"
 
 struct ResourceMaterial;
-struct GUID;
+struct DGUID;
 
 struct ResourceMesh
 {
@@ -36,12 +37,16 @@ struct ResourceMesh
 class MetaMesh : public MetaResource
 {
 public:
-	MetaMesh();
-	~MetaMesh();
+	MetaMesh() {};
+	~MetaMesh() {};
 
-	GUID Material_ind;
+	DGUID Material_ind;
 
 	// More Load Options
+	void LoadMetaFile(const char* file)
+	{
+		App->importer->mesh_i->LoadMeta(file, this);
+	}
 };
 
 #endif

@@ -8,6 +8,7 @@
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
 #include "ResourceMesh.h"
+#include "Resource.h"
 
 #include <fstream>
 #include <iostream>
@@ -22,14 +23,18 @@ void MeshImport::Init()
 //-IMPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-void MeshImport::ImportMesh(GUID fID, ComponentMesh* mesh)
+void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 {
-	MetaResource* res = &App->resources->Library.at(fID);
+	MetaMesh* res = (MetaMesh*)App->resources->Library.at(fID);
 
 	mesh->name = res->file;
+
 	if (!res->Asset.IsLoaded())
 		res->Asset.LoadToMem();
+	
 	mesh->r_mesh = res->Asset.mesh.ptr;
+	mesh->Material_Ind = res->Material_ind;
+	res->UseCount++;
 
 	mesh->SetMeshBoundBox();
 	mesh->UID = fID;
@@ -193,14 +198,14 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 		cursor += (sizeof(GLfloat)*uv_size);
 	}
 
-	ExportMeta(scene, mesh_id, path);
-
-	memcpy(cursor, &mesh->mMaterialIndex, sizeof(uint));
-
-	std::ofstream write_file;
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
+
+	ExportMeta(scene, mesh_id, path, data);
+
 	filename.append(".meshdrnk");
+
+	std::ofstream write_file;
 
 	write_file.open(filename.c_str(), std::fstream::out | std::fstream::binary);
 
@@ -243,6 +248,31 @@ void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normal
 	normals.push_back(p3 + norm.z);
 }
 
+void MeshImport::ExportMeta(const aiScene* scene, const int& mesh_id, std::string path, char* data)
+{
+	std::string meta_name = ".\\Library\\" + GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meta";
+	JSON_Value* meta_file = json_parse_file(path.c_str());
+	meta_file = json_value_init_object();
+
+	JSON_Object* meta_obj = json_value_get_object(meta_file);
+
+	json_object_dotset_string(meta_obj, "File", std::string(".\\Library\\"+ GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meshdrnk").c_str());
+	std::string write = DGUID(data).HexID;
+	write[64] = '\0';
+	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
+
+	json_serialize_to_file(meta_file, meta_name.c_str());
+}
+void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
+{
+	meta->type = RT_Mesh;
+
+	JSON_Value* meta_file = json_parse_file(file);
+	JSON_Object* meta_obj = json_value_get_object(meta_file);
+
+	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
+	meta->file = json_object_dotget_string(meta_obj, "File");	
+}
 ////////////------------------------------------------------------------------------------------------------------------------
 //-SaveDT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------

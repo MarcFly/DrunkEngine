@@ -12,15 +12,18 @@ void Resource::LoadToMem()
 	switch (par->type)
 	{
 	case RT_GameObject:
+		break;
 	case RT_Mesh:
-		mesh.ptr = new ResourceMesh();
 		mesh.ptr = App->importer->mesh_i->LoadMesh(par->file.c_str());
 		break;
 	case RT_Material:
-		mat.ptr = new ResourceMaterial();
 		mat.ptr = App->importer->mat_i->LoadMat(par->file.c_str());
 		break;
 	case RT_Texture:
+		texture.ptr = App->importer->mat_i->LoadTexture(par->file.c_str());
+		break;
+	default:
+		break;
 	}
 }
 
@@ -33,21 +36,31 @@ void Resource::UnloadFromMem()
 		
 	case RT_Material:
 	case RT_Texture:
+		break;
+	default:
+		break;
 	}
 }
 
 bool Resource::IsLoaded()
 {
-	switch (par->type)
+	if (par->UseCount > 0)
 	{
-	case RT_GameObject:
-		break;
-	case RT_Mesh: 
-		return (mesh.ptr != nullptr);
-	case RT_Material:
-		return (mat.ptr != nullptr);
-	case RT_Texture:
-		return (texture.ptr != nullptr);
+		switch (par->type)
+		{
+		case RT_GameObject:
+			break;
+		case RT_Mesh:
+			return (mesh.ptr != nullptr);
+		case RT_Material:
+			return (mat.ptr != nullptr);
+		case RT_Texture:
+			return (texture.ptr != nullptr);
+		default:
+			break;
+		}
 	}
+	return false;
 }
+
 //--------------------------------------

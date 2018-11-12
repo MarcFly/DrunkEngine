@@ -46,7 +46,7 @@ void ComponentMaterial::CleanUp()
 void ComponentMaterial::Load(JSON_Object* comp)
 {
 	this->name = json_object_get_string(comp, "mat_name");
-	App->importer->mat_i->ImportMat(this->name.c_str(), this);
+	//App->importer->mat_i->ImportMat(this->name.c_str(), this);
 }
 
 void ComponentMaterial::Save(JSON_Array* comps)

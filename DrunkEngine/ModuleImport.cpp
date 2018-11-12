@@ -12,6 +12,8 @@
 #include "MaterialImport.h"
 #include "MeshImport.h"
 #include "ModuleResourceManager.h"
+#include "Resource.h"
+#include "ResourceMesh.h"
 
 #include <fstream>
 #include <iostream>
@@ -51,6 +53,8 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 	ret->parent = par;
 	
+	std::string filename = ".\\Library\\";
+
 	if (ret->parent != nullptr)
 	{
 		ret->root = ret->parent->root;
@@ -60,53 +64,62 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	{
 		ret->root = ret;
 		ret->par_UUID = UINT_FAST32_MAX;
+
+		for (int i = 0; i < scene->mNumMaterials; i++)
+		{
+			std::string matname = filename;
+			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+			matname.append(".matdrnk");
+			DGUID fID(IsImported(matname.c_str()).c_str());
+			if(fID.HexID[0] != '\0')
+				mat_i->ExportMat(scene, i, path);			
+		}
 	}
 
 	ret->name = obj_node->mName.C_Str();
 
 	// Sequential Import for FBX Only, will create the components one by one
-	std::string filename = ".\\Library\\";
+	
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
 		std::string meshname = filename;
 		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
 		meshname.append(".meshdrnk");
-		GUID fID(IsImported(meshname.c_str()).c_str());
+		DGUID fID(IsImported(meshname.c_str()).c_str());
 		ComponentMesh* aux = new ComponentMesh(ret);
-		if (App->resources->InLibrary(fID))
+
+		if(fID.HexID[0] == '\0')
+			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);		
+
+		if (!App->resources->InLibrary(fID))
 		{
-			mesh_i->ImportMesh(fID, aux);
+			MetaMesh* map_mesh = new MetaMesh();
+			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
+			map_mesh->LoadMetaFile(meta_file.c_str());
+			App->resources->Library.insert(std::pair<DGUID, MetaResource*>(fID, map_mesh));
 		}
-		else
-		{
-			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);
-			//App->resources->;
-			mesh_i->ImportMesh(fID, aux);
-		}
-		
+
+		mesh_i->LinkMesh(fID, aux);
+
 		aux->parent = ret;
+
+		if (aux->Material_Ind.HexID[0] != '\0')
+		{
+			std::string matname = filename;
+			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+			matname.append(".matdrnk");
+			DGUID fID(IsImported(matname.c_str()).c_str());
+			if(App->resources->InLibrary(fID))
+			{ 
+				ComponentMaterial* aux_mat = new ComponentMaterial(ret);
+				mat_i->LinkMat(fID, aux_mat);
+				ret->components.push_back(aux_mat);
+			}
+		}
+
 		ret->components.push_back(aux);
 		
-	}
-	for (int i = 0; i < scene->mNumMaterials; i++)
-	{
-		std::string matname = filename;
-		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
-		matname.append(".matdrnk");
-		ComponentMaterial* aux = new ComponentMaterial(ret);
-		if (mat_i->ImportMat(matname.c_str(), aux, GetDir(path).c_str()) == nullptr)
-		{
-			aux = nullptr;
-			aux = new ComponentMaterial(ret);
-			mat_i->ExportMat(scene, i, path);
-			mat_i->ImportMat(matname.c_str(), aux, GetDir(path).c_str());
-		}
-		if (aux != nullptr)
-		{
-			aux->parent = ret;
-			ret->components.push_back(aux);
-		}
 	}
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)
@@ -204,7 +217,8 @@ std::string ModuleImport::IsImported(const char * file)
 	if (size != -1)
 	{
 		char* data = new char[size];
-		ret = GUID(data).HexID;
+		ret = DGUID(data).HexID;
+		ret[64] = '\0';
 	}
 	read.seekg(read.beg, 0);
 	read.close();

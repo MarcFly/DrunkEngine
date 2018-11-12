@@ -43,11 +43,11 @@ public:
 
 public:
 	ResourceMesh* r_mesh;
-	GUID Material_Ind;
+	DGUID Material_Ind;
 	AABB* BoundingBox;
 
 public:
-	void SetTextTo(const GUID& nUID);
+	void SetTextTo(const DGUID& nUID);
 	void SetTextTo(ResourceMesh* nMesh);
 
 	void SetBaseVals()

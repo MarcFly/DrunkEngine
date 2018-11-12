@@ -170,7 +170,7 @@ void ComponentMesh::DrawMesh()
 	if (r_mesh->tex_coords != nullptr)
 	{
 		ResourceMaterial* r_mat = nullptr;
-		if (Material_Ind != -1)
+		if (Material_Ind.HexID[0] != '\0')
 		{
 			int cmp_count = 0;
 			for (int i = 0; i < parent->components.size(); i++)
@@ -207,7 +207,7 @@ void ComponentMesh::DrawMesh()
 		}
 		else
 		{
-			Material_Ind = -1;
+			Material_Ind.HexID[0] = '\0';
 			App->ui->console_win->AddLog("Tried to render non-existing Material!");
 		}
 	}
@@ -285,7 +285,10 @@ void ComponentMesh::CleanUp()
 void ComponentMesh::Load(JSON_Object* comp)
 {
 	this->name = json_object_get_string(comp, "mesh_name");
-	App->importer->mesh_i->ImportMesh(name.c_str(), this);
+	DGUID fID(App->importer->IsImported(name.c_str()).c_str());
+	if (App->resources->InLibrary(fID))
+		App->importer->mesh_i->LinkMesh(fID, this);
+
 }
 
 void ComponentMesh::Save(JSON_Array* comps)

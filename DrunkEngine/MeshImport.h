@@ -8,7 +8,7 @@
 class ComponentMesh;
 class GameObject;
 struct ResourceMesh;
-struct GUID;
+struct DGUID;
 class MetaMesh;
 
 class MeshImport {
@@ -18,7 +18,7 @@ public:
 
 	void Init();
 
-	void ImportMesh(GUID fID, ComponentMesh* mesh);
+	void LinkMesh(DGUID fID, ComponentMesh* mesh);
 	ResourceMesh* LoadMesh(const char* file);
 
 	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
@@ -26,8 +26,8 @@ public:
 
 	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
 
-	void ExportMeta(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
-	void LoadMeta(MetaMesh* meta);
+	void ExportMeta(const aiScene* scene, const int& mesh_id, std::string path, char* data);
+	void LoadMeta(const char* file, MetaMesh* meta);
 
 };
 

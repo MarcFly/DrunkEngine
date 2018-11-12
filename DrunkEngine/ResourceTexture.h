@@ -3,6 +3,8 @@
 
 #include <string>
 #include "GLEW/include/GL/glew.h"
+#include "Resource.h"
+#include "MaterialImport.h"
 
 enum TextureMode
 {
@@ -21,6 +23,18 @@ struct ResourceTexture
 	TextureMode type = TM_Error;
 
 	bool deleted = false;
+};
+
+class MetaTexture : public MetaResource
+{
+public:
+	MetaTexture() {};
+	~MetaTexture() {};
+
+	void LoadMetaFile(const char* file)
+	{
+		App->importer->mat_i->LoadMetaTex(file, this);
+	}
 };
 
 #endif
