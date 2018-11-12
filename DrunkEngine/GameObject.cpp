@@ -40,6 +40,8 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 		root = par->root;
 	}
 
+	App->importer->LoadSceneData(path, scene);
+
 	for (int i = 0; i < root_obj->mNumChildren; i++)
 		this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj->mChildren[i], this));
 

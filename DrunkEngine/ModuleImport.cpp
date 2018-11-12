@@ -64,16 +64,6 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	{
 		ret->root = ret;
 		ret->par_UUID = UINT_FAST32_MAX;
-
-		for (int i = 0; i < scene->mNumMaterials; i++)
-		{
-			std::string matname = filename;
-			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
-			matname.append(".matdrnk");
-			DGUID fID(IsImported(matname.c_str()).c_str());
-			if(fID.HexID[0] != '\0')
-				mat_i->ExportMat(scene, i, path);			
-		}
 	}
 
 	ret->name = obj_node->mName.C_Str();
@@ -131,6 +121,18 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	return ret;
 }
 
+void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
+{
+	for (int i = 0; i < scene->mNumMaterials; i++)
+	{
+		std::string matname = ".\\Library\\";
+		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+		matname.append(".matdrnk");
+		DGUID fID(IsImported(matname.c_str()).c_str());
+		if (fID.HexID[0] == '\0')
+			mat_i->ExportMat(scene, i, path);
+	}
+}
 
 void ModuleImport::ExportScene(const char* file_path)
 {
@@ -218,8 +220,7 @@ std::string ModuleImport::IsImported(const char * file)
 	if (size != -1)
 	{
 		char* data = new char[size];
-		ret = DGUID(data).HexID;
-		//ret[64] = '\0';
+		ret = GetHexID(data, size);
 		ret.erase(ret.length() - (ret.length() - 64));
 	}
 	read.seekg(read.beg, 0);

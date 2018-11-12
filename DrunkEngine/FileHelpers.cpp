@@ -76,5 +76,15 @@ std::string GetHexID(const char* data)
 	std::string str = data;
 	picosha2::hash256(str.begin(), str.end(), hash.begin(), hash.end());
 
-	return picosha2::bytes_to_hex_string(hash.begin(), hash.end()).c_str();;
+	return picosha2::bytes_to_hex_string(hash.begin(), hash.end()).c_str();
+}
+
+std::string GetHexID(char* data, int size)
+{
+	std::vector<unsigned char> hash(picosha2::k_digest_size);
+	std::string str;
+	str.copy(data, size);
+	picosha2::hash256(str.begin(), str.end(), hash.begin(), hash.end());
+
+	return picosha2::bytes_to_hex_string(hash.begin(), hash.end()).c_str();
 }

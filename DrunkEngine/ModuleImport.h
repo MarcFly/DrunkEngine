@@ -45,6 +45,7 @@ public:
 	
 	GameObject* ImportGameObject(const char* path, GameObject* par);
 	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
+	void LoadSceneData(const char* path, const aiScene* scene);
 
 	void ExportScene(const char* scene);
 

@@ -58,7 +58,8 @@ struct DGUID
 	}
 	bool operator<(DGUID const& cmp_id) const
 	{
-		return true;
+		bool ret = !(std::string(cmp_id.HexID) == std::string(HexID));
+		return ret;
 	}
 };
 
