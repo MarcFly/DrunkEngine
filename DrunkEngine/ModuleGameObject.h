@@ -69,6 +69,7 @@ public:
 	ImGuizmo::OPERATION mCurrentGizmoOperation;
 	ImGuizmo::MODE mCurrentGizmoMode;
 	
+	float3 previous_scale;
 };
 
 #endif // !_MODULE_EVENTSYSTEM_H_

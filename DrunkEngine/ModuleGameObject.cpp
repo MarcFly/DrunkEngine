@@ -7,6 +7,7 @@ ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, T
 {
 	mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	mCurrentGizmoMode = ImGuizmo::WORLD;
+	previous_scale = float3::one;
 }
 
 ModuleGameObject::~ModuleGameObject()
@@ -255,24 +256,28 @@ void ModuleGameObject::ManageGuizmo()
 				{
 				case ImGuizmo::TRANSLATE:
 				{
-					active_objects[i]->GetTransform()->SetTransformPosition(pos.x, pos.y, pos.x);
+					float3 pos_float3 = float3(pos.x, pos.y, pos.z) + (active_objects[i]->GetTransform()->position);
+					active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
 					break;
 				}
 				case ImGuizmo::ROTATE:
 				{
-					Quat rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
+					Quat rotate_quat = Quat(-rot.x, -rot.y, -rot.z, rot.w).Mul(active_objects[i]->GetTransform()->rotate_quat);
 					active_objects[i]->GetTransform()->SetTransformRotation(rotate_quat);
 					break;
 				}
 				case ImGuizmo::SCALE:
 				{
-					float3 scale_float3 = float3(scale.x, scale.y, scale.z);
-					active_objects[i]->GetTransform()->SetTransformScale(scale_float3.x, scale_float3.y, scale_float3.x);
+					float3 scale_float3 = float3(scale.x - previous_scale.x, scale.y - previous_scale.y, scale.z - previous_scale.z) + active_objects[i]->GetTransform()->scale;
+					active_objects[i]->GetTransform()->SetTransformScale(scale_float3.x, scale_float3.y, scale_float3.z);
+					previous_scale = float3(scale.x, scale.y, scale.z);
 					break;
 				}
 				}
-				
+
 			}
+			else
+				previous_scale = float3::one;
 		}
 	}
 }
