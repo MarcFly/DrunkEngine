@@ -97,6 +97,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			MetaMesh* map_mesh = new MetaMesh();
 			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
 			map_mesh->LoadMetaFile(meta_file.c_str());
+			fID = IsImported(meshname.c_str()).c_str();
 			App->resources->Library.insert(std::pair<DGUID, MetaResource*>(fID, map_mesh));
 		}
 
@@ -218,7 +219,8 @@ std::string ModuleImport::IsImported(const char * file)
 	{
 		char* data = new char[size];
 		ret = DGUID(data).HexID;
-		ret[64] = '\0';
+		//ret[64] = '\0';
+		ret.erase(ret.length() - (ret.length() - 64));
 	}
 	read.seekg(read.beg, 0);
 	read.close();

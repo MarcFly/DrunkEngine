@@ -58,7 +58,7 @@ struct DGUID
 	}
 	bool operator<(DGUID const& cmp_id) const
 	{
-		return false;
+		return true;
 	}
 };
 

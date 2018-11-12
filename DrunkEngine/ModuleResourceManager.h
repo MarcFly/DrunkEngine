@@ -27,9 +27,7 @@ public:
 		if (check == non_id || check.HexID[0] == '\0')
 			return false;
 		else
-		{
-			return (Library.find(check)._Ptr != nullptr);
-		}
+			return (Library.find(check) != Library.end());
 	}
 
 };
