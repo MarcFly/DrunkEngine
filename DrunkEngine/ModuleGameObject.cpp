@@ -236,7 +236,7 @@ void ModuleGameObject::ManageGuizmo()
 			float aux_vals[16];
 			float4x4 aux_mat = active_objects[i]->GetTransform()->global_transform;
 			
-			ImGuizmo::SetRect(0, 0, App->window->screen_size_w, App->window->screen_size_h);
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, App->window->window_w, App->window->window_h);
 			ImGuizmo::Manipulate(Main_Cam->GetViewMatrix(), Main_Cam->frustum.ProjectionMatrix().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, aux_mat.ptr(), aux_vals);
 
 			aiMatrix4x4 new_transform = aiMatrix4x4(aux_vals[0], aux_vals[1], aux_vals[2], aux_vals[3],
@@ -256,7 +256,7 @@ void ModuleGameObject::ManageGuizmo()
 				{
 				case ImGuizmo::TRANSLATE:
 				{
-					float3 pos_float3 = float3(pos.x, pos.y, pos.z) + (active_objects[i]->GetTransform()->position);
+					float3 pos_float3 = float3(pos.x, pos.y, pos.z).Mul(active_objects[i]->GetTransform()->position);
 					active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
 					break;
 				}
