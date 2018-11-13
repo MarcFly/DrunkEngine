@@ -3,7 +3,8 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-
+#include "ResourceMaterial.h"
+#include "ResourceTexture.h"
 
 ObjectPropertiesWindow::ObjectPropertiesWindow() : Window("Object Properties")
 {
@@ -88,9 +89,9 @@ void ObjectPropertiesWindow::MatInspector(ComponentMaterial* mat)
 	if (ImGui::CollapsingHeader("Material"))
 	{
 
-		for (int i = 0; mat != nullptr && i < mat->textures.size(); i++)
+		for (int i = 0; mat != nullptr && i < mat->r_mat->textures.size(); i++)
 		{
-			Texture* aux = mat->textures[i];
+			ResourceTexture* aux = mat->r_mat->textures[i];
 			ImGui::Separator();
 
 			if (check_info)
@@ -110,15 +111,17 @@ void ObjectPropertiesWindow::MatInspector(ComponentMaterial* mat)
 
 			if (ImGui::Button(str))
 			{
-				std::vector<Component*> cmp_meshes;
+				/*std::vector<Component*> cmp_meshes;
 				cmp_meshes = mat->parent->GetComponents(CT_Mesh);
 				for (int j = 0; j < cmp_meshes.size(); j++)
-					cmp_meshes[i]->AsMesh()->Material_Ind = i;
+					cmp_meshes[i]->AsMesh()->Material_Ind = i;*/
 			}
 
 			snprintf(str, 30, "%s%d%d", "Destroy this Texture ##", i, i);
 			if (ImGui::Button(str))
-				mat->DestroyTexture(i);
+			{
+			}
+				//mat->DestroyTexture(i);
 		}
 	}
 }

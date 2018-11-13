@@ -14,6 +14,7 @@
 #include "ModuleImport.h"
 #include "ModuleEventSystem.h"
 #include "ModuleGameObject.h"
+#include "ModuleResourceManager.h"
 
 #include "ModuleUI.h"
 
@@ -26,6 +27,7 @@ public:
 	ModuleRenderer3D* renderer3D;
 	//ModulePhysics3D* physics;
 	ModuleImport* importer;
+	ModuleResourceManager* resources;
 	ModuleUI* ui;
 	ModuleScene* scene;
 	ModuleEventSystem* eventSys;

@@ -11,6 +11,11 @@
 #include "Component.h"
 #include "MaterialImport.h"
 #include "MeshImport.h"
+#include "ModuleResourceManager.h"
+#include "Resource.h"
+#include "ResourceMesh.h"
+#include "ResourceMaterial.h"
+#include "MD5.h"
 
 #include <fstream>
 #include <iostream>
@@ -50,6 +55,8 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 
 	ret->parent = par;
 	
+	std::string filename = ".\\Library\\";
+
 	if (ret->parent != nullptr)
 	{
 		ret->root = ret->parent->root;
@@ -67,44 +74,56 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	ret->name = obj_node->mName.C_Str();
 	
 	// Sequential Import for FBX Only, will create the components one by one
+	
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
 	{
-		std::string filename = "Library\\Meshes\\";
-		filename += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
-		filename.append(".meshdrnk");
+		std::string meshname = filename;
+		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
+		meshname.append(".meshdrnk");
+		DGUID fID(IsImported(meshname.c_str()).c_str());
 		ComponentMesh* aux = new ComponentMesh(ret);
-		if (mesh_i->ImportMesh(filename.c_str(), aux) == nullptr)
+
+		if(fID.MD5ID[0] == -52)
+			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);		
+
+		if (!App->resources->InLibrary(fID))
 		{
-			aux = nullptr;
-			aux = new ComponentMesh(ret);
-			mesh_i->ExportMesh(scene, obj_node->mMeshes[i],path);
-			mesh_i->ImportMesh(filename.c_str(), aux);
+			MetaMesh* map_mesh = new MetaMesh();
+			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
+			map_mesh->LoadMetaFile(meta_file.c_str());
+			fID = IsImported(meshname.c_str()).c_str();
+			App->resources->Library[fID] = map_mesh;
 		}
-		if (aux != nullptr)
+
+		mesh_i->LinkMesh(fID, aux);
+
+		aux->parent = ret;
+
+		if (aux->mat_ind != -1)
 		{
-			aux->parent = ret;
-			ret->components.push_back(aux);
+			std::string matname = filename;
+			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+			matname.append(".matdrnk");
+			DGUID mfID(IsImported(matname.c_str()).c_str());
+			matname.clear();
+			if(!App->resources->InLibrary(mfID))
+			{ 
+				MetaMat* map_mat = new MetaMat();
+				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
+				map_mat->LoadMetaFile(meta_file.c_str());
+				mfID = GetMD5ID(meta_file.c_str()).c_str();
+				App->resources->Library[mfID] = map_mat;
+			}
+			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
+			mat_i->LinkMat(mfID, aux_mat);
+			aux->Material_Ind = mfID;
+			ret->components.push_back(aux_mat);
 		}
-	}
-	for (int i = 0; i < scene->mNumMaterials; i++)
-	{
-		std::string filename = "Library\\Materials\\";
-		filename += GetFileName(path) + "_Mat_" + std::to_string(i);
-		filename.append(".matdrnk");
-		ComponentMaterial* aux = new ComponentMaterial(ret);
-		if (mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str()) == nullptr)
-		{
-			aux = nullptr;
-			aux = new ComponentMaterial(ret);
-			mat_i->ExportMat(scene, i, path);
-			mat_i->ImportMat(filename.c_str(), aux, GetDir(path).c_str());
-		}
-		if (aux != nullptr)
-		{
-			aux->parent = ret;
-			ret->components.push_back(aux);
-		}
+
+		ret->components.push_back(aux);
+		
+		meshname.clear();
 	}
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)
@@ -115,6 +134,18 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	return ret;
 }
 
+void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
+{
+	for (int i = 0; i < scene->mNumMaterials; i++)
+	{
+		std::string matname = ".\\Library\\";
+		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+		matname.append(".matdrnk");
+		DGUID fID(IsImported(matname.c_str()).c_str());
+		if (fID.MD5ID[0] == -52)
+			mat_i->ExportMat(scene, i, path);
+	}
+}
 
 void ModuleImport::ExportScene(const char* file_path)
 {
@@ -190,6 +221,11 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 		App->ui->console_win->AddLog("File format not recognized!\n");
 	else
 		App->ui->console_win->AddLog("Wtf did you drop?\n");
+}
+
+std::string ModuleImport::IsImported(const char * file)
+{
+	return GetMD5ID(file);
 }
 
 void CallLog(const char* str, char* usrData)

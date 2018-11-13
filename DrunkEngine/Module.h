@@ -20,6 +20,7 @@ enum TypeModule
 	Type_UI,
 	Type_Import,
 	Type_GameObj,
+	Type_ResManager,
 	Type_Null
 };
 

@@ -3,35 +3,13 @@
 
 #include <vector>
 #include <string>
-#include "GLEW/include/GL/glew.h"
 #include "Color.h"
 #include "Component.h"
 #include "Globals.h"
 
 class GameObject;
-enum TextureMode
-{
-	TM_Error = -1,
-	TM_DIFFUSE,
-	TM_AMBIENT,
-
-	TM_MAX
-};
-
-class ComponentMaterial;
-
-struct Texture
-{
-	GLuint id_tex = 0;
-	GLuint width, height;
-	std::string filename;
-	TextureMode type = TM_Error;
-	ComponentMaterial* mparent;
-
-	std::vector<ComponentMaterial*> referenced_mats;
-
-	bool deleted = false;
-};
+struct ResourceTexture;
+struct ResourceMaterial;
 
 class ComponentMaterial : public Component
 {
@@ -46,28 +24,19 @@ public:
 
 	void CleanUp();
 
-	Texture* CheckTexRep(std::string name);
-	Texture* CheckNameRep(std::string name);
 
 	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 public:
 
-	uint NumDiffTextures;
-	std::vector<Texture*> textures;
-	uint NumProperties;
-	Color default_print;
+	ResourceMaterial* r_mat = nullptr;
 
 public:
 	void SetBaseVals()
 	{
 		this->type = CT_Material;
-		this->multiple = true;
 
-		this->NumDiffTextures = 0;
-		this->NumProperties = 0;
-		this->default_print = { 1,1,1,1 };
 		this->multiple = true;
 
 		this->parent = nullptr;

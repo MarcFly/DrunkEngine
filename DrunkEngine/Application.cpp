@@ -10,6 +10,7 @@ Application::Application()
 	camera = new ModuleCamera3D(this);
 	//physics = new ModulePhysics3D(this);
 	importer = new ModuleImport();
+	resources = new ModuleResourceManager(this);
 	ui = new ModuleUI(this);
 	scene = new ModuleScene(this);
 	eventSys = new ModuleEventSystem(this);
@@ -25,6 +26,7 @@ Application::Application()
 	AddModule(input);
 	//AddModule(physics);
 	AddModule(importer);
+	AddModule(resources);
 	AddModule(scene);
 	AddModule(gameObj);
 	AddModule(ui);

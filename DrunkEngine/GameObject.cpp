@@ -3,6 +3,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
+#include "ResourceMesh.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -28,6 +29,7 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 
 	Start();
 }
+
 GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path, GameObject* par)
 {
 	this->name = file_path;
@@ -35,10 +37,13 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 
 	if (par != nullptr)
 	{
-		SetUUID();
+		UUID = GetUUID();
+		UID = DGUID(path);
 		parent = par;
 		root = par->root;
 	}
+
+	App->importer->LoadSceneData(path, scene);
 
 	for (int i = 0; i < root_obj->mNumChildren; i++)
 		this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj->mChildren[i], this));
@@ -492,8 +497,8 @@ std::vector<uint> GameObject::GetMeshProps()
 	for (int i = 0; i < meshes.size(); i++)
 	{
 		ComponentMesh* aux = meshes[i]->AsMesh();
-		ret[0] += aux->num_vertex;
-		ret[1] += aux->num_faces;
+		ret[0] += aux->r_mesh->num_vertex;
+		ret[1] += aux->r_mesh->num_faces;
 	}
 
 	for (int i = 0; i < children.size(); i++)

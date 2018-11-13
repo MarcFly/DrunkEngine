@@ -4,6 +4,7 @@
 #include "ConsoleWindow.h"
 #include "Inspector.h"
 #include "ComponentCamera.h"
+#include "ResourceMesh.h"
 #include "KdTree.h"
 
 #define MOV_SPEED 4.0f
@@ -222,11 +223,11 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 	local.Transform(global->Inverted());
 
 	int count_hits = 0;
-	for (int i = 0; i < mesh->num_index;)
+	for (int i = 0; i < mesh->r_mesh->num_index;)
 	{
-		vec vertex1 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
-		vec vertex2 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
-		vec vertex3 = { mesh->vertex[(mesh->index[i] * 3)], mesh->vertex[(mesh->index[i] * 3) + 1], mesh->vertex[(mesh->index[i] * 3) + 2] }; i++;
+		vec vertex1 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
+		vec vertex2 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
+		vec vertex3 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
 		Triangle test = Triangle(vertex1, vertex2, vertex3);
 		float new_dist = INT_MAX;
 		bool check = local.ToRay().Intersects(test, &new_dist, nullptr);
