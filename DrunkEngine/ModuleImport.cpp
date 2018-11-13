@@ -103,17 +103,17 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 			matname.append(".matdrnk");
 			DGUID mfID(IsImported(matname.c_str()).c_str());
+			matname.clear();
 			if(!App->resources->InLibrary(mfID))
 			{ 
 				MetaMat* map_mat = new MetaMat();
 				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
 				map_mat->LoadMetaFile(meta_file.c_str());
-				mfID = IsImported(meta_file.c_str()).c_str();
+				mfID = GetMD5ID(meta_file.c_str()).c_str();
 				App->resources->Library[mfID] = map_mat;
-				//App->resources->Library.
 			}
 			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
-			mat_i->LinkMat(fID, aux_mat);
+			mat_i->LinkMat(mfID, aux_mat);
 			aux->Material_Ind = mfID;
 			ret->components.push_back(aux_mat);
 		}

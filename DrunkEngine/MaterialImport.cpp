@@ -27,6 +27,13 @@ void MatImport::Init()
 
 void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 {
+	MetaMat* meta = (MetaMat*)App->resources->Library.at(fID);
+	if (!meta->Asset.IsLoaded())
+		meta->Asset.LoadToMem();
+
+	meta->UseCount++;
+
+	mat->r_mat = meta->Asset.mat.ptr;
 }
 
 ResourceTexture* MatImport::LinkTexture(DGUID fID)
@@ -93,15 +100,19 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 			char* aux = new char[texture_ranges[i]]; // Acounting for exit queues and bit buffer
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
-			std::string filename = ".\\Library\\";
-			filename += GetFileName(aux);
-			filename.append(".dds");
-			DGUID tfID(App->importer->IsImported(aux).c_str());
-			if (App->resources->InLibrary(tfID))
+			std::string filename = ".\\Library\\" + GetFileName(aux);
+			DGUID tfID(App->importer->IsImported(filename.c_str()).c_str());
+			if (!App->resources->InLibrary(tfID))
 			{
-				ResourceTexture* tex = LinkTexture(tfID);
-				r_mat->textures.push_back(tex);
-			}			
+				MetaTexture* map_tex = new MetaTexture();
+				std::string meta_file = filename + ".meta";
+				map_tex->LoadMetaFile(meta_file.c_str());
+				tfID = GetMD5ID(meta_file.c_str()).c_str();
+				App->resources->Library[tfID] = map_tex;
+				
+			}		
+			ResourceTexture* tex = LinkTexture(tfID);
+			r_mat->textures.push_back(tex);
 			cursor += texture_ranges[i];
 		}
 
@@ -461,7 +472,7 @@ void MatImport::ExportMeta(const aiScene* scene, const int& mat_id, std::string 
 }
 void MatImport::LoadMeta(const char* file, MetaMat* meta)
 {
-	meta->type = RT_Texture;
+	meta->type = RT_Material;
 
 	JSON_Value* meta_file = json_parse_file(file);
 	JSON_Object* meta_obj = json_value_get_object(meta_file);

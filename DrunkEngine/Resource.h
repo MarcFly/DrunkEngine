@@ -43,7 +43,7 @@ struct DGUID
 
 	const char* operator=(const char* hex)
 	{
-		memcpy(&MD5ID[0], hex, 64);
+		memcpy(&MD5ID[0], hex, 32);
 		return MD5ID;
 	}
 
@@ -61,13 +61,11 @@ struct DGUID
 	}	
 	bool operator<(const DGUID cmp_id) const
 	{
-		return cmp_id.CheckSum() < CheckSum();
+		return cmp_id.TrueSum()[0] < TrueSum()[0];
 	}
 	bool operator==(const DGUID cmp_id)const
 	{
 		bool ret = false;
-		std::vector<uint> f = TrueComp();
-		std::vector<uint> s = cmp_id.TrueComp();
 		int victor = 0;
 		for (int i = 0; i < 32; i++)
 		{
@@ -77,31 +75,38 @@ struct DGUID
 		}
 		if (ret)
 			return !ret;
-
-		if (victor > 16)
-			return false;
-		else if (victor < 16)
-			return true;
 		else
 		{
-			int cs_cmp = (CheckSum() - cmp_id.CheckSum());
-			if (cs_cmp > 0)
-				return false;
-			else
-				return true;
+			return TrueComp(cmp_id);
 		}
 
 	}
-	int CheckSum() const {
-		int ret = 0;
-		for(int i = 0; i < 32; i++)
-			ret += MD5ID[i];
+	bool TrueComp(const DGUID cmp_id) const
+	{
+		bool ret = false;
+
+		std::vector<uint> f = TrueSum();
+		std::vector<uint> s = cmp_id.TrueSum();
+	
+		for(int i = 0; i < f.size(); i++)
+		{
+			if (f[i] < s[i]) {
+				ret = false;
+				break;
+			}
+			else if (f[i] > s[i]) {
+				ret = true;
+				break;
+			}
+		}
+
+
 		return ret;
 	}
-	std::vector<uint> TrueComp() const
+	std::vector<uint> TrueSum() const
 	{
 		std::vector<uint> ret;
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < 16; i++)
 			ret.push_back(MD5ID[i] + 1000 * MD5ID[i + 1]);
 
 		return ret;
@@ -136,10 +141,12 @@ public:
 class MetaResource
 {
 public:
-	MetaResource() { Asset.par = this; };
+	MetaResource() {
+		Asset.par = this; 
+	};
 	virtual ~MetaResource() {};
 
-	ResourceTypes type;
+	ResourceTypes type = RT_Error;
 	std::string file;
 	uint UseCount = 0;
 	bool to_pop = false;

@@ -72,11 +72,19 @@ Uint32 GetUUID()
 
 std::string GetMD5ID(const char* file)
 {
+	std::string send(file);
+	return GetMD5ID(send);
+}
+
+std::string GetMD5ID(std::string file)
+{
 	MD5 md5;
 	std::string str(file);
-	char* dest = new char[str.length() + 1]; std::copy(str.begin(), str.end(), dest);
+	char* dest = new char[str.length() + 1];
+	std::copy(str.begin(), str.end(), dest);
 	char* cursor = dest + str.length();
 	*cursor = '\0';
-	const char* ret = md5.digestFile(dest); 
-	return std::string(ret);
+	const char* ret = md5.digestFile(dest);
+	std::string retstr(ret);
+	return retstr;
 }

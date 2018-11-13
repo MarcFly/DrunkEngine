@@ -15,6 +15,7 @@ std::string GetFileName(const char* file);
 
 Uint32 GetUUID();
 
-std::string GetMD5ID(const char* data);
+std::string GetMD5ID(const char* file);
+std::string GetMD5ID(std::string file);
 
 #endif
