@@ -34,6 +34,8 @@ public:
 
 	void SetNonStaticList();
 
+	bool isInsideFrustum(const ComponentCamera * cam, const AABB* bounding_box);
+
 	//KD Tree
 	void SetSceneKDTree(const int elements_per_node, const int max_subdivisions);
 	KDTree * GetSceneKDTree() const;

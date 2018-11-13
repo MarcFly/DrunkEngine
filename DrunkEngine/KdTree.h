@@ -5,6 +5,7 @@
 #include "Globals.h"
 
 class GameObject;
+class ComponentCamera;
 
 class KDTree
 {
@@ -65,6 +66,7 @@ public:
 	void CleanUp();
 
 	void RecursiveGetStaticObjs(const GameObject * obj);
+	void CheckKDTreeInsideFrustum(const Node * node, const ComponentCamera * cam);
 
 public:
 	int elements_per_node;

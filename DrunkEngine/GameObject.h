@@ -46,7 +46,6 @@ public:
 	void AdjustObjects();
 	void AdjustComponents();
 
-	bool isInsideFrustum(const ComponentCamera * cam, const AABB* bounding_box);
 	void CalculateGlobalTransforms();
 
 	void RecursiveSetStatic(GameObject* obj, const bool bool_static);
@@ -71,6 +70,8 @@ public:
 	bool static_pop = false;
 	bool active = false;
 	bool is_static = false;
+
+	bool static_to_draw = false;
 
 	float max_distance_point = 0;
 

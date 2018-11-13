@@ -52,6 +52,28 @@ void KDTree::RecursiveGetStaticObjs(const GameObject * obj)
 	}
 }
 
+void KDTree::CheckKDTreeInsideFrustum(const Node * node, const ComponentCamera * cam)
+{
+	if (App->gameObj->isInsideFrustum(cam, &node->bounding_box))
+	{
+		if (node->child.size() > 0)
+		{
+			for (int i = 0; i < node->child.size(); i++)
+			{
+				CheckKDTreeInsideFrustum(node->child[i], cam);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < node->objects_in_node.size(); i++)
+			{
+				node->objects_in_node[i]->static_to_draw = true;
+			}
+
+		}
+	}
+}
+
 KDTree::Node::Node(std::vector<GameObject*>& objs_in_node, Node * parent, KDTree * root)
 {
 	this->root = root;
