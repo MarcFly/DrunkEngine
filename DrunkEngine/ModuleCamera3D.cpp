@@ -197,18 +197,17 @@ void ModuleCamera3D::TestIntersect(const std::vector<GameObject*>& objs, const L
 
 void ModuleCamera3D::TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check)
 {
-	
-	if (node->child.size() != 0)
+	if (ray.Intersects(node->bounding_box))
 	{
-		for (int i = 0; i < node->child.size(); i++)
+		if (node->child.size() != 0)
 		{
-			TreeTestIntersect(node->child[i], ray, objects_to_check);
+			for (int i = 0; i < node->child.size(); i++)
+			{
+				TreeTestIntersect(node->child[i], ray, objects_to_check);
+			}
 		}
-	}
 
-	else
-	{
-		if (ray.Intersects(node->bounding_box))
+		else
 		{
 			for (int i = 0; i < node->objects_in_node.size(); i++)
 				objects_to_check.push_back(node->objects_in_node[i]);
