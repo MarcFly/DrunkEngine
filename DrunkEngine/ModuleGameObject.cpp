@@ -19,6 +19,8 @@ bool ModuleGameObject::Init()
 {
 	bool ret = true;
 
+	App->eventSys->Subscribe(EventType::Transform_Updated, this);
+
 	return ret;
 }
 
@@ -324,4 +326,18 @@ bool ModuleGameObject::isInsideFrustum(const ComponentCamera * cam, const AABB *
 		return true;
 	// we must be partly in then otherwise
 	return true;
+}
+
+void ModuleGameObject::RecieveEvent(const Event & event)
+{
+	switch (event.type)
+	{
+	case EventType::Transform_Updated:
+	{
+		event.game_object.ptr->CalculateGlobalTransforms();
+		break;
+	}
+	default:
+		break;
+	}
 }

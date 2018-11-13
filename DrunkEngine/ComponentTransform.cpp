@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Assimp/include/scene.h"
 #include "GameObject.h"
+#include "Application.h"
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {
@@ -67,6 +68,10 @@ void ComponentTransform::SetLocalTransform()
 
 	RecursiveSetChildrenToUpdate(this);
 	RecursiveSetParentToUpdate(this);
+
+	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	ev.game_object.ptr = parent;
+	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
