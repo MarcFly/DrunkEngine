@@ -57,7 +57,7 @@ bool ModuleScene::CleanUp()
 
 	PLOG("Destroying all objects");
 
-	ret = DestroyScene();
+	ret = App->gameObj->CleanUp();
 
 	// detach log streamW
 	aiDetachAllLogStreams();
@@ -90,15 +90,15 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 	if (scene != nullptr)
 	{
-		if (getRootObj() == nullptr)
-			NewScene();
+		if (App->gameObj->getRootObj() == nullptr)
+			App->gameObj->NewScene();
 		
 		if (App->ui->inspector->selected_object != nullptr)
 			App->ui->inspector->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->inspector->selected_object));
 		else
-			getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), Root_Object));
+			App->gameObj->getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->gameObj->getRootObj()));
 		
-		CreateMainCam();
+		App->gameObj->CreateMainCam();
 
 		aiReleaseImport(scene);
 	}
@@ -113,8 +113,8 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 bool ModuleScene::LoadSceneFile(const char* file_path)
 {
-	DestroyScene();
-	NewScene();
+	App->gameObj->CleanUp();
+	App->gameObj->NewScene();
 	JSON_Value* scene = json_parse_file(file_path);
 	JSON_Object* obj_g = json_value_get_object(scene);
 	JSON_Array* gos = json_object_get_array(obj_g, "scene");
@@ -122,27 +122,13 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 	{
 		JSON_Value* val = json_array_get_value(gos, i);
 
-		getRootObj()->children.push_back(new GameObject());
-		getRootObj()->children[getRootObj()->children.size() - 1]->Load(val, file_path);
+		App->gameObj->getRootObj()->children.push_back(new GameObject());
+		App->gameObj->getRootObj()->children[App->gameObj->getRootObj()->children.size() - 1]->Load(val, file_path);
 	}
 
 	OrderScene();
 
 	return true;
-}
-
-void ModuleScene::SetActiveFalse()
-{
-	for (int i = 0; i < active_objects.size(); i++)
-	{
-		active_objects[i]->active = false;
-	}
-	active_objects.clear();
-}
-
-void ModuleScene::SetmainCam(ComponentCamera * cam)
-{
-	Main_Cam = cam;
 }
 
 bool ModuleScene::Load(JSON_Value * root_value)
@@ -170,8 +156,8 @@ bool ModuleScene::Save(JSON_Value * root_value)
 	JSON_Object* root_obj = json_value_get_object(root_value);
 	// Write Module Scene config data to root_obj
 	std::string Save_scene = "";
-	if(getRootObj() != nullptr)
-		Save_scene = getRootObj()->name + ".drnk";
+	if(App->gameObj->getRootObj() != nullptr)
+		Save_scene = App->gameObj->getRootObj()->name + ".drnk";
 	json_object_dotset_string(root_obj, "scene.default_load", Save_scene.c_str());
 	json_object_dotset_string(root_obj, "scene.scenes_path", scene_folder.c_str());
 	json_serialize_to_file(root_value, "config_data.json");
@@ -184,9 +170,9 @@ void ModuleScene::SaveScene(const char* filename)
 {
 	getRootObj()->name = GetFileName(filename);
 
-	if (getRootObj() != nullptr)
+	if (App->gameObj->getRootObj() != nullptr)
 	{
-		std::string Save_scene = getRootObj()->name + ".drnk";
+		std::string Save_scene = App->gameObj->getRootObj()->name + ".drnk";
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
 		if (scene == nullptr)
 		{
@@ -197,7 +183,7 @@ void ModuleScene::SaveScene(const char* filename)
 		JSON_Value* set_array = json_value_init_array();
 		JSON_Array* go = json_value_get_array(set_array);
 
-		getRootObj()->Save(go);
+		App->gameObj->getRootObj()->Save(go);
 
 		JSON_Object* set = json_value_get_object(scene);
 		json_object_set_value(set, "scene", set_array);
@@ -208,30 +194,6 @@ void ModuleScene::SaveScene(const char* filename)
 	}
 }
 
-void ModuleScene::NewScene()
-{
-	DeleteScene();
-
-	Root_Object = new GameObject();
-	Root_Object->name = "NewScene";
-}
-
-void ModuleScene::CreateMainCam()
-{
-	if (active_cameras.size() < 1)
-	{
-		GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
-		getRootObj()->children.push_back(MainCam);
-	}
-}
-
-void ModuleScene::DeleteScene()
-{
-	if (getRootObj() != nullptr)
-		getRootObj()->DestroyThisObject();
-	delete Root_Object;
-}
-
 //-SET OBJ DATA------------------------------------------------------------------------------------------
 
 // -----------------------
@@ -240,34 +202,17 @@ int ModuleScene::GetDevILVer()
 	return IL_VERSION;
 }
 
-bool ModuleScene::DestroyScene()
-{
-	bool ret = true;
-
-	if (Root_Object != nullptr)
-	{
-		Root_Object->CleanUp();
-
-		delete Root_Object;
-		Root_Object = nullptr;
-	}
-
-	active_cameras.clear();
-
-	return ret;
-}
-
 void ModuleScene::OrderScene()
 {
-	for (int i = 0; i < getRootObj()->children.size(); i++)
+	for (int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
 	{
-		if (getRootObj()->children[i]->par_UUID != UINT_FAST32_MAX)
+		if (App->gameObj->getRootObj()->children[i]->par_UUID != UINT_FAST32_MAX)
 		{
-			GameObject* obj = getRootObj()->children[i];
-			getRootObj()->children[i]->to_pop = true;
-			getRootObj()->AdjustObjects();
+			GameObject* obj = App->gameObj->getRootObj()->children[i];
+			App->gameObj->getRootObj()->children[i]->to_pop = true;
+			App->gameObj->getRootObj()->AdjustObjects();
 			obj->to_pop = false;
-			GameObject* get = getRootObj()->GetChild(obj->par_UUID);
+			GameObject* get = App->gameObj->getRootObj()->GetChild(obj->par_UUID);
 			obj->parent = get;
 			if (get != nullptr)
 				get->children.push_back(obj);

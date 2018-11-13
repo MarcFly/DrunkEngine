@@ -130,6 +130,7 @@
     <ClInclude Include="DevIL\include\IL\il_wrap.h" />
     <ClInclude Include="FileHelpers.h" />
     <ClInclude Include="MD5.h" />
+    <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
     <ClInclude Include="Inspector.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="FileHelpers.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
     <ClCompile Include="LoadSaveWindows.cpp" />

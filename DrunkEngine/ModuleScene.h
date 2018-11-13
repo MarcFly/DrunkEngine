@@ -28,45 +28,23 @@ public:
 	
 	void SetCurrTexTo(GameObject& curr_obj, const int tex_ind);
 
-	void SetActiveFalse();
-
-	void SetmainCam(ComponentCamera * cam);
-
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
 	void SaveScene(const char* filename = "");
-
-	void NewScene();
-	void CreateMainCam();
-	void DeleteScene();
 
 	void OrderScene();
 
 	void RecieveEvent(const Event & event);
 
 public:
-	GameObject* Root_Object = nullptr;
-
 	std::string scene_folder;
-
-	std::vector<GameObject*> active_objects;
-	std::vector<ComponentCamera*> active_cameras;
-
-public:
-	GameObject* getRootObj() const { return Root_Object; };
-
-	ComponentCamera * Main_Cam = nullptr;
 
 	int GetDevILVer();
 
 	int GetAssimpMajorVer() { return aiGetVersionMajor(); };
 	int GetAssimpMinorVer() { return aiGetVersionMinor(); };
 	int GetAssimpVersionRevision() { return aiGetVersionRevision(); };
-
-	void Draw() { if(Root_Object != nullptr)Root_Object->Draw(); };
-
-	void ObjUpdate(float dt) { Root_Object->Update(dt); };
 
 private:
 	void SetDefault()

@@ -3,7 +3,6 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-#include "KdTree.h"
 #include "ResourceMesh.h"
 
 // Creation of Root Node from a file
@@ -19,10 +18,14 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 		this->parent = par;
 		root = par->root;
 	}
+
 	GetTransform();
 
 	if (type == CT_Camera)
 		this->components.push_back(new ComponentCamera(this));
+
+	App->gameObj->objects_in_scene.push_back(this);
+	App->gameObj->non_static_objects_in_scene.push_back(this);
 
 	Start();
 }
@@ -47,6 +50,9 @@ GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * ro
 
 	GetTransform();
 
+	App->gameObj->objects_in_scene.push_back(this);
+	App->gameObj->non_static_objects_in_scene.push_back(this);
+
 	Start();
 }
 
@@ -67,16 +73,13 @@ void GameObject::Start()
 
 void GameObject::Update(float dt)
 {
-	App->scene->getRootObj()->CalculateGlobalTransforms();
+	App->gameObj->getRootObj()->CalculateGlobalTransforms();
 
 	for (int i = 0; i < this->components.size(); i++)
 		this->components[i]->Update(dt);
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Update(dt);
-
-	if (Scene_KdTree != nullptr)
-		Scene_KdTree->Update();
 
 	Draw();
 
@@ -524,38 +527,4 @@ Component* GameObject::NewComponent(CTypes type)
 		return new ComponentTransform(this);
 	
 	return nullptr;
-}
-
-bool GameObject::isInsideFrustum(const ComponentCamera * cam, const AABB * bounding_box)
-{
-	float3 vCorner[8];
-	int iTotalIn = 0;
-	Plane planes[6];
-	cam->frustum.GetPlanes(planes);
-
-	bounding_box->GetCornerPoints(vCorner); // get the corners of the box into the vCorner array
-	// test all 8 corners against the 6 sides
-	// if all points are behind 1 specific plane, we are out
-	// if we are in with all points, then we are fully in
-	for (int p = 0; p < 6; ++p) {
-		int iInCount = 8;
-		int iPtIn = 1;
-		for (int i = 0; i < 8; ++i) {
-			// test this point against the planes
-			if (!planes[p].AreOnSameSide(vCorner[i], cam->frustum.CenterPoint())) {
-				iPtIn = 0;
-				--iInCount;
-			}
-		}
-		// were all the points outside of plane p?
-		if (iInCount == 0)
-			return false;
-		// check if they were all on the right side of the plane
-		iTotalIn += iPtIn;
-	}
-	// so if iTotalIn is 6, then all are inside the view
-	if (iTotalIn == 6)
-		return true;
-	// we must be partly in then otherwise
-	return true;
 }

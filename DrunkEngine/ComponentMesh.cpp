@@ -95,31 +95,37 @@ void ComponentMesh::Draw()
 	glPushMatrix();
 	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
-	if (App->scene->active_cameras.size() > 0 && this->parent->isInsideFrustum(App->scene->Main_Cam, this->parent->GetBB()))
+	if (App->gameObj->camera_rendering != nullptr)
 	{
-		if (r_mesh->index != nullptr && r_mesh->vertex != nullptr)
+		if (this->parent->is_static == false && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
+			|| App->gameObj->GetSceneKDTree() == nullptr && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
+			|| this->parent->static_to_draw)
 		{
-			if (App->renderer3D->faces)
+			if (index != nullptr && vertex != nullptr)
 			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				DrawMesh();
+				if (App->renderer3D->faces)
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					DrawMesh();
+				}
+
+				if (App->renderer3D->wireframe)
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					DrawMeshWire();
+				}
+
+				// Set Default Color back
+				Color def = App->camera->background;
+				glColor4f(def.r, def.g, def.b, def.a);
+
+				if (App->renderer3D->render_normals)
+					this->DrawNormals();
+
+				this->parent->static_to_draw = false;
 			}
-
-			if (App->renderer3D->wireframe)
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				DrawMeshWire();
-			}
-
-			// Set Default Color back
-			Color def = App->camera->background;
-			glColor4f(def.r, def.g, def.b, def.a);
-
-			if (App->renderer3D->render_normals)
-				this->DrawNormals();
 		}
 	}
-
 	glPopMatrix();
 }
 
@@ -218,6 +224,7 @@ void ComponentMesh::DrawNormals()
 		glVertex3f(r_mesh->normal[k * 6], r_mesh->normal[k * 6 + 1], r_mesh->normal[k * 6 + 2]);
 
 		vec norm(r_mesh->normal[k * 6 + 3] - r_mesh->normal[k * 6], r_mesh->normal[k * 6 + 4] - r_mesh->normal[k * 6 + 1], r_mesh->normal[k * 6 + 5] - r_mesh->normal[k * 6 + 2]);
+
 		norm = norm.Mul(App->renderer3D->normal_length);
 
 		glVertex3f(r_mesh->normal[k * 6] + norm.x, r_mesh->normal[k * 6 + 1] + norm.y, r_mesh->normal[k * 6 + 2] + norm.z);

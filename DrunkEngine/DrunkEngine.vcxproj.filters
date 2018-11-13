@@ -139,6 +139,9 @@
     <Filter Include="Sources\Modules\ModuleImport\Importers">
       <UniqueIdentifier>{6b51472b-2314-4641-9d03-efc2dc0dfdf8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\UI\ImGuizmo">
+      <UniqueIdentifier>{ffc68ec3-3e46-470d-a2ca-cd432c35b6c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -647,6 +650,9 @@
     </ClInclude>
     <ClInclude Include="MD5.h">
       <Filter>Sources\Tools\FileHelpers</Filter>
+    </ClInclude> 
+    <ClInclude Include="ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\Modules\UI\ImGuizmo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -910,6 +916,9 @@
     </ClCompile>
     <ClCompile Include="ResourceMesh.cpp">
       <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\Modules\UI\ImGuizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

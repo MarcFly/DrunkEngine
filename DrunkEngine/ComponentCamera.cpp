@@ -13,14 +13,16 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	if (par != nullptr)
 	{
 		this->parent = par;
-		App->scene->active_cameras.push_back(this);
+		App->gameObj->active_cameras.push_back(this);
 	}
 	else
-		App->scene->SetmainCam(this);
-
+	{
+		App->gameObj->SetmainCam(this);
+		App->gameObj->SetCameraRender(this);
+	}
 	CalculateViewMatrix();
 
-	id = App->scene->active_cameras.size();
+	id = App->gameObj->active_cameras.size();
 
 	X = vec(1.0f, 0.0f, 0.0f);
 	Y = vec(0.0f, 1.0f, 0.0f);
@@ -29,7 +31,7 @@ ComponentCamera::ComponentCamera(GameObject * par)
 	Reference = vec(0.0f, 0.0f, 0.0f);
 
 	frustum.nearPlaneDistance = 0.5f;
-	frustum.farPlaneDistance = 500.0f;
+	frustum.farPlaneDistance = 1000.0f;
 
 	frustum.type = FrustumType::PerspectiveFrustum;
 	frustum.projectiveSpace = FrustumProjectiveSpace::FrustumSpaceGL;
@@ -292,7 +294,38 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	vec aux = obj->getObjectCenter();
 	LookAt(vec(aux.x, aux.y, aux.z));
 
-	mesh_multiplier = vertex_aux / 4;
+	mesh_multiplier = vertex_aux / 4 + 1;
+}
+
+void ComponentCamera::LookToActiveObjs(vec look_to)
+{
+	float aux = 0;
+
+	for (int i = 0; i < App->gameObj->active_objects.size(); i++)
+	{
+		vec test_max = App->gameObj->active_objects[i]->BoundingBox->maxPoint;
+		vec test_min = App->gameObj->active_objects[i]->BoundingBox->minPoint;
+
+		vec test = test_max - test_min;
+
+		if (aux < abs(test.x))
+			aux = abs(test.x);
+
+		if (aux < abs(test.y))
+			aux = abs(test.y);
+
+		if (aux < abs(test.z))
+			aux = abs(test.z);
+	}
+
+	Transport(vec(aux + 3, aux + 3, aux + 3));
+
+	LookAt(look_to);
+
+	if (aux != 0)
+		mesh_multiplier = aux / 4;
+	else
+		mesh_multiplier = 1;
 }
 
 void ComponentCamera::TransformPos(float3 pos)

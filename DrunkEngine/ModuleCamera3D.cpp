@@ -5,6 +5,7 @@
 #include "Inspector.h"
 #include "ComponentCamera.h"
 #include "ResourceMesh.h"
+#include "KdTree.h"
 
 #define MOV_SPEED 4.0f
 #define MOUSE_SENSIBILITY 0.01f
@@ -55,12 +56,14 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = MOV_SPEED * 2 * dt * main_camera->mesh_multiplier;
 
-	if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->MoveZ(speed);
-	if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->MoveZ(-speed);
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	{
+		if (App->input->GetKey(App->input->controls[MOVE_FORWARD]) == KEY_REPEAT) main_camera->MoveZ(speed);
+		if (App->input->GetKey(App->input->controls[MOVE_BACK]) == KEY_REPEAT) main_camera->MoveZ(-speed);
 
-	if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->MoveX(-speed);
-	if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->MoveX(speed);
-
+		if (App->input->GetKey(App->input->controls[MOVE_LEFT]) == KEY_REPEAT) main_camera->MoveX(-speed);
+		if (App->input->GetKey(App->input->controls[MOVE_RIGHT]) == KEY_REPEAT) main_camera->MoveX(speed);
+	}
 	if (App->input->GetMouseZ() < 0) main_camera->MoveZ(-speed * MOUSE_WHEEL_SPEED);
 	if (App->input->GetMouseZ() > 0) main_camera->MoveZ(speed * MOUSE_WHEEL_SPEED);
 
@@ -68,31 +71,31 @@ update_status ModuleCamera3D::Update(float dt)
 	{
 		vec aux = vec(0.0f, 0.0f, 0.0f);
 
-		for (int i = 0; i < App->scene->active_objects.size(); i++)
+		for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 		{
-			aux += App->scene->active_objects[i]->getObjectCenter();
+			aux += App->gameObj->active_objects[i]->getObjectCenter();
 		}
 		
-		if (App->scene->active_objects.size() > 0)
-			aux = aux / App->scene->active_objects.size();
+		if (App->gameObj->active_objects.size() > 0)
+			aux = aux / App->gameObj->active_objects.size();
 
-		main_camera->LookAt(aux);
+		main_camera->LookToActiveObjs(aux);
 	}
 
-	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !ImGuizmo::IsUsing() && !ImGuizmo::IsOver())
 		MousePicking();
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
 		vec aux = vec(0.0f, 0.0f, 0.0f);
 
-		for (int i = 0; i < App->scene->active_objects.size(); i++)
+		for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 		{
-			aux += App->scene->active_objects[i]->getObjectCenter();
+			aux += App->gameObj->active_objects[i]->getObjectCenter();
 		}
 
-		if (App->scene->active_objects.size() > 0)
-			aux = aux / App->scene->active_objects.size();
+		if (App->gameObj->active_objects.size() > 0)
+			aux = aux / App->gameObj->active_objects.size();
 
 		main_camera->Reference = aux;
 
@@ -114,7 +117,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Recalculate matrix -------------
 	main_camera->CalculateViewMatrix();
 
-	DrawRay(picking.a, picking.b);
+	//DrawRay(picking.a, picking.b);
 
 	return UPDATE_CONTINUE;
 }
@@ -144,13 +147,27 @@ void ModuleCamera3D::MousePicking()
 	float y = 1 - ((ImGui::GetMousePos().y / (float)App->window->window_h) * 2.0f);
 	picking = (main_camera->frustum.UnProjectLineSegment(x,y));
 
-	App->scene->SetActiveFalse();
+	App->gameObj->SetActiveFalse();
 	//App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
+	std::vector<GameObject*> objects_to_check;
 
-	for(int i = 0; i < App->scene->getRootObj()->children.size(); i++)
-		TestIntersect(App->scene->getRootObj()->children[i], picking, intersected);	
+	if (App->gameObj->GetSceneKDTree() != nullptr)
+		objects_to_check = App->gameObj->non_static_objects_in_scene;
+	else
+		objects_to_check = App->gameObj->objects_in_scene;
+
+	/*for(int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
+		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);*/
+
+	if (App->gameObj->GetSceneKDTree() != nullptr)
+	{
+		for (int i = 0; i < App->gameObj->GetSceneKDTree()->base_node->child.size(); i++)
+			TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node->child[i], picking, objects_to_check);
+	}
+
+	TestIntersect(objects_to_check, picking, intersected);
 
 	float dist = INT_MAX;
 	for (int i = 0; i < intersected.size(); i++)
@@ -158,27 +175,43 @@ void ModuleCamera3D::MousePicking()
 		float new_dist = TestTris(picking, intersected[i]->GetComponent(CT_Mesh)->AsMesh());
 		if (new_dist < dist)
 		{
-			App->scene->SetActiveFalse();
+			App->gameObj->SetActiveFalse();
 			dist = new_dist;
-			App->scene->active_objects.push_back(intersected[i]);
+			App->gameObj->active_objects.push_back(intersected[i]);
 			intersected[i]->active = true;
 		}
 	}
 
 }
 
-void ModuleCamera3D::TestIntersect(GameObject * obj, LineSegment& ray, std::vector<GameObject*>& intersected)
+void ModuleCamera3D::TestIntersect(const std::vector<GameObject*>& objs, const LineSegment & ray, std::vector<GameObject*>& intersected)
 {
-	if (obj->isInsideFrustum(main_camera, obj->GetBB()))
+	for (int i = 0; i < objs.size(); i++)
 	{
-		AABB* seeBB = obj->GetBB();
-		if (ray.ToRay().Intersects(*seeBB))
+		if (ray.ToRay().Intersects(*objs[i]->GetBB()))
 		{
-			if (obj->GetComponent(CT_Mesh) != nullptr)
-				intersected.push_back(obj);
+			if (objs[i]->GetComponent(CT_Mesh) != nullptr)
+				intersected.push_back(objs[i]);
+		}
+	}
+}
 
-			for (int i = 0; i < obj->children.size(); i++)
-				TestIntersect(obj->children[i], ray, intersected);
+void ModuleCamera3D::TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check)
+{
+	if (ray.Intersects(node->bounding_box))
+	{
+		if (node->child.size() != 0)
+		{
+			for (int i = 0; i < node->child.size(); i++)
+			{
+				TreeTestIntersect(node->child[i], ray, objects_to_check);
+			}
+		}
+
+		else
+		{
+			for (int i = 0; i < node->objects_in_node.size(); i++)
+				objects_to_check.push_back(node->objects_in_node[i]);
 		}
 	}
 }

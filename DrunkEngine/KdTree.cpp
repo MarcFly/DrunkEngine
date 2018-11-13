@@ -6,15 +6,16 @@ KDTree::KDTree(int elements_per_node, int max_subdivisions)
 	static_objs.clear();
 	nodes.clear();
 
+	to_draw = false;
+
 	this->elements_per_node = elements_per_node;
 	this->max_subdivisions = max_subdivisions;
 
-	RecursiveGetStaticObjs(App->scene->Root_Object);
+	RecursiveGetStaticObjs(App->gameObj->getRootObj());
 
 	if (static_objs.size() > 0)
 	{
 		base_node = new Node(static_objs, nullptr, this);
-		nodes.push_back(base_node);
 	}
 }
 
@@ -44,9 +45,32 @@ void KDTree::RecursiveGetStaticObjs(const GameObject * obj)
 		if (obj->children[i]->children.size() > 0)
 			RecursiveGetStaticObjs(obj->children[i]);
 
-		if (obj->children[i]->is_static)
+		if (obj->children[i]->is_static && (obj->children[i]->GetComponent(CTypes::CT_Camera) != nullptr || obj->children[i]->GetComponent(CTypes::CT_Mesh) != nullptr))
 		{
 			static_objs.push_back(obj->children[i]);
+		}
+	}
+}
+
+void KDTree::CheckKDTreeInsideFrustum(const Node * node, const ComponentCamera * cam)
+{
+	if (App->gameObj->isInsideFrustum(cam, &node->bounding_box))
+	{
+		if (node->child.size() > 0)
+		{
+			for (int i = 0; i < node->child.size(); i++)
+			{
+				CheckKDTreeInsideFrustum(node->child[i], cam);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < node->objects_in_node.size(); i++)
+			{
+				if (App->gameObj->isInsideFrustum(cam, node->objects_in_node[i]->BoundingBox))
+					node->objects_in_node[i]->static_to_draw = true;
+			}
+
 		}
 	}
 }
@@ -101,7 +125,8 @@ KDTree::Node::~Node()
 
 void KDTree::Node::Update()
 {
-	Draw();
+	if (root->to_draw)
+		Draw();
 }
 
 void KDTree::Node::Draw()
@@ -180,11 +205,7 @@ void KDTree::Node::SetNodeVertex()
 
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		/*vec object_center = objects_in_node[i]->getObjectCenter();
-		SetVertexPos(object_center);*/
-
 		SetVertexPos(objects_in_node[i]->BoundingBox->minPoint, objects_in_node[i]->BoundingBox->maxPoint);
-
 	}
 }
 
@@ -214,7 +235,7 @@ void KDTree::Node::CreateNodes()
 		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
 		new_AABB_Node1 = AABB(vec(center_2.x, GetKdTreeCut(axis_to_check), center_2.z), bounding_box.maxPoint);
-		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, GetKdTreeCut(axis_to_check), center_1.z));
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_1.x, GetKdTreeCut(axis_to_check), center_1.z));
 	}
 
 	else  // Axis_Z
@@ -225,17 +246,19 @@ void KDTree::Node::CreateNodes()
 		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z) + bounding_box.minPoint) / 2;
 
 		new_AABB_Node1 = AABB(vec(center_2.x, center_2.y, GetKdTreeCut(axis_to_check)), bounding_box.maxPoint);
-		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, center_1.y, GetKdTreeCut(axis_to_check)));
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_1.x, center_1.y, GetKdTreeCut(axis_to_check)));
 	}
 
-	Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
-	root->nodes.push_back(Node1);
-	child.push_back(Node1);
+	if (!CheckNodeRepeat(new_AABB_Node1) && !CheckNodeRepeat(new_AABB_Node2) && !CheckMeshesColliding())	//Check that the node is not the same as the previous one + Collision test between objs in node
+	{
+		Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
+		root->nodes.push_back(Node1);
+		child.push_back(Node1);
 
-	Node * Node2 = new Node(GetObjectsInNode(new_AABB_Node2), this, new_AABB_Node2);
-	root->nodes.push_back(Node2);
-	child.push_back(Node2);
-
+		Node * Node2 = new Node(GetObjectsInNode(new_AABB_Node2), this, new_AABB_Node2);
+		root->nodes.push_back(Node2);
+		child.push_back(Node2);
+	}
 }
 
 std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
@@ -244,32 +267,11 @@ std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
 
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		if (new_bounding_box.Contains(objects_in_node[i]->getObjectCenter()))
+		if (new_bounding_box.Intersects(*objects_in_node[i]->BoundingBox) || new_bounding_box.Contains(*objects_in_node[i]->BoundingBox))
 			objs_in_new_node.push_back(objects_in_node[i]);
 	}
 
 	return objs_in_new_node;
-}
-
-void KDTree::Node::SetVertexPos(const vec object_center)
-{
-	if (bounding_box.maxPoint.x < object_center.x)
-		bounding_box.maxPoint.x = object_center.x;
-	
-	if (bounding_box.minPoint.x > object_center.x)
-		bounding_box.minPoint.x = object_center.x;
-
-	if (bounding_box.maxPoint.y < object_center.y)
-		bounding_box.maxPoint.y = object_center.y;
-	
-	if (bounding_box.minPoint.y > object_center.y)
-		bounding_box.minPoint.y = object_center.y;
-	
-	if (bounding_box.maxPoint.z < object_center.z)
-		bounding_box.maxPoint.z = object_center.z;
-	
-	if (bounding_box.minPoint.z > object_center.z)
-		bounding_box.minPoint.z = object_center.z;
 }
 
 void KDTree::Node::SetVertexPos(const vec& min, const vec& max)
@@ -319,4 +321,45 @@ float KDTree::Node::GetKdTreeCut(Axis axis)
 	case Axis::Axis_Z:
 		return cut.z;
 	}
+}
+
+std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
+{
+	std::vector<GameObject*> vec_objs;
+
+	for (int i = 0; i < node->objects_in_node.size(); i++)
+		vec_objs.push_back(node->objects_in_node[i]);
+
+	return vec_objs;
+}
+
+bool KDTree::Node::CheckNodeRepeat(AABB new_bb)
+{
+	bool ret = false;
+
+	//Check if this node is the same as the new one
+
+	if (subdivision > 3)
+		if (bounding_box.maxPoint.x == new_bb.maxPoint.x &&
+			bounding_box.maxPoint.y == new_bb.maxPoint.y &&
+			bounding_box.maxPoint.z == new_bb.maxPoint.z &&
+			bounding_box.minPoint.x == new_bb.minPoint.x &&
+			bounding_box.minPoint.y == new_bb.minPoint.y &&
+			bounding_box.minPoint.z == new_bb.minPoint.z)
+			ret = true;
+
+	return ret;
+}
+
+bool KDTree::Node::CheckMeshesColliding()
+{
+	for (int i = 0; i < objects_in_node.size(); i++)
+	{
+		for (int j = 1 + i; j < objects_in_node.size(); j++)
+		{
+			if (!objects_in_node[i]->BoundingBox->Intersects(*objects_in_node[j]->BoundingBox))
+				return false;
+		}
+	}
+	return true;
 }
