@@ -67,7 +67,8 @@ void KDTree::CheckKDTreeInsideFrustum(const Node * node, const ComponentCamera *
 		{
 			for (int i = 0; i < node->objects_in_node.size(); i++)
 			{
-				node->objects_in_node[i]->static_to_draw = true;
+				if (App->gameObj->isInsideFrustum(cam, node->objects_in_node[i]->BoundingBox))
+					node->objects_in_node[i]->static_to_draw = true;
 			}
 
 		}
@@ -248,7 +249,7 @@ void KDTree::Node::CreateNodes()
 		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, center_1.y, GetKdTreeCut(axis_to_check)));
 	}
 
-	if (!CheckNodeRepeat(new_AABB_Node1) && !CheckNodeRepeat(new_AABB_Node2))
+	if (!CheckMeshesColliding())
 	{
 		Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
 		root->nodes.push_back(Node1);
@@ -332,20 +333,15 @@ std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
 	return vec_objs;
 }
 
-bool KDTree::Node::CheckNodeRepeat(AABB new_bb)
+bool KDTree::Node::CheckMeshesColliding()
 {
-	bool ret = false;
-	
-	//Check if this node is the same as the new one
-
-	if (subdivision > 3)
-		if (bounding_box.maxPoint.x == new_bb.maxPoint.x &&
-			bounding_box.maxPoint.y == new_bb.maxPoint.y &&
-			bounding_box.maxPoint.z == new_bb.maxPoint.z &&
-			bounding_box.minPoint.x == new_bb.minPoint.x &&
-			bounding_box.minPoint.y == new_bb.minPoint.y &&
-			bounding_box.minPoint.z == new_bb.minPoint.z)
-			ret = true;
-
-	return ret;
+	for (int i = 0; i < objects_in_node.size(); i++)
+	{
+		for (int j = 1 + i; j < objects_in_node.size(); j++)
+		{
+			if (!objects_in_node[i]->BoundingBox->Intersects(*objects_in_node[j]->BoundingBox))
+				return false;
+		}
+	}
+	return true;
 }

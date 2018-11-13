@@ -18,15 +18,11 @@ bool ModuleGameObject::Init()
 {
 	bool ret = true;
 
-	
-
 	return ret;
 }
 
 update_status ModuleGameObject::PreUpdate(float dt)
 {
-
-	
 
 	return UPDATE_CONTINUE;
 }
@@ -36,7 +32,7 @@ update_status ModuleGameObject::Update(float dt)
 	ManageGuizmo();
 
 	if (Scene_KdTree != nullptr)
-		Scene_KdTree->CheckKDTreeInsideFrustum(Scene_KdTree->base_node, active_cameras[0]);
+		Scene_KdTree->CheckKDTreeInsideFrustum(Scene_KdTree->base_node, camera_rendering);
 
 	if (Root_Object != nullptr)
 		Root_Object->Update(dt);
@@ -283,6 +279,11 @@ void ModuleGameObject::ManageGuizmo()
 				previous_scale = float3::one;
 		}
 	}
+}
+
+void ModuleGameObject::SetCameraRender(ComponentCamera * cam)
+{
+	camera_rendering = cam;
 }
 
 bool ModuleGameObject::isInsideFrustum(const ComponentCamera * cam, const AABB * bounding_box)

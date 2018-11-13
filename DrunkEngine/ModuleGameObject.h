@@ -47,6 +47,8 @@ public:
 
 	void ManageGuizmo();
 
+	void SetCameraRender(ComponentCamera * cam);
+
 public:
 
 	std::string scene_folder;
@@ -65,6 +67,7 @@ private:
 public:
 	GameObject * getRootObj() const { return Root_Object; };
 	ComponentCamera * Main_Cam = nullptr;
+	ComponentCamera * camera_rendering = nullptr;
 
 public:
 	//ImGuizmo

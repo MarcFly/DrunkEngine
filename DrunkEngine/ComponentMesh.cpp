@@ -129,10 +129,10 @@ void ComponentMesh::Draw()
 	glPushMatrix();
 	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
-	if (App->gameObj->active_cameras.size() > 0)	//if using a component Cam as the checker
+	if (App->gameObj->camera_rendering != nullptr)
 	{
-		if (this->parent->is_static == false && App->gameObj->isInsideFrustum(App->gameObj->active_cameras[0], this->parent->GetBB())
-			|| App->gameObj->GetSceneKDTree() == nullptr && App->gameObj->isInsideFrustum(App->gameObj->active_cameras[0], this->parent->GetBB())
+		if (this->parent->is_static == false && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
+			|| App->gameObj->GetSceneKDTree() == nullptr && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
 			|| this->parent->static_to_draw)
 		{
 			if (index != nullptr && vertex != nullptr)

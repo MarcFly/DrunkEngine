@@ -16,8 +16,10 @@ ComponentCamera::ComponentCamera(GameObject * par)
 		App->gameObj->active_cameras.push_back(this);
 	}
 	else
+	{
 		App->gameObj->SetmainCam(this);
-
+		App->gameObj->SetCameraRender(this);
+	}
 	CalculateViewMatrix();
 
 	id = App->gameObj->active_cameras.size();

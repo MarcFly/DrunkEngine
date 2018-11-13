@@ -41,7 +41,7 @@ public:
 
 		std::vector<GameObject*> GetObjsInNode(Node * node);
 
-		bool CheckNodeRepeat(AABB new_bb);
+		bool CheckMeshesColliding();
 
 	public:
 		int id;
