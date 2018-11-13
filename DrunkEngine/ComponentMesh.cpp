@@ -101,7 +101,7 @@ void ComponentMesh::Draw()
 			|| App->gameObj->GetSceneKDTree() == nullptr && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
 			|| this->parent->static_to_draw)
 		{
-			if (index != nullptr && vertex != nullptr)
+			if (r_mesh->index != nullptr && r_mesh->vertex != nullptr)
 			{
 				if (App->renderer3D->faces)
 				{

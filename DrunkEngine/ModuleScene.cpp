@@ -168,7 +168,7 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 void ModuleScene::SaveScene(const char* filename)
 {
-	getRootObj()->name = GetFileName(filename);
+	App->gameObj->getRootObj()->name = GetFileName(filename);
 
 	if (App->gameObj->getRootObj() != nullptr)
 	{
