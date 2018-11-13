@@ -5,9 +5,11 @@
 #include "Globals.h"
 
 class GameObject;
+class ComponentCamera;
 
 class KDTree
 {
+public:
 	class Node
 	{
 	public:
@@ -33,10 +35,14 @@ class KDTree
 		void CreateNodes();
 		std::vector<GameObject*> GetObjectsInNode(AABB& new_bounding_box);
 
-		void SetVertexPos(const vec object_center);
 		void SetVertexPos(const vec& min, const vec& max);
 
 		float GetKdTreeCut(Axis axis);
+
+		std::vector<GameObject*> GetObjsInNode(Node * node);
+
+		bool CheckNodeRepeat(AABB new_bb);
+		bool CheckMeshesColliding();
 
 	public:
 		int id;
@@ -61,10 +67,13 @@ public:
 	void CleanUp();
 
 	void RecursiveGetStaticObjs(const GameObject * obj);
+	void CheckKDTreeInsideFrustum(const Node * node, const ComponentCamera * cam);
 
 public:
 	int elements_per_node;
 	int max_subdivisions;
+
+	bool to_draw;
 
 	Node * base_node = nullptr;
 	std::vector<Node*> nodes;

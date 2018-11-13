@@ -127,6 +127,9 @@
     <Filter Include="Sources\Modules\Import/Export">
       <UniqueIdentifier>{22699cfd-1c77-4dc9-a255-60cf3482b4bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\UI\ImGuizmo">
+      <UniqueIdentifier>{ffc68ec3-3e46-470d-a2ca-cd432c35b6c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -615,6 +618,9 @@
     <ClInclude Include="ModuleGameObject.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\Modules\UI\ImGuizmo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -865,6 +871,9 @@
     </ClCompile>
     <ClCompile Include="ModuleGameObject.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\Modules\UI\ImGuizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

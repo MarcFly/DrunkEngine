@@ -16,7 +16,7 @@ void Inspector::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
-		CreateObjLeaf(App->scene->Root_Object, 0);
+		CreateObjLeaf(App->gameObj->getRootObj(), 0);
 	}
 	ImGui::End();
 }
@@ -34,29 +34,29 @@ void Inspector::CreateObjLeaf(GameObject * obj, int st)
 	if (obj->children.size() != 0)		
 	{
 		bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
-		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->scene->active_objects.size() > 0)
+		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->gameObj->active_objects.size() > 0)
 		{
 			bool repeated = false;
-			for (int i = 0; i < App->scene->active_objects.size(); i++)
+			for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 			{
-				if (App->scene->active_objects[i] == obj)
+				if (App->gameObj->active_objects[i] == obj)
 					repeated = true;
 			}
 			if (!repeated)
 			{
-				App->scene->active_objects.push_back(obj);
+				App->gameObj->active_objects.push_back(obj);
 				obj->active = true;
 				obj->GetTransform()->update_bouding_box = true;
 			}
 		}
 		else if (ImGui::IsItemClicked())
 		{
-			App->scene->SetActiveFalse();
-			App->scene->active_objects.push_back(obj);
+			App->gameObj->SetActiveFalse();
+			App->gameObj->active_objects.push_back(obj);
 			obj->active = true;
 			obj->GetTransform()->update_bouding_box = true;
 
-			selected_object = App->scene->active_objects[0];
+			selected_object = App->gameObj->active_objects[0];
 			check_info = true;
 		}
 		if (n_open)
@@ -72,27 +72,27 @@ void Inspector::CreateObjLeaf(GameObject * obj, int st)
 	{
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 		ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
-		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->scene->active_objects.size() > 0)
+		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->gameObj->active_objects.size() > 0)
 		{
 			bool repeated = false;
-			for (int i = 0; i < App->scene->active_objects.size(); i++)
+			for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 			{
-				if (App->scene->active_objects[i] == obj)
+				if (App->gameObj->active_objects[i] == obj)
 					repeated = true;
 			}
 			if (!repeated)
 			{
-				App->scene->active_objects.push_back(obj);
+				App->gameObj->active_objects.push_back(obj);
 				obj->active = true;
 			}
 		}
 		else if (ImGui::IsItemClicked())
 		{
-			App->scene->SetActiveFalse();
-			App->scene->active_objects.push_back(obj);
+			App->gameObj->SetActiveFalse();
+			App->gameObj->active_objects.push_back(obj);
 			obj->active = true;
 
-			selected_object = App->scene->active_objects[0];
+			selected_object = App->gameObj->active_objects[0];
 			check_info = true;
 		}
 	}

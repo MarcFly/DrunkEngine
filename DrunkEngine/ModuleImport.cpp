@@ -61,8 +61,11 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		ret->par_UUID = UINT_FAST32_MAX;
 	}
 
-	ret->name = obj_node->mName.C_Str();
+	App->gameObj->objects_in_scene.push_back(ret);
+	App->gameObj->non_static_objects_in_scene.push_back(ret);
 
+	ret->name = obj_node->mName.C_Str();
+	
 	// Sequential Import for FBX Only, will create the components one by one
 
 	for (int i = 0; i < obj_node->mNumMeshes; i++)
@@ -107,7 +110,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 	for (int i = 0; i < obj_node->mNumChildren; i++)
 		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
 	ret->GetTransform()->SetFromMatrix(&obj_node->mTransformation);
-	App->scene->Main_Cam->LookToObj(ret, ret->SetBoundBox());
+	App->gameObj->Main_Cam->LookToObj(ret, ret->SetBoundBox());
 
 	return ret;
 }

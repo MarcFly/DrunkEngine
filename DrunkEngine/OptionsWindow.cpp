@@ -195,25 +195,25 @@ void OptionsWindow::Draw()
 		{
 			ImGui::Separator();
 
-			float aux_fov = RadToDeg(App->scene->Main_Cam->frustum.verticalFov);
+			float aux_fov = RadToDeg(App->gameObj->Main_Cam->frustum.verticalFov);
 			if (ImGui::SliderFloat("FOV", &aux_fov, 0.1f, 179.0f))
 			{
-				App->scene->Main_Cam->frustum.verticalFov = DegToRad(aux_fov);
-				App->scene->Main_Cam->SetAspectRatio();
+				App->gameObj->Main_Cam->frustum.verticalFov = DegToRad(aux_fov);
+				App->gameObj->Main_Cam->SetAspectRatio();
 				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
 				App->eventSys->BroadcastEvent(ev);
 			}
 
-			if (ImGui::SliderFloat("NearPlane", &App->scene->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
+			if (ImGui::SliderFloat("NearPlane", &App->gameObj->Main_Cam->frustum.nearPlaneDistance, 0.5f, 200.0f))
 			{
-				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
+				App->gameObj->Main_Cam->frustum.SetViewPlaneDistances(App->gameObj->Main_Cam->frustum.nearPlaneDistance, App->gameObj->Main_Cam->frustum.farPlaneDistance);
 				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
 				App->eventSys->BroadcastEvent(ev);
 			}
 
-			if (ImGui::SliderFloat("FarPlane", &App->scene->Main_Cam->frustum.farPlaneDistance, 200.f, 2000.0f))
+			if (ImGui::SliderFloat("FarPlane", &App->gameObj->Main_Cam->frustum.farPlaneDistance, 200.f, 2000.0f))
 			{
-				App->scene->Main_Cam->frustum.SetViewPlaneDistances(App->scene->Main_Cam->frustum.nearPlaneDistance, App->scene->Main_Cam->frustum.farPlaneDistance);
+				App->gameObj->Main_Cam->frustum.SetViewPlaneDistances(App->gameObj->Main_Cam->frustum.nearPlaneDistance, App->gameObj->Main_Cam->frustum.farPlaneDistance);
 				Event ev(EventType::Camera_Modified, Event::UnionUsed::UseNull);
 				App->eventSys->BroadcastEvent(ev);
 			}		
