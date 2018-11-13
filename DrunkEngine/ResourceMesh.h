@@ -5,6 +5,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "MeshImport.h"
+#include "Resource.h"
 
 struct ResourceMaterial;
 struct DGUID;
@@ -32,6 +33,8 @@ struct ResourceMesh
 	GLuint num_faces = 0;
 
 	GUID* UID = nullptr;
+
+	void GenBuffers();
 };
 
 class MetaMesh : public MetaResource
@@ -44,10 +47,9 @@ public:
 	uint mat_ind;
 
 	// More Load Options
-	void LoadMetaFile(const char* file)
-	{
-		App->importer->mesh_i->LoadMeta(file, this);
-	}
+	void LoadMetaFile(const char* file);
+
+
 };
 
 #endif

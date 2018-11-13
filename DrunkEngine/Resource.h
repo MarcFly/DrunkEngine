@@ -24,48 +24,43 @@ enum ResourceTypes
 
 struct DGUID
 {
-	char HexID[64];
-
-	bool last_comp = true;
-
-	DGUID* me = this;
+	char MD5ID[32];
 
 	DGUID()
 	{
-		HexID[0] = '\0';
+		MD5ID[0] = '\0';
 	}
 	DGUID(const char* data)
 	{
 		if (data == nullptr || std::string(data) == "")
-			HexID[0] = '\0';
+			MD5ID[0] = '\0';
 		else
-			memcpy(&HexID[0], GetHexID(data).c_str(), 64);		
+		{
+			std::string ret = GetMD5ID(data);
+			memcpy(&MD5ID[0], ret.c_str(), 32);
+		}
 	}
 
 	const char* operator=(const char* hex)
 	{
-		memcpy(&HexID[0], hex, 64);
-		return HexID;
+		memcpy(&MD5ID[0], hex, 64);
+		return MD5ID;
 	}
 
 	bool operator==(const char* cmp_id)
 	{
-		return (std::string(cmp_id) == std::string(HexID));
+		return (std::string(cmp_id) == std::string(MD5ID));
 	}
 	bool operator==(std::string cmp_id)
 	{
-		return (cmp_id == std::string(HexID));
+		return (cmp_id == std::string(MD5ID));
 	}
 	bool operator==(DGUID cmp_id)
 	{
-		return (std::string(cmp_id.HexID) == std::string(HexID));
+		return (std::string(cmp_id.MD5ID) == std::string(MD5ID));
 	}	
 	bool operator<(const DGUID cmp_id) const
 	{
-		/*bool ret = false;
-		for (int i = 0; i < 64 && ret == false; i++)
-			ret = cmp_id.HexID[i] < HexID[i];
-		return !ret;*/
 		return cmp_id.CheckSum() < CheckSum();
 	}
 	bool operator==(const DGUID cmp_id)const
@@ -74,40 +69,40 @@ struct DGUID
 		std::vector<uint> f = TrueComp();
 		std::vector<uint> s = cmp_id.TrueComp();
 		int victor = 0;
-		for (int i = 0; i < 64; i++)
-			if (HexID[i] < cmp_id.HexID[i])
-			{
-				ret = HexID[i] == cmp_id.HexID[i];
+		for (int i = 0; i < 32; i++)
+		{
+			ret = MD5ID[i] == cmp_id.MD5ID[i];
+			if (MD5ID[i] < cmp_id.MD5ID[i])
 				victor++;
-			}
+		}
 		if (ret)
 			return !ret;
 
-		if (victor > 32)
-			return true;
-		else if (victor < 32)
+		if (victor > 16)
 			return false;
+		else if (victor < 16)
+			return true;
 		else
 		{
 			int cs_cmp = (CheckSum() - cmp_id.CheckSum());
 			if (cs_cmp > 0)
-				return true;
-			else
 				return false;
+			else
+				return true;
 		}
 
 	}
 	int CheckSum() const {
 		int ret = 0;
-		for(int i = 0; i < 64; i++)
-			ret += HexID[i];
+		for(int i = 0; i < 32; i++)
+			ret += MD5ID[i];
 		return ret;
 	}
 	std::vector<uint> TrueComp() const
 	{
 		std::vector<uint> ret;
-		for (int i = 0; i < 64; i++)
-			ret.push_back(HexID[i] + 1000 * HexID[i + 1]);
+		for (int i = 0; i < 32; i++)
+			ret.push_back(MD5ID[i] + 1000 * MD5ID[i + 1]);
 
 		return ret;
 	}

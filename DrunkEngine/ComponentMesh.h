@@ -26,7 +26,6 @@ public:
 
 	bool SetTexCoords(const aiMesh* mesh);
 	void SetNormals(const int& index);
-	void GenBuffers();
 	void SetMeshBoundBox();
 	
 	void Draw();

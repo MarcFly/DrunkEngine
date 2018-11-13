@@ -66,41 +66,6 @@ void ComponentMesh::SetNormals(const int& index)
 	r_mesh->normal[index * 6 + 5] = p3 + norm.z;
 }
 
-void ComponentMesh::GenBuffers()
-{
-	// Vertex Buffer
-	if (r_mesh->num_vertex > 0)
-	{
-		glGenBuffers(1, &r_mesh->id_vertex);
-		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_vertex * 3, r_mesh->vertex, GL_STATIC_DRAW);
-	}
-
-	// **Unbind Buffer**
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Index Buffer
-	if (r_mesh->num_index > 0)
-	{
-	glGenBuffers(1, &r_mesh->id_index);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * r_mesh->num_index, r_mesh->index, GL_STATIC_DRAW);
-	}
-	// **Unbind Buffer**
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
-	// Texture Coordinates / UVs Buffer
-	if (r_mesh->num_uvs > 0)
-	{
-		glGenBuffers(1, &r_mesh->id_uvs);
-		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_uvs * 3, r_mesh->tex_coords, GL_STATIC_DRAW);
-	}
-	// **Unbind Buffer**
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 void ComponentMesh::SetMeshBoundBox()
 {
 	float max_x = INT_MIN, max_y = INT_MIN, max_z = INT_MIN, min_x = INT_MAX, min_y = INT_MAX, min_z = INT_MAX;
@@ -170,7 +135,7 @@ void ComponentMesh::DrawMesh()
 	if (r_mesh->tex_coords != nullptr)
 	{
 		ResourceMaterial* r_mat = nullptr;
-		if (Material_Ind.HexID[0] != '\0')
+		if (Material_Ind.MD5ID[0] != '\0')
 		{
 			int cmp_count = 0;
 			for (int i = 0; i < parent->components.size(); i++)
@@ -207,7 +172,7 @@ void ComponentMesh::DrawMesh()
 		}
 		else
 		{
-			Material_Ind.HexID[0] = '\0';
+			Material_Ind.MD5ID[0] = '\0';
 			App->ui->console_win->AddLog("Tried to render non-existing Material!");
 		}
 	}

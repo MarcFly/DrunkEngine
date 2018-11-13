@@ -23,7 +23,7 @@ public:
 	
 	bool InLibrary(DGUID& check)
 	{
-		if (check.HexID[0] == '\0')
+		if (check.MD5ID[0] == -52)
 			return false;
 		else
 		{

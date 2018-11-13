@@ -645,6 +645,9 @@
     <ClInclude Include="ResourceTexture.h">
       <Filter>Sources\Modules\ResourceManager\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="MD5.h">
+      <Filter>Sources\Tools\FileHelpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -904,6 +907,9 @@
     </ClCompile>
     <ClCompile Include="ModuleResourceManager.cpp">
       <Filter>Sources\Modules\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMesh.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

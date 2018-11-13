@@ -99,6 +99,8 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 		cursor += (ranges[3] * sizeof(GLfloat));
 
 		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
+
+		ret->GenBuffers();
 	}
 	else
 	{
@@ -258,9 +260,8 @@ void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string 
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
 	json_object_dotset_string(meta_obj, "File", std::string(".\\Library\\"+ GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meshdrnk").c_str());
-	std::string write = DGUID(data).HexID;
-	write[64] = '\0';
-	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
+	//std::string write = DGUID(data).MD5ID;
+	//json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
 	json_object_dotset_number(meta_obj, "mat_ind", mesh->mMaterialIndex);
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
@@ -272,7 +273,7 @@ void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 	JSON_Value* meta_file = json_parse_file(file);
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
+	//meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
 	meta->file = json_object_dotget_string(meta_obj, "File");	
 	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
 }

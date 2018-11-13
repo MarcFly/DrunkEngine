@@ -129,6 +129,7 @@
     <ClInclude Include="DevIL\include\IL\ilu_region.h" />
     <ClInclude Include="DevIL\include\IL\il_wrap.h" />
     <ClInclude Include="FileHelpers.h" />
+    <ClInclude Include="MD5.h" />
     <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
     <ClInclude Include="Inspector.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="RandomGenWindow.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
+    <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

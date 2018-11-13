@@ -15,6 +15,7 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
+#include "MD5.h"
 
 #include <fstream>
 #include <iostream>
@@ -80,7 +81,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		DGUID fID(IsImported(meshname.c_str()).c_str());
 		ComponentMesh* aux = new ComponentMesh(ret);
 
-		if(fID.HexID[0] == '\0')
+		if(fID.MD5ID[0] == -52)
 			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);		
 
 		if (!App->resources->InLibrary(fID))
@@ -89,14 +90,14 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
 			map_mesh->LoadMetaFile(meta_file.c_str());
 			fID = IsImported(meshname.c_str()).c_str();
-			App->resources->Library.insert(std::pair<DGUID, MetaResource*>(fID, map_mesh));
+			App->resources->Library[fID] = map_mesh;
 		}
 
 		mesh_i->LinkMesh(fID, aux);
 
 		aux->parent = ret;
 
-		if (aux->Material_Ind.HexID[0] != '\0')
+		if (aux->mat_ind != -1)
 		{
 			std::string matname = filename;
 			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
@@ -106,14 +107,20 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			{ 
 				MetaMat* map_mat = new MetaMat();
 				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
+				map_mat->LoadMetaFile(meta_file.c_str());
+				mfID = IsImported(meta_file.c_str()).c_str();
+				App->resources->Library[mfID] = map_mat;
+				//App->resources->Library.
 			}
 			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
 			mat_i->LinkMat(fID, aux_mat);
+			aux->Material_Ind = mfID;
 			ret->components.push_back(aux_mat);
 		}
 
 		ret->components.push_back(aux);
 		
+		meshname.clear();
 	}
 
 	for (int i = 0; i < obj_node->mNumChildren; i++)
@@ -132,7 +139,7 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 		matname.append(".matdrnk");
 		DGUID fID(IsImported(matname.c_str()).c_str());
-		if (fID.HexID[0] == '\0')
+		if (fID.MD5ID[0] == -52)
 			mat_i->ExportMat(scene, i, path);
 	}
 }
@@ -215,20 +222,7 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 
 std::string ModuleImport::IsImported(const char * file)
 {
-	std::string ret = "";
-
-	std::ifstream read;
-	read.open(file, std::fstream::in || std::ios::binary);
-	int size = read.seekg(read.end, 0).tellg();
-	if (size != -1)
-	{
-		char* data = new char[size];
-		ret = GetHexID(data, size);
-		ret.erase(ret.length() - (ret.length() - 64));
-	}
-	read.seekg(read.beg, 0);
-	read.close();
-	return ret;
+	return GetMD5ID(file);
 }
 
 void CallLog(const char* str, char* usrData)
