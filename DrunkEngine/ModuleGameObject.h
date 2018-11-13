@@ -75,6 +75,7 @@ public:
 	ImGuizmo::MODE mCurrentGizmoMode;
 	
 	float3 previous_scale;
+	float3 previous_pos;
 };
 
 #endif // !_MODULE_EVENTSYSTEM_H_

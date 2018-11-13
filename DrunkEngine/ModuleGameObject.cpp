@@ -8,6 +8,7 @@ ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, T
 	mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	mCurrentGizmoMode = ImGuizmo::WORLD;
 	previous_scale = float3::one;
+	previous_pos = float3::zero;
 }
 
 ModuleGameObject::~ModuleGameObject()
@@ -233,8 +234,8 @@ void ModuleGameObject::ManageGuizmo()
 		if (!active_objects[i]->is_static)
 		{
 			float aux_vals[16];
-			float4x4 aux_mat = active_objects[i]->GetTransform()->global_transform;
-			
+			float4x4 aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
+
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, App->window->window_w, App->window->window_h);
 			ImGuizmo::Manipulate(Main_Cam->GetViewMatrix(), Main_Cam->frustum.ProjectionMatrix().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, aux_mat.ptr(), aux_vals);
 
@@ -249,19 +250,21 @@ void ModuleGameObject::ManageGuizmo()
 				aiVector3D pos;
 				aiQuaternion rot;
 
+				new_transform.Transpose();
 				new_transform.Decompose(scale, rot, pos);
 
 				switch (mCurrentGizmoOperation)
 				{
 				case ImGuizmo::TRANSLATE:
 				{
-					float3 pos_float3 = float3(pos.x, pos.y, pos.z).Mul(active_objects[i]->GetTransform()->position);
+					float3 pos_float3 = float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z) + active_objects[i]->GetTransform()->position;
 					active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
+					previous_pos = float3(pos.x, pos.y, pos.z);
 					break;
 				}
 				case ImGuizmo::ROTATE:
 				{
-					Quat rotate_quat = Quat(-rot.x, -rot.y, -rot.z, rot.w).Mul(active_objects[i]->GetTransform()->rotate_quat);
+					Quat rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w).Mul(active_objects[i]->GetTransform()->rotate_quat);
 					active_objects[i]->GetTransform()->SetTransformRotation(rotate_quat);
 					break;
 				}
@@ -276,7 +279,10 @@ void ModuleGameObject::ManageGuizmo()
 
 			}
 			else
+			{
 				previous_scale = float3::one;
+				previous_pos = float3::zero;
+			}
 		}
 	}
 }
