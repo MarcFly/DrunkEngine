@@ -235,7 +235,7 @@ void KDTree::Node::CreateNodes()
 		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.maxPoint.y, bounding_box.minPoint.z) + bounding_box.minPoint) / 2;
 
 		new_AABB_Node1 = AABB(vec(center_2.x, GetKdTreeCut(axis_to_check), center_2.z), bounding_box.maxPoint);
-		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, GetKdTreeCut(axis_to_check), center_1.z));
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_1.x, GetKdTreeCut(axis_to_check), center_1.z));
 	}
 
 	else  // Axis_Z
@@ -246,10 +246,10 @@ void KDTree::Node::CreateNodes()
 		vec center_2 = (vec(bounding_box.minPoint.x, bounding_box.minPoint.y, bounding_box.maxPoint.z) + bounding_box.minPoint) / 2;
 
 		new_AABB_Node1 = AABB(vec(center_2.x, center_2.y, GetKdTreeCut(axis_to_check)), bounding_box.maxPoint);
-		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_2.x, center_1.y, GetKdTreeCut(axis_to_check)));
+		new_AABB_Node2 = AABB(bounding_box.minPoint, vec(center_1.x, center_1.y, GetKdTreeCut(axis_to_check)));
 	}
 
-	if (!CheckMeshesColliding())
+	if (!CheckNodeRepeat(new_AABB_Node1) && !CheckNodeRepeat(new_AABB_Node2) && !CheckMeshesColliding())	//Check that the node is not the same as the previous one + Collision test between objs in node
 	{
 		Node * Node1 = new Node(GetObjectsInNode(new_AABB_Node1), this, new_AABB_Node1);
 		root->nodes.push_back(Node1);
@@ -267,7 +267,7 @@ std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
 
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{
-		if (new_bounding_box.Intersects(*objects_in_node[i]->BoundingBox))
+		if (new_bounding_box.Intersects(*objects_in_node[i]->BoundingBox) || new_bounding_box.Contains(*objects_in_node[i]->BoundingBox))
 			objs_in_new_node.push_back(objects_in_node[i]);
 	}
 
@@ -331,6 +331,24 @@ std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
 		vec_objs.push_back(node->objects_in_node[i]);
 
 	return vec_objs;
+}
+
+bool KDTree::Node::CheckNodeRepeat(AABB new_bb)
+{
+	bool ret = false;
+
+	//Check if this node is the same as the new one
+
+	if (subdivision > 3)
+		if (bounding_box.maxPoint.x == new_bb.maxPoint.x &&
+			bounding_box.maxPoint.y == new_bb.maxPoint.y &&
+			bounding_box.maxPoint.z == new_bb.maxPoint.z &&
+			bounding_box.minPoint.x == new_bb.minPoint.x &&
+			bounding_box.minPoint.y == new_bb.minPoint.y &&
+			bounding_box.minPoint.z == new_bb.minPoint.z)
+			ret = true;
+
+	return ret;
 }
 
 bool KDTree::Node::CheckMeshesColliding()
