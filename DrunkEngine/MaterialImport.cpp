@@ -318,8 +318,6 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 void MatImport::ExportTexture(const char * path, const char* full_path)
 {
-	App->importer->DebugTimer.Start();
-
 	ILuint id_Image;
 	ilGenImages(1, &id_Image);
 	ilBindImage(id_Image);
@@ -327,8 +325,6 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 	std::string libpath = ".\\Library\\" + GetFileName(path) + ".dds";
 	bool check = ilLoadImage(libpath.c_str());
 
-	PLOG("Texture Load took %d", App->importer->DebugTimer.Read());
-	App->importer->DebugTimer.Start();
 	if (!check) // Check from obj directory
 	{
 		std::string new_file_path = path;
@@ -339,20 +335,12 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 		check = ilLoadImage(new_file_path.c_str());
 
 		if (check)
-		{
 			App->ui->console_win->AddLog("Texture found in Parent Directory: Exporting Texture for next time!");
-			PLOG("Texture in dir took %d", App->importer->DebugTimer.Read());
-			App->importer->Start();
-		}
 	}
 	
 	if (check)
 	{
 		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-		ILuint size;
-		ILubyte *data;
-		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
 
 		std::string export_path = ".\\Library\\";
 		export_path.append(GetFileName(path).c_str());
@@ -360,11 +348,8 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 		export_path.append(".dds");
 
 		ilSave(IL_DDS, export_path.c_str());
-		
-		PLOG("Tex true export took %d", App->importer->DebugTimer.Read());
 
 		App->ui->console_win->AddLog("Exported Texture from path %s", path);
-
 	}
 	else
 	{
