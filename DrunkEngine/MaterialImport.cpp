@@ -305,15 +305,13 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 	PLOG("Material %d data copy took %d", mat_id, App->importer->DebugTimer.Read());
 
-	ExportMeta(scene, mat_id, filename, data);
-
-	filename.append(".matdrnk");
-
-	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
+	write_file.open((filename + ".matdrnk").c_str(), std::fstream::out | std::ios::binary);
 
 	write_file.write(data, buf_size);
 
 	write_file.close();
+
+	ExportMeta(scene, mat_id, filename, data);
 }
 
 void MatImport::ExportTexture(const char * path, const char* full_path)
@@ -344,10 +342,10 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 
 		std::string export_path = ".\\Library\\";
 		export_path.append(GetFileName(path).c_str());
-		ExportMetaTex(export_path);
-		export_path.append(".dds");
 
-		ilSave(IL_DDS, export_path.c_str());
+		ilSave(IL_DDS, (export_path + ".dds").c_str());
+
+		ExportMetaTex(export_path);
 
 		App->ui->console_win->AddLog("Exported Texture from path %s", path);
 	}

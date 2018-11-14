@@ -204,17 +204,19 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
 
-	ExportMeta(mesh, mesh_id, path, data);
+	
 
 	filename.append(".meshdrnk");
 
 	std::ofstream write_file;
 
-	write_file.open(filename.c_str(), std::fstream::out | std::fstream::binary);
+	write_file.open((filename + ".meshdrnk").c_str(), std::fstream::out | std::fstream::binary);
 
 	write_file.write(data, buf_size);
 
 	write_file.close();
+
+	ExportMeta(mesh, mesh_id, path, data);
 }
 
 void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex)

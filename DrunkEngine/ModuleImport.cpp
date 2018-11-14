@@ -138,15 +138,12 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
-		DebugTimer.Start();
 		std::string matname = ".\\Library\\";
 		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 		matname.append(".matdrnk");
 		DGUID fID(matname.c_str());
 		if (fID.MD5ID[0] == -52)
 			mat_i->ExportMat(scene, i, path);
-
-		PLOG("Mat %d export took %d", i, DebugTimer.Read());
 	}
 }
 
