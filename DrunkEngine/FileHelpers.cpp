@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "MD5.h"
 #include <string.h>
+#include "Timer.h"
 
 std::string GetDir(const char* full_path)
 {
@@ -72,12 +73,8 @@ Uint32 GetUUID()
 
 std::string GetMD5ID(const char* file)
 {
-	std::string send(file);
-	return GetMD5ID(send);
-}
+	Timer checkmd5;
 
-std::string GetMD5ID(std::string file)
-{
 	MD5 md5;
 	std::string str(file);
 	char* dest = new char[str.length() + 1];
@@ -86,5 +83,26 @@ std::string GetMD5ID(std::string file)
 	*cursor = '\0';
 	const char* ret = md5.digestFile(dest);
 	std::string retstr(ret);
+
+	PLOG("MD5 creation took %d", checkmd5.Read());
+
+	return retstr;
+}
+
+std::string GetMD5ID(std::string file)
+{
+	Timer checkmd5;
+
+	MD5 md5;
+	std::string str(file);
+	char* dest = new char[str.length() + 1];
+	std::copy(str.begin(), str.end(), dest);
+	char* cursor = dest + str.length();
+	*cursor = '\0';
+	const char* ret = md5.digestFile(dest);
+	std::string retstr(ret);
+
+	PLOG("MD5 creation took %d", checkmd5.Read());
+
 	return retstr;
 }

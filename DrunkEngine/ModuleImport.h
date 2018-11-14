@@ -52,7 +52,6 @@ public:
 	void LoadFile(char* file);
 	FileType CheckExtension(std::string& ext);
 	void LoadFileType(char* file, FileType type);
-	std::string IsImported(const char* file);
 
 public:
 	MeshImport* mesh_i;

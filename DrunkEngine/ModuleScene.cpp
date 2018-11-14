@@ -35,8 +35,8 @@ bool ModuleScene::Start()
 	bool ret = true;
 
 	//Load(nullptr);
-	LoadFBX("./Assets/Street environment_V01.FBX");
-	//LoadFBX("./Assets/Ogre.fbx");
+	//LoadFBX("./Assets/Street environment_V01.FBX");
+	LoadFBX("./Assets/Ogre.fbx");
 	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 	//LoadFBX("./Assets/Cube3d.fbx");
 	//LoadSceneFile("Scene.json");
@@ -47,6 +47,8 @@ bool ModuleScene::Start()
 
 	App->eventSys->Subscribe(EventType::Window_Resize, this);
 	App->eventSys->Subscribe(EventType::Camera_Modified, this);
+
+
 
 	return ret;
 }
@@ -72,6 +74,8 @@ bool ModuleScene::LoadFBX(const char* file_path)
 	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast); 
 
 	std::string aux = file_path;
+
+	DebugTimer.Start();
 
 	if (scene == nullptr)
 	{
@@ -107,6 +111,8 @@ bool ModuleScene::LoadFBX(const char* file_path)
 		App->ui->console_win->AddLog("Error loading scene's meshes %s", file_path);
 		ret = false;
 	}
+
+	PLOG("%d LoadFBX took %d", GetType(), DebugTimer.Read());
 
 	return ret;
 }

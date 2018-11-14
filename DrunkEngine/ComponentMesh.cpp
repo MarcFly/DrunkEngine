@@ -9,6 +9,7 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "FileHelpers.h"
 
 ComponentMesh::ComponentMesh()
 {
@@ -257,7 +258,7 @@ void ComponentMesh::CleanUp()
 void ComponentMesh::Load(JSON_Object* comp)
 {
 	this->name = json_object_get_string(comp, "mesh_name");
-	DGUID fID(App->importer->IsImported(name.c_str()).c_str());
+	DGUID fID(GetMD5ID(name.c_str()).c_str());
 	if (App->resources->InLibrary(fID))
 		App->importer->mesh_i->LinkMesh(fID, this);
 

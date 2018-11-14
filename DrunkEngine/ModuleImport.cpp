@@ -81,7 +81,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		std::string meshname = filename;
 		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
 		meshname.append(".meshdrnk");
-		DGUID fID(IsImported(meshname.c_str()).c_str());
+		DGUID fID(GetMD5ID(meshname.c_str()).c_str());
 		ComponentMesh* aux = new ComponentMesh(ret);
 
 		if(fID.MD5ID[0] == -52)
@@ -92,7 +92,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			MetaMesh* map_mesh = new MetaMesh();
 			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
 			map_mesh->LoadMetaFile(meta_file.c_str());
-			fID = IsImported(meshname.c_str()).c_str();
+			fID = GetMD5ID(meshname.c_str()).c_str();
 			App->resources->Library[fID] = map_mesh;
 		}
 
@@ -105,7 +105,7 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 			std::string matname = filename;
 			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 			matname.append(".matdrnk");
-			DGUID mfID(IsImported(matname.c_str()).c_str());
+			DGUID mfID(GetMD5ID(matname.c_str()).c_str());
 			matname.clear();
 			if(!App->resources->InLibrary(mfID))
 			{ 
@@ -141,7 +141,7 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 		std::string matname = ".\\Library\\";
 		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 		matname.append(".matdrnk");
-		DGUID fID(IsImported(matname.c_str()).c_str());
+		DGUID fID(GetMD5ID(matname.c_str()).c_str());
 		if (fID.MD5ID[0] == -52)
 			mat_i->ExportMat(scene, i, path);
 	}
@@ -221,11 +221,6 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 		App->ui->console_win->AddLog("File format not recognized!\n");
 	else
 		App->ui->console_win->AddLog("Wtf did you drop?\n");
-}
-
-std::string ModuleImport::IsImported(const char * file)
-{
-	return GetMD5ID(file);
 }
 
 void CallLog(const char* str, char* usrData)

@@ -4,6 +4,7 @@
 #include "parson/parson.h"
 #include <list>
 #include "Globals.h"
+#include "Timer.h"
 
 class Application;
 struct PhysBody3D;
@@ -86,6 +87,9 @@ public:
 	}
 
 	virtual void RecieveEvent(const Event & event) {}
+
+public:
+	Timer DebugTimer;
 };
 
 #endif // !_MODULE_H_
