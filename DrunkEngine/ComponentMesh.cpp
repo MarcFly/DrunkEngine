@@ -238,14 +238,8 @@ void ComponentMesh::DrawNormals()
 
 void ComponentMesh::CleanUp()
 {
-	glDeleteBuffers(1, &r_mesh->id_index);
-	glDeleteBuffers(1, &r_mesh->id_uvs);
-	glDeleteBuffers(1, &r_mesh->id_vertex);
-
-	delete r_mesh->index; r_mesh->index = nullptr;
-	delete r_mesh->normal; r_mesh->normal = nullptr;
-	delete r_mesh->tex_coords; r_mesh->tex_coords = nullptr;
-	delete r_mesh->vertex; r_mesh->vertex = nullptr;
+	App->resources->Unused(UID);
+	r_mesh = nullptr;
 
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
@@ -257,10 +251,11 @@ void ComponentMesh::CleanUp()
 
 void ComponentMesh::Load(JSON_Object* comp)
 {
-	this->name = json_object_get_string(comp, "mesh_name");
-	DGUID fID(GetMD5ID(name.c_str()).c_str());
-	if (App->resources->InLibrary(fID))
-		App->importer->mesh_i->LinkMesh(fID, this);
+	this->name = json_object_get_string(comp, "filename");
+	this->UID = DGUID(name.c_str());
+
+	if (App->resources->InLibrary(UID))
+		App->importer->mesh_i->LinkMesh(UID, this);
 
 }
 
@@ -271,7 +266,7 @@ void ComponentMesh::Save(JSON_Array* comps)
 
 	json_object_dotset_number(curr, "properties.type", type);
 
-	json_object_dotset_string(curr, "properties.mesh_name", name.c_str());
+	json_object_dotset_string(curr, "properties.filename", App->resources->Library.at(UID)->file.c_str());
 
 	json_array_append_value(comps, append);
 

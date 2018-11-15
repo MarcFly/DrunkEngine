@@ -209,7 +209,7 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 
 	write_file.close();
 
-	ExportMeta(mesh, mesh_id, path, data);
+	ExportMeta(mesh, mesh_id, path);
 }
 
 void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex)
@@ -246,7 +246,7 @@ void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normal
 	normals.push_back(p3 + norm.z);
 }
 
-void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path, char* data)
+void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path)
 {
 	std::string meta_name = ".\\Library\\" + GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meta";
 	JSON_Value* meta_file = json_parse_file(path.c_str());

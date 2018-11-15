@@ -45,7 +45,14 @@ void ComponentMaterial::CleanUp()
 
 void ComponentMaterial::Load(JSON_Object* comp)
 {
-	this->name = json_object_get_string(comp, "mat_name");
+	this->name = json_object_get_string(comp, "filename");
+	this->UID = DGUID(GetMD5ID(name).c_str());
+
+	if (App->resources->InLibrary(UID))
+		App->importer->mat_i->LinkMat(UID, this);
+	else
+		App->ui->console_win->AddLog("Not in library!");
+
 	//App->importer->mat_i->ImportMat(this->name.c_str(), this);
 }
 

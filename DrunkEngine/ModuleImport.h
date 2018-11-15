@@ -41,14 +41,12 @@ public:
 	bool Init();
 
 	bool CleanUp();
-
-	void ImportFBX(const char* path);
 	
-	GameObject* ImportGameObject(const char* path, GameObject* par);
-	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
-	void LoadSceneData(const char* path, const aiScene* scene);
+	//GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
+	void LoadScene(const char* path);
 
-	void ExportScene(const char* scene);
+	void ExportScene(const char* path);
+	void ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene);
 
 	void LoadFile(char* file);
 	FileType CheckExtension(std::string& ext);

@@ -41,6 +41,12 @@ struct DGUID
 		}
 	}
 
+	DGUID operator=(DGUID cmp_id)
+	{
+		memcpy(&MD5ID[0], &cmp_id.MD5ID[0], 32);
+		return *this;
+	}
+
 	const char* operator=(const char* hex)
 	{
 		memcpy(&MD5ID[0], hex, 32);

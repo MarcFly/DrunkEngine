@@ -32,6 +32,11 @@ public:
 		}
 	}
 
+	void Unused(DGUID uid)
+	{
+		Library.at(uid)->UseCount--;
+	}
+
 };
 
 

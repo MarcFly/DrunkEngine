@@ -99,7 +99,8 @@ void ModuleGameObject::CreateMainCam()
 {
 	if (active_cameras.size() < 1)
 	{
-		GameObject* MainCam = new GameObject(Root_Object, "Main Camera", CT_Camera);
+		GameObject* MainCam = new GameObject("Main Camera", Root_Object);
+		MainCam->components.push_back(new ComponentCamera(MainCam));
 		getRootObj()->children.push_back(MainCam);
 	}
 }

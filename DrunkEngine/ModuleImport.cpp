@@ -53,88 +53,54 @@ bool ModuleImport::CleanUp()
 	return true;
 }
 
-GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par)
+void ModuleImport::LoadScene(const char* path)
 {
-	GameObject* ret = new GameObject();
+	GameObject* par = App->gameObj->getRootObj();
 
-	ret->parent = par;
-	
-	std::string filename = ".\\Library\\";
-
-	if (ret->parent != nullptr)
+	if (App->gameObj->getRootObj() == nullptr)
 	{
-		ret->root = ret->parent->root;
-		ret->par_UUID = ret->parent->UUID;
+		App->gameObj->CleanUp();
+		App->gameObj->NewScene();
+		par = App->gameObj->getRootObj();
 	}
-	else
+	else if(App->ui->inspector->selected_object != nullptr)
 	{
-		ret->root = ret;
-		ret->par_UUID = UINT_FAST32_MAX;
+		par = App->ui->inspector->selected_object;
 	}
 
-	App->gameObj->objects_in_scene.push_back(ret);
-	App->gameObj->non_static_objects_in_scene.push_back(ret);
+	JSON_Value* scene = json_parse_file(path);
+	JSON_Object* obj_g = json_value_get_object(scene);
+	JSON_Array* obj_arr = json_object_get_array(obj_g, "scene");
 
-	ret->name = obj_node->mName.C_Str();
-	
-	// Sequential Import for FBX Only, will create the components one by one
-	
-
-	for (int i = 0; i < obj_node->mNumMeshes; i++)
+	for (int i = 0; i < json_array_get_count(obj_arr); i++)
 	{
-		std::string meshname = filename;
-		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
-		meshname.append(".meshdrnk");
-		DGUID fID(meshname.c_str());
-		ComponentMesh* aux = new ComponentMesh(ret);	
+		JSON_Value* val = json_array_get_value(obj_arr, i);
 
-		if (!App->resources->InLibrary(fID))
-		{
-			MetaMesh* map_mesh = new MetaMesh();
-			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + scene->mMeshes[i]->mName.C_Str() + std::to_string(obj_node->mMeshes[i]) + ".meta";
-			map_mesh->LoadMetaFile(meta_file.c_str());
-			App->resources->Library[fID] = map_mesh;
-		}
-
-		mesh_i->LinkMesh(fID, aux);
-
-		aux->parent = ret;
-
-		if (aux->mat_ind != -1)
-		{
-			std::string matname = filename;
-			matname += GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind);
-			matname.append(".matdrnk");
-			DGUID mfID(matname.c_str());
-			matname.clear();
-			if(!App->resources->InLibrary(mfID))
-			{ 
-				MetaMat* map_mat = new MetaMat();
-				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
-				map_mat->LoadMetaFile(meta_file.c_str());
-				App->resources->Library[mfID] = map_mat;
-			}
-			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
-			mat_i->LinkMat(mfID, aux_mat);
-			aux->Material_Ind = mfID;
-			ret->components.push_back(aux_mat);
-		}
-
-		ret->components.push_back(aux);
-		
-		meshname.clear();
+		par->children.push_back(prefab_i->ImportGameObject(path, val));
 	}
 
-	for (int i = 0; i < obj_node->mNumChildren; i++)
-		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
-	ret->GetTransform()->SetFromMatrix(&obj_node->mTransformation);
-	App->gameObj->Main_Cam->LookToObj(ret, ret->SetBoundBox());
-
-	return ret;
+	par->OrderChildren();	
 }
 
-void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
+void ModuleImport::ExportScene(const char* path)
 {
+	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_Fast);
+
+	DebugTimer.Start();
+
+	if (scene == nullptr)
+	{
+		// Trying to load it from the scene folder
+		std::string new_file_path = path;
+		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
+
+		new_file_path = App->scene->scene_folder + new_file_path;
+
+		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
+		if (scene == nullptr)
+			App->ui->console_win->AddLog("Failed to Load from file %s", path);
+	}
+
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
 		aiMaterial* mat = scene->mMaterials[i];
@@ -150,7 +116,7 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 	{
 		aiMesh* mesh = scene->mMeshes[i];
 		std::string meshname = ".\\Library\\";
-		meshname += GetFileName(path) + "_Mesh_" + mesh->mName.C_Str() + std::to_string(i);
+		meshname += GetFileName(path) + "_Mesh_" + std::to_string(i);
 		meshname.append(".meshdrnk");
 		DGUID fID(meshname.c_str());
 		if (fID.MD5ID[0] == -52)
@@ -158,12 +124,9 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 	}
 
 	{
-		aiNode* node = scene->mRootNode;
 		std::string scenename = ".\\Library\\";
-		scenename += GetFileName(path) + "scenedrnk";
-		DGUID fID(scenename.c_str());
-		if (fID.MD5ID[0] == -52)
-			prefab_i->ExportAINode(node, path);
+		scenename += GetFileName(path) + ".scenedrnk";
+		ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
 	}
 
 	//scene->mNumAnimations
@@ -171,37 +134,25 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 	//scene->mNumLights
 }
 
-void ModuleImport::ExportScene(const char* file_path)
+void ModuleImport::ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene)
 {
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_MaxQuality);
-	std::string aux = file_path;
-
+	JSON_Value* scene = json_parse_file(path);
 	if (scene == nullptr)
 	{
-		// Trying to load it from the scene folder
-		std::string new_file_path = file_path;
-		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-		new_file_path = App->scene->scene_folder + new_file_path;
-
-		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
-		aux = new_file_path;
+		scene = json_value_init_object();
+		json_serialize_to_file(scene, path);
+		scene = json_parse_file(path);
 	}
-	else
-		App->ui->console_win->AddLog("Succesful Load from file %s", file_path);
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* go = json_value_get_array(set_array);
 
-	if (scene->HasMeshes())
-		for (int i = 0; i < scene->mNumMeshes; i++)
-			mesh_i->ExportAIMesh(scene->mMeshes[i], i, aux.c_str());
+	prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
 
-	if(scene->HasMaterials())
-		for(int i = 0; i < scene->mNumMaterials; i++)
-			for (int j = 0; j < scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE); j++)
-			{
-				aiString path;
-				scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, j, &path);
-				mat_i->ExportILTexture(path.C_Str());
-			}
+	JSON_Object* set = json_value_get_object(scene);
+	json_object_set_value(set, "scene", set_array);
+	json_serialize_to_file(scene, path);
+
+	App->ui->console_win->AddLog("%s Scene exported", path);
 }
 
 void ModuleImport::LoadFile(char * file)
@@ -236,8 +187,7 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 {
 	if (type == FT_New_Object)
 	{
-		//ExportScene(file);
-		App->scene->LoadFBX(file);
+		ExportScene(file);
 	}
 	else if (type == FT_Texture)
 		mat_i->ExportILTexture(file);

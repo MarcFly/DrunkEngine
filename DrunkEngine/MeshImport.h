@@ -26,7 +26,7 @@ public:
 
 	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);
 
-	void ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path, char* data);
+	void ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path);
 	void LoadMeta(const char* file, MetaMesh* meta);
 
 };
