@@ -11,7 +11,7 @@ void Resource::LoadToMem()
 {
 	switch (par->type)
 	{
-	case RT_GameObject:
+	case RT_Prefab:
 		break;
 	case RT_Mesh:
 		mesh.ptr = App->importer->mesh_i->LoadMesh(par->file.c_str());
@@ -31,10 +31,12 @@ void Resource::UnloadFromMem()
 {
 	switch (par->type)
 	{
-	case RT_GameObject:
+	case RT_Prefab:
+		break;
 	case RT_Mesh:
-		
+		break;
 	case RT_Material:
+		break;
 	case RT_Texture:
 		break;
 	default:
@@ -48,7 +50,7 @@ bool Resource::IsLoaded()
 	{
 		switch (par->type)
 		{
-		case RT_GameObject:
+		case RT_Prefab:
 			break;
 		case RT_Mesh:
 			return (mesh.ptr != nullptr);

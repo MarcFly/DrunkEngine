@@ -52,8 +52,6 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 {
 	ResourceMaterial* r_mat = new ResourceMaterial();
 
-	App->importer->Imp_Timer.Start();
-
 	// Default Material Color
 	std::ifstream read_file;
 	read_file.open(file, std::ios::binary);
@@ -117,8 +115,6 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 			cursor += texture_ranges[i];
 		}
 
-		App->importer->Imp_Timer.LogTime("Texture");
-
 		App->ui->console_win->AddLog("New Material with %d textures loaded.", r_mat->textures.size());
 
 	}
@@ -127,8 +123,6 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 		delete r_mat;
 		r_mat = nullptr;
 	}
-
-	App->importer->Imp_Timer.LogTime("Material Import");
 
 	return r_mat;
 
@@ -309,7 +303,7 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 
 	write_file.close();
 
-	ExportMeta(mat, mat_id, filename, data);
+	ExportMeta(mat, mat_id, filename);
 }
 
 void MatImport::ExportILTexture(const char * path, const char* full_path)
@@ -437,7 +431,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 
 //--------------------------------------
 
-void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string path, char* data)
+void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string& path)
 {
 	std::string meta_name = path + ".meta";
 	JSON_Value* meta_file = json_parse_file(path.c_str());

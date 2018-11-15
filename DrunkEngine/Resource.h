@@ -14,7 +14,7 @@ struct MetaResource;
 enum ResourceTypes
 {
 	RT_Error = -1,
-	RT_GameObject,
+	RT_Prefab,
 	RT_Mesh,
 	RT_Material,
 	RT_Texture,

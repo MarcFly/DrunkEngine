@@ -16,6 +16,7 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "MD5.h"
+#include "PrefabImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -33,6 +34,7 @@ bool ModuleImport::Init()
 	
 	mesh_i = new MeshImport();
 	mat_i = new MatImport();
+	prefab_i = new PrefabImport();
 
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -46,6 +48,8 @@ bool ModuleImport::CleanUp()
 {
 	delete mesh_i;
 	delete mat_i;
+	delete prefab_i;
+
 	return true;
 }
 
@@ -151,6 +155,15 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 		DGUID fID(meshname.c_str());
 		if (fID.MD5ID[0] == -52)
 			mesh_i->ExportAIMesh(mesh, i, path);
+	}
+
+	{
+		aiNode* node = scene->mRootNode;
+		std::string scenename = ".\\Library\\";
+		scenename += GetFileName(path) + "scenedrnk";
+		DGUID fID(scenename.c_str());
+		if (fID.MD5ID[0] == -52)
+			prefab_i->ExportAINode(node, path);
 	}
 
 	//scene->mNumAnimations

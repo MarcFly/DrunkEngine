@@ -22,7 +22,7 @@ public:
 	void ExportTexture(ResourceTexture* tex);
 
 	ResourceMaterial* LoadMat(const char* file);
-	void ExportMeta(const aiMaterial* mat, const int& mat_id, std::string path, char* data);
+	void ExportMeta(const aiMaterial* mat, const int& mat_id, std::string& path);
 	void LoadMeta(const char* file, MetaMat* meta);
 	void LinkMat(DGUID fID, ComponentMaterial* mat);
 

@@ -43,7 +43,7 @@ public:
 	float4x4 local_transform;
 	float4x4 global_transform;
 
-	ComponentMesh* mparent = nullptr;
+	//ComponentMesh* mparent = nullptr;
 	bool update_bouding_box;
 	bool update_camera_transform;
 

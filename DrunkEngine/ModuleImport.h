@@ -18,6 +18,7 @@
 
 class MeshImport;
 class MatImport;
+class PrefabImport;
 
 enum FileType
 {
@@ -56,6 +57,7 @@ public:
 public:
 	MeshImport* mesh_i;
 	MatImport* mat_i;
+	PrefabImport* prefab_i;
 
 	std::string tex_folder;
 	std::string mesh_folder;
