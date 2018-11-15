@@ -17,6 +17,8 @@ public:
 
 	bool CleanUp();
 	
+	DGUID AddResource(const char* file);
+	MetaResource* NewResource(FileType type);
 
 public:
 	std::map<DGUID, MetaResource*, std::equal_to<DGUID>> Library;

@@ -155,9 +155,6 @@ GameObject * PrefabImport::ImportGameObject(const char* path, JSON_Value* go)
 
 		CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
 
-		if (type == CT_Mesh)
-			bool sh = true;
-
 		Component* add = ret->NewComponent(type);
 		add->Load(obj);
 		add->parent = ret;

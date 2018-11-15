@@ -11,11 +11,27 @@ void CreateHiddenDir(const char* dir);
 
 unsigned int GetExtSize(const char* file);
 
+std::string GetExtension(const char* file);
+
 std::string GetFileName(const char* file);
 
 Uint32 GetUUID();
 
 std::string GetMD5ID(const char* file);
 std::string GetMD5ID(std::string file);
+
+enum FileType
+{
+	FT_Error = -1,
+	FT_Texture,
+	FT_Object,
+	FT_New_Object,
+	FT_Material,
+	FT_Mesh,
+
+	FT_Files_Max
+};
+
+FileType CheckExtension(std::string& ext);
 
 #endif

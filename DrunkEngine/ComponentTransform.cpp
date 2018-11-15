@@ -110,6 +110,8 @@ void ComponentTransform::Load(JSON_Object* comp)
 	rotate_quat.z = json_object_dotget_number(comp, "rotate_quat.z");
 
 	SetTransformRotation(rotate_quat);
+
+	SetLocalTransform();
 }
 
 void ComponentTransform::Save(JSON_Array* comps)

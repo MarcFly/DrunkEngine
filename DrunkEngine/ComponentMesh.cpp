@@ -254,7 +254,9 @@ void ComponentMesh::Load(JSON_Object* comp)
 	this->name = json_object_get_string(comp, "filename");
 	this->UID = DGUID(name.c_str());
 
-	if (App->resources->InLibrary(UID))
+	if (!App->resources->InLibrary(UID))
+		this->UID = App->resources->AddResource(name.c_str());
+	if(App->resources->InLibrary(UID))
 		App->importer->mesh_i->LinkMesh(UID, this);
 
 }

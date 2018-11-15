@@ -45,6 +45,11 @@ uint GetExtSize(const char* file)
 	return ret.length();
 }
 
+std::string GetExtension(const char* file)
+{
+	return strrchr(file, '.');
+}
+
 std::string GetFileName(const char* file)
 {
 	std::string ret = file;
@@ -105,4 +110,19 @@ std::string GetMD5ID(std::string file)
 	PLOG("MD5 creation took %d", checkmd5.Read());
 
 	return retstr;
+}
+
+FileType CheckExtension(std::string& ext)
+{
+	FileType ret = FT_Error;
+
+	if (ext == std::string(".fbx") || ext == std::string(".FBX"))
+		ret = FT_New_Object;
+	else if (ext == std::string(".png") || ext == std::string(".bmp") || ext == std::string(".jpg") || ext == std::string(".dds"))
+		ret = FT_Texture;
+	else if (ext == std::string(".meshdrnk"))
+		ret = FT_Mesh;
+	else if (ext == std::string(".matdrnk"))
+		ret = FT_Material;
+	return ret;
 }

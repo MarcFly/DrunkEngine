@@ -171,17 +171,7 @@ void ModuleImport::LoadFile(char * file)
 
 }
 
-FileType ModuleImport::CheckExtension(std::string & ext)
-{
-	FileType ret = FT_Error;
 
-	if (ext == std::string(".fbx") || ext == std::string(".FBX"))
-		ret = FT_New_Object;
-	else if (ext == std::string(".png") || ext == std::string(".bmp") || ext == std::string(".jpg") || ext == std::string(".dds"))
-		ret = FT_Texture;
-
-	return ret;
-}
 
 void ModuleImport::LoadFileType(char * file, FileType type)
 {

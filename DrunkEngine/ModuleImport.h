@@ -20,18 +20,6 @@ class MeshImport;
 class MatImport;
 class PrefabImport;
 
-enum FileType
-{
-	FT_Error = -1,
-	FT_Texture,
-	FT_Object,
-	FT_New_Object,
-	FT_Material,
-	FT_Mesh,
-
-	FT_Files_Max
-};
-
 class ModuleImport : public Module {
 public:
 	ModuleImport(bool start_enabled = true);
@@ -49,7 +37,7 @@ public:
 	void ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene);
 
 	void LoadFile(char* file);
-	FileType CheckExtension(std::string& ext);
+	
 	void LoadFileType(char* file, FileType type);
 
 public:

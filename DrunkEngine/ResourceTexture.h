@@ -28,7 +28,7 @@ struct ResourceTexture
 class MetaTexture : public MetaResource
 {
 public:
-	MetaTexture() {};
+	MetaTexture() { type = RT_Texture; };
 	~MetaTexture() {};
 
 	void LoadMetaFile(const char* file)

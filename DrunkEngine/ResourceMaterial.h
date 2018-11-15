@@ -18,7 +18,7 @@ struct ResourceMaterial
 class MetaMat : public MetaResource
 {
 public:
-	MetaMat() {};
+	MetaMat() { type = RT_Material; };
 	~MetaMat() {};
 
 	void LoadMetaFile(const char* file)

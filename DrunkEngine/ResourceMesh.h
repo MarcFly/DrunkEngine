@@ -40,7 +40,7 @@ struct ResourceMesh
 class MetaMesh : public MetaResource
 {
 public:
-	MetaMesh() {};
+	MetaMesh() { type = RT_Mesh; };
 	~MetaMesh() {};
 
 	DGUID Material_ind;
