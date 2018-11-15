@@ -64,3 +64,42 @@ bool Resource::IsLoaded()
 }
 
 //--------------------------------------
+
+bool DGUID::TrueComp(const DGUID cmp_id) const
+{
+	bool ret = false;
+
+	std::vector<uint> f = TrueSum();
+	std::vector<uint> s = cmp_id.TrueSum();
+
+	for (int i = 0; i < f.size(); i++)
+	{
+		if (f[i] != s[i])
+		{
+			ret = (f[i] > s[i]);
+			break;
+		}
+	}
+
+
+	return ret;
+}
+
+std::vector<uint> DGUID::TrueSum() const
+{
+	std::vector<uint> ret;
+	for (int i = 0; i < 16; i++)
+	{
+		if (i == 0)
+			ret.push_back(MD5ID[i] + 1000 * MD5ID[i + 1]);
+		else
+		{
+			ret.push_back(MD5ID[i] + 1000 * MD5ID[i + 1] + 1000000 * MD5ID[i + 2]);
+			i++;
+		}
+
+		i++;
+	}
+
+	return ret;
+}

@@ -224,10 +224,8 @@ ResourceTexture* MatImport::LoadTexture(const char * path)
 //-EXPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char * path)
+void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const char * path)
 {
-	aiMaterial* mat = scene->mMaterials[mat_id];
-
 	uint prop_size = mat->mNumProperties;
 	uint text_size = mat->GetTextureCount(aiTextureType_DIFFUSE);
 	
@@ -251,7 +249,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 		aiString aipath;
 		mat->GetTexture(aiTextureType_DIFFUSE, i, &aipath);
 		
-		ExportTexture(aipath.C_Str(), path);
+		ExportILTexture(aipath.C_Str(), path);
 
 		textures.push_back(aipath.C_Str());
 
@@ -311,10 +309,10 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 
 	write_file.close();
 
-	ExportMeta(scene, mat_id, filename, data);
+	ExportMeta(mat, mat_id, filename, data);
 }
 
-void MatImport::ExportTexture(const char * path, const char* full_path)
+void MatImport::ExportILTexture(const char * path, const char* full_path)
 {
 	ILuint id_Image;
 	ilGenImages(1, &id_Image);
@@ -439,7 +437,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 
 //--------------------------------------
 
-void MatImport::ExportMeta(const aiScene* scene, const int& mat_id, std::string path, char* data)
+void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string path, char* data)
 {
 	std::string meta_name = path + ".meta";
 	JSON_Value* meta_file = json_parse_file(path.c_str());

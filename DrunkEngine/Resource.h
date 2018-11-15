@@ -66,12 +66,11 @@ struct DGUID
 	bool operator==(const DGUID cmp_id)const
 	{
 		bool ret = false;
-		int victor = 0;
 		for (int i = 0; i < 32; i++)
 		{
 			ret = MD5ID[i] == cmp_id.MD5ID[i];
-			if (MD5ID[i] < cmp_id.MD5ID[i])
-				victor++;
+			if (!ret)
+				break;
 		}
 		if (ret)
 			return !ret;
@@ -81,36 +80,9 @@ struct DGUID
 		}
 
 	}
-	bool TrueComp(const DGUID cmp_id) const
-	{
-		bool ret = false;
 
-		std::vector<uint> f = TrueSum();
-		std::vector<uint> s = cmp_id.TrueSum();
-	
-		for(int i = 0; i < f.size(); i++)
-		{
-			if (f[i] < s[i]) {
-				ret = false;
-				break;
-			}
-			else if (f[i] > s[i]) {
-				ret = true;
-				break;
-			}
-		}
-
-
-		return ret;
-	}
-	std::vector<uint> TrueSum() const
-	{
-		std::vector<uint> ret;
-		for (int i = 0; i < 16; i++)
-			ret.push_back(MD5ID[i] + 1000 * MD5ID[i + 1]);
-
-		return ret;
-	}
+	bool TrueComp(const DGUID cmp_id) const;
+	std::vector<uint> TrueSum() const;
 };
 
 union Resource

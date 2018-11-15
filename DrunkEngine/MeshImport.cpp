@@ -48,8 +48,7 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 	std::ifstream read_file;
 	read_file.open(file, std::fstream::in | std::fstream::binary);
 
-	std::streampos end = read_file.seekg(0, read_file.end).tellg();
-	int size = end;
+	int size = read_file.seekg(0, read_file.end).tellg();
 	read_file.seekg(0, read_file.beg);
 
 	if (size > 1024)
@@ -117,10 +116,8 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 //-EXPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char* path)
+void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char* path)
 {
-	aiMesh* mesh = scene->mMeshes[mesh_id];
-
 	uint buf_size = 0;
 
 	uint vertex_size = (mesh->mNumVertices * 3); 
@@ -203,10 +200,6 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
-
-	
-
-	filename.append(".meshdrnk");
 
 	std::ofstream write_file;
 

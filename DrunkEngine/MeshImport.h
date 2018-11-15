@@ -21,7 +21,7 @@ public:
 	void LinkMesh(DGUID fID, ComponentMesh* mesh);
 	ResourceMesh* LoadMesh(const char* file);
 
-	void ExportMesh(const aiScene* scene, const int& mesh_id, const char* path = nullptr);
+	void ExportAIMesh(const aiMesh* scene, const int& mesh_id, const char* path = nullptr);
 	void ExportMesh(const ComponentMesh* mesh);
 
 	void ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex);

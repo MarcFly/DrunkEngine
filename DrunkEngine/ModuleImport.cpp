@@ -81,18 +81,14 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		std::string meshname = filename;
 		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
 		meshname.append(".meshdrnk");
-		DGUID fID(GetMD5ID(meshname.c_str()).c_str());
-		ComponentMesh* aux = new ComponentMesh(ret);
-
-		if(fID.MD5ID[0] == -52)
-			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);		
+		DGUID fID(meshname.c_str());
+		ComponentMesh* aux = new ComponentMesh(ret);	
 
 		if (!App->resources->InLibrary(fID))
 		{
 			MetaMesh* map_mesh = new MetaMesh();
-			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
+			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + scene->mMeshes[i]->mName.C_Str() + std::to_string(obj_node->mMeshes[i]) + ".meta";
 			map_mesh->LoadMetaFile(meta_file.c_str());
-			fID = GetMD5ID(meshname.c_str()).c_str();
 			App->resources->Library[fID] = map_mesh;
 		}
 
@@ -103,16 +99,15 @@ GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* sce
 		if (aux->mat_ind != -1)
 		{
 			std::string matname = filename;
-			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+			matname += GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind);
 			matname.append(".matdrnk");
-			DGUID mfID(GetMD5ID(matname.c_str()).c_str());
+			DGUID mfID(matname.c_str());
 			matname.clear();
 			if(!App->resources->InLibrary(mfID))
 			{ 
 				MetaMat* map_mat = new MetaMat();
 				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
 				map_mat->LoadMetaFile(meta_file.c_str());
-				mfID = GetMD5ID(meta_file.c_str()).c_str();
 				App->resources->Library[mfID] = map_mat;
 			}
 			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
@@ -138,13 +133,29 @@ void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
+		aiMaterial* mat = scene->mMaterials[i];
 		std::string matname = ".\\Library\\";
 		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 		matname.append(".matdrnk");
 		DGUID fID(matname.c_str());
 		if (fID.MD5ID[0] == -52)
-			mat_i->ExportMat(scene, i, path);
+			mat_i->ExportAIMat(mat, i, path);
 	}
+
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+		std::string meshname = ".\\Library\\";
+		meshname += GetFileName(path) + "_Mesh_" + mesh->mName.C_Str() + std::to_string(i);
+		meshname.append(".meshdrnk");
+		DGUID fID(meshname.c_str());
+		if (fID.MD5ID[0] == -52)
+			mesh_i->ExportAIMesh(mesh, i, path);
+	}
+
+	//scene->mNumAnimations
+	//scene->numCameras
+	//scene->mNumLights
 }
 
 void ModuleImport::ExportScene(const char* file_path)
@@ -168,7 +179,7 @@ void ModuleImport::ExportScene(const char* file_path)
 
 	if (scene->HasMeshes())
 		for (int i = 0; i < scene->mNumMeshes; i++)
-			mesh_i->ExportMesh(scene, i, aux.c_str());
+			mesh_i->ExportAIMesh(scene->mMeshes[i], i, aux.c_str());
 
 	if(scene->HasMaterials())
 		for(int i = 0; i < scene->mNumMaterials; i++)
@@ -176,7 +187,7 @@ void ModuleImport::ExportScene(const char* file_path)
 			{
 				aiString path;
 				scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, j, &path);
-				mat_i->ExportTexture(path.C_Str());
+				mat_i->ExportILTexture(path.C_Str());
 			}
 }
 
@@ -216,7 +227,7 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 		App->scene->LoadFBX(file);
 	}
 	else if (type == FT_Texture)
-		mat_i->ExportTexture(file);
+		mat_i->ExportILTexture(file);
 	else if(type == FT_Error)
 		App->ui->console_win->AddLog("File format not recognized!\n");
 	else
