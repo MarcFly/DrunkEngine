@@ -10,6 +10,8 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 	SetFromMatrix(t);
 	parent = par;
 
+	aux_glob_rot = aux_glob_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
+
 	SetLocalTransform();
 }
 
@@ -92,6 +94,47 @@ void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
 
 	if (t->parent->parent != nullptr)
 		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
+}
+
+void ComponentTransform::SetGlobalPos(const float4x4 new_transform)
+{
+	aux_glob_pos = aux_glob_pos * new_transform;
+
+	RecursiveSetChildrenToUpdate(this);
+	RecursiveSetParentToUpdate(this);
+
+	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	ev.game_object.ptr = parent;
+	App->eventSys->BroadcastEvent(ev);
+}
+
+void ComponentTransform::SetGlobalRot(const float4x4 new_transform)
+{
+	aux_glob_rot = aux_glob_rot * new_transform;
+
+	RecursiveSetChildrenToUpdate(this);
+	RecursiveSetParentToUpdate(this);
+
+	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	ev.game_object.ptr = parent;
+	App->eventSys->BroadcastEvent(ev);
+}
+
+void ComponentTransform::CalculateGlobalTransforms()
+{
+	if (parent->parent != nullptr)
+		global_transform = aux_glob_pos * aux_glob_rot * parent->parent->GetTransform()->global_transform * local_transform;
+
+	else
+		global_transform = local_transform;
+
+	if (parent->children.size() > 0)
+	{
+		for (std::vector<GameObject*>::iterator it = parent->children.begin(); it != parent->children.end(); it++)
+		{
+			(*it)->GetTransform()->CalculateGlobalTransforms();
+		}
+	}
 }
 
 void ComponentTransform::CleanUp()

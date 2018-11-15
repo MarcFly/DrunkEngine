@@ -28,6 +28,10 @@ public:
 
 	void SetFromMatrix(const aiMatrix4x4* t);
 
+	void SetGlobalPos(const float4x4 new_transform);
+	void SetGlobalRot(const float4x4 new_transform);
+	void CalculateGlobalTransforms();
+
 	void CleanUp();
 
 	void Load(JSON_Object* comp);
@@ -42,6 +46,8 @@ public:
 
 	float4x4 local_transform;
 	float4x4 global_transform;
+	float4x4 aux_glob_pos;
+	float4x4 aux_glob_rot;
 
 	ComponentMesh* mparent = nullptr;
 	bool update_bouding_box;
@@ -53,10 +59,11 @@ public:
 		position = { 0,0,0 }; 
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
+		aux_glob_rot = aux_glob_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;
-    
+
 		update_bouding_box = true;
 		update_camera_transform = true;
 	}

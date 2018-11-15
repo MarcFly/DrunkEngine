@@ -6,7 +6,7 @@
 ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, Type_GameObj)
 {
 	mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	mCurrentGizmoMode = ImGuizmo::WORLD;
+	mCurrentGizmoMode = ImGuizmo::LOCAL;
 	previous_scale = float3::one;
 	previous_pos = float3::zero;
 }
@@ -222,11 +222,20 @@ void ModuleGameObject::ManageGuizmo()
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) != KEY_REPEAT)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		{
 			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+			mCurrentGizmoMode = ImGuizmo::WORLD;
+		}
 		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+		{
 			mCurrentGizmoOperation = ImGuizmo::ROTATE;
+			mCurrentGizmoMode = ImGuizmo::WORLD;
+		}
 		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+		{
 			mCurrentGizmoOperation = ImGuizmo::SCALE;
+			mCurrentGizmoMode = ImGuizmo::WORLD;
+		}
 	}
 
 	
@@ -236,7 +245,17 @@ void ModuleGameObject::ManageGuizmo()
 		if (!active_objects[i]->is_static)
 		{
 			float aux_vals[16];
-			float4x4 aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
+			float4x4 aux_mat;
+
+			if (mCurrentGizmoMode == ImGuizmo::LOCAL || mCurrentGizmoOperation == ImGuizmo::SCALE || active_objects[i]->parent == nullptr)
+				aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
+
+			else
+			{
+				float4 aux_global_pos = active_objects[i]->parent->GetTransform()->global_transform.Transposed().Row(3);
+				float4x4 aux_global_tansform = float4x4::FromTRS(float3(aux_global_pos.x, aux_global_pos.y, aux_global_pos.z), Quat::identity, float3::one).Transposed();
+				aux_mat = aux_global_tansform * active_objects[i]->GetTransform()->aux_glob_rot.Transposed() * active_objects[i]->GetTransform()->aux_glob_pos.Transposed();
+			}
 
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, App->window->window_w, App->window->window_h);
 			ImGuizmo::Manipulate(Main_Cam->GetViewMatrix(), Main_Cam->frustum.ProjectionMatrix().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, aux_mat.ptr(), aux_vals);
@@ -259,23 +278,44 @@ void ModuleGameObject::ManageGuizmo()
 				{
 				case ImGuizmo::TRANSLATE:
 				{
-					float3 pos_float3 = float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z) + active_objects[i]->GetTransform()->position;
-					active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
-					previous_pos = float3(pos.x, pos.y, pos.z);
-					break;
+					if (mCurrentGizmoMode == ImGuizmo::WORLD)
+					{
+						float4x4 new_transform = float4x4::FromTRS(float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z), Quat::identity, float3::one);
+						active_objects[i]->GetTransform()->SetGlobalPos(new_transform);
+						previous_pos = float3(pos.x, pos.y, pos.z);
+						break;
+					}
+					else	// LOCAL
+					{
+						float3 pos_float3 = float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z) + active_objects[i]->GetTransform()->position;
+						active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
+						previous_pos = float3(pos.x, pos.y, pos.z);
+						break;
+					}
 				}
 				case ImGuizmo::ROTATE:
 				{
-					Quat rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w).Mul(active_objects[i]->GetTransform()->rotate_quat);
-					active_objects[i]->GetTransform()->SetTransformRotation(rotate_quat);
-					break;
+					if (mCurrentGizmoMode == ImGuizmo::WORLD)
+					{
+						float4x4 new_transform = float4x4::FromTRS(float3::zero, Quat(rot.x, rot.y, rot.z, rot.w), float3::one);
+						active_objects[i]->GetTransform()->SetGlobalRot(new_transform);
+						break;
+					}
+					else	// LOCAL
+					{
+						Quat rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w).Mul(active_objects[i]->GetTransform()->rotate_quat);
+						active_objects[i]->GetTransform()->SetTransformRotation(rotate_quat);
+						break;
+					}
 				}
 				case ImGuizmo::SCALE:
 				{
+					//Only Local
 					float3 scale_float3 = float3(scale.x - previous_scale.x, scale.y - previous_scale.y, scale.z - previous_scale.z) + active_objects[i]->GetTransform()->scale;
 					active_objects[i]->GetTransform()->SetTransformScale(scale_float3.x, scale_float3.y, scale_float3.z);
 					previous_scale = float3(scale.x, scale.y, scale.z);
 					break;
+
 				}
 				}
 
@@ -334,7 +374,7 @@ void ModuleGameObject::RecieveEvent(const Event & event)
 	{
 	case EventType::Transform_Updated:
 	{
-		event.game_object.ptr->CalculateGlobalTransforms();
+		event.game_object.ptr->GetTransform()->CalculateGlobalTransforms();
 		break;
 	}
 	default:
