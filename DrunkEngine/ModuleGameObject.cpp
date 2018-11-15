@@ -222,20 +222,14 @@ void ModuleGameObject::ManageGuizmo()
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) != KEY_REPEAT)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-		{
 			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-			mCurrentGizmoMode = ImGuizmo::WORLD;
-		}
+
 		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
-		{
 			mCurrentGizmoOperation = ImGuizmo::ROTATE;
-			mCurrentGizmoMode = ImGuizmo::WORLD;
-		}
+
 		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
-		{
 			mCurrentGizmoOperation = ImGuizmo::SCALE;
-			mCurrentGizmoMode = ImGuizmo::WORLD;
-		}
+
 	}
 
 	
@@ -257,7 +251,7 @@ void ModuleGameObject::ManageGuizmo()
 				aux_mat = aux_global_tansform * active_objects[i]->GetTransform()->aux_glob_rot.Transposed() * active_objects[i]->GetTransform()->aux_glob_pos.Transposed();
 			}
 
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, App->window->window_w, App->window->window_h);
+			ImGuizmo::SetRect(0, 0, App->window->window_w, App->window->window_h);
 			ImGuizmo::Manipulate(Main_Cam->GetViewMatrix(), Main_Cam->frustum.ProjectionMatrix().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, aux_mat.ptr(), aux_vals);
 
 			aiMatrix4x4 new_transform = aiMatrix4x4(aux_vals[0], aux_vals[1], aux_vals[2], aux_vals[3],

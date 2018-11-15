@@ -185,20 +185,63 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 
 		ImGui::Spacing();
 
-		//Pos
-		float pos[3] = { transform->position.x, transform->position.y, transform->position.z };
-		if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.1f))
-			transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+		if (ImGui::RadioButton("World", radio_world))
+		{
+			radio_world = true;
+			radio_local = false;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
+		}
 
-		//Scale
-		float scale[3] = { transform->scale.x, transform->scale.y, transform->scale.z };
-		if (!transform->parent->is_static && ImGui::DragFloat3("Scale", scale, 0.1f))
-			transform->SetTransformScale(scale[0], scale[1], scale[2]);
+		ImGui::SameLine();
 
-		//Rot
-		float rot[3] = { transform->rotate_euler.x, transform->rotate_euler.y, transform->rotate_euler.z };
-		if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.2f))
-			transform->SetTransformRotation((float3)rot);
+		if (ImGui::RadioButton("Local", radio_local))
+		{
+			radio_world = false;
+			radio_local = true;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
+		}
+
+		ImGui::Spacing();
+
+		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::LOCAL)
+		{
+			//Pos
+			float pos[3] = { transform->position.x, transform->position.y, transform->position.z };
+			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+				transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+
+			//Scale
+			float scale[3] = { transform->scale.x, transform->scale.y, transform->scale.z };
+			if (!transform->parent->is_static && ImGui::DragFloat3("Scale", scale, 0.2f))
+				transform->SetTransformScale(scale[0], scale[1], scale[2]);
+
+			//Rot
+			float rot[3] = { transform->rotate_euler.x, transform->rotate_euler.y, transform->rotate_euler.z };
+			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
+				transform->SetTransformRotation((float3)rot);
+		}
+		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::WORLD)
+		{	
+			float3 pos_vec;
+			Quat rot_quat;
+			float3 aux;
+
+			transform->aux_glob_pos.Decompose(pos_vec, rot_quat, aux);
+			transform->aux_glob_rot.Decompose(aux, rot_quat, aux);
+
+			//Pos
+			float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
+			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+				transform->SetGlobalPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
+
+			//Rot
+			float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
+			float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
+			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
+				transform->SetGlobalRot(float4x4::FromTRS(float3::zero, Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z)), float3::one));
+
+		}
+
 
 		ImGui::Spacing();
 	}
