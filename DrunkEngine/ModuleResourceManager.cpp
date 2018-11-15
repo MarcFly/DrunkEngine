@@ -33,8 +33,8 @@ DGUID ModuleResourceManager::AddResource(const char* file)
 		std::string metaname = ".\\Library\\" + GetFileName(file) + ".meta";
 
 		map_res->LoadMetaFile(metaname.c_str());
-		App->resources->Library[DGUID(file)] = map_res;
-		ret = (--Library.end())._Ptr->_Myval.first;
+		ret = DGUID(file);
+		Library[ret] = map_res;
 	}
 	
 	
