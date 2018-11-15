@@ -25,9 +25,7 @@ void MeshImport::Init()
 
 void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 {
-	MetaResource* temp = App->resources->Library.at(fID);
-	MetaResource* found = App->resources->Library[fID];
-	MetaMesh* res = (MetaMesh*)temp;
+	MetaMesh* res = (MetaMesh*)App->resources->Library.at(fID);
 
 	mesh->name = res->file;
 
@@ -257,8 +255,10 @@ void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string 
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
 	json_object_dotset_string(meta_obj, "File", std::string(".\\Library\\"+ GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meshdrnk").c_str());
-	//std::string write = DGUID(data).MD5ID;
-	//json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
+	std::string write = ".\\Library\\" + GetFileName(path.c_str()) + "_Mat_" + std::to_string(mesh->mMaterialIndex) + ".matdrnk";
+	write = DGUID(write.c_str()).MD5ID;
+	write[32] = '\0';
+	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
 	json_object_dotset_number(meta_obj, "mat_ind", mesh->mMaterialIndex);
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
@@ -270,8 +270,8 @@ void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 	JSON_Value* meta_file = json_parse_file(file);
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	//meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
-	meta->file = json_object_dotget_string(meta_obj, "File");	
+	meta->file = json_object_dotget_string(meta_obj, "File");
+	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
 	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
 }
 ////////////------------------------------------------------------------------------------------------------------------------

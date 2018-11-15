@@ -79,7 +79,9 @@ void ModuleImport::LoadScene(const char* path)
 		par->children.push_back(prefab_i->ImportGameObject(path, val));
 	}
 
-	par->OrderChildren();	
+	par->OrderChildren();
+
+	par->GetTransform()->SetLocalTransform();
 }
 
 void ModuleImport::ExportScene(const char* path)

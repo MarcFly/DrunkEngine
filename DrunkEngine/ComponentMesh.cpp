@@ -144,18 +144,16 @@ void ComponentMesh::DrawMesh()
 		ResourceMaterial* r_mat = nullptr;
 		if (Material_Ind.MD5ID[0] != '\0')
 		{
-			int cmp_count = 0;
+			//	r_mat = App->resources->Library.at(Material_Ind);
+
 			for (int i = 0; i < parent->components.size(); i++)
-				if (parent->components[i]->AsMaterial() != nullptr)
+			{
+				if (parent->components[i]->UID == Material_Ind)
 				{
-					if (cmp_count == i)
-					{
-						r_mat = parent->components[i]->AsMaterial()->r_mat;
-						break;
-					}
-					else
-						cmp_count++;
+					r_mat = parent->components[i]->AsMaterial()->r_mat;
+					break;
 				}
+			}
 		}
 
 		if (r_mat != nullptr)
@@ -253,6 +251,7 @@ void ComponentMesh::Load(JSON_Object* comp)
 {
 	this->name = json_object_get_string(comp, "filename");
 	this->UID = DGUID(name.c_str());
+
 
 	if (!App->resources->InLibrary(UID))
 		this->UID = App->resources->AddResource(name.c_str());

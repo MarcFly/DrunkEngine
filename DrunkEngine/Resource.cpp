@@ -105,3 +105,17 @@ std::vector<uint> DGUID::TrueSum() const
 
 	return ret;
 }
+
+bool DGUID::operator==(DGUID cmp_id)
+{
+	std::vector<uint> f = TrueSum();
+	std::vector<uint> s = cmp_id.TrueSum();
+
+	for (int i = 0; i < f.size(); i++)
+	{
+		if (f[i] != s[i])
+			return false;
+	}
+
+	return true;
+}

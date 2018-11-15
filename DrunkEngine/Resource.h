@@ -47,9 +47,9 @@ struct DGUID
 		return *this;
 	}
 
-	const char* operator=(const char* hex)
+	const char* operator=(const char* MD5id)
 	{
-		memcpy(&MD5ID[0], hex, 32);
+		memcpy(&MD5ID[0], MD5id, 32);
 		return MD5ID;
 	}
 
@@ -61,10 +61,6 @@ struct DGUID
 	{
 		return (cmp_id == std::string(MD5ID));
 	}
-	bool operator==(DGUID cmp_id)
-	{
-		return (std::string(cmp_id.MD5ID) == std::string(MD5ID));
-	}	
 	bool operator<(const DGUID cmp_id) const
 	{
 		return cmp_id.TrueSum()[0] < TrueSum()[0];
@@ -89,6 +85,7 @@ struct DGUID
 
 	bool TrueComp(const DGUID cmp_id) const;
 	std::vector<uint> TrueSum() const;
+	bool operator==(DGUID cmp_id);
 };
 
 union Resource

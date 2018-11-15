@@ -100,13 +100,13 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
 			std::string filename = ".\\Library\\" + GetFileName(aux);
-			DGUID tfID(GetMD5ID(filename.c_str()).c_str());
+			DGUID tfID(filename.c_str());
 			if (!App->resources->InLibrary(tfID))
 			{
 				MetaTexture* map_tex = new MetaTexture();
 				std::string meta_file = filename + ".meta";
 				map_tex->LoadMetaFile(meta_file.c_str());
-				tfID = GetMD5ID(meta_file.c_str()).c_str();
+				tfID = DGUID(map_tex->file.c_str());
 				App->resources->Library[tfID] = map_tex;
 				
 			}		
