@@ -26,16 +26,18 @@ bool ModuleResourceManager::PostUpdate()
 		if (item->Asset.IsInUse())
 			item->Asset.UnloadFromMem();
 	}
+
+	return true;
 }
 
 bool ModuleResourceManager::CleanUp()
 {
 	bool ret = true;
 
-	while(Library.size() > 0)
+	std::map<DGUID, MetaResource*>::iterator it = (Library.begin());
+	
+	for (int i = 0; i < Library.size(); i++, it++)
 	{
-		std::map<DGUID, MetaResource*>::iterator it = (--Library.end());
-
 		MetaResource* item = it._Ptr->_Myval.second;
 
 		if(item->Asset.IsLoaded())
@@ -43,9 +45,9 @@ bool ModuleResourceManager::CleanUp()
 		
 		delete it._Ptr->_Myval.second;
 		it._Ptr->_Myval.second = nullptr;
-
-		Library.erase(it);
 	}
+
+	Library.clear();
 
 	return ret;
 }

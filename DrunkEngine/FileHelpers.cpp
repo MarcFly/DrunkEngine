@@ -117,7 +117,7 @@ FileType CheckExtension(std::string& ext)
 	FileType ret = FT_Error;
 
 	if (ext == std::string(".fbx") || ext == std::string(".FBX"))
-		ret = FT_New_Object;
+		ret = FT_FBX;
 	else if (ext == std::string(".png") || ext == std::string(".bmp") || ext == std::string(".jpg") || ext == std::string(".dds"))
 		ret = FT_Texture;
 	else if (ext == std::string(".meshdrnk"))

@@ -25,7 +25,7 @@ enum FileType
 	FT_Error = -1,
 	FT_Texture,
 	FT_Object,
-	FT_New_Object,
+	FT_FBX,
 	FT_Material,
 	FT_Mesh,
 

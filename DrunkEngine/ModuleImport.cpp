@@ -89,8 +89,6 @@ void ModuleImport::LoadScene(const char* path)
 	}
 
 	par->OrderChildren();
-
-	par->GetTransform()->SetLocalTransform();
 }
 
 void ModuleImport::ExportScene(const char* path)
@@ -186,7 +184,7 @@ void ModuleImport::LoadFile(char * file)
 
 void ModuleImport::LoadFileType(char * file, FileType type)
 {
-	if (type == FT_New_Object)
+	if (type == FT_FBX)
 	{
 		ExportScene(file);
 	}

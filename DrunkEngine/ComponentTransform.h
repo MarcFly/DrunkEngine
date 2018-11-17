@@ -44,7 +44,7 @@ public:
 	float4x4 global_transform;
 
 	//ComponentMesh* mparent = nullptr;
-	bool update_bouding_box;
+	bool update_bounding_box;
 	bool update_camera_transform;
 
 public:
@@ -57,7 +57,7 @@ public:
 		type = CT_Transform;
 		multiple = false;
     
-		update_bouding_box = true;
+		update_bounding_box = true;
 		update_camera_transform = true;
 	}
 
