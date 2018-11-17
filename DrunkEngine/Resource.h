@@ -14,7 +14,7 @@ struct MetaResource;
 enum ResourceTypes
 {
 	RT_Error = -1,
-	RT_GameObject,
+	RT_Prefab,
 	RT_Mesh,
 	RT_Material,
 	RT_Texture,
@@ -41,9 +41,15 @@ struct DGUID
 		}
 	}
 
-	const char* operator=(const char* hex)
+	DGUID operator=(DGUID cmp_id)
 	{
-		memcpy(&MD5ID[0], hex, 32);
+		memcpy(&MD5ID[0], &cmp_id.MD5ID[0], 32);
+		return *this;
+	}
+
+	const char* operator=(const char* MD5id)
+	{
+		memcpy(&MD5ID[0], MD5id, 32);
 		return MD5ID;
 	}
 
@@ -55,10 +61,6 @@ struct DGUID
 	{
 		return (cmp_id == std::string(MD5ID));
 	}
-	bool operator==(DGUID cmp_id)
-	{
-		return (std::string(cmp_id.MD5ID) == std::string(MD5ID));
-	}	
 	bool operator<(const DGUID cmp_id) const
 	{
 		return cmp_id.TrueSum()[0] < TrueSum()[0];
@@ -66,12 +68,11 @@ struct DGUID
 	bool operator==(const DGUID cmp_id)const
 	{
 		bool ret = false;
-		int victor = 0;
 		for (int i = 0; i < 32; i++)
 		{
 			ret = MD5ID[i] == cmp_id.MD5ID[i];
-			if (MD5ID[i] < cmp_id.MD5ID[i])
-				victor++;
+			if (!ret)
+				break;
 		}
 		if (ret)
 			return !ret;
@@ -81,42 +82,23 @@ struct DGUID
 		}
 
 	}
-	bool TrueComp(const DGUID cmp_id) const
-	{
-		bool ret = false;
 
-		std::vector<uint> f = TrueSum();
-		std::vector<uint> s = cmp_id.TrueSum();
-	
-		for(int i = 0; i < f.size(); i++)
-		{
-			if (f[i] < s[i]) {
-				ret = false;
-				break;
-			}
-			else if (f[i] > s[i]) {
-				ret = true;
-				break;
-			}
-		}
-
-
-		return ret;
-	}
-	std::vector<uint> TrueSum() const
-	{
-		std::vector<uint> ret;
-		for (int i = 0; i < 16; i++)
-			ret.push_back(MD5ID[i] + 1000 * MD5ID[i + 1]);
-
-		return ret;
-	}
+	bool TrueComp(const DGUID cmp_id) const;
+	std::vector<uint> TrueSum() const;
+	bool operator==(DGUID cmp_id);
 };
 
 union Resource
 {
 	Resource() {};
 	Resource(MetaResource* parent) : par{parent} {};
+	
+	// Dirty check ptr to know if it is in mem, ask check as a global mem check
+	struct check
+	{
+		bool* ptr = nullptr;
+	}inmem;
+
 	struct mesh
 	{
 		ResourceMesh* ptr = nullptr;
@@ -135,7 +117,8 @@ union Resource
 public:
 	void LoadToMem();
 	void UnloadFromMem();
-	bool IsLoaded();
+	bool IsInUse();
+	bool IsLoaded() {return inmem.ptr != nullptr;};
 };
 
 class MetaResource

@@ -18,18 +18,7 @@
 
 class MeshImport;
 class MatImport;
-
-enum FileType
-{
-	FT_Error = -1,
-	FT_Texture,
-	FT_Object,
-	FT_New_Object,
-	FT_Material,
-	FT_Mesh,
-
-	FT_Files_Max
-};
+class PrefabImport;
 
 class ModuleImport : public Module {
 public:
@@ -40,23 +29,21 @@ public:
 	bool Init();
 
 	bool CleanUp();
-
-	void ImportFBX(const char* path);
 	
-	GameObject* ImportGameObject(const char* path, GameObject* par);
-	GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
-	void LoadSceneData(const char* path, const aiScene* scene);
+	//GameObject* ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par);
+	void LoadScene(const char* path);
 
-	void ExportScene(const char* scene);
+	void ExportScene(const char* path);
+	void ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene);
 
 	void LoadFile(char* file);
-	FileType CheckExtension(std::string& ext);
+	
 	void LoadFileType(char* file, FileType type);
-	std::string IsImported(const char* file);
 
 public:
 	MeshImport* mesh_i;
 	MatImport* mat_i;
+	PrefabImport* prefab_i;
 
 	std::string tex_folder;
 	std::string mesh_folder;

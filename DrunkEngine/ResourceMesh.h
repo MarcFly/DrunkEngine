@@ -32,15 +32,16 @@ struct ResourceMesh
 
 	GLuint num_faces = 0;
 
-	GUID* UID = nullptr;
-
 	void GenBuffers();
+
+	void UnloadMem();
+	~ResourceMesh();
 };
 
 class MetaMesh : public MetaResource
 {
 public:
-	MetaMesh() {};
+	MetaMesh() { type = RT_Mesh; };
 	~MetaMesh() {};
 
 	DGUID Material_ind;

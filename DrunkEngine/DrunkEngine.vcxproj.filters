@@ -650,9 +650,15 @@
     </ClInclude>
     <ClInclude Include="MD5.h">
       <Filter>Sources\Tools\FileHelpers</Filter>
-    </ClInclude> 
+    </ClInclude>
     <ClInclude Include="ImGuizmo\ImGuizmo.h">
       <Filter>Sources\Modules\UI\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcePrefab.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -919,6 +925,15 @@
     </ClCompile>
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
       <Filter>Sources\Modules\UI\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMaterial.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

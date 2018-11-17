@@ -45,6 +45,7 @@ private:
 	int		fps_cap;
 	std::list<Module*> list_modules;
 
+	Timer	DebugT;
 public:
 
 	Application();

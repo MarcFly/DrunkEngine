@@ -144,6 +144,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_MODELVIEW);
+	if (App->gameObj->Main_Cam == nullptr)
+		App->gameObj->Main_Cam = App->gameObj->camera_rendering;
 	glLoadMatrixf(App->gameObj->Main_Cam->GetViewMatrix());
 
 	RenderGrid();

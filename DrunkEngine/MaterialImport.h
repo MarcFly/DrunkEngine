@@ -16,13 +16,13 @@ public:
 
 	void Init();
 
-	void ExportMat(const aiScene * scene, const int& mat_id, const char * path);
+	void ExportAIMat(const aiMaterial * mat, const int& mat_id, const char * path);
 	void ExportMat(const ComponentMaterial* mat);
-	void ExportTexture(const char* path, const char* full_path = nullptr);
+	void ExportILTexture(const char* path, const char* full_path = nullptr);
 	void ExportTexture(ResourceTexture* tex);
 
 	ResourceMaterial* LoadMat(const char* file);
-	void ExportMeta(const aiScene* scene, const int& mat_id, std::string path, char* data);
+	void ExportMeta(const aiMaterial* mat, const int& mat_id, std::string& path);
 	void LoadMeta(const char* file, MetaMat* meta);
 	void LinkMat(DGUID fID, ComponentMaterial* mat);
 

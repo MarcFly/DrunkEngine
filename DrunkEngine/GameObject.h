@@ -24,10 +24,7 @@ class GameObject
 {
 public:
 	GameObject();
-	GameObject(GameObject* par, const char* name, CTypes type);
-	GameObject(const char* path, const aiScene* scene, const aiNode* root_obj, const char* file_path, GameObject* par = nullptr);
-
-	void CreateThisObj(const aiScene* scene, const aiNode* obj);
+	GameObject(const char* name, GameObject* par = nullptr);
 
 	void Start();
 	void Update(float dt);
@@ -43,6 +40,7 @@ public:
 	void SetBoundBoxFromMeshes();
 
 	Component* NewComponent(CTypes type);
+	void OrderChildren();
 	void AdjustObjects();
 	void AdjustComponents();
 

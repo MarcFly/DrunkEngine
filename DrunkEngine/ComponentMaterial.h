@@ -19,7 +19,6 @@ public:
 
 	~ComponentMaterial() {};
 
-	void DestroyTexture(const int& tex_index);
 	void PopTexture(const int& tex_index);
 
 	void CleanUp();

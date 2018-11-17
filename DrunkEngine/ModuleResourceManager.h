@@ -15,8 +15,12 @@ public:
 
 	bool Init();
 
+	bool PostUpdate();
+
 	bool CleanUp();
 	
+	DGUID AddResource(const char* file);
+	MetaResource* NewResource(FileType type);
 
 public:
 	std::map<DGUID, MetaResource*, std::equal_to<DGUID>> Library;
@@ -30,6 +34,11 @@ public:
 			std::map<DGUID, MetaResource*>::iterator it = Library.find(check);
 			return (it != Library.end());
 		}
+	}
+
+	void Unused(DGUID uid)
+	{
+		Library.at(uid)->UseCount--;
 	}
 
 };

@@ -75,7 +75,7 @@ void ComponentTransform::SetLocalTransform()
 
 void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
 {
-	t->update_bouding_box = true;
+	t->update_bounding_box = true;
 	t->update_camera_transform = true;
 
 	for (int i = 0; i < t->parent->children.size(); i++)
@@ -86,7 +86,7 @@ void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
 
 void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
 {
-	t->update_bouding_box = true;
+	t->update_bounding_box = true;
 	t->update_camera_transform = true;
 
 	if (t->parent->parent != nullptr)
@@ -164,6 +164,8 @@ void ComponentTransform::Load(JSON_Object* comp)
 	rotate_quat.z = json_object_dotget_number(comp, "rotate_quat.z");
 
 	SetTransformRotation(rotate_quat);
+
+	SetLocalTransform();
 }
 
 void ComponentTransform::Save(JSON_Array* comps)

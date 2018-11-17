@@ -235,12 +235,14 @@
     <ClInclude Include="parson\parson.h" />
     <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h" />
     <ClInclude Include="PhysBody3D.h" />
+    <ClInclude Include="PrefabImport.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RandomGenWindow.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ModuleResourceManager.h" />
     <ClInclude Include="ResourceMaterial.h" />
     <ClInclude Include="ResourceMesh.h" />
+    <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
@@ -327,11 +329,14 @@
     <ClCompile Include="parson\parson.c" />
     <ClCompile Include="pcg-c-basic-0.9\pcg_basic.c" />
     <ClCompile Include="PhysBody3D.cpp" />
+    <ClCompile Include="PrefabImport.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RandomGenWindow.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
+    <ClCompile Include="ResourceMaterial.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
+    <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

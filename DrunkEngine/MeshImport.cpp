@@ -29,7 +29,7 @@ void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 
 	mesh->name = res->file;
 
-	if (!res->Asset.IsLoaded())
+	if (res->Asset.IsLoaded())
 		res->Asset.LoadToMem();
 	
 	mesh->r_mesh = res->Asset.mesh.ptr;
@@ -48,8 +48,7 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 	std::ifstream read_file;
 	read_file.open(file, std::fstream::in | std::fstream::binary);
 
-	std::streampos end = read_file.seekg(0, read_file.end).tellg();
-	int size = end;
+	int size = read_file.seekg(0, read_file.end).tellg();
 	read_file.seekg(0, read_file.beg);
 
 	if (size > 1024)
@@ -117,10 +116,8 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 //-EXPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char* path)
+void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char* path)
 {
-	aiMesh* mesh = scene->mMeshes[mesh_id];
-
 	uint buf_size = 0;
 
 	uint vertex_size = (mesh->mNumVertices * 3); 
@@ -204,17 +201,15 @@ void MeshImport::ExportMesh(const aiScene* scene, const int& mesh_id, const char
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
 
-	ExportMeta(mesh, mesh_id, path, data);
-
-	filename.append(".meshdrnk");
-
 	std::ofstream write_file;
 
-	write_file.open(filename.c_str(), std::fstream::out | std::fstream::binary);
+	write_file.open((filename + ".meshdrnk").c_str(), std::fstream::out | std::fstream::binary);
 
 	write_file.write(data, buf_size);
 
 	write_file.close();
+
+	ExportMeta(mesh, mesh_id, path);
 }
 
 void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex)
@@ -251,7 +246,7 @@ void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normal
 	normals.push_back(p3 + norm.z);
 }
 
-void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path, char* data)
+void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path)
 {
 	std::string meta_name = ".\\Library\\" + GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meta";
 	JSON_Value* meta_file = json_parse_file(path.c_str());
@@ -260,8 +255,10 @@ void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string 
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
 	json_object_dotset_string(meta_obj, "File", std::string(".\\Library\\"+ GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + ".meshdrnk").c_str());
-	//std::string write = DGUID(data).MD5ID;
-	//json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
+	std::string write = ".\\Library\\" + GetFileName(path.c_str()) + "_Mat_" + std::to_string(mesh->mMaterialIndex) + ".matdrnk";
+	write = DGUID(write.c_str()).MD5ID;
+	write[32] = '\0';
+	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
 	json_object_dotset_number(meta_obj, "mat_ind", mesh->mMaterialIndex);
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
@@ -273,8 +270,8 @@ void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 	JSON_Value* meta_file = json_parse_file(file);
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	//meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
-	meta->file = json_object_dotget_string(meta_obj, "File");	
+	meta->file = json_object_dotget_string(meta_obj, "File");
+	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
 	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
 }
 ////////////------------------------------------------------------------------------------------------------------------------

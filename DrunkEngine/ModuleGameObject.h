@@ -22,7 +22,7 @@ public:
 	void SetActiveFalse();
 	void SetmainCam(ComponentCamera * cam);
 
-	void NewScene();
+	void NewScene(GameObject* base = nullptr);
 	void CreateMainCam();
 	void DeleteScene();
 

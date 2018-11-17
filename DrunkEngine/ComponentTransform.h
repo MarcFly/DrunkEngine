@@ -49,13 +49,13 @@ public:
 	float4x4 local_transform;
 	float4x4 global_transform;
 
+	bool update_bounding_box;
+
 	float4x4 world_pos;		//Initialized as (0,0,0), this one is used to calculate the real position
 	float4x4 world_rot;
 
 	float4x4 aux_world_pos;		//The user sees this one
 
-	ComponentMesh* mparent = nullptr;
-	bool update_bouding_box;
 	bool update_camera_transform;
 
 public:
@@ -68,8 +68,9 @@ public:
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;
+    
+		update_bounding_box = true;
 
-		update_bouding_box = true;
 		update_camera_transform = true;
 	}
 

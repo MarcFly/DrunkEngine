@@ -1,9 +1,9 @@
 #include "ResourceMesh.h"
 #include "Application.h"
 
-void MetaMesh::LoadMetaFile(const char* file)
+ResourceMesh::~ResourceMesh()
 {
-	App->importer->mesh_i->LoadMeta(file, this);
+	UnloadMem();
 }
 
 void ResourceMesh::GenBuffers()
@@ -41,4 +41,42 @@ void ResourceMesh::GenBuffers()
 	}
 	// **Unbind Buffer**
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ResourceMesh::UnloadMem()
+{
+	if (index != nullptr)
+	{
+		glDeleteBuffers(1, &id_index);
+		delete[] index;
+		index = nullptr;
+	}
+
+	if (tex_coords)
+	{
+		glDeleteBuffers(1, &id_uvs);
+		delete[] tex_coords;
+		tex_coords = nullptr;
+	}
+
+	if (vertex != nullptr)
+	{
+		glDeleteBuffers(1, &id_vertex);
+		delete[] vertex;
+		vertex = nullptr;
+	}
+
+	if (normal != nullptr)
+	{
+		// Have to load normals to GPU as it will drop a lot the performance in CPU mode
+		delete[] normal;
+		normal = nullptr;
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------
+
+void MetaMesh::LoadMetaFile(const char* file)
+{
+	App->importer->mesh_i->LoadMeta(file, this);
 }

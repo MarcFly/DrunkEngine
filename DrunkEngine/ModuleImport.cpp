@@ -16,6 +16,7 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "MD5.h"
+#include "PrefabImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -33,6 +34,7 @@ bool ModuleImport::Init()
 	
 	mesh_i = new MeshImport();
 	mat_i = new MatImport();
+	prefab_i = new PrefabImport();
 
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -46,138 +48,120 @@ bool ModuleImport::CleanUp()
 {
 	delete mesh_i;
 	delete mat_i;
+	delete prefab_i;
+
 	return true;
 }
 
-GameObject * ModuleImport::ImportGameObject(const char* path, const aiScene* scene, const aiNode * obj_node, GameObject* par)
+void ModuleImport::LoadScene(const char* path)
 {
-	GameObject* ret = new GameObject();
+	JSON_Value* scene = json_parse_file(path);
+	JSON_Object* obj_g = json_value_get_object(scene);
+	JSON_Array* obj_arr = json_object_get_array(obj_g, "scene");
 
-	ret->parent = par;
+	GameObject* par = App->gameObj->getRootObj();
 	
-	std::string filename = ".\\Library\\";
+	int i = 0;
+	JSON_Value* val = json_array_get_value(obj_arr, i);
 
-	if (ret->parent != nullptr)
+	if (App->gameObj->getRootObj() == nullptr)
 	{
-		ret->root = ret->parent->root;
-		ret->par_UUID = ret->parent->UUID;
-	}
-	else
-	{
-		ret->root = ret;
-		ret->par_UUID = UINT_FAST32_MAX;
-	}
-
-	App->gameObj->objects_in_scene.push_back(ret);
-	App->gameObj->non_static_objects_in_scene.push_back(ret);
-
-	ret->name = obj_node->mName.C_Str();
-	
-	// Sequential Import for FBX Only, will create the components one by one
-	
-
-	for (int i = 0; i < obj_node->mNumMeshes; i++)
-	{
-		std::string meshname = filename;
-		meshname += GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]);
-		meshname.append(".meshdrnk");
-		DGUID fID(IsImported(meshname.c_str()).c_str());
-		ComponentMesh* aux = new ComponentMesh(ret);
-
-		if(fID.MD5ID[0] == -52)
-			mesh_i->ExportMesh(scene, obj_node->mMeshes[i], path);		
-
-		if (!App->resources->InLibrary(fID))
-		{
-			MetaMesh* map_mesh = new MetaMesh();
-			std::string meta_file = filename + GetFileName(path) + "_Mesh_" + std::to_string(obj_node->mMeshes[i]) + ".meta";
-			map_mesh->LoadMetaFile(meta_file.c_str());
-			fID = IsImported(meshname.c_str()).c_str();
-			App->resources->Library[fID] = map_mesh;
-		}
-
-		mesh_i->LinkMesh(fID, aux);
-
-		aux->parent = ret;
-
-		if (aux->mat_ind != -1)
-		{
-			std::string matname = filename;
-			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
-			matname.append(".matdrnk");
-			DGUID mfID(IsImported(matname.c_str()).c_str());
-			matname.clear();
-			if(!App->resources->InLibrary(mfID))
-			{ 
-				MetaMat* map_mat = new MetaMat();
-				std::string meta_file = filename + GetFileName(path) + "_Mat_" + std::to_string(aux->mat_ind) + ".meta";
-				map_mat->LoadMetaFile(meta_file.c_str());
-				mfID = GetMD5ID(meta_file.c_str()).c_str();
-				App->resources->Library[mfID] = map_mat;
-			}
-			ComponentMaterial* aux_mat = new ComponentMaterial(ret);
-			mat_i->LinkMat(mfID, aux_mat);
-			aux->Material_Ind = mfID;
-			ret->components.push_back(aux_mat);
-		}
-
-		ret->components.push_back(aux);
+		App->gameObj->DeleteScene();
 		
-		meshname.clear();
+		App->gameObj->NewScene(prefab_i->ImportGameObject(path, val));
+		par = App->gameObj->getRootObj();
+		par->name = GetFileName(path);
+		i++;
 	}
-
-	for (int i = 0; i < obj_node->mNumChildren; i++)
-		ret->children.push_back(ImportGameObject(path, scene, obj_node->mChildren[i], ret));
-	ret->GetTransform()->SetFromMatrix(&obj_node->mTransformation);
-	App->gameObj->Main_Cam->LookToObj(ret, ret->SetBoundBox());
-
-	return ret;
-}
-
-void ModuleImport::LoadSceneData(const char* path, const aiScene* scene)
-{
-	for (int i = 0; i < scene->mNumMaterials; i++)
+	else if (App->ui->inspector->selected_object != nullptr)
 	{
-		std::string matname = ".\\Library\\";
-		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
-		matname.append(".matdrnk");
-		DGUID fID(IsImported(matname.c_str()).c_str());
-		if (fID.MD5ID[0] == -52)
-			mat_i->ExportMat(scene, i, path);
+		par = App->ui->inspector->selected_object;
 	}
+
+	for (i; i < json_array_get_count(obj_arr); i++)
+	{
+		val = json_array_get_value(obj_arr, i);
+
+		GameObject* add = prefab_i->ImportGameObject(path, val);
+		add->parent = par;
+
+		par->children.push_back(add);
+	}
+
+	par->OrderChildren();
 }
 
-void ModuleImport::ExportScene(const char* file_path)
+void ModuleImport::ExportScene(const char* path)
 {
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_MaxQuality);
-	std::string aux = file_path;
+	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_Fast);
+
+	DebugTimer.Start();
 
 	if (scene == nullptr)
 	{
 		// Trying to load it from the scene folder
-		std::string new_file_path = file_path;
+		std::string new_file_path = path;
 		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
 
 		new_file_path = App->scene->scene_folder + new_file_path;
 
 		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
-		aux = new_file_path;
+		if (scene == nullptr)
+			App->ui->console_win->AddLog("Failed to Load from file %s", path);
 	}
-	else
-		App->ui->console_win->AddLog("Succesful Load from file %s", file_path);
 
-	if (scene->HasMeshes())
-		for (int i = 0; i < scene->mNumMeshes; i++)
-			mesh_i->ExportMesh(scene, i, aux.c_str());
+	for (int i = 0; i < scene->mNumMaterials; i++)
+	{
+		aiMaterial* mat = scene->mMaterials[i];
+		std::string matname = ".\\Library\\";
+		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+		matname.append(".matdrnk");
+		DGUID fID(matname.c_str());
+		if (fID.MD5ID[0] == -52)
+			mat_i->ExportAIMat(mat, i, path);
+	}
 
-	if(scene->HasMaterials())
-		for(int i = 0; i < scene->mNumMaterials; i++)
-			for (int j = 0; j < scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE); j++)
-			{
-				aiString path;
-				scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, j, &path);
-				mat_i->ExportTexture(path.C_Str());
-			}
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+		std::string meshname = ".\\Library\\";
+		meshname += GetFileName(path) + "_Mesh_" + std::to_string(i);
+		meshname.append(".meshdrnk");
+		DGUID fID(meshname.c_str());
+		if (fID.MD5ID[0] == -52)
+			mesh_i->ExportAIMesh(mesh, i, path);
+	}
+
+	{
+		std::string scenename = ".\\Library\\";
+		scenename += GetFileName(path) + ".scenedrnk";
+		ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
+	}
+
+	//scene->mNumAnimations
+	//scene->numCameras
+	//scene->mNumLights
+}
+
+void ModuleImport::ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene)
+{
+	JSON_Value* scene = json_parse_file(path);
+	if (scene == nullptr)
+	{
+		scene = json_value_init_object();
+		json_serialize_to_file(scene, path);
+		scene = json_parse_file(path);
+	}
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* go = json_value_get_array(set_array);
+
+	prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
+
+	JSON_Object* set = json_value_get_object(scene);
+	json_object_set_value(set, "scene", set_array);
+	json_serialize_to_file(scene, path);
+
+	App->ui->console_win->AddLog("%s Scene exported", path);
 }
 
 void ModuleImport::LoadFile(char * file)
@@ -196,36 +180,20 @@ void ModuleImport::LoadFile(char * file)
 
 }
 
-FileType ModuleImport::CheckExtension(std::string & ext)
-{
-	FileType ret = FT_Error;
 
-	if (ext == std::string(".fbx") || ext == std::string(".FBX"))
-		ret = FT_New_Object;
-	else if (ext == std::string(".png") || ext == std::string(".bmp") || ext == std::string(".jpg") || ext == std::string(".dds"))
-		ret = FT_Texture;
-
-	return ret;
-}
 
 void ModuleImport::LoadFileType(char * file, FileType type)
 {
-	if (type == FT_New_Object)
+	if (type == FT_FBX)
 	{
-		//ExportScene(file);
-		App->scene->LoadFBX(file);
+		ExportScene(file);
 	}
 	else if (type == FT_Texture)
-		mat_i->ExportTexture(file);
+		mat_i->ExportILTexture(file);
 	else if(type == FT_Error)
 		App->ui->console_win->AddLog("File format not recognized!\n");
 	else
 		App->ui->console_win->AddLog("Wtf did you drop?\n");
-}
-
-std::string ModuleImport::IsImported(const char * file)
-{
-	return GetMD5ID(file);
 }
 
 void CallLog(const char* str, char* usrData)

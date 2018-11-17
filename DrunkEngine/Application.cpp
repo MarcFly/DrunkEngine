@@ -59,6 +59,8 @@ bool Application::Init()
 	// After all Start we load data if there is a data file
 	PLOG("Application Load profile --------------");
 
+	DebugT.Start();
+
 	std::list<Module*>::iterator item = list_modules.begin();
 
 	JSON_Value* root_v = json_parse_file(profile.c_str());
@@ -89,15 +91,21 @@ bool Application::Init()
 		}
 	}
 
-
+	PLOG("Load took %d", DebugT.Read());
+	DebugT.Start();
 	// Call Init() in all modules
 	item = list_modules.begin();
 
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Init();
-		item++;
+
+		PLOG("%d Init took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
+		DebugT.Start();
+
+		item++;		
 	}
+
 
 	// After all Init calls we call Start() in all modules
 	PLOG("Application Start --------------");
@@ -107,12 +115,14 @@ bool Application::Init()
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Start();
-		//item._Ptr->_Myval->Save(root_v);
+		
+		PLOG("%d Start took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
+		DebugT.Start();
+
 		item++;
 	}
 
 	json_serialize_to_file(root_v, "config_data.json");
-
 	
 	fps_timer.Start();
 	ms_timer.Start();
@@ -167,7 +177,9 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
+		DebugT.Start();
 		ret = item._Ptr->_Myval->PreUpdate(dt);
+		PLOG("%d PreUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
 
@@ -175,7 +187,9 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
+		DebugT.Start();
 		ret = item._Ptr->_Myval->Update(dt);
+		PLOG("%d Update took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
 
@@ -183,7 +197,9 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
+		DebugT.Start();
 		ret = item._Ptr->_Myval->PostUpdate(dt);
+		PLOG("%d PostUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
 

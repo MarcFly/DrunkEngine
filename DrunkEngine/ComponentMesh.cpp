@@ -9,6 +9,7 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "FileHelpers.h"
 
 ComponentMesh::ComponentMesh()
 {
@@ -143,18 +144,16 @@ void ComponentMesh::DrawMesh()
 		ResourceMaterial* r_mat = nullptr;
 		if (Material_Ind.MD5ID[0] != '\0')
 		{
-			int cmp_count = 0;
+			//	r_mat = App->resources->Library.at(Material_Ind);
+
 			for (int i = 0; i < parent->components.size(); i++)
-				if (parent->components[i]->AsMaterial() != nullptr)
+			{
+				if (parent->components[i]->UID == Material_Ind)
 				{
-					if (cmp_count == i)
-					{
-						r_mat = parent->components[i]->AsMaterial()->r_mat;
-						break;
-					}
-					else
-						cmp_count++;
+					r_mat = parent->components[i]->AsMaterial()->r_mat;
+					break;
 				}
+			}
 		}
 
 		if (r_mat != nullptr)
@@ -172,7 +171,7 @@ void ComponentMesh::DrawMesh()
 					glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
 					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-					glBindTexture(GL_TEXTURE_2D, r_mat->textures[i]->id_tex);
+					glBindTexture(GL_TEXTURE_2D, r_mat->textures[i].second->id_tex);
 				}
 			}
 		}
@@ -237,14 +236,8 @@ void ComponentMesh::DrawNormals()
 
 void ComponentMesh::CleanUp()
 {
-	glDeleteBuffers(1, &r_mesh->id_index);
-	glDeleteBuffers(1, &r_mesh->id_uvs);
-	glDeleteBuffers(1, &r_mesh->id_vertex);
-
-	delete r_mesh->index; r_mesh->index = nullptr;
-	delete r_mesh->normal; r_mesh->normal = nullptr;
-	delete r_mesh->tex_coords; r_mesh->tex_coords = nullptr;
-	delete r_mesh->vertex; r_mesh->vertex = nullptr;
+	App->resources->Unused(UID);
+	r_mesh = nullptr;
 
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
@@ -256,10 +249,14 @@ void ComponentMesh::CleanUp()
 
 void ComponentMesh::Load(JSON_Object* comp)
 {
-	this->name = json_object_get_string(comp, "mesh_name");
-	DGUID fID(App->importer->IsImported(name.c_str()).c_str());
-	if (App->resources->InLibrary(fID))
-		App->importer->mesh_i->LinkMesh(fID, this);
+	this->name = json_object_get_string(comp, "filename");
+	this->UID = DGUID(name.c_str());
+
+
+	if (!App->resources->InLibrary(UID))
+		this->UID = App->resources->AddResource(name.c_str());
+	if(App->resources->InLibrary(UID))
+		App->importer->mesh_i->LinkMesh(UID, this);
 
 }
 
@@ -270,7 +267,7 @@ void ComponentMesh::Save(JSON_Array* comps)
 
 	json_object_dotset_number(curr, "properties.type", type);
 
-	json_object_dotset_string(curr, "properties.mesh_name", name.c_str());
+	json_object_dotset_string(curr, "properties.filename", App->resources->Library.at(UID)->file.c_str());
 
 	json_array_append_value(comps, append);
 

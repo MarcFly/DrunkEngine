@@ -10,6 +10,7 @@
 #include "Assimp/include/cfileio.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "FileHelpers.h"
 
 #include <fstream>
 #include <iostream>
@@ -28,7 +29,7 @@ void MatImport::Init()
 void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 {
 	MetaMat* meta = (MetaMat*)App->resources->Library.at(fID);
-	if (!meta->Asset.IsLoaded())
+	if (meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
 	meta->UseCount++;
@@ -39,7 +40,7 @@ void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 ResourceTexture* MatImport::LinkTexture(DGUID fID)
 {
 	MetaTexture* meta = (MetaTexture*)App->resources->Library.at(fID);
-	if (!meta->Asset.IsLoaded())
+	if (meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
 	meta->UseCount++;
@@ -50,8 +51,6 @@ ResourceTexture* MatImport::LinkTexture(DGUID fID)
 ResourceMaterial* MatImport::LoadMat(const char* file)
 {
 	ResourceMaterial* r_mat = new ResourceMaterial();
-
-	App->importer->Imp_Timer.Start();
 
 	// Default Material Color
 	std::ifstream read_file;
@@ -101,22 +100,20 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 			memcpy(aux, cursor, texture_ranges[i] * sizeof(char));
 
 			std::string filename = ".\\Library\\" + GetFileName(aux);
-			DGUID tfID(App->importer->IsImported(filename.c_str()).c_str());
+			DGUID tfID(filename.c_str());
 			if (!App->resources->InLibrary(tfID))
 			{
 				MetaTexture* map_tex = new MetaTexture();
 				std::string meta_file = filename + ".meta";
 				map_tex->LoadMetaFile(meta_file.c_str());
-				tfID = GetMD5ID(meta_file.c_str()).c_str();
+				tfID = DGUID(map_tex->file.c_str());
 				App->resources->Library[tfID] = map_tex;
 				
 			}		
 			ResourceTexture* tex = LinkTexture(tfID);
-			r_mat->textures.push_back(tex);
+			r_mat->textures.push_back(std::pair<DGUID, ResourceTexture*>(tfID, tex));
 			cursor += texture_ranges[i];
 		}
-
-		App->importer->Imp_Timer.LogTime("Texture");
 
 		App->ui->console_win->AddLog("New Material with %d textures loaded.", r_mat->textures.size());
 
@@ -126,8 +123,6 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 		delete r_mat;
 		r_mat = nullptr;
 	}
-
-	App->importer->Imp_Timer.LogTime("Material Import");
 
 	return r_mat;
 
@@ -223,10 +218,8 @@ ResourceTexture* MatImport::LoadTexture(const char * path)
 //-EXPORT-//------------------------------------------------------------------------------------------------------------------
 ////////////------------------------------------------------------------------------------------------------------------------
 
-void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char * path)
+void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const char * path)
 {
-	aiMaterial* mat = scene->mMaterials[mat_id];
-
 	uint prop_size = mat->mNumProperties;
 	uint text_size = mat->GetTextureCount(aiTextureType_DIFFUSE);
 	
@@ -250,7 +243,7 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 		aiString aipath;
 		mat->GetTexture(aiTextureType_DIFFUSE, i, &aipath);
 		
-		ExportTexture(aipath.C_Str(), path);
+		ExportILTexture(aipath.C_Str(), path);
 
 		textures.push_back(aipath.C_Str());
 
@@ -302,21 +295,19 @@ void MatImport::ExportMat(const aiScene * scene, const int& mat_id, const char *
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mat_" + std::to_string(mat_id);
 
-	ExportMeta(scene, mat_id, filename, data);
+	PLOG("Material %d data copy took %d", mat_id, App->importer->DebugTimer.Read());
 
-	filename.append(".matdrnk");
-
-	write_file.open(filename.c_str(), std::fstream::out | std::ios::binary);
+	write_file.open((filename + ".matdrnk").c_str(), std::fstream::out | std::ios::binary);
 
 	write_file.write(data, buf_size);
 
 	write_file.close();
-	
+
+	ExportMeta(mat, mat_id, filename);
 }
 
-void MatImport::ExportTexture(const char * path, const char* full_path)
+void MatImport::ExportILTexture(const char * path, const char* full_path)
 {
-
 	ILuint id_Image;
 	ilGenImages(1, &id_Image);
 	ilBindImage(id_Image);
@@ -334,38 +325,21 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 		check = ilLoadImage(new_file_path.c_str());
 
 		if (check)
-		{
 			App->ui->console_win->AddLog("Texture found in Parent Directory: Exporting Texture for next time!");
-		}
-
 	}
-
+	
 	if (check)
 	{
 		check = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
-		ILuint size;
-		ILubyte *data;
-		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
-		size = ilSaveL(IL_DDS, NULL, 0);
+		std::string export_path = ".\\Library\\";
+		export_path.append(GetFileName(path).c_str());
 
-		if (size > 0)
-		{
-			data = new ILubyte[size];
+		ilSave(IL_DDS, (export_path + ".dds").c_str());
 
-			std::string export_path = ".\\Library\\";
-			export_path.append(GetFileName(path).c_str());
-
-			ExportMetaTex(export_path);
-
-			export_path.append(".dds");
-
-			if (ilSaveL(IL_DDS, data, size) > 0)
-				ilSaveImage(export_path.c_str());
-		}
+		ExportMetaTex(export_path);
 
 		App->ui->console_win->AddLog("Exported Texture from path %s", path);
-
 	}
 	else
 	{
@@ -373,7 +347,6 @@ void MatImport::ExportTexture(const char * path, const char* full_path)
 	}
 
 	ilDeleteImages(1, &id_Image);
-
 }
 
 ////////////------------------------------------------------------------------------------------------------------------------
@@ -400,9 +373,9 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 	std::vector<std::string> textures; // Only Diffuse for now
 	for (int i = 0; i < text_size; i++)
 	{
-		if (mat->r_mat->textures[i] != nullptr)
+		if (mat->r_mat->textures[i].second != nullptr)
 		{
-			textures.push_back(mat->r_mat->textures[i]->filename.c_str());
+			textures.push_back(mat->r_mat->textures[i].second->filename.c_str());
 
 			buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 
@@ -458,7 +431,7 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 
 //--------------------------------------
 
-void MatImport::ExportMeta(const aiScene* scene, const int& mat_id, std::string path, char* data)
+void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string& path)
 {
 	std::string meta_name = path + ".meta";
 	JSON_Value* meta_file = json_parse_file(path.c_str());

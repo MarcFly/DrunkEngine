@@ -7,8 +7,15 @@
 
 // Creation of Root Node from a file
 GameObject::GameObject()
-{}
-GameObject::GameObject(GameObject * par, const char* name, CTypes type)
+{
+	GetTransform();
+
+	App->gameObj->objects_in_scene.push_back(this);
+	App->gameObj->non_static_objects_in_scene.push_back(this);
+
+	Start();
+}
+GameObject::GameObject(const char* name, GameObject * par)
 {
 	this->name = name;
 	this->root = this;
@@ -18,35 +25,6 @@ GameObject::GameObject(GameObject * par, const char* name, CTypes type)
 		this->parent = par;
 		root = par->root;
 	}
-
-	GetTransform();
-
-	if (type == CT_Camera)
-		this->components.push_back(new ComponentCamera(this));
-
-	App->gameObj->objects_in_scene.push_back(this);
-	App->gameObj->non_static_objects_in_scene.push_back(this);
-
-	Start();
-}
-
-GameObject::GameObject(const char* path, const aiScene* scene, const aiNode * root_obj, const char * file_path, GameObject* par)
-{
-	this->name = file_path;
-	this->root = this;	
-
-	if (par != nullptr)
-	{
-		UUID = GetUUID();
-		UID = DGUID(path);
-		parent = par;
-		root = par->root;
-	}
-
-	App->importer->LoadSceneData(path, scene);
-
-	for (int i = 0; i < root_obj->mNumChildren; i++)
-		this->children.push_back(App->importer->ImportGameObject(path, scene, root_obj->mChildren[i], this));
 
 	GetTransform();
 
@@ -88,10 +66,10 @@ void GameObject::Draw()
 	for (int i = 0; i < this->components.size(); i++)		
 		this->components[i]->Draw();
 
-	if (this->BoundingBox != nullptr && this->GetTransform()->update_bouding_box)
+	if (this->BoundingBox != nullptr && this->GetTransform()->update_bounding_box)
 	{
 		SetTransformedBoundBox();
-		this->GetTransform()->update_bouding_box = false;
+		this->GetTransform()->update_bounding_box = false;
 	}
 
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
@@ -336,6 +314,25 @@ void GameObject::SetBoundBoxFromMeshes()
 	}
 }
 
+void GameObject::OrderChildren()
+{
+	for (int i = 0; i < this->children.size(); i++)
+	{
+		if (this->children[i]->par_UUID != UINT_FAST32_MAX && this->children[i]->par_UUID != this->children[i]->parent->UUID)
+		{
+			GameObject* obj = this->children[i];
+			this->children[i]->to_pop = true;
+			this->AdjustObjects();
+			obj->to_pop = false;
+			GameObject* get = this->GetChild(obj->par_UUID);
+			obj->parent = get;
+			if (get != nullptr)
+				get->children.push_back(obj);
+			i--;
+		}
+	}
+}
+
 void GameObject::AdjustObjects()
 {
 	int i = 0;
@@ -413,28 +410,8 @@ void GameObject::CleanUp()
 
 void GameObject::Load(JSON_Value* go, const char* file)
 {
-	JSON_Object* curr = json_value_get_object(json_object_get_value_at(json_value_get_object(go),0));
+	// deprecated, will be loaded from parent adn prefab_i->ImportGameObject
 
-	this->UUID = json_object_dotget_number(curr, "UUID");
-	this->par_UUID = json_object_get_number(curr, "par_UUID");
-	this->name = json_object_get_string(curr, "name");
-
-	JSON_Array* get_array = json_object_get_array(curr, "components");
-
-	for (int i = 0; i < json_array_get_count(get_array); i++)
-	{
-		JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(get_array, i)),"properties");
-		JSON_Object* obj = json_value_get_object(val);
-		CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
-
-		if (type == 0)
-			bool test = true;
-
-		Component* add = NewComponent(type);
-		add->Load(obj);
-		add->parent = this;
-		this->components.push_back(add);
-	}
 }
 
 void GameObject::Save(JSON_Array* go)

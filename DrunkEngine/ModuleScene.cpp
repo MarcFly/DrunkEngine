@@ -13,6 +13,7 @@
 #include "ComponentCamera.h"
 #include "ModuleRenderer3D.h"
 #include "FileHelpers.h"
+#include "PrefabImport.h"
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 #pragma comment (lib, "DevIL/libx86/Release/DevIL.lib")
@@ -34,19 +35,18 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	//Load(nullptr);
 	LoadFBX("./Assets/Street environment_V01.FBX");
 	//LoadFBX("./Assets/Ogre.fbx");
 	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 	//LoadFBX("./Assets/Cube3d.fbx");
-	//LoadSceneFile("Scene.json");
 
 	App->renderer3D->OnResize();
 
-	//SaveScene();
 
 	App->eventSys->Subscribe(EventType::Window_Resize, this);
 	App->eventSys->Subscribe(EventType::Camera_Modified, this);
+
+
 
 	return ret;
 }
@@ -68,45 +68,15 @@ bool ModuleScene::CleanUp()
 bool ModuleScene::LoadFBX(const char* file_path)
 {
 	bool ret = true;
-
-	const aiScene* scene = aiImportFile(file_path, aiProcessPreset_TargetRealtime_Fast); 
-
-	std::string aux = file_path;
-
-	if (scene == nullptr)
-	{
-		// Trying to load it from the scene folder
-		std::string new_file_path = file_path;
-		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-		new_file_path = scene_folder + new_file_path;
-
-		scene = aiImportFile(new_file_path.c_str(), aiProcessPreset_TargetRealtime_Fast);
-		aux = new_file_path;
-		if(scene == nullptr)
-			App->ui->console_win->AddLog("Failed to Load from file %s", file_path);
-	}
 		
+	App->importer->ExportScene(file_path);
 
-	if (scene != nullptr)
-	{
-		if (App->gameObj->getRootObj() == nullptr)
-			App->gameObj->NewScene();
+	std::string drnkfile = ".\\Library\\" + GetFileName(file_path) + ".scenedrnk";
+	App->importer->LoadScene(drnkfile.c_str());
 		
-		if (App->ui->inspector->selected_object != nullptr)
-			App->ui->inspector->selected_object->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->ui->inspector->selected_object));
-		else
-			App->gameObj->getRootObj()->children.push_back(new GameObject(file_path, scene, scene->mRootNode, aux.substr(aux.find_last_of("\\/") + 1).c_str(), App->gameObj->getRootObj()));
-		
-		App->gameObj->CreateMainCam();
+	App->gameObj->CreateMainCam();
 
-		aiReleaseImport(scene);
-	}
-	else
-	{
-		App->ui->console_win->AddLog("Error loading scene's meshes %s", file_path);
-		ret = false;
-	}
+	DebugTimer.LogTime(".scenednrk load");
 
 	return ret;
 }
@@ -123,10 +93,10 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 		JSON_Value* val = json_array_get_value(gos, i);
 
 		App->gameObj->getRootObj()->children.push_back(new GameObject());
-		App->gameObj->getRootObj()->children[App->gameObj->getRootObj()->children.size() - 1]->Load(val, file_path);
+		App->gameObj->getRootObj()->children.back()->Load(val, file_path);
 	}
 
-	OrderScene();
+	App->gameObj->getRootObj()->OrderChildren();
 
 	return true;
 }
@@ -202,24 +172,6 @@ int ModuleScene::GetDevILVer()
 	return IL_VERSION;
 }
 
-void ModuleScene::OrderScene()
-{
-	for (int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
-	{
-		if (App->gameObj->getRootObj()->children[i]->par_UUID != UINT_FAST32_MAX)
-		{
-			GameObject* obj = App->gameObj->getRootObj()->children[i];
-			App->gameObj->getRootObj()->children[i]->to_pop = true;
-			App->gameObj->getRootObj()->AdjustObjects();
-			obj->to_pop = false;
-			GameObject* get = App->gameObj->getRootObj()->GetChild(obj->par_UUID);
-			obj->parent = get;
-			if (get != nullptr)
-				get->children.push_back(obj);
-			i--;
-		}
-	}
-}
 
 void ModuleScene::RecieveEvent(const Event & event)
 {
