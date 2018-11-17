@@ -56,10 +56,10 @@ void OptionsWindow::Draw()
 					for (int i = 1; i < fps_history.size(); i++)
 						fps_history[i - 1] = fps_history[i];
 
-					fps_history[fps_history.size() - 1] = App->GetFPS();
+					fps_history[fps_history.size() - 1] = App->time->GetFPS();
 				}
 				else
-					fps_history.push_back(App->GetFPS());
+					fps_history.push_back(App->time->GetFPS());
 
 				frame_read_time.Start();
 			}
@@ -72,10 +72,10 @@ void OptionsWindow::Draw()
 				for (int i = 1; i < dt_history.size(); i++)
 					dt_history[i - 1] = dt_history[i];
 
-				dt_history[dt_history.size() - 1] = App->GetDt();
+				dt_history[dt_history.size() - 1] = App->time->DtMil();
 			}
 			else
-				dt_history.push_back(App->GetDt());
+				dt_history.push_back(App->time->DtMil());
 			
 			
 			sprintf_s(title, 20, "DT %.2f ms", dt_history[dt_history.size() - 1]);

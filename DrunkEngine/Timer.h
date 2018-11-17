@@ -14,7 +14,10 @@ public:
 	void Start();
 	void Stop();
 
-	Uint32 Read();
+	Uint32 Read() const;
+
+	bool IsRunning() const;
+
 
 private:
 

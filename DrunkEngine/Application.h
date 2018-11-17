@@ -39,6 +39,8 @@ private:
 	std::list<Module*> list_modules;
 
 	Timer	DebugT;
+
+	bool _isEditor;
 public:
 
 	Application();

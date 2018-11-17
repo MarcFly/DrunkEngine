@@ -4,6 +4,12 @@
 
 Application::Application()
 {
+#if GAME
+	_isEditor = false;
+#else
+	_isEditor = true;
+#endif
+
 	time = new ModuleTime(this);
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
@@ -91,17 +97,12 @@ bool Application::Init()
 		}
 	}
 
-	PLOG("Load took %d", DebugT.Read());
-	DebugT.Start();
 	// Call Init() in all modules
 	item = list_modules.begin();
 
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Init();
-
-		PLOG("%d Init took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
-		DebugT.Start();
 
 		item++;		
 	}
@@ -115,9 +116,6 @@ bool Application::Init()
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Start();
-		
-		PLOG("%d Start took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
-		DebugT.Start();
 
 		item++;
 	}
@@ -131,7 +129,14 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	// PrepareUpdate()?
+	std::list<Module*>::iterator item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->PrepareUpdate();
+
+		item++;
+	}
 }
 
 // ---------------------------------------------
@@ -175,7 +180,7 @@ update_status Application::Update()
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		DebugT.Start();
-		ret = item._Ptr->_Myval->PreUpdate(time->GetDt());
+		ret = item._Ptr->_Myval->PreUpdate(time->GameDT());
 		PLOG("%d PreUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
@@ -185,7 +190,7 @@ update_status Application::Update()
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		DebugT.Start();
-		ret = item._Ptr->_Myval->Update(time->GetDt());
+		ret = item._Ptr->_Myval->Update(time->GameDT());
 		PLOG("%d Update took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
@@ -195,7 +200,7 @@ update_status Application::Update()
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		DebugT.Start();
-		ret = item._Ptr->_Myval->PostUpdate(time->GetDt());
+		ret = item._Ptr->_Myval->PostUpdate(time->GameDT());
 		PLOG("%d PostUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
