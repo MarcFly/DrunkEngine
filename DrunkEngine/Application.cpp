@@ -4,6 +4,7 @@
 
 Application::Application()
 {
+	time = new ModuleTime(this);
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	renderer3D = new ModuleRenderer3D(this);
@@ -21,10 +22,10 @@ Application::Application()
 	// They will CleanUp() in reverse order
 
 	// Main Modules
+	AddModule(time);
 	AddModule(window);
 	AddModule(camera);
 	AddModule(input);
-	//AddModule(physics);
 	AddModule(importer);
 	AddModule(resources);
 	AddModule(scene);
@@ -123,17 +124,14 @@ bool Application::Init()
 
 	json_serialize_to_file(root_v, "config_data.json");
 	
-	fps_timer.Start();
-	ms_timer.Start();
-	count_fps = 0;
-	fps = 0;
+	
 	return ret;
 }
 
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	Frame_Metrics();
+	// PrepareUpdate()?
 }
 
 // ---------------------------------------------
@@ -177,7 +175,7 @@ update_status Application::Update()
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		DebugT.Start();
-		ret = item._Ptr->_Myval->PreUpdate(dt);
+		ret = item._Ptr->_Myval->PreUpdate(time->GetDt());
 		PLOG("%d PreUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
@@ -187,7 +185,7 @@ update_status Application::Update()
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		DebugT.Start();
-		ret = item._Ptr->_Myval->Update(dt);
+		ret = item._Ptr->_Myval->Update(time->GetDt());
 		PLOG("%d Update took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
@@ -197,7 +195,7 @@ update_status Application::Update()
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		DebugT.Start();
-		ret = item._Ptr->_Myval->PostUpdate(dt);
+		ret = item._Ptr->_Myval->PostUpdate(time->GetDt());
 		PLOG("%d PostUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
@@ -219,41 +217,17 @@ bool Application::CleanUp()
 	return ret;
 }
 
-float Application::GetFPS()
-{
-	return 1.0f / dt;
-}
+
 
 void Application::AddModule(Module* mod)
 {
 	list_modules.push_back(mod);
 }
 
-void Application::Frame_Metrics()
-{
-	//dt
 
-	// Very badly constructed delay in order to cap fps
-	/*if (dt > 0 && fps_cap > 0 && (dt < 1.0f / (float)fps_cap))
-		SDL_Delay(1000*((1.0f / (float)fps_cap) - dt));*/
-
-	dt = (float)ms_timer.Read() / 1000.0f;
-
-	ms_timer.Start();
-
-}
 
 void Application::EventSystemBroadcast()
 {
 	eventSys->SendBroadcastedEvents();
 }
 
-void Application::Cap_FPS(const int& cap) 
-{
-	fps_cap = cap;
-}
-
-float Application::GetDt()
-{
-	return 1000 * dt;
-}

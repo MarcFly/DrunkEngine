@@ -9,23 +9,23 @@
 #include "ModuleInput.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
-//#include "ModulePhysics3D.h"
 #include "ModuleScene.h"
 #include "ModuleImport.h"
 #include "ModuleEventSystem.h"
 #include "ModuleGameObject.h"
 #include "ModuleResourceManager.h"
+#include "ModuleTime.h"
 
 #include "ModuleUI.h"
 
 class Application
 {
 public:
+	ModuleTime* time;
 	ModuleWindow* window;
 	ModuleInput* input;
 	ModuleCamera3D* camera;
 	ModuleRenderer3D* renderer3D;
-	//ModulePhysics3D* physics;
 	ModuleImport* importer;
 	ModuleResourceManager* resources;
 	ModuleUI* ui;
@@ -36,13 +36,6 @@ public:
 	std::string profile = "config_data.json";
 
 private:
-
-	Timer	ms_timer;
-	Timer	fps_timer;
-	float	dt;
-	int		count_fps;
-	int		fps;
-	int		fps_cap;
 	std::list<Module*> list_modules;
 
 	Timer	DebugT;
@@ -55,17 +48,12 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-	float GetFPS();
-	float GetDt();
-	void Cap_FPS(const int& cap);
-
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
-	void Frame_Metrics();
-
+	
 	void EventSystemBroadcast();
 };
 

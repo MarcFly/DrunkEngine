@@ -22,6 +22,7 @@ enum TypeModule
 	Type_Import,
 	Type_GameObj,
 	Type_ResManager,
+	Type_Time,
 	Type_Null
 };
 

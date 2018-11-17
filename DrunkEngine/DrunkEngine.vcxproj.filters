@@ -660,6 +660,9 @@
     <ClInclude Include="ResourcePrefab.h">
       <Filter>Sources\Modules\ResourceManager\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleTime.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -934,6 +937,9 @@
     </ClCompile>
     <ClCompile Include="ResourceMaterial.cpp">
       <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleTime.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
