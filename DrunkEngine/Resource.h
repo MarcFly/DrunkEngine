@@ -28,12 +28,12 @@ struct DGUID
 
 	DGUID()
 	{
-		MD5ID[0] = '\0';
+		SetInvalid();
 	}
 	DGUID(const char* data)
 	{
 		if (data == nullptr || std::string(data) == "")
-			MD5ID[0] = '\0';
+			SetInvalid();
 		else
 		{
 			std::string ret = GetMD5ID(data);
@@ -65,27 +65,16 @@ struct DGUID
 	{
 		return cmp_id.TrueSum()[0] < TrueSum()[0];
 	}
-	bool operator==(const DGUID cmp_id)const
-	{
-		bool ret = false;
-		for (int i = 0; i < 32; i++)
-		{
-			ret = MD5ID[i] == cmp_id.MD5ID[i];
-			if (!ret)
-				break;
-		}
-		if (ret)
-			return !ret;
-		else
-		{
-			return TrueComp(cmp_id);
-		}
 
-	}
-
+	bool operator==(DGUID cmp_id);
+	bool operator==(const DGUID cmp_id)const;
+	
 	bool TrueComp(const DGUID cmp_id) const;
 	std::vector<uint> TrueSum() const;
-	bool operator==(DGUID cmp_id);
+
+	void SetInvalid();
+	bool CheckValidity();
+	
 };
 
 union Resource

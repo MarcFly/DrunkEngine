@@ -37,6 +37,7 @@ update_status ModuleGameObject::Update(float dt)
 	if (Scene_KdTree != nullptr)
 		Scene_KdTree->CheckKDTreeInsideFrustum(Scene_KdTree->base_node, camera_rendering);
 
+
 	if (Root_Object != nullptr)
 		Root_Object->Update(dt);
 

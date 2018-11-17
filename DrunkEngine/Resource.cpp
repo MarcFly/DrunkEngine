@@ -125,3 +125,39 @@ bool DGUID::operator==(DGUID cmp_id)
 
 	return true;
 }
+
+bool DGUID::operator==(const DGUID cmp_id)const
+{
+	bool ret = false;
+	for (int i = 0; i < 32; i++)
+	{
+		ret = MD5ID[i] == cmp_id.MD5ID[i];
+		if (!ret)
+			break;
+	}
+	if (ret)
+		return !ret;
+	else
+	{
+		return TrueComp(cmp_id);
+	}
+
+}
+
+void DGUID::SetInvalid()
+{
+	for (int i = 0; i < 32; i++)
+		MD5ID[i] = -52;
+}
+
+bool DGUID::CheckValidity()
+{
+	bool ret = true;
+
+	for (int i = 0; i < 32 && ret; i++)
+	{
+		ret = MD5ID[i] != -52;
+	}
+
+	return ret;
+}
