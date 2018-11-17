@@ -29,6 +29,19 @@ void ComponentMaterial::PopTexture(const int& tex_index)
 
 void ComponentMaterial::CleanUp()
 {
+	for (int i = 0; i < parent->components.size(); i++)
+	{
+		if (parent->components[i] != nullptr)
+		{
+			ComponentMesh* mesh = parent->components[i]->AsMesh();
+			if (mesh != nullptr)
+				if (mesh->r_mat == r_mat)
+				{
+					mesh->r_mat = nullptr;
+					mesh->Material_Ind.SetInvalid();
+				}
+		}
+	}
 
 	for (int i = 0; i < r_mat->textures.size(); i++)
 		PopTexture(i);

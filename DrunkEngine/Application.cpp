@@ -90,17 +90,12 @@ bool Application::Init()
 		}
 	}
 
-	PLOG("Load took %d", DebugT.Read());
-	DebugT.Start();
 	// Call Init() in all modules
 	item = list_modules.begin();
 
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Init();
-
-		PLOG("%d Init took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
-		DebugT.Start();
 
 		item++;		
 	}
@@ -114,9 +109,6 @@ bool Application::Init()
 	while(item != list_modules.end() && ret == true)
 	{
 		ret = item._Ptr->_Myval->Start();
-		
-		PLOG("%d Start took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
-		DebugT.Start();
 
 		item++;
 	}
@@ -176,9 +168,7 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		DebugT.Start();
 		ret = item._Ptr->_Myval->PreUpdate(dt);
-		PLOG("%d PreUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
 
@@ -186,9 +176,7 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		DebugT.Start();
 		ret = item._Ptr->_Myval->Update(dt);
-		PLOG("%d Update took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
 
@@ -196,9 +184,7 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		DebugT.Start();
 		ret = item._Ptr->_Myval->PostUpdate(dt);
-		PLOG("%d PostUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
 		item++;
 	}
 

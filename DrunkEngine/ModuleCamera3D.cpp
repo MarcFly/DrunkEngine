@@ -218,15 +218,28 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 	local.Transform(global->Inverted());
 
 	int count_hits = 0;
+	ResourceMesh* r_mesh = mesh->r_mesh;
+
 	for (int i = 0; i < mesh->r_mesh->num_index;)
 	{
-		vec vertex1 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
-		vec vertex2 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
-		vec vertex3 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
+		vec vertex1 = { r_mesh->vertex[(r_mesh->index[i] * 3)], 
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 1],
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 2] }; 
+		i++;
+
+		vec vertex2 = { r_mesh->vertex[(r_mesh->index[i] * 3)], 
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 1],
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 2] }; 
+		i++;
+
+		vec vertex3 = { r_mesh->vertex[(r_mesh->index[i] * 3)], 
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 1],
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 2] }; 
+		i++;
 		Triangle test = Triangle(vertex1, vertex2, vertex3);
-		float new_dist = INT_MAX;
-		bool check = local.ToRay().Intersects(test, &new_dist, nullptr);
-		new_dist = vec(((vertex1 + vertex2 + vertex3) / 3.0f) - local.a).Length();
+		vec intersect_point;
+		bool check = local.ToRay().Intersects(test, nullptr, &intersect_point);
+		float new_dist = (intersect_point - local.a).Length();
 		if (check && new_dist < ret)
 		{
 			ret = new_dist;
