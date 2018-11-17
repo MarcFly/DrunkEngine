@@ -68,10 +68,8 @@ void ModuleImport::LoadScene(const char* path)
 	{
 		App->gameObj->DeleteScene();
 		
-		App->gameObj->NewScene(prefab_i->ImportGameObject(path, val));
+		App->gameObj->NewScene();
 		par = App->gameObj->getRootObj();
-		par->name = GetFileName(path);
-		i++;
 	}
 	else if (App->ui->inspector->selected_object != nullptr)
 	{
@@ -136,7 +134,7 @@ void ModuleImport::ExportScene(const char* path)
 
 	{
 		std::string scenename = ".\\Library\\";
-		scenename += GetFileName(path) + ".scenedrnk";
+		scenename += GetFileName(path) + ".prefabdrnk";
 		ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
 	}
 
@@ -153,17 +151,19 @@ void ModuleImport::ExportSceneNodes(const char* path, const aiNode* root_node, c
 		scene = json_value_init_object();
 		json_serialize_to_file(scene, path);
 		scene = json_parse_file(path);
+
+		JSON_Value* set_array = json_value_init_array();
+		JSON_Array* go = json_value_get_array(set_array);
+
+		prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
+
+		JSON_Object* set = json_value_get_object(scene);
+		json_object_set_value(set, "scene", set_array);
+		json_serialize_to_file(scene, path);
+
+		App->ui->console_win->AddLog("%s Scene exported", path);
 	}
-	JSON_Value* set_array = json_value_init_array();
-	JSON_Array* go = json_value_get_array(set_array);
-
-	prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
-
-	JSON_Object* set = json_value_get_object(scene);
-	json_object_set_value(set, "scene", set_array);
-	json_serialize_to_file(scene, path);
-
-	App->ui->console_win->AddLog("%s Scene exported", path);
+	
 }
 
 void ModuleImport::LoadFile(char * file)

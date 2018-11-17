@@ -71,12 +71,12 @@ bool ModuleScene::LoadFBX(const char* file_path)
 		
 	App->importer->ExportScene(file_path);
 
-	std::string drnkfile = ".\\Library\\" + GetFileName(file_path) + ".scenedrnk";
+	std::string drnkfile = ".\\Library\\" + GetFileName(file_path) + ".prefabdrnk";
 	App->importer->LoadScene(drnkfile.c_str());
 		
 	App->gameObj->CreateMainCam();
 
-	DebugTimer.LogTime(".scenednrk load");
+	DebugTimer.LogTime(".prefabdrnk load");
 
 	return ret;
 }
