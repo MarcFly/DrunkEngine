@@ -64,7 +64,7 @@ public:
 		position = { 0,0,0 }; 
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
-		world_rot = world_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
+		aux_world_pos = world_rot = world_pos = float4x4::identity;
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;

@@ -226,8 +226,6 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 			Quat rot_quat;
 			float3 aux;
 
-			transform->SetAuxWorldPos();
-
 			//transform->aux_world_pos.Decompose(pos_vec, rot_quat, aux);
 			pos_vec = transform->aux_world_pos.Col3(3);
 			transform->world_rot.Decompose(aux, rot_quat, aux);

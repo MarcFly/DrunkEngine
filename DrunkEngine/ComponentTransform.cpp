@@ -63,10 +63,7 @@ void ComponentTransform::SetTransformScale(const float scale_x, const float scal
 
 void ComponentTransform::SetLocalTransform()
 {
-	float4x4 local_pos = float4x4::FromTRS(position, Quat::identity, float3::one);
-	float4x4 local_scale = float4x4::FromTRS(float3::zero, Quat::identity, scale);
-
-	local_transform = local_pos * (float4x4)rotate_quat * local_scale;
+	local_transform = float4x4::FromTRS(position, rotate_quat, scale);
 
 	RecursiveSetChildrenToUpdate(this);
 	RecursiveSetParentToUpdate(this);
@@ -99,8 +96,6 @@ void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
 void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 {
 	aux_world_pos = aux_world_pos * new_transform;
-
-	//float3 aux_vec = (aux_world_pos - global_transform).Col3(3);
 	world_pos = world_pos * new_transform;
 
 	RecursiveSetChildrenToUpdate(this);
@@ -138,11 +133,13 @@ void ComponentTransform::CalculateGlobalTransforms()
 			(*it)->GetTransform()->CalculateGlobalTransforms();
 		}
 	}
+
+	SetAuxWorldPos();
 }
 
 void ComponentTransform::SetAuxWorldPos()
 {
-	aux_world_pos = float4x4::identity - global_transform;
+	aux_world_pos = float4x4::FromTRS(float3(float3::zero - global_transform.Col3(3)), Quat::identity.Neg(), float3::one);
 	aux_world_pos = -aux_world_pos;
 }
 
