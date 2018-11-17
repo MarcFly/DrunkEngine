@@ -87,7 +87,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		vec aux = vec(0.0f, 0.0f, 0.0f);
+		float3 aux = vec(0.0f, 0.0f, 0.0f);
 
 		for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 		{
@@ -97,9 +97,7 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->gameObj->active_objects.size() > 0)
 			aux = aux / App->gameObj->active_objects.size();
 
-		main_camera->Reference = aux;
-
-		main_camera->Rotate();
+		main_camera->RotateAround(aux);
 	}
 	else
 	{
@@ -117,7 +115,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Recalculate matrix -------------
 	main_camera->CalculateViewMatrix();
 
-	DrawRay(picking.a, picking.b);
+	//DrawRay(picking.a, picking.b);
 
 	return UPDATE_CONTINUE;
 }

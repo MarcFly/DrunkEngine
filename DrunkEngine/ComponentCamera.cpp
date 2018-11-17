@@ -263,6 +263,22 @@ void ComponentCamera::Rotate()
 	frustum.SetUp(rot_y.Mul(frustum.Up()).Normalized());
 }
 
+void ComponentCamera::RotateAround(const float3 aux)
+{
+	float dx = -App->input->GetMouseXMotion() * MOUSE_SENSIBILITY * (mesh_multiplier + 5);	// +5 to rotate faster on small objs
+	float dy = -App->input->GetMouseYMotion() * MOUSE_SENSIBILITY * (mesh_multiplier + 5);
+
+	Quat new_transform = (Quat)App->camera->main_camera->ViewMatrix;
+
+	float3 distance = frustum.pos - aux;
+	new_transform = new_transform.RotateAxisAngle(frustum.Up(), math::DegToRad(dx)) * new_transform.RotateAxisAngle(frustum.WorldRight(), math::DegToRad(dy));
+	
+	distance = new_transform.Transform(distance);
+	frustum.pos = distance + aux;
+	
+	LookAt(aux);
+}
+
 float3 ComponentCamera::RotateAngle(const float3 &u, float angle, const float3 &v)
 {
 	return *(float3*)&(float4x4::RotateAxisAngle(v, angle) * float4(u, 1.0f));
@@ -318,7 +334,15 @@ void ComponentCamera::LookToActiveObjs(vec look_to)
 			aux = abs(test.z);
 	}
 
-	Transport(vec(aux + 3, aux + 3, aux + 3));
+	int i = 0;
+	float3 center = float3::zero;
+
+	for (; i < App->gameObj->active_objects.size(); i++)
+		center = center + App->gameObj->active_objects[i]->getObjectCenter();
+
+	center = center / i;
+
+	Transport(vec(aux + 3 + center.x, aux + 3 + center.y, aux + 3 + center.z));
 
 	LookAt(look_to);
 
