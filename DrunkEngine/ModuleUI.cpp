@@ -50,7 +50,7 @@ bool ModuleUI::Init()
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow());
 	windows.push_back(inspector = new Inspector());
-	windows.push_back(octree_win = new KDTreeWindow());
+	windows.push_back(kdtree_win = new KDTreeWindow());
 	windows.push_back(obj_properties_win = new ObjectPropertiesWindow());
 	windows.push_back(savescene_win = new SaveSceneWindow());
 	windows.push_back(loadscene_win = new LoadSceneWindow());
@@ -174,7 +174,7 @@ bool ModuleUI::MainMenu()
 				obj_properties_win->SwitchActive();
 
 			if (ImGui::MenuItem("K-D Tree"))
-				octree_win->SwitchActive();			
+				kdtree_win->SwitchActive();			
 
 			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
 				console_win->SwitchActive();		
