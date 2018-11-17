@@ -15,6 +15,8 @@ public:
 
 	bool Init();
 
+	bool PostUpdate();
+
 	bool CleanUp();
 	
 	DGUID AddResource(const char* file);

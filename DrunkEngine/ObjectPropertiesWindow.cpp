@@ -91,7 +91,7 @@ void ObjectPropertiesWindow::MatInspector(ComponentMaterial* mat)
 
 		for (int i = 0; mat != nullptr && i < mat->r_mat->textures.size(); i++)
 		{
-			ResourceTexture* aux = mat->r_mat->textures[i];
+			ResourceTexture* aux = mat->r_mat->textures[i].second;
 			ImGui::Separator();
 
 			if (check_info)

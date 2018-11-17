@@ -3,7 +3,7 @@
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
-
+#include <map>
 ModuleResourceManager::ModuleResourceManager(bool start_enabled) : Module(start_enabled, Type_ResManager)
 {
 
@@ -16,9 +16,36 @@ bool ModuleResourceManager::Init()
 	return ret;
 }
 
+bool ModuleResourceManager::PostUpdate()
+{
+	std::map<DGUID, MetaResource*>::iterator it = (Library.begin());
+	for (int i = 0; i < Library.size(); i++, it++)
+	{
+		MetaResource* item = it._Ptr->_Myval.second;
+
+		if (item->Asset.IsInUse())
+			item->Asset.UnloadFromMem();
+	}
+}
+
 bool ModuleResourceManager::CleanUp()
 {
 	bool ret = true;
+
+	while(Library.size() > 0)
+	{
+		std::map<DGUID, MetaResource*>::iterator it = (--Library.end());
+
+		MetaResource* item = it._Ptr->_Myval.second;
+
+		if(item->Asset.IsLoaded())
+			item->Asset.UnloadFromMem();
+		
+		delete it._Ptr->_Myval.second;
+		it._Ptr->_Myval.second = nullptr;
+
+		Library.erase(it);
+	}
 
 	return ret;
 }

@@ -16,17 +16,10 @@ ComponentMaterial::ComponentMaterial(GameObject* par)
 	parent = par;
 }
 
-void ComponentMaterial::DestroyTexture(const int& tex_ind)
-{
-	glDeleteTextures(1, &r_mat->textures[tex_ind]->id_tex);
-
-	r_mat->textures[tex_ind] = nullptr;
-
-	PopTexture(tex_ind);
-}
-
 void ComponentMaterial::PopTexture(const int& tex_index)
 {
+	App->resources->Unused(r_mat->textures[tex_index].first);
+	r_mat->textures[tex_index].second = nullptr;
 
 	for (int i = tex_index + 1; i < r_mat->textures.size(); i++)
 		r_mat->textures[i - 1] = r_mat->textures[i];
@@ -37,9 +30,11 @@ void ComponentMaterial::PopTexture(const int& tex_index)
 void ComponentMaterial::CleanUp()
 {
 
-	/*for (int i = 0; i < r_mat->textures.size(); i++)
-		DestroyTexture(i);*/
+	for (int i = 0; i < r_mat->textures.size(); i++)
+		PopTexture(i);
 
+	App->resources->Unused(UID);
+	r_mat = nullptr;
 
 	parent = nullptr;
 }

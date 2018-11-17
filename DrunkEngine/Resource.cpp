@@ -34,17 +34,23 @@ void Resource::UnloadFromMem()
 	case RT_Prefab:
 		break;
 	case RT_Mesh:
+		delete mesh.ptr;
+		mesh.ptr = nullptr;
 		break;
 	case RT_Material:
+		delete mat.ptr;
+		mat.ptr = nullptr;
 		break;
 	case RT_Texture:
+		delete texture.ptr;
+		texture.ptr = nullptr;
 		break;
 	default:
 		break;
 	}
 }
 
-bool Resource::IsLoaded()
+bool Resource::IsInUse()
 {
 	if (par->UseCount > 0)
 	{

@@ -92,6 +92,13 @@ union Resource
 {
 	Resource() {};
 	Resource(MetaResource* parent) : par{parent} {};
+	
+	// Dirty check ptr to know if it is in mem, ask check as a global mem check
+	struct check
+	{
+		bool* ptr = nullptr;
+	}inmem;
+
 	struct mesh
 	{
 		ResourceMesh* ptr = nullptr;
@@ -110,7 +117,8 @@ union Resource
 public:
 	void LoadToMem();
 	void UnloadFromMem();
-	bool IsLoaded();
+	bool IsInUse();
+	bool IsLoaded() {return inmem.ptr != nullptr;};
 };
 
 class MetaResource

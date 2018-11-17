@@ -171,7 +171,7 @@ void ComponentMesh::DrawMesh()
 					glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
 					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-					glBindTexture(GL_TEXTURE_2D, r_mat->textures[i]->id_tex);
+					glBindTexture(GL_TEXTURE_2D, r_mat->textures[i].second->id_tex);
 				}
 			}
 		}

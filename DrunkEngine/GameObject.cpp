@@ -320,7 +320,7 @@ void GameObject::OrderChildren()
 {
 	for (int i = 0; i < this->children.size(); i++)
 	{
-		if (this->children[i]->par_UUID != UINT_FAST32_MAX)
+		if (this->children[i]->par_UUID != UINT_FAST32_MAX && this->children[i]->par_UUID != this->children[i]->parent->UUID)
 		{
 			GameObject* obj = this->children[i];
 			this->children[i]->to_pop = true;

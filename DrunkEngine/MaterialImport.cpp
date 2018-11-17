@@ -29,7 +29,7 @@ void MatImport::Init()
 void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 {
 	MetaMat* meta = (MetaMat*)App->resources->Library.at(fID);
-	if (!meta->Asset.IsLoaded())
+	if (meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
 	meta->UseCount++;
@@ -40,7 +40,7 @@ void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 ResourceTexture* MatImport::LinkTexture(DGUID fID)
 {
 	MetaTexture* meta = (MetaTexture*)App->resources->Library.at(fID);
-	if (!meta->Asset.IsLoaded())
+	if (meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
 	meta->UseCount++;
@@ -111,7 +111,7 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 				
 			}		
 			ResourceTexture* tex = LinkTexture(tfID);
-			r_mat->textures.push_back(tex);
+			r_mat->textures.push_back(std::pair<DGUID, ResourceTexture*>(tfID, tex));
 			cursor += texture_ranges[i];
 		}
 
@@ -373,9 +373,9 @@ void MatImport::ExportMat(const ComponentMaterial* mat)
 	std::vector<std::string> textures; // Only Diffuse for now
 	for (int i = 0; i < text_size; i++)
 	{
-		if (mat->r_mat->textures[i] != nullptr)
+		if (mat->r_mat->textures[i].second != nullptr)
 		{
-			textures.push_back(mat->r_mat->textures[i]->filename.c_str());
+			textures.push_back(mat->r_mat->textures[i].second->filename.c_str());
 
 			buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
 

@@ -4,15 +4,19 @@
 #include "Color.h"
 #include "Resource.h"
 #include "MaterialImport.h"
+#include "Application.h"
 
 struct ResourceTexture;
 
 struct ResourceMaterial
 {
 	uint NumDiffTextures = 0;
-	std::vector<ResourceTexture*> textures;
+	std::vector<std::pair<DGUID, ResourceTexture*>> textures;
 	uint NumProperties = 0;
 	Color default_print = { 1,1,1,1 };
+
+	~ResourceMaterial();
+	void UnloadMem();
 };
 
 class MetaMat : public MetaResource

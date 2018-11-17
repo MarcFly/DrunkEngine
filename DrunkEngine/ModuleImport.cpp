@@ -55,28 +55,37 @@ bool ModuleImport::CleanUp()
 
 void ModuleImport::LoadScene(const char* path)
 {
-	GameObject* par = App->gameObj->getRootObj();
-
-	if (App->gameObj->getRootObj() == nullptr)
-	{
-		App->gameObj->CleanUp();
-		App->gameObj->NewScene();
-		par = App->gameObj->getRootObj();
-	}
-	else if(App->ui->inspector->selected_object != nullptr)
-	{
-		par = App->ui->inspector->selected_object;
-	}
-
 	JSON_Value* scene = json_parse_file(path);
 	JSON_Object* obj_g = json_value_get_object(scene);
 	JSON_Array* obj_arr = json_object_get_array(obj_g, "scene");
 
-	for (int i = 0; i < json_array_get_count(obj_arr); i++)
-	{
-		JSON_Value* val = json_array_get_value(obj_arr, i);
+	GameObject* par = App->gameObj->getRootObj();
+	
+	int i = 0;
+	JSON_Value* val = json_array_get_value(obj_arr, i);
 
-		par->children.push_back(prefab_i->ImportGameObject(path, val));
+	if (App->gameObj->getRootObj() == nullptr)
+	{
+		App->gameObj->DeleteScene();
+		
+		App->gameObj->NewScene(prefab_i->ImportGameObject(path, val));
+		par = App->gameObj->getRootObj();
+		par->name = GetFileName(path);
+		i++;
+	}
+	else if (App->ui->inspector->selected_object != nullptr)
+	{
+		par = App->ui->inspector->selected_object;
+	}
+
+	for (i; i < json_array_get_count(obj_arr); i++)
+	{
+		val = json_array_get_value(obj_arr, i);
+
+		GameObject* add = prefab_i->ImportGameObject(path, val);
+		add->parent = par;
+
+		par->children.push_back(add);
 	}
 
 	par->OrderChildren();

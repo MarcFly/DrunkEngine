@@ -33,8 +33,6 @@ public:
 	void DrawMeshWire();
 	void DrawNormals();
 
-	
-
 	void CleanUp();
 
 	void Load(JSON_Object* comp);

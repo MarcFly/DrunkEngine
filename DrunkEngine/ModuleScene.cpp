@@ -68,9 +68,6 @@ bool ModuleScene::CleanUp()
 bool ModuleScene::LoadFBX(const char* file_path)
 {
 	bool ret = true;
-
-	if (App->gameObj->getRootObj() == nullptr)
-		App->gameObj->NewScene();
 		
 	App->importer->ExportScene(file_path);
 

@@ -87,12 +87,17 @@ void ModuleGameObject::SetmainCam(ComponentCamera * cam)
 	Main_Cam = cam;
 }
 
-void ModuleGameObject::NewScene()
+void ModuleGameObject::NewScene(GameObject* base)
 {
 	DeleteScene();
 
-	Root_Object = new GameObject();
-	Root_Object->name = "NewScene";
+	if (base == nullptr)
+	{
+		Root_Object = new GameObject();
+		Root_Object->name = "NewScene";
+	}
+	else
+		Root_Object = base;
 }
 
 void ModuleGameObject::CreateMainCam()

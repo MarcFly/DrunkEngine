@@ -161,7 +161,8 @@ GameObject * PrefabImport::ImportGameObject(const char* path, JSON_Value* go)
 			add = ret->NewComponent(type);
 		add->Load(obj);
 		add->parent = ret;
-		ret->components.push_back(add);
+		if(type != CT_Transform)
+			ret->components.push_back(add);
 	}
 
 	return ret;

@@ -929,6 +929,12 @@
     <ClCompile Include="PrefabImport.cpp">
       <Filter>Sources\Modules\ModuleImport\Importers</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMaterial.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MGL\Math\float2.inl">

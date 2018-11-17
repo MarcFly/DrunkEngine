@@ -5,6 +5,7 @@
 #include "GLEW/include/GL/glew.h"
 #include "Resource.h"
 #include "MaterialImport.h"
+#include "Application.h"
 
 enum TextureMode
 {
@@ -22,7 +23,9 @@ struct ResourceTexture
 	std::string filename;
 	TextureMode type = TM_Error;
 
-	bool deleted = false;
+	~ResourceTexture();
+
+	void UnloadMem();
 };
 
 class MetaTexture : public MetaResource
