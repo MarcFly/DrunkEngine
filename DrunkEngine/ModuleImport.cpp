@@ -89,6 +89,8 @@ void ModuleImport::LoadScene(const char* path)
 	}
 
 	par->OrderChildren();
+
+	par->SetTransformedBoundBox();
 }
 
 void ModuleImport::ExportScene(const char* path)
