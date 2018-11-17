@@ -70,7 +70,6 @@ bool Application::Init()
 
 		json_object_set_string(json_value_get_object(root_v), "UserID", "initialized");
 		
-
 		while (item != list_modules.end() && ret == true)
 		{
 			item._Ptr->_Myval->SetDefault();

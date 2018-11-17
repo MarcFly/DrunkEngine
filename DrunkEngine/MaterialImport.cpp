@@ -225,9 +225,9 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 	
 	uint buf_size = sizeof(uint) * 2;
 
-	aiColor3D getc;
+	aiColor4D getc;
 	mat->Get(AI_MATKEY_COLOR_DIFFUSE, getc);
-	float color[4] = {getc.r,getc.g,getc.b,1};
+	float color[4] = {getc.r, getc.g, getc.b, getc.a};
 
 	buf_size += sizeof(color);
 

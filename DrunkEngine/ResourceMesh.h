@@ -6,6 +6,7 @@
 #include <gl/GLU.h>
 #include "MeshImport.h"
 #include "Resource.h"
+#include "Color.h"
 
 struct ResourceMaterial;
 struct DGUID;
@@ -32,6 +33,8 @@ struct ResourceMesh
 
 	GLuint num_faces = 0;
 
+	Color def_color = { 1,1,1,1 };
+
 	void GenBuffers();
 
 	void UnloadMem();
@@ -46,7 +49,7 @@ public:
 
 	DGUID Material_ind;
 	uint mat_ind;
-
+	
 	// More Load Options
 	void LoadMetaFile(const char* file);
 

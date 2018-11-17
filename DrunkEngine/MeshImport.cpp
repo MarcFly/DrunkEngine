@@ -57,7 +57,7 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 		read_file.read(data, sizeof(char)*size);
 		char* cursor = data;
 
-		uint ranges[4];
+		uint ranges[5];
 		memcpy(ranges, cursor, sizeof(ranges));
 		cursor += sizeof(ranges);
 
@@ -96,6 +96,8 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 		}
 
 		cursor += (ranges[3] * sizeof(GLfloat));
+
+		memcpy(&ret->def_color, cursor, sizeof(float) * ranges[4]);
 
 		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
 
@@ -138,21 +140,21 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 	buf_size += sizeof(GLfloat)*uv_size;
 
 	uint BBox_size = 3 * 2; // 2 Vertex of 3 float each
-	uint Mat_index = 0; // The material index 
-
+	uint color_size = 4;
 	uint size_size = sizeof(uint) * 5; // Amount of data put inside, the first values of data will be the size of each part
 
-	buf_size += (size_size + sizeof(float)*BBox_size + sizeof(unsigned int)/*MatIndex*/);
+	buf_size += (size_size + sizeof(float)*BBox_size + sizeof(float) * color_size);
 
 	char* data = new char[buf_size];
 	char* cursor = data;
 
-	uint ranges[4] =
+	uint ranges[5] =
 	{
 		vertex_size,
 		index_size,
 		normal_size,
-		uv_size
+		uv_size,
+		color_size
 	};
 
 	memcpy(cursor, ranges, sizeof(ranges));
@@ -197,6 +199,20 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 		memcpy(cursor, &mesh->mTextureCoords[0][0], sizeof(GLfloat)*uv_size);
 		cursor += (sizeof(GLfloat)*uv_size);
 	}
+
+	float color[4] = { 1,1,1,1 };
+	aiColor4D* cpy = nullptr;
+	for (int i = 0; i < 8 && cpy != NULL; i++)
+		cpy = mesh->mColors[i];
+	if (cpy != NULL)
+	{
+		color[0] = cpy->r;
+		color[1] = cpy->g;
+		color[2] = cpy->b;
+		color[3] = cpy->a;
+	}
+
+	memcpy(cursor, &color[0], sizeof(float)*color_size);
 
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id);
@@ -260,7 +276,7 @@ void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string 
 	write[32] = '\0';
 	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
 	json_object_dotset_number(meta_obj, "mat_ind", mesh->mMaterialIndex);
-
+	
 	json_serialize_to_file(meta_file, meta_name.c_str());
 }
 void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
@@ -273,6 +289,8 @@ void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 	meta->file = json_object_dotget_string(meta_obj, "File");
 	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
 	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
+
+
 }
 ////////////------------------------------------------------------------------------------------------------------------------
 //-SaveDT-//------------------------------------------------------------------------------------------------------------------

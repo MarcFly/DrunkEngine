@@ -183,7 +183,7 @@ void ComponentMesh::DrawMesh()
 	}
 	else
 	{
-		glColor4f(1, 1, 1, 1);
+		glColor4f(r_mesh->def_color.r, r_mesh->def_color.g, r_mesh->def_color.b, r_mesh->def_color.a);
 	}
 
 	// Draw
