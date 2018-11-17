@@ -2,12 +2,15 @@
 #include "GameObject.h"
 #include "Assimp/include/scene.h"
 #include "GameObject.h"
+#include "Application.h"
 
 ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 {
 	SetBaseVals();
 	SetFromMatrix(t);
 	parent = par;
+
+	world_rot = world_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
 
 	SetLocalTransform();
 }
@@ -60,13 +63,14 @@ void ComponentTransform::SetTransformScale(const float scale_x, const float scal
 
 void ComponentTransform::SetLocalTransform()
 {
-	float4x4 local_pos = float4x4::FromTRS(position, Quat::identity, float3::one);
-	float4x4 local_scale = float4x4::FromTRS(float3::zero, Quat::identity, scale);
-
-	local_transform = local_pos * (float4x4)rotate_quat * local_scale;
+	local_transform = float4x4::FromTRS(position, rotate_quat, scale);
 
 	RecursiveSetChildrenToUpdate(this);
 	RecursiveSetParentToUpdate(this);
+
+	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	ev.game_object.ptr = parent;
+	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
@@ -87,6 +91,56 @@ void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
 
 	if (t->parent->parent != nullptr)
 		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
+}
+
+void ComponentTransform::SetWorldPos(const float4x4 new_transform)
+{
+	aux_world_pos = aux_world_pos * new_transform;
+	world_pos = world_pos * new_transform;
+
+	RecursiveSetChildrenToUpdate(this);
+	RecursiveSetParentToUpdate(this);
+
+	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	ev.game_object.ptr = parent;
+	App->eventSys->BroadcastEvent(ev);
+}
+
+void ComponentTransform::SetWorldRot(const float4x4 new_transform)
+{
+	world_rot = world_rot * new_transform;
+
+	RecursiveSetChildrenToUpdate(this);
+	RecursiveSetParentToUpdate(this);
+
+	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	ev.game_object.ptr = parent;
+	App->eventSys->BroadcastEvent(ev);
+}
+
+void ComponentTransform::CalculateGlobalTransforms()
+{
+	if (parent->parent != nullptr)
+		global_transform = world_pos * world_rot * parent->parent->GetTransform()->global_transform * local_transform;
+
+	else
+		global_transform = local_transform;
+
+	if (parent->children.size() > 0)
+	{
+		for (std::vector<GameObject*>::iterator it = parent->children.begin(); it != parent->children.end(); it++)
+		{
+			(*it)->GetTransform()->CalculateGlobalTransforms();
+		}
+	}
+
+	SetAuxWorldPos();
+}
+
+void ComponentTransform::SetAuxWorldPos()
+{
+	aux_world_pos = float4x4::FromTRS(float3(float3::zero - global_transform.Col3(3)), Quat::identity.Neg(), float3::one);
+	aux_world_pos = -aux_world_pos;
 }
 
 void ComponentTransform::CleanUp()
