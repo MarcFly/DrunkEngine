@@ -49,6 +49,8 @@ public:
 
 	void SetCameraRender(ComponentCamera * cam);
 
+	void RecieveEvent(const Event & event);
+
 public:
 
 	std::string scene_folder;

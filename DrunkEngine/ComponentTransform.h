@@ -28,6 +28,12 @@ public:
 
 	void SetFromMatrix(const aiMatrix4x4* t);
 
+	void SetWorldPos(const float4x4 new_transform);
+	void SetWorldRot(const float4x4 new_transform);
+	void CalculateGlobalTransforms();
+
+	void SetAuxWorldPos();
+
 	void CleanUp();
 
 	void Load(JSON_Object* comp);
@@ -43,8 +49,13 @@ public:
 	float4x4 local_transform;
 	float4x4 global_transform;
 
-	//ComponentMesh* mparent = nullptr;
 	bool update_bounding_box;
+
+	float4x4 world_pos;		//Initialized as (0,0,0), this one is used to calculate the real position
+	float4x4 world_rot;
+
+	float4x4 aux_world_pos;		//The user sees this one
+
 	bool update_camera_transform;
 
 public:
@@ -53,11 +64,13 @@ public:
 		position = { 0,0,0 }; 
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
+		aux_world_pos = world_rot = world_pos = float4x4::identity;
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;
     
 		update_bounding_box = true;
+
 		update_camera_transform = true;
 	}
 

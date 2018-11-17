@@ -51,8 +51,6 @@ void GameObject::Start()
 
 void GameObject::Update(float dt)
 {
-	App->gameObj->getRootObj()->CalculateGlobalTransforms();
-
 	for (int i = 0; i < this->components.size(); i++)
 		this->components[i]->Update(dt);
 
@@ -375,23 +373,6 @@ void GameObject::AdjustComponents()
 	}
 
 	this->components.pop_back();
-}
-
-void GameObject::CalculateGlobalTransforms()
-{
-	if (this->parent != nullptr)
-		this->GetTransform()->global_transform = this->parent->GetTransform()->global_transform * this->GetTransform()->local_transform;
-
-	else
-		GetTransform()->global_transform = GetTransform()->local_transform;
-	
-	if (this->children.size() > 0)
-	{
-		for (std::vector<GameObject*>::iterator it = this->children.begin(); it != this->children.end(); it++)
-		{
-			(*it)->CalculateGlobalTransforms();
-		}
-	}
 }
 
 void GameObject::RecursiveSetStatic(GameObject * obj, const bool bool_static)
