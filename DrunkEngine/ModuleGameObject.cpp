@@ -246,9 +246,11 @@ void ModuleGameObject::ManageGuizmo()
 
 			else
 			{
-				float4 aux_global_pos = active_objects[i]->parent->GetTransform()->global_transform.Transposed().Row(3);
-				float4x4 aux_global_tansform = float4x4::FromTRS(float3(aux_global_pos.x, aux_global_pos.y, aux_global_pos.z), Quat::identity, float3::one).Transposed();
-				aux_mat = aux_global_tansform * active_objects[i]->GetTransform()->aux_glob_rot.Transposed() * active_objects[i]->GetTransform()->aux_glob_pos.Transposed();
+				//float4 aux_global_pos = active_objects[i]->parent->GetTransform()->global_transform.Transposed().Row(3);
+				//float4x4 aux_global_tansform = float4x4::FromTRS(float3(aux_global_pos.x, aux_global_pos.y, aux_global_pos.z), Quat::identity, float3::one).Transposed();
+				//aux_mat = aux_global_tansform * active_objects[i]->GetTransform()->world_rot.Transposed() * active_objects[i]->GetTransform()->world_pos.Transposed();
+				aux_mat = active_objects[i]->GetTransform()->aux_world_pos.Transposed();
+				aux_mat = aux_mat * active_objects[i]->GetTransform()->world_rot.Transposed();
 			}
 
 			ImGuizmo::SetRect(0, 0, App->window->window_w, App->window->window_h);
@@ -275,7 +277,7 @@ void ModuleGameObject::ManageGuizmo()
 					if (mCurrentGizmoMode == ImGuizmo::WORLD)
 					{
 						float4x4 new_transform = float4x4::FromTRS(float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z), Quat::identity, float3::one);
-						active_objects[i]->GetTransform()->SetGlobalPos(new_transform);
+						active_objects[i]->GetTransform()->SetWorldPos(new_transform);
 						previous_pos = float3(pos.x, pos.y, pos.z);
 						break;
 					}
@@ -292,7 +294,7 @@ void ModuleGameObject::ManageGuizmo()
 					if (mCurrentGizmoMode == ImGuizmo::WORLD)
 					{
 						float4x4 new_transform = float4x4::FromTRS(float3::zero, Quat(rot.x, rot.y, rot.z, rot.w), float3::one);
-						active_objects[i]->GetTransform()->SetGlobalRot(new_transform);
+						active_objects[i]->GetTransform()->SetWorldRot(new_transform);
 						break;
 					}
 					else	// LOCAL

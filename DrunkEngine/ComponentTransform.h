@@ -28,9 +28,11 @@ public:
 
 	void SetFromMatrix(const aiMatrix4x4* t);
 
-	void SetGlobalPos(const float4x4 new_transform);
-	void SetGlobalRot(const float4x4 new_transform);
+	void SetWorldPos(const float4x4 new_transform);
+	void SetWorldRot(const float4x4 new_transform);
 	void CalculateGlobalTransforms();
+
+	void SetAuxWorldPos();
 
 	void CleanUp();
 
@@ -46,8 +48,11 @@ public:
 
 	float4x4 local_transform;
 	float4x4 global_transform;
-	float4x4 aux_glob_pos;
-	float4x4 aux_glob_rot;
+
+	float4x4 world_pos;		//Initialized as (0,0,0), this one is used to calculate the real position
+	float4x4 world_rot;
+
+	float4x4 aux_world_pos;		//The user sees this one
 
 	ComponentMesh* mparent = nullptr;
 	bool update_bouding_box;
@@ -59,7 +64,7 @@ public:
 		position = { 0,0,0 }; 
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
-		aux_glob_rot = aux_glob_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
+		world_rot = world_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;

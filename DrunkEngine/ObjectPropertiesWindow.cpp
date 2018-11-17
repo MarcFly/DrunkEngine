@@ -226,19 +226,22 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 			Quat rot_quat;
 			float3 aux;
 
-			transform->aux_glob_pos.Decompose(pos_vec, rot_quat, aux);
-			transform->aux_glob_rot.Decompose(aux, rot_quat, aux);
+			transform->SetAuxWorldPos();
+
+			//transform->aux_world_pos.Decompose(pos_vec, rot_quat, aux);
+			pos_vec = transform->aux_world_pos.Col3(3);
+			transform->world_rot.Decompose(aux, rot_quat, aux);
 
 			//Pos
 			float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
-				transform->SetGlobalPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
+				transform->SetWorldPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
 
 			//Rot
 			float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
 			float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
-				transform->SetGlobalRot(float4x4::FromTRS(float3::zero, Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z)), float3::one));
+				transform->SetWorldRot(float4x4::FromTRS(float3::zero, Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z)), float3::one));
 
 		}
 

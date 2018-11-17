@@ -10,7 +10,7 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 	SetFromMatrix(t);
 	parent = par;
 
-	aux_glob_rot = aux_glob_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
+	world_rot = world_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
 
 	SetLocalTransform();
 }
@@ -96,9 +96,12 @@ void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
 		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
 }
 
-void ComponentTransform::SetGlobalPos(const float4x4 new_transform)
+void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 {
-	aux_glob_pos = aux_glob_pos * new_transform;
+	aux_world_pos = aux_world_pos * new_transform;
+
+	//float3 aux_vec = (aux_world_pos - global_transform).Col3(3);
+	world_pos = world_pos * new_transform;
 
 	RecursiveSetChildrenToUpdate(this);
 	RecursiveSetParentToUpdate(this);
@@ -108,9 +111,9 @@ void ComponentTransform::SetGlobalPos(const float4x4 new_transform)
 	App->eventSys->BroadcastEvent(ev);
 }
 
-void ComponentTransform::SetGlobalRot(const float4x4 new_transform)
+void ComponentTransform::SetWorldRot(const float4x4 new_transform)
 {
-	aux_glob_rot = aux_glob_rot * new_transform;
+	world_rot = world_rot * new_transform;
 
 	RecursiveSetChildrenToUpdate(this);
 	RecursiveSetParentToUpdate(this);
@@ -123,7 +126,7 @@ void ComponentTransform::SetGlobalRot(const float4x4 new_transform)
 void ComponentTransform::CalculateGlobalTransforms()
 {
 	if (parent->parent != nullptr)
-		global_transform = aux_glob_pos * aux_glob_rot * parent->parent->GetTransform()->global_transform * local_transform;
+		global_transform = world_pos * world_rot * parent->parent->GetTransform()->global_transform * local_transform;
 
 	else
 		global_transform = local_transform;
@@ -135,6 +138,12 @@ void ComponentTransform::CalculateGlobalTransforms()
 			(*it)->GetTransform()->CalculateGlobalTransforms();
 		}
 	}
+}
+
+void ComponentTransform::SetAuxWorldPos()
+{
+	aux_world_pos = float4x4::identity - global_transform;
+	aux_world_pos = -aux_world_pos;
 }
 
 void ComponentTransform::CleanUp()
