@@ -27,7 +27,7 @@ public:
 	
 	bool InLibrary(DGUID& check)
 	{
-		if (check.MD5ID[0] == -52)
+		if (!check.CheckValidity())
 			return false;
 		else
 		{

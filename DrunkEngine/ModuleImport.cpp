@@ -119,7 +119,7 @@ void ModuleImport::ExportScene(const char* path)
 		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 		matname.append(".matdrnk");
 		DGUID fID(matname.c_str());
-		if (fID.MD5ID[0] == -52)
+		if (!fID.CheckValidity())
 			mat_i->ExportAIMat(mat, i, path);
 	}
 
@@ -130,7 +130,7 @@ void ModuleImport::ExportScene(const char* path)
 		meshname += GetFileName(path) + "_Mesh_" + std::to_string(i);
 		meshname.append(".meshdrnk");
 		DGUID fID(meshname.c_str());
-		if (fID.MD5ID[0] == -52)
+		if (!fID.CheckValidity())
 			mesh_i->ExportAIMesh(mesh, i, path);
 	}
 
