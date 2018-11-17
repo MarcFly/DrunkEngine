@@ -55,7 +55,7 @@ public:
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
 	Inspector* inspector = nullptr;
-	KDTreeWindow* octree_win = nullptr;
+	KDTreeWindow* kdtree_win = nullptr;
 	ObjectPropertiesWindow* obj_properties_win = nullptr;
 
 	// Data Windows

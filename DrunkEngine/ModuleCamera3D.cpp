@@ -117,7 +117,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Recalculate matrix -------------
 	main_camera->CalculateViewMatrix();
 
-	//DrawRay(picking.a, picking.b);
+	DrawRay(picking.a, picking.b);
 
 	return UPDATE_CONTINUE;
 }
@@ -162,10 +162,7 @@ void ModuleCamera3D::MousePicking()
 		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);*/
 
 	if (App->gameObj->GetSceneKDTree() != nullptr)
-	{
-		for (int i = 0; i < App->gameObj->GetSceneKDTree()->base_node->child.size(); i++)
-			TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node->child[i], picking, objects_to_check);
-	}
+		TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node, picking, objects_to_check);
 
 	TestIntersect(objects_to_check, picking, intersected);
 

@@ -5,6 +5,7 @@
 #include "ComponentCamera.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "KdTreeWindow.h"
 
 ObjectPropertiesWindow::ObjectPropertiesWindow() : Window("Object Properties")
 {
@@ -171,9 +172,19 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 				App->gameObj->active_objects[0]->RecursiveSetStatic(transform->parent, transform->parent->is_static);
 
 				if (transform->parent->is_static)
+				{
 					App->gameObj->SetToStaticObjects(transform->parent);
+					App->ui->kdtree_win->CreateKDTree();
+				}
 				else
+				{
 					App->gameObj->DeleteFromStaticObjects(transform->parent);
+
+					if (App->gameObj->GetSceneKDTree() != nullptr)
+						App->gameObj->DeleteSceneKDTree();
+
+					App->ui->kdtree_win->CreateKDTree();
+				}
 			}
 		}
 		else

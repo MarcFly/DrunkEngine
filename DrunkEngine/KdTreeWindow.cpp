@@ -3,7 +3,7 @@
 
 KDTreeWindow::KDTreeWindow() : Window("K-D Tree Properties")
 {
-	elements_per_node = 1;
+	elements_per_node = 2;
 	max_subdivisions = 10;
 }
 
@@ -21,11 +21,7 @@ void KDTreeWindow::Draw()
 
 		if (ImGui::Button("Create K-D Tree"))
 		{
-			if (App->gameObj->GetSceneKDTree() != nullptr)
-				App->gameObj->DeleteSceneKDTree();
-
-			if (App->gameObj->static_objects_in_scene.size() > 0)
-				App->gameObj->SetSceneKDTree(elements_per_node, max_subdivisions);
+			CreateKDTree();
 		}
 
 		ImGui::SameLine();
@@ -43,4 +39,13 @@ void KDTreeWindow::Draw()
 
 	}
 	ImGui::End();
+}
+
+void KDTreeWindow::CreateKDTree()
+{
+	if (App->gameObj->GetSceneKDTree() != nullptr)
+		App->gameObj->DeleteSceneKDTree();
+
+	if (App->gameObj->static_objects_in_scene.size() > 0)
+		App->gameObj->SetSceneKDTree(elements_per_node, max_subdivisions);
 }
