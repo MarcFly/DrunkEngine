@@ -6,7 +6,7 @@
 ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, Type_GameObj)
 {
 	mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	mCurrentGizmoMode = ImGuizmo::LOCAL;
+	mCurrentGizmoMode = ImGuizmo::WORLD;
 	previous_scale = float3::one;
 	previous_pos = float3::zero;
 }
@@ -252,13 +252,7 @@ void ModuleGameObject::ManageGuizmo()
 				aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
 
 			else
-			{
-				//float4 aux_global_pos = active_objects[i]->parent->GetTransform()->global_transform.Transposed().Row(3);
-				//float4x4 aux_global_tansform = float4x4::FromTRS(float3(aux_global_pos.x, aux_global_pos.y, aux_global_pos.z), Quat::identity, float3::one).Transposed();
-				//aux_mat = aux_global_tansform * active_objects[i]->GetTransform()->world_rot.Transposed() * active_objects[i]->GetTransform()->world_pos.Transposed();
 				aux_mat = active_objects[i]->GetTransform()->aux_world_pos.Transposed();
-				aux_mat = aux_mat * active_objects[i]->GetTransform()->world_rot.Transposed();
-			}
 
 			ImGuizmo::SetRect(0, 0, App->window->window_w, App->window->window_h);
 			ImGuizmo::Manipulate(Main_Cam->GetViewMatrix(), Main_Cam->frustum.ProjectionMatrix().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, aux_mat.ptr(), aux_vals);
@@ -300,8 +294,7 @@ void ModuleGameObject::ManageGuizmo()
 				{
 					if (mCurrentGizmoMode == ImGuizmo::WORLD)
 					{
-						float4x4 new_transform = float4x4::FromTRS(float3::zero, Quat(rot.x, rot.y, rot.z, rot.w), float3::one);
-						active_objects[i]->GetTransform()->SetWorldRot(new_transform);
+						active_objects[i]->GetTransform()->SetWorldRot(Quat(rot.x, rot.y, rot.z, rot.w));
 						break;
 					}
 					else	// LOCAL

@@ -109,9 +109,9 @@ void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 	App->eventSys->BroadcastEvent(ev);
 }
 
-void ComponentTransform::SetWorldRot(const float4x4 new_transform)
+void ComponentTransform::SetWorldRot(const Quat new_rot)
 {
-	world_rot = world_rot * new_transform;
+	world_rot = world_rot * world_rot.FromQuat(new_rot, aux_world_pos.Col3(3) - world_pos.Col3(3));
 
 	RecursiveSetChildrenToUpdate(this);
 	RecursiveSetParentToUpdate(this);

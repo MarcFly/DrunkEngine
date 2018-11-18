@@ -221,11 +221,6 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
 				transform->SetTransformPosition(pos[0], pos[1], pos[2]);
 
-			//Scale
-			float scale[3] = { transform->scale.x, transform->scale.y, transform->scale.z };
-			if (!transform->parent->is_static && ImGui::DragFloat3("Scale", scale, 0.2f))
-				transform->SetTransformScale(scale[0], scale[1], scale[2]);
-
 			//Rot
 			float rot[3] = { transform->rotate_euler.x, transform->rotate_euler.y, transform->rotate_euler.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
@@ -250,10 +245,16 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
 			float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
-				transform->SetWorldRot(float4x4::FromTRS(float3::zero, Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z)), float3::one));
-
+			{
+				Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z));
+				transform->SetWorldRot(rot_quat);
+			}
 		}
 
+		//Scale
+		float scale[3] = { transform->scale.x, transform->scale.y, transform->scale.z };
+		if (!transform->parent->is_static && ImGui::DragFloat3("Scale", scale, 0.2f))
+			transform->SetTransformScale(scale[0], scale[1], scale[2]);
 
 		ImGui::Spacing();
 	}
