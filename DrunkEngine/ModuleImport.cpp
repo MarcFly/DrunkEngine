@@ -93,6 +93,7 @@ void ModuleImport::LoadScene(const char* path)
 		}
 
 		par->OrderChildren();
+		par->RecursiveSetNewUUID();
 
 		par->GetTransform()->CalculateGlobalTransforms();
 		par->SetTransformedBoundBox();

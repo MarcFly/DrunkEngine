@@ -93,6 +93,7 @@ void ModuleGameObject::NewScene(GameObject* base)
 	{
 		Root_Object = new GameObject();
 		Root_Object->name = "NewScene";
+		Root_Object->UUID = UINT_FAST32_MAX;
 	}
 	else
 		Root_Object = base;

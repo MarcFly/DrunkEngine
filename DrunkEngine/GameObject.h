@@ -53,6 +53,7 @@ public:
 	void DestroyThisObject();
 	void DestroyComponent();
 
+	void RecursiveSetNewUUID();
 
 public:
 	Uint32	UUID = UINT_FAST32_MAX, par_UUID = UINT_FAST32_MAX;

@@ -14,6 +14,8 @@ GameObject::GameObject()
 	App->gameObj->non_static_objects_in_scene.push_back(this);
 
 	Start();
+
+	UUID = GetUUID();
 }
 GameObject::GameObject(const char* name, GameObject * par)
 {
@@ -30,6 +32,8 @@ GameObject::GameObject(const char* name, GameObject * par)
 
 	App->gameObj->objects_in_scene.push_back(this);
 	App->gameObj->non_static_objects_in_scene.push_back(this);
+
+	UUID = GetUUID();
 
 	Start();
 }
@@ -412,6 +416,20 @@ void GameObject::DestroyThisObject()
 
 void GameObject::DestroyComponent()
 {
+
+}
+
+void GameObject::RecursiveSetNewUUID()
+{
+	if (this->parent == nullptr)
+		par_UUID = UINT_FAST32_MAX;
+	else
+		par_UUID = parent->UUID;
+	
+	UUID = GetUUID();
+
+	for (int i = 0; i < children.size(); i++)
+		children[i]->RecursiveSetNewUUID();
 
 }
 

@@ -101,6 +101,7 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 	}
 
 	App->gameObj->getRootObj()->OrderChildren();
+	App->gameObj->getRootObj()->RecursiveSetNewUUID();
 
 	App->gameObj->getRootObj()->GetTransform()->CalculateGlobalTransforms();
 	App->gameObj->getRootObj()->SetTransformedBoundBox();
