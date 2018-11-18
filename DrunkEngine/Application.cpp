@@ -127,6 +127,8 @@ bool Application::Init()
 	return ret;
 }
 
+
+
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
@@ -138,6 +140,8 @@ void Application::PrepareUpdate()
 
 		item++;
 	}
+
+	EventSystemBroadcast();
 }
 
 // ---------------------------------------------
@@ -169,42 +173,88 @@ void Application::FinishUpdate()
 
 
 // Call PreUpdate, Update and PostUpdate on all modules
+bool Application::PreUpdate()
+{
+	std::list<Module*>::iterator item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->PreEditorUpdate(time->GetDT());
+
+		item++;
+	}
+
+	item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->PreUpdate(time->GameDT());
+
+		item++;
+	}
+
+	return true;
+}
+
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
-	PrepareUpdate();
 	
-	EventSystemBroadcast();
+	PrepareUpdate();
 
-	std::list<Module*>::iterator item = list_modules.begin();
+	PreUpdate();
 
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
-	{
-		ret = item._Ptr->_Myval->PreUpdate(time->GameDT());
+	DoUpdate();
 
-		item++;
-	}
-
-	item = list_modules.begin();
-
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
-	{
-		ret = item._Ptr->_Myval->Update(time->GameDT());
-
-		item++;
-	}
-
-	item = list_modules.begin();
-
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
-	{
-		ret = item._Ptr->_Myval->PostUpdate(time->GameDT());
-		
-		item++;
-	}
+	PostUpdate();	
 
 	FinishUpdate();
 	return ret;
+}
+
+bool Application::DoUpdate()
+{
+	std::list<Module*>::iterator item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->EditorUpdate(time->GetDT());
+
+		item++;
+	}
+
+	item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->Update(time->GameDT());
+
+		item++;
+	}
+
+	return true;
+}
+
+bool Application::PostUpdate()
+{
+	std::list<Module*>::iterator item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->PostEditorUpdate(time->GetDT());
+
+		item++;
+	}
+
+	item = list_modules.begin();
+
+	while (item != list_modules.end())
+	{
+		item._Ptr->_Myval->PostUpdate(time->GameDT());
+
+		item++;
+	}
+	return true;
 }
 
 bool Application::CleanUp()
