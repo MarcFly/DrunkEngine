@@ -20,16 +20,12 @@ void ComponentMaterial::PopTexture(const int& tex_index)
 {
 	if (textures.size() > 0)
 	{
-		App->resources->Unused(r_mat->textures[tex_index]);
 		textures[tex_index] = nullptr;
 
-		for (int i = tex_index + 1; i < r_mat->textures.size(); i++)
-		{
-			r_mat->textures[i - 1] = r_mat->textures[i];
+		for (int i = tex_index + 1; i < textures.size(); i++)
 			textures[i - 1] = textures[i];
-		}
 
-		r_mat->textures.pop_back();
+		textures.pop_back();
 	}
 }
 
@@ -49,7 +45,7 @@ void ComponentMaterial::CleanUp()
 		}
 	}
 
-	for (int i = 0; i < r_mat->textures.size(); i++)
+	for (int i = 0; i < textures.size(); i++)
 		PopTexture(i);
 
 	App->resources->Unused(UID);

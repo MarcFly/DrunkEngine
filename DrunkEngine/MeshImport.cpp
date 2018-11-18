@@ -26,11 +26,10 @@ void MeshImport::Init()
 void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 {
 	MetaMesh* res = (MetaMesh*)App->resources->Library.at(fID);
-	res->Asset.par = res;
 
 	mesh->name = res->file;
 
-	if (res->Asset.IsLoaded())
+	if (!res->Asset.IsLoaded())
 		res->Asset.LoadToMem();
 	
 	mesh->r_mesh = res->Asset.mesh.ptr;

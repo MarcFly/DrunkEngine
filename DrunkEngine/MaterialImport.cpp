@@ -29,9 +29,8 @@ void MatImport::Init()
 void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 {
 	MetaMat* meta = (MetaMat*)App->resources->Library.at(fID);
-	meta->Asset.par = meta;
 
-	if (meta->Asset.IsLoaded())
+	if (!meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
 	meta->UseCount++;
@@ -42,9 +41,8 @@ void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 ResourceTexture* MatImport::LinkTexture(DGUID fID)
 {
 	MetaTexture* meta = (MetaTexture*)App->resources->Library.at(fID);
-	meta->Asset.par = meta;
 
-	if (meta->Asset.IsLoaded())
+	if (!meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
 	meta->UseCount++;
