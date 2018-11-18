@@ -44,7 +44,7 @@ public:
 
 public:
 	ResourceMesh* r_mesh;
-	ResourceMaterial* r_mat;
+	ComponentMaterial* c_mat;
 	DGUID Material_Ind;
 	uint mat_ind;
 	AABB* BoundingBox;
@@ -66,7 +66,7 @@ public:
 
 		mat_ind = -1;
 
-		r_mat = nullptr;
+		c_mat = nullptr;
 	}
 };
 

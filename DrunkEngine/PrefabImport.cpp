@@ -51,9 +51,8 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 
 			if(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex != -1)
 				ExportMatNode(comps, scene->mMaterials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex], scene->mMeshes[node->mMeshes[i]]->mMaterialIndex, name);
-
-			//scene->mMeshes[i]->
 		}
+
 	}
 	
 	set_val = obj + "components";
@@ -99,6 +98,7 @@ void PrefabImport::ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* tra
 
 	json_array_append_value(comps, append);
 }
+
 void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int mesh_id, std::string name)
 {
 	JSON_Value* append = json_value_init_object();

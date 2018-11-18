@@ -83,20 +83,29 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 bool ModuleScene::LoadSceneFile(const char* file_path)
 {
-	App->gameObj->CleanUp();
 	App->gameObj->NewScene();
+
 	JSON_Value* scene = json_parse_file(file_path);
 	JSON_Object* obj_g = json_value_get_object(scene);
 	JSON_Array* gos = json_object_get_array(obj_g, "scene");
+
 	for (int i = 0; i < json_array_get_count(gos); i++)
 	{
 		JSON_Value* val = json_array_get_value(gos, i);
 
-		App->gameObj->getRootObj()->children.push_back(new GameObject());
-		App->gameObj->getRootObj()->children.back()->Load(val, file_path);
+		GameObject* add = App->importer->prefab_i->ImportGameObject(file_path, val);
+		add->parent = App->gameObj->getRootObj();
+		App->gameObj->getRootObj()->children.push_back(add);
 	}
 
 	App->gameObj->getRootObj()->OrderChildren();
+
+	App->gameObj->getRootObj()->SetTransformedBoundBox();
+
+	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
+
+	App->gameObj->SetSceneObjects();
+	App->gameObj->SetNonStaticList();
 
 	return true;
 }
@@ -142,7 +151,7 @@ void ModuleScene::SaveScene(const char* filename)
 
 	if (App->gameObj->getRootObj() != nullptr)
 	{
-		std::string Save_scene = App->gameObj->getRootObj()->name + ".drnk";
+		std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
 		if (scene == nullptr)
 		{

@@ -9,10 +9,7 @@ ResourceMaterial::~ResourceMaterial()
 void ResourceMaterial::UnloadMem()
 {
 	for (int i = 0; i < textures.size(); i++)
-	{
-		App->resources->Unused(textures[i].first);
-		textures[i].second = nullptr;		
-	}
+		App->resources->Unused(textures[i]);
 
 	textures.clear();
 }

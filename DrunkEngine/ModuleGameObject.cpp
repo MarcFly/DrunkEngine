@@ -115,13 +115,22 @@ void ModuleGameObject::CreateMainCam()
 
 void ModuleGameObject::DeleteScene()
 {
+	objects_in_scene.clear();
+	static_objects_in_scene.clear();
+	non_static_objects_in_scene.clear();
+
 	if (getRootObj() != nullptr)
+	{
 		getRootObj()->DestroyThisObject();
-	delete Root_Object;
+		delete Root_Object;
+	}
 }
 
 void ModuleGameObject::SetSceneObjects(GameObject * obj)
 {
+	if (obj == nullptr)
+		obj = getRootObj();
+
 	if (obj->parent == nullptr)
 		objects_in_scene.clear();
 	

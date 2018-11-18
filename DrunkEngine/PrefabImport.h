@@ -18,7 +18,7 @@ public:
 	void ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* trans);
 	void ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int mesh_id, std::string name);
 	void ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const int mat_id, std::string name);
-
+	
 	ResourcePrefab* LoadPrefab(const char* file);
 
 	// For Prefab Meta, not needed for scene

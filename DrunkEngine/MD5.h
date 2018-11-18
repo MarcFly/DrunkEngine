@@ -49,10 +49,12 @@
 #define S43 15
 #define S44 21
 
-
-
-
-
+static char digestFailure[33] = {
+	-52, -52, -52, -52, -52, -52, -52, -52,
+	-52, -52, -52, -52, -52, -52, -52, -52,
+	-52, -52, -52, -52, -52, -52, -52, -52,
+	-52, -52, -52, -52, -52, -52, -52, -52, '\0'
+};
 
 static unsigned char PADDING[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -347,7 +349,7 @@ public:
 		unsigned char buffer[1024];
 
 		if ((file = fopen(filename, "rb")) == NULL)
-			printf("%s can't be opened\n", filename);
+			return digestFailure;
 		else
 		{
 			while (len = fread(buffer, 1, 1024, file))

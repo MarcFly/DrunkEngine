@@ -30,6 +30,7 @@ public:
 public:
 
 	ResourceMaterial* r_mat = nullptr;
+	std::vector<ResourceTexture*> textures;
 
 public:
 	void SetBaseVals()

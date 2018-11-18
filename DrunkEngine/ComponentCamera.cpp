@@ -391,10 +391,23 @@ void ComponentCamera::SetbbFrustum()
 
 void ComponentCamera::Load(JSON_Object* comp)
 {
-
+	frustum.horizontalFov =  json_object_dotget_number(comp, "properties.frustum.horizontalFov)");
+	frustum.verticalFov = json_object_dotget_number(comp, "properties.frustum.verticalFov");
+	frustum.farPlaneDistance = json_object_dotget_number(comp, "properties.frustum.farPlaneDistance");
+	frustum.nearPlaneDistance = json_object_dotget_number(comp, "properties.frustum.nearPlaneDistance");
 }
 
 void ComponentCamera::Save(JSON_Array* comps)
 {
+	JSON_Value* append = json_value_init_object();
+	JSON_Object* curr = json_value_get_object(append);
 
+	json_object_dotset_number(curr, "properties.type", CT_Camera);
+
+	json_object_dotset_number(curr, "properties.frustum.horizontalFov)", frustum.horizontalFov);
+	json_object_dotset_number(curr, "properties.frustum.verticalFov", frustum.verticalFov);
+	json_object_dotset_number(curr, "properties.frustum.farPlaneDistance", frustum.farPlaneDistance);
+	json_object_dotset_number(curr, "properties.frustum.nearPlaneDistance", frustum.nearPlaneDistance);
+
+	json_array_append_value(comps, append);
 }

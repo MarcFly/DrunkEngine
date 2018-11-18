@@ -11,7 +11,7 @@ struct ResourceTexture;
 struct ResourceMaterial
 {
 	uint NumDiffTextures = 0;
-	std::vector<std::pair<DGUID, ResourceTexture*>> textures;
+	std::vector<DGUID> textures;
 	uint NumProperties = 0;
 	Color default_print = { 1,1,1,1 };
 

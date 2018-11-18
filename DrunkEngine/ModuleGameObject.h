@@ -26,7 +26,7 @@ public:
 	void CreateMainCam();
 	void DeleteScene();
 
-	void SetSceneObjects(GameObject * obj);
+	void SetSceneObjects(GameObject * obj = nullptr);
 
 	void SetToStaticObjects(GameObject * obj);
 	void DeleteFromStaticObjects(GameObject * obj);
