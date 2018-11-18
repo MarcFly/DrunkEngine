@@ -33,16 +33,16 @@ public:
 		void SetNodeVertex();
 
 		void CreateNodes();
-		std::vector<GameObject*> GetObjectsInNode(AABB& new_bounding_box);
+		std::vector<GameObject*> GetObjectsInNode(const AABB& new_bounding_box);
 
 		void SetVertexPos(const vec& min, const vec& max);
 
-		float GetKdTreeCut(Axis axis);
+		float GetKdTreeCut(const Axis axis);
 
-		std::vector<GameObject*> GetObjsInNode(Node * node);
+		std::vector<GameObject*> GetObjsInNode(const Node * node);
 
-		bool CheckNodeRepeat(AABB new_bb);
-		bool CheckMeshesColliding();
+		bool CheckNodeRepeat(const AABB new_bb);
+		bool CheckMeshesColliding() const;
 
 	public:
 		int id;

@@ -261,7 +261,7 @@ void KDTree::Node::CreateNodes()
 	}
 }
 
-std::vector<GameObject*> KDTree::Node::GetObjectsInNode(AABB& new_bounding_box)
+std::vector<GameObject*> KDTree::Node::GetObjectsInNode(const AABB& new_bounding_box)
 {
 	std::vector<GameObject*> objs_in_new_node;
 
@@ -299,7 +299,7 @@ void KDTree::Node::SetVertexPos(const vec& min, const vec& max)
 	}
 }
 
-float KDTree::Node::GetKdTreeCut(Axis axis)
+float KDTree::Node::GetKdTreeCut(const Axis axis)
 {
 	vec cut = vec::zero;
 
@@ -323,7 +323,7 @@ float KDTree::Node::GetKdTreeCut(Axis axis)
 	}
 }
 
-std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
+std::vector<GameObject*> KDTree::Node::GetObjsInNode(const Node * node)
 {
 	std::vector<GameObject*> vec_objs;
 
@@ -333,7 +333,7 @@ std::vector<GameObject*> KDTree::Node::GetObjsInNode(Node * node)
 	return vec_objs;
 }
 
-bool KDTree::Node::CheckNodeRepeat(AABB new_bb)
+bool KDTree::Node::CheckNodeRepeat(const AABB new_bb)
 {
 	bool ret = false;
 
@@ -351,7 +351,7 @@ bool KDTree::Node::CheckNodeRepeat(AABB new_bb)
 	return ret;
 }
 
-bool KDTree::Node::CheckMeshesColliding()
+bool KDTree::Node::CheckMeshesColliding() const
 {
 	for (int i = 0; i < objects_in_node.size(); i++)
 	{

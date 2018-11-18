@@ -151,7 +151,7 @@ void ComponentTransform::CleanUp()
 	parent = nullptr;
 }
 
-void ComponentTransform::Load(JSON_Object* comp)
+void ComponentTransform::Load(const JSON_Object* comp)
 {
 	position.x = json_object_dotget_number(comp, "position.x");
 	position.y = json_object_dotget_number(comp, "position.y");

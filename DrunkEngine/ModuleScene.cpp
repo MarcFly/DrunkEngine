@@ -108,7 +108,7 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 	return true;
 }
 
-bool ModuleScene::Load(JSON_Value * root_value)
+bool ModuleScene::Load(const JSON_Value * root_value)
 {
 	bool ret = false;
 

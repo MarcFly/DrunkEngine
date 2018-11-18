@@ -89,7 +89,7 @@ public:
 
 	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2) {}
 
-	virtual bool Load(JSON_Value* root_value)
+	virtual bool Load(const JSON_Value* root_value)
 	{
 		return UPDATE_CONTINUE; 
 	}

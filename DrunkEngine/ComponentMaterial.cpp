@@ -58,7 +58,7 @@ void ComponentMaterial::CleanUp()
 	parent = nullptr;
 }
 
-void ComponentMaterial::Load(JSON_Object* comp)
+void ComponentMaterial::Load(const JSON_Object* comp)
 {
 	this->name = json_object_get_string(comp, "filename");
 	this->UID = DGUID(name.c_str());

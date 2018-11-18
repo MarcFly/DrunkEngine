@@ -204,7 +204,7 @@ void ModuleInput::SetDefaultControls()
 	App->ui->console_win->AddLog("Input config set to default");
 }
 
-bool ModuleInput::Load(JSON_Value * root_value)
+bool ModuleInput::Load(const JSON_Value * root_value)
 {
 	bool ret = false;
 

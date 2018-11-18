@@ -64,23 +64,21 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void Render(bool use_texture);
 	void OnResize();
 	void ChangeVsync();
 	bool CheckGLError();
-	void RenderGrid();
-	void RenderBoundBox(ComponentMesh* mesh);
+	void RenderGrid() const;
 	void SwapWireframe(bool active);
 
 	void SetTextureParams();
-	void GenTexParams();
+	void GenTexParams() const;
 
 	void InitCheckTex();
 
 	void RecieveEvent(const Event & event);
 
 public:
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
 public:

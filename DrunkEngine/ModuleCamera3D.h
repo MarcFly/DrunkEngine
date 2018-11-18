@@ -20,15 +20,15 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 	
 	void MousePicking();
 	void TestIntersect(const std::vector<GameObject*>& objs, const LineSegment & ray, std::vector<GameObject*>& intersected);
 	void TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check);
-	float TestTris(LineSegment local, ComponentMesh* mesh);
+	float TestTris(LineSegment local, const ComponentMesh* mesh);
 
-	void DrawRay(vec a, vec b);
+	void DrawRay(vec a, vec b) const;
 
 	void RecieveEvent(const Event & event);
 

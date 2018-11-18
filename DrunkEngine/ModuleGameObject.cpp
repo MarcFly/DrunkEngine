@@ -70,11 +70,6 @@ bool ModuleGameObject::CleanUp()
 	return ret;
 }
 
-void ModuleGameObject::Draw()
-{
-
-}
-
 void ModuleGameObject::SetActiveFalse()
 {
 	for (int i = 0; i < active_objects.size(); i++)

@@ -90,11 +90,8 @@ public:
 	void UpdateShortcuts();
 	void SetDefaultControls();
 
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
-
-	bool CheckExtension(std::string& ext);
-	void LoadFile();
 
 private:
 	KEY_STATE* keyboard;
@@ -130,8 +127,7 @@ private:
 		menu_c[INSPECTOR]			= 12;
 		menu_c[ABOUT_MENU]			= 4;
 		menu_c[SCENE_VIEWER_MENU]	= 25;
-		menu_c[KD_TREE_MENU]		= 23;
-		
+		menu_c[KD_TREE_MENU]		= 23;	
 	}
 };
 

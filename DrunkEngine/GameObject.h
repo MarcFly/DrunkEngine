@@ -29,22 +29,20 @@ public:
 	void Start();
 	void Update(float dt);
 	void Draw();
-	void DrawBB();
+	void DrawBB() const;
 
 	void Save(JSON_Array* go);
-	void Load(JSON_Value* scene, const char* file);
+	void Load(const JSON_Value* scene, const char* file);
 
 	vec getObjectCenter();
 	float SetBoundBox();
 	void SetTransformedBoundBox();
 	void SetBoundBoxFromMeshes();
 
-	Component* NewComponent(CTypes type);
+	Component* NewComponent(const CTypes type);
 	void OrderChildren();
 	void AdjustObjects();
 	void AdjustComponents();
-
-	void CalculateGlobalTransforms();
 
 	void RecursiveSetStatic(GameObject* obj, const bool bool_static);
 
@@ -87,8 +85,6 @@ public:
 		return BoundingBox;
 	}
 
-	
-
 	ComponentTransform* GetTransform()
 	{
 		for (int i = 0; i < components.size(); i++)
@@ -101,7 +97,7 @@ public:
 		return components[components.size() - 1]->AsTransform();
 	}
 
-	Component* GetComponent(CTypes id_t)
+	Component* GetComponent(CTypes id_t) const
 	{
 		for (int i = 0; i < components.size(); i++)
 			if (components[i]->type == id_t)
@@ -110,7 +106,7 @@ public:
 		return nullptr;
 	}
 
-	unsigned int GetCountCType(CTypes id_t)
+	unsigned int GetCountCType(CTypes id_t) const
 	{
 		unsigned int ret = 0;
 		for (int i = 0; i < components.size(); i++)
@@ -119,7 +115,7 @@ public:
 		return ret;
 	}
 
-	std::vector<Component*> GetComponents(CTypes id_t)
+	std::vector<Component*> GetComponents(CTypes id_t) const
 	{
 		std::vector<Component*> ret;
 		for (int i = 0; i < components.size(); i++)
@@ -131,7 +127,7 @@ public:
 		return ret;
 	}
 
-	GameObject* GetChild(Uint32 UUID)
+	GameObject* GetChild(const Uint32 UUID) const
 	{
 		GameObject* ret = nullptr;
 

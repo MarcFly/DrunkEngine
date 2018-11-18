@@ -124,7 +124,7 @@ update_status ModuleCamera3D::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleCamera3D::Load(JSON_Value * root_value)
+bool ModuleCamera3D::Load(const JSON_Value * root_value)
 {
 	return true;
 }
@@ -215,7 +215,7 @@ void ModuleCamera3D::TreeTestIntersect(const KDTree::Node* node, const LineSegme
 	}
 }
 
-float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
+float ModuleCamera3D::TestTris(LineSegment local, const ComponentMesh* mesh)
 {
 	float ret = INT_MAX;
 	float4x4* global = &mesh->parent->GetTransform()->global_transform;
@@ -253,7 +253,7 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 	return ret;
 }
 
-void ModuleCamera3D::DrawRay(vec a, vec b)
+void ModuleCamera3D::DrawRay(vec a, vec b) const
 {
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
@@ -272,14 +272,6 @@ void ModuleCamera3D::RecieveEvent(const Event & event)
 {
 	switch (event.type)
 	{
-	case EventType::Camera_Modified:
-	{
-		break;
-	}
-	case EventType::Window_Resize:
-	{
-		break;
-	}
 	default:
 		break;
 	}

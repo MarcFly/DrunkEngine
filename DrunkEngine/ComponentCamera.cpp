@@ -303,7 +303,7 @@ void ComponentCamera::CalculateViewMatrix()
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }
 
-void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
+void ComponentCamera::LookToObj(GameObject* obj, const float vertex_aux)
 {
 	Transport(vec(vertex_aux + 3, vertex_aux + 3, vertex_aux + 3));
 
@@ -313,7 +313,7 @@ void ComponentCamera::LookToObj(GameObject* obj, float vertex_aux)
 	mesh_multiplier = vertex_aux / 4 + 1;
 }
 
-void ComponentCamera::LookToActiveObjs(vec look_to)
+void ComponentCamera::LookToActiveObjs(const vec look_to)
 {
 	float aux = 0;
 
@@ -389,7 +389,7 @@ void ComponentCamera::SetbbFrustum()
 	frustum.GetCornerPoints(bb_frustum);
 }
 
-void ComponentCamera::Load(JSON_Object* comp)
+void ComponentCamera::Load(const JSON_Object* comp)
 {
 	frustum.horizontalFov =  json_object_dotget_number(comp, "properties.frustum.horizontalFov)");
 	frustum.verticalFov = json_object_dotget_number(comp, "properties.frustum.verticalFov");

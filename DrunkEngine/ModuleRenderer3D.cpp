@@ -187,11 +187,6 @@ bool ModuleRenderer3D::CleanUp()
 	return true;
 }
 
-void ModuleRenderer3D::Render(bool use_texture)
-{
-
-}
-
 void ModuleRenderer3D::OnResize()
 {
 	glViewport(0, 0, App->window->window_w, App->window->window_h);
@@ -229,7 +224,7 @@ bool ModuleRenderer3D::CheckGLError()
 	return ret;
 }
 
-void ModuleRenderer3D::RenderGrid()
+void ModuleRenderer3D::RenderGrid() const
 {
 	glDisable(GL_LIGHTING);
 
@@ -334,7 +329,7 @@ void ModuleRenderer3D::SetTextureParams()
 	}
 }
 
-void ModuleRenderer3D::GenTexParams()
+void ModuleRenderer3D::GenTexParams() const
 {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tws);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, twt);
@@ -345,7 +340,7 @@ void ModuleRenderer3D::GenTexParams()
 }
 
 // SAVELOAD--------------------------------------------------------------------------------
-bool ModuleRenderer3D::Load(JSON_Value * root_value)
+bool ModuleRenderer3D::Load(const JSON_Value * root_value)
 {
 	bool ret = false;
 
