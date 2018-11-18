@@ -22,6 +22,7 @@ enum TypeModule
 	Type_Import,
 	Type_GameObj,
 	Type_ResManager,
+	Type_Time,
 	Type_Null
 };
 
@@ -47,19 +48,38 @@ public:
 		return true;
 	}
 
-	virtual update_status PreUpdate(float dt)
+	virtual void PrepareUpdate()
+	{
+	}
+
+	virtual update_status PreUpdate(float game_dt)
 	{
 		return UPDATE_CONTINUE;
 	}
 
-	virtual update_status Update(float dt)
+	virtual bool PreEditorUpdate(float real_dt)
+	{
+		return true;
+	}
+
+	virtual update_status Update(float game_dt)
 	{
 		return UPDATE_CONTINUE;
 	}
 
-	virtual update_status PostUpdate(float dt)
+	virtual bool EditorUpdate(float real_dt)
+	{
+		return true;
+	}
+
+	virtual update_status PostUpdate(float game_dt)
 	{
 		return UPDATE_CONTINUE;
+	}
+
+	virtual bool PostEditorUpdate(float real_dt)
+	{
+		return true;
 	}
 
 	virtual bool CleanUp() 

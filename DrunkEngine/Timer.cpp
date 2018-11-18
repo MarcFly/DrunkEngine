@@ -26,7 +26,7 @@ void Timer::Stop()
 }
 
 // ---------------------------------------------
-Uint32 Timer::Read()
+Uint32 Timer::Read() const
 {
 	if(running == true)
 	{
@@ -36,6 +36,11 @@ Uint32 Timer::Read()
 	{
 		return stopped_at - started_at;
 	}
+}
+
+bool Timer::IsRunning() const
+{
+	return running;
 }
 
 void Timer::LogTime(std::string log_nm)

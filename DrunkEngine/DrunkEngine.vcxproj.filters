@@ -654,6 +654,9 @@
     <ClInclude Include="ResourcePrefab.h">
       <Filter>Sources\Modules\ResourceManager\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleTime.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="SceneViewerWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
@@ -928,6 +931,9 @@
     </ClCompile>
     <ClCompile Include="ResourceMaterial.cpp">
       <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleTime.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
     <ClCompile Include="SceneViewerWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
