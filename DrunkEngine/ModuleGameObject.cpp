@@ -37,7 +37,6 @@ update_status ModuleGameObject::Update(float dt)
 	if (Scene_KdTree != nullptr && Scene_KdTree->base_node != nullptr)
 		Scene_KdTree->CheckKDTreeInsideFrustum(Scene_KdTree->base_node, camera_rendering);
 
-
 	if (Root_Object != nullptr)
 		Root_Object->Update(dt);
 
@@ -252,7 +251,7 @@ void ModuleGameObject::ManageGuizmo()
 
 	for (int i = 0; i < active_objects.size(); i++)
 	{
-		if (!active_objects[i]->is_static)
+		if (!active_objects[i]->is_static && active_objects[i] != Root_Object)
 		{
 			float aux_vals[16];
 			float4x4 aux_mat;

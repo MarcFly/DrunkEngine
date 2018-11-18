@@ -86,6 +86,7 @@ void ModuleImport::LoadScene(const char* path)
 
 	par->OrderChildren();
 
+	par->GetTransform()->CalculateGlobalTransforms();
 	par->SetTransformedBoundBox();
 
 	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
@@ -195,7 +196,7 @@ void ModuleImport::LoadFileType(char * file, FileType type)
 	else if(type == FT_Error)
 		App->ui->console_win->AddLog("File format not recognized!\n");
 	else
-		App->ui->console_win->AddLog("Wtf did you drop?\n");
+		App->ui->console_win->AddLog("What did you drop?\n");
 }
 
 void CallLog(const char* str, char* usrData)
