@@ -188,7 +188,7 @@ bool Application::PreUpdate()
 
 	while (item != list_modules.end())
 	{
-		item._Ptr->_Myval->PreUpdate(time->GameDT());
+		item._Ptr->_Myval->PreUpdate(time->GetDT());
 
 		item++;
 	}
@@ -227,7 +227,7 @@ bool Application::DoUpdate()
 
 	while (item != list_modules.end())
 	{
-		item._Ptr->_Myval->Update(time->GameDT());
+		item._Ptr->_Myval->Update(time->GetDT());
 
 		item++;
 	}
@@ -250,7 +250,7 @@ bool Application::PostUpdate()
 
 	while (item != list_modules.end())
 	{
-		item._Ptr->_Myval->PostUpdate(time->GameDT());
+		item._Ptr->_Myval->PostUpdate(time->GetDT());
 
 		item++;
 	}
