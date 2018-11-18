@@ -72,6 +72,9 @@ void GameObject::Draw()
 		this->GetTransform()->update_bounding_box = false;
 	}
 
+	if (this->active)
+		bool ret = true;
+
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
 		this->DrawBB();
 
@@ -249,22 +252,22 @@ void GameObject::SetTransformedBoundBox()
 
 		for (int i = 0; i < this->children.size(); i++)
 		{
-			math::AABB auxBB = *this->children[i]->BoundingBox;
+			math::AABB* auxBB = this->children[i]->BoundingBox;
 
 			// Setting the BB min and max points with transforms
 
-			if (this->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
-				this->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
-			if (this->BoundingBox->minPoint.x > auxBB.minPoint.x)
-				this->BoundingBox->minPoint.x = auxBB.minPoint.x;
-			if (this->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
-				this->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
-			if (this->BoundingBox->minPoint.y > auxBB.minPoint.y)
-				this->BoundingBox->minPoint.y = auxBB.minPoint.y;
-			if (this->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
-				this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
-			if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
-				this->BoundingBox->minPoint.z = auxBB.minPoint.z;
+			if (this->BoundingBox->maxPoint.x < auxBB->maxPoint.x)
+				this->BoundingBox->maxPoint.x = auxBB->maxPoint.x;
+			if (this->BoundingBox->minPoint.x > auxBB->minPoint.x)
+				this->BoundingBox->minPoint.x = auxBB->minPoint.x;
+			if (this->BoundingBox->maxPoint.y < auxBB->maxPoint.y)
+				this->BoundingBox->maxPoint.y = auxBB->maxPoint.y;
+			if (this->BoundingBox->minPoint.y > auxBB->minPoint.y)
+				this->BoundingBox->minPoint.y = auxBB->minPoint.y;
+			if (this->BoundingBox->maxPoint.z < auxBB->maxPoint.z)
+				this->BoundingBox->maxPoint.z = auxBB->maxPoint.z;
+			if (this->BoundingBox->minPoint.z > auxBB->minPoint.z)
+				this->BoundingBox->minPoint.z = auxBB->minPoint.z;
 		}
 	}
 
@@ -407,9 +410,23 @@ void GameObject::CleanUp()
 	this->name.clear();
 }
 
+void GameObject::DestroyThisObject()
+{
+	this->CleanUp();
+	this->to_pop = true;
+
+	if (parent != nullptr)
+		parent->AdjustObjects();
+}
+
+void GameObject::DestroyComponent()
+{
+
+}
+
 void GameObject::Load(JSON_Value* go, const char* file)
 {
-	// deprecated, will be loaded from parent adn prefab_i->ImportGameObject
+	
 
 }
 

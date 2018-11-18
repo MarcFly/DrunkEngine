@@ -136,21 +136,21 @@ void ComponentMesh::DrawMesh()
 	{
 		LinkMat();
 
-		if (r_mat != nullptr)
+		if (c_mat != nullptr)
 		{
-			Color c = r_mat->default_print;
+			Color c = c_mat->r_mat->default_print;
 			glColor4f(c.r, c.g, c.b, c.a);
 
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
 			
-			for (int i = 0; i < r_mat->textures.size(); i++)
+			for (int i = 0; i < c_mat->textures.size(); i++)
 			{
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
 				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-				glBindTexture(GL_TEXTURE_2D, r_mat->textures[i].second->id_tex);
+				glBindTexture(GL_TEXTURE_2D, c_mat->textures[i]->id_tex);
 			}	
 		}
 		else
@@ -220,7 +220,7 @@ void ComponentMesh::CleanUp()
 {
 	App->resources->Unused(UID);
 	r_mesh = nullptr;
-	r_mat = nullptr;
+	c_mat = nullptr;
 
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
@@ -253,8 +253,6 @@ void ComponentMesh::Save(JSON_Array* comps)
 	json_object_dotset_string(curr, "properties.filename", App->resources->Library.at(UID)->file.c_str());
 
 	json_array_append_value(comps, append);
-
-	App->importer->mesh_i->ExportMesh(this);
 }
 
 bool ComponentMesh::CheckMeshValidity()
@@ -278,14 +276,14 @@ bool ComponentMesh::CheckMeshValidity()
 
 void ComponentMesh::LinkMat()
 {
-	if(r_mat == nullptr)
+	if(c_mat == nullptr)
 		if (Material_Ind.CheckValidity())
 		{
 			for (int i = 0; i < parent->components.size(); i++)
 			{
 				if (parent->components[i]->UID == Material_Ind)
 				{
-					r_mat = parent->components[i]->AsMaterial()->r_mat;
+					c_mat = parent->components[i]->AsMaterial();
 					break;
 				}
 			}

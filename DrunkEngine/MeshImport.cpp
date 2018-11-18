@@ -26,6 +26,7 @@ void MeshImport::Init()
 void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 {
 	MetaMesh* res = (MetaMesh*)App->resources->Library.at(fID);
+	res->Asset.par = res;
 
 	mesh->name = res->file;
 

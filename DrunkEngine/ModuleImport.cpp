@@ -66,8 +66,6 @@ void ModuleImport::LoadScene(const char* path)
 
 	if (App->gameObj->getRootObj() == nullptr)
 	{
-		App->gameObj->DeleteScene();
-		
 		App->gameObj->NewScene();
 		par = App->gameObj->getRootObj();
 	}

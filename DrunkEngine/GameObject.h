@@ -52,6 +52,9 @@ public:
 
 	std::vector<unsigned int> GetMeshProps();
 
+	void DestroyThisObject();
+	void DestroyComponent();
+
 
 public:
 	Uint32	UUID = UINT_FAST32_MAX, par_UUID = UINT_FAST32_MAX;
@@ -84,17 +87,7 @@ public:
 		return BoundingBox;
 	}
 
-	void DestroyThisObject() 
-	{
-		this->CleanUp();
-		this->to_pop = true;
-		parent->AdjustObjects();
-	}
-
-	void DestroyComponent()
-	{
-		// Destroy a component
-	}
+	
 
 	ComponentTransform* GetTransform()
 	{

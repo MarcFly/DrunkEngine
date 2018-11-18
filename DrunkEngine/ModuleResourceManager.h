@@ -15,7 +15,7 @@ public:
 
 	bool Init();
 
-	bool PostUpdate();
+	update_status PostUpdate(float dt);
 
 	bool CleanUp();
 	
