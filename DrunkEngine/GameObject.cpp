@@ -65,21 +65,14 @@ void GameObject::Draw()
 	for (int i = 0; i < this->components.size(); i++)		
 		this->components[i]->Draw();
 
-	App->gameObj->DebugTimer.Start();
 	if (this->BoundingBox != nullptr && this->GetTransform()->update_bounding_box)
 	{
 		SetTransformedBoundBox();
 		this->GetTransform()->update_bounding_box = false;
 	}
 
-	if (this->active)
-		bool ret = true;
-
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
 		this->DrawBB();
-
-	for (int i = 0; i < this->children.size(); i++)
-		this->children[i]->Draw();
 }
 
 void GameObject::DrawBB()

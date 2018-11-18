@@ -133,18 +133,7 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 
 ResourceTexture* MatImport::LoadTexture(const char * path)
 {
-	Timer text_timer;
-
 	ResourceTexture* ret = new ResourceTexture();
-
-	if (strrchr(path, '\\') != nullptr)
-	{
-		ret->filename = strrchr(path, '\\');
-		ret->filename.substr(ret->filename.find_first_of("\\") + 3);
-	}
-	else
-		ret->filename = path;
-
 	
 	// Load Tex parameters and data to vram?
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -158,21 +147,6 @@ ResourceTexture* MatImport::LoadTexture(const char * path)
 	ilBindImage(id_Image);
 
 	bool check = ilLoadImage(path);
-		
-	if (!check) // Check from imported textures folder
-	{
-		std::string new_file_path = path;
-		new_file_path = new_file_path.substr(new_file_path.find_last_of("\\/") + 1);
-
-		new_file_path = ".\\Library\\" + new_file_path; // Have to set new directories
-
-		check = ilLoadImage(new_file_path.c_str());
-		if (check)
-			App->ui->console_win->AddLog("Texture found in Imported Directories");
-	}
-
-	text_timer.LogTime("Texture Load");
-	text_timer.Start();
 
 	if (check)
 	{
@@ -189,12 +163,7 @@ ResourceTexture* MatImport::LoadTexture(const char * path)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
 
 		App->ui->console_win->AddLog("Loaded Texture from path %s, with size %d x %d", path, ret->width, ret->height);
-
-		text_timer.LogTime("Tex full Load");
-		text_timer.Start();
-
 	}
-
 	else
 	{
 		App->ui->console_win->AddLog("Failed to load image from path %s", path);
@@ -208,11 +177,7 @@ ResourceTexture* MatImport::LoadTexture(const char * path)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	App->ui->inspector_win->CheckMeshInfo();
-
-	text_timer.LogTime("Tex finish Load");
-	text_timer.Start();
-	
+	App->ui->inspector_win->CheckMeshInfo();	
 
 	return ret;
 }
@@ -460,7 +425,7 @@ void MatImport::LoadMeta(const char* file, MetaMat* meta)
 void MatImport::ExportMetaTex(std::string path)
 {
 	std::string meta_name = path + ".meta";
-	JSON_Value* meta_file = json_parse_file(path.c_str());
+	JSON_Value* meta_file = json_parse_file(meta_name.c_str());
 	meta_file = json_value_init_object();
 
 	JSON_Object* meta_obj = json_value_get_object(meta_file);

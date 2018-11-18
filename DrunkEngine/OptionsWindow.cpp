@@ -23,8 +23,8 @@ OptionsWindow::OptionsWindow() : Window("Options")
 
 	change_camera_controls = false;
 
-	//ram_read_time.Start();
-
+	info_read_time.Start();
+	read_once = true;
 	App->ui->console_win->AddLog("Created Options Window-----------------");
 }
 
@@ -33,6 +33,9 @@ OptionsWindow::~OptionsWindow()
 
 void OptionsWindow::Draw()
 {
+	if (read_once)
+		GetFixedSystemData();
+
 	ImGui::Begin(GetName().c_str(), &active);
 	{
 		if (ImGui::CollapsingHeader("Application"))
@@ -492,30 +495,21 @@ void OptionsWindow::Draw()
 
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
-			ImGui::Text("SDL Version: ");
-			SDL_version ver;
-			SDL_GetVersion(&ver);
-			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d.%d.%d", ver.major, ver.minor, ver.patch);
-
-			ImGui::Separator();
+			if (info_read_time.Read() > 5000)
+				GetRuntimeSystemData();
 
 			ImGui::Text("Logical CPUs: ");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d Threads (%d KB)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d Threads (%d KB)", cpu_count, cache);
 
 			ImGui::Text("Used System Ram: ");
 			ImGui::SameLine();
-			if (ram_read_time.Read() > 1000) {
-				GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
-				ram_read_time.Start();
-			}
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f MB",  mem.WorkingSetSize / (1024.0f * 1024.0f));
 
 
 			ImGui::Text("Total System Ram: ");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f GB", SDL_GetSystemRAM() / 1024.0f);
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f GB",  SystemRam);
 
 			ImGui::Text("Caps: ");
 			ImGui::SameLine();
@@ -555,53 +549,21 @@ void OptionsWindow::Draw()
 
 			ImGui::Separator();
 
-			// GPU
-			std::string gpu_vendor = (char*)glGetString(GL_VENDOR);
-			
+			// GPU			
 			ImGui::Text("Brand: ");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", gpu_vendor.c_str());
 
 			ImGui::Text("GPU: ");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", glGetString(GL_RENDERER));
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", GPU.c_str());
 
 			ImGui::Text("Drivers: ");
 			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", glGetString(GL_VERSION));
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", Drivers.c_str());
 
 
 			// VRAM DATA
-			GLint budget = 0;
-			GLint available = 0;
-			GLuint used_mem = 0;
-
-			if (gpu_vendor.find("NVIDIA") != -1)
-			{
-				glGetIntegerv(MEM_BUDGET_NVX, &budget);
-				glGetIntegerv(MEM_AVAILABLE_NVX, &available);
-
-				used_mem = (budget - available) / 1024;
-			}
-			else if (gpu_vendor.find("ATI") != -1)
-			{
-				// With these ones, the info may not be accurate, no better way besides just counting the vram used manually
-				GLint vbo_mem[4];
-				GLint tex_mem[4];
-				GLint rbo_mem[4];
-				glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, vbo_mem);
-				glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, tex_mem);
-				glGetIntegerv(GL_RENDERBUFFER_FREE_MEMORY_ATI, rbo_mem);
-
-				used_mem = (vbo_mem[0] + tex_mem[0] + rbo_mem[0]) / (1024 * 1024);
-
-				wglGetGPUInfoAMD(wglGetGPUIDsAMD(0, 0), WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(GLuint), &budget);
-
-				available = budget - used_mem;
-				budget *= 1024;
-				available *= 1024;
-			}
-			
 			ImGui::Text("VRAM Used: ");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d MB", used_mem);
@@ -618,18 +580,11 @@ void OptionsWindow::Draw()
 
 		if (ImGui::CollapsingHeader("Libraries Used"))
 		{
-			// Get Library Versions
-			SDL_version sdl_ver;
-			SDL_GetVersion(&sdl_ver);
-			int major, minor;
-			glGetIntegerv(GL_MAJOR_VERSION, &major);
-			glGetIntegerv(GL_MINOR_VERSION, &minor);
-
 			ImGui::Text("LIBRARIES USED:");
 
 			ImGui::Separator();
 
-			ImGui::TextColored(HyperlinkColor, "OpenGL (%d.%d) ", major, minor);
+			ImGui::TextColored(HyperlinkColor, "OpenGL (%d.%d) ", gl_major, gl_minor);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())
@@ -649,13 +604,6 @@ void OptionsWindow::Draw()
 			if (ImGui::IsItemClicked())
 				ShellExecute(NULL, "open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
 
-			/*ImGui::SameLine();
-			ImGui::TextColored(HyperlinkColor, "Bullet (%.2f) ", btGetVersion() / 100.0f);
-			if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Go to webpage");
-			if (ImGui::IsItemClicked())
-			ShellExecute(NULL, "open", "https://github.com/bulletphysics", NULL, NULL, SW_SHOWNORMAL);
-			*/
 			ImGui::TextColored(HyperlinkColor, "GLEW(%d.%d.%d ", GLEW_VERSION_MAJOR, GLEW_VERSION_MINOR, GLEW_VERSION_MICRO);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Go to webpage");
@@ -663,14 +611,14 @@ void OptionsWindow::Draw()
 				ShellExecute(NULL, "open", "http://glew.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
 
 			ImGui::SameLine();
-			ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%D) ", App->scene->GetDevILVer() / 100, App->scene->GetDevILVer() / 10 - 10 * (App->scene->GetDevILVer() / 100), App->scene->GetDevILVer() - 10 * (App->scene->GetDevILVer() / 10));
+			ImGui::TextColored(HyperlinkColor, "DevIL (%d.%d.%d) ", devil_a, devil_b, devil_c);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())
 				ShellExecute(NULL, "open", "http://openil.sourceforge.net/", NULL, NULL, SW_SHOWNORMAL);
 
 			ImGui::SameLine();
-			ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", App->scene->GetAssimpMajorVer(), App->scene->GetAssimpMinorVer(), App->scene->GetAssimpVersionRevision());
+			ImGui::TextColored(HyperlinkColor, "Assimp (%d.%d.%d) ", ai_major, ai_minor, ai_revision);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())
@@ -823,6 +771,64 @@ void OptionsWindow::CheckInputChange()
 
 			input_change = Controls::NULL_CONTROL;
 		}
+	}
+}
+
+void OptionsWindow::GetFixedSystemData()
+{
+	read_once = false;
+
+	SDL_GetVersion(&sdl_ver);
+	cpu_count = SDL_GetCPUCount();
+	cache = SDL_GetCPUCacheLineSize();
+	SystemRam = SDL_GetSystemRAM() / 1024.0f;
+
+	gpu_vendor = (const char*)glGetString(GL_VENDOR);
+	GPU = (const char*)glGetString(GL_RENDERER);
+	Drivers = (const char*)glGetString(GL_VERSION);
+
+	glGetIntegerv(GL_MAJOR_VERSION, &gl_major);
+	glGetIntegerv(GL_MINOR_VERSION, &gl_minor);
+
+	devil_a = App->scene->GetDevILVer() / 100;
+	devil_b = App->scene->GetDevILVer() / 10 - 10 * (App->scene->GetDevILVer() / 100);
+	devil_c = App->scene->GetDevILVer() - 10 * (App->scene->GetDevILVer() / 10);
+
+	ai_major = App->scene->GetAssimpMajorVer();
+	ai_minor = App->scene->GetAssimpMinorVer();
+	ai_revision = App->scene->GetAssimpVersionRevision();
+}
+
+void OptionsWindow::GetRuntimeSystemData()
+{
+	info_read_time.Start();
+
+	GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
+
+	if (gpu_vendor.find("NVIDIA") != -1)
+	{
+		glGetIntegerv(MEM_BUDGET_NVX, &budget);
+		glGetIntegerv(MEM_AVAILABLE_NVX, &available);
+
+		used_mem = (budget - available) / 1024;
+	}
+	else if (gpu_vendor.find("ATI") != -1)
+	{
+		// With these ones, the info may not be accurate, no better way besides just counting the vram used manually
+		GLint vbo_mem[4];
+		GLint tex_mem[4];
+		GLint rbo_mem[4];
+		glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, vbo_mem);
+		glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, tex_mem);
+		glGetIntegerv(GL_RENDERBUFFER_FREE_MEMORY_ATI, rbo_mem);
+
+		used_mem = (vbo_mem[0] + tex_mem[0] + rbo_mem[0]) / (1024 * 1024);
+
+		wglGetGPUInfoAMD(wglGetGPUIDsAMD(0, 0), WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(GLuint), &budget);
+
+		available = budget - used_mem;
+		budget *= 1024;
+		available *= 1024;
 	}
 }
 

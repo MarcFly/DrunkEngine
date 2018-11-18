@@ -39,9 +39,31 @@ public:
 private:
 	bool change_camera_controls;
 
-	PROCESS_MEMORY_COUNTERS mem = { 0 };
-	Timer ram_read_time;
+	// System Info Read
+	bool read_once;
 
+	PROCESS_MEMORY_COUNTERS mem = { 0 };
+	Timer info_read_time;
+
+	SDL_version sdl_ver;
+	int cpu_count;
+	int cache;
+	float SystemRam;
+	std::string gpu_vendor;
+	std::string GPU;
+	std::string Drivers;
+
+	GLint budget;
+	GLint available;
+	GLuint used_mem;
+
+	int gl_major, gl_minor;
+	int devil_a, devil_b, devil_c;
+	int ai_major, ai_minor, ai_revision;
+
+private:
+	void GetFixedSystemData();
+	void GetRuntimeSystemData();
 };
 
 #endif
