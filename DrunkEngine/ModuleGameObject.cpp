@@ -24,13 +24,13 @@ bool ModuleGameObject::Init()
 	return ret;
 }
 
-update_status ModuleGameObject::PreUpdate(float dt)
+bool ModuleGameObject::PreUpdate(float dt)
 {
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
-update_status ModuleGameObject::Update(float dt)
+bool ModuleGameObject::Update(float dt)
 {
 	ManageGuizmo();
 
@@ -43,7 +43,7 @@ update_status ModuleGameObject::Update(float dt)
 	if (Scene_KdTree != nullptr)
 		Scene_KdTree->Update();
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 bool ModuleGameObject::CleanUp()

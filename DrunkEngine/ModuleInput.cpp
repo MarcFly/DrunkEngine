@@ -47,7 +47,7 @@ bool ModuleInput::Init()
 }
 
 // Called every draw update
-update_status ModuleInput::PreUpdate(float dt)
+bool ModuleInput::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
 
@@ -153,11 +153,11 @@ update_status ModuleInput::PreUpdate(float dt)
 	}
 
 	if(quit == true)
-		return UPDATE_STOP;
+		return false;
 
 
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 // Called before quitting

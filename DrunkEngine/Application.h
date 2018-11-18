@@ -47,7 +47,10 @@ public:
 	~Application();
 
 	bool Init();
-	update_status Update();
+	bool PreUpdate();
+	bool Update();
+	bool DoUpdate();
+	bool PostUpdate();
 	bool CleanUp();
 
 private:

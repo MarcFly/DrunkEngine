@@ -13,8 +13,8 @@ public:
 	~ModuleGameObject();
 
 	bool Init();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
+	bool PreUpdate(float dt);
+	bool Update(float dt);
 	bool CleanUp();
 
 	void SetActiveFalse();

@@ -44,13 +44,13 @@ bool ModuleCamera3D::CleanUp()
 }
 
 // -----------------------------------------------------------------
-update_status ModuleCamera3D::Update(float dt)
+bool ModuleCamera3D::Update(float dt)
 {
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
 	if(App->ui->CheckDataWindows() || ImGui::IsMouseHoveringAnyWindow())
-		return UPDATE_CONTINUE;
+		return true;
 	
 	float speed = MOV_SPEED * dt * main_camera->mesh_multiplier;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
@@ -121,7 +121,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 	//DrawRay(picking.a, picking.b);
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 bool ModuleCamera3D::Load(const JSON_Value * root_value)

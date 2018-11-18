@@ -6,6 +6,7 @@ ModuleTime::ModuleTime(bool start_enabled) : Module(start_enabled, Type_Time)
 {
 	game_timer.Start();
 	real_timer.Start();
+	total_time.Start();
 	count_fps = 0;
 	fps = 0;
 
@@ -27,17 +28,22 @@ void ModuleTime::PrepareUpdate()
 	Game_Frame_Metrics();
 }
 
-update_status ModuleTime::PreUpdate(float dt)
+bool ModuleTime::PreUpdate(float dt)
 {
-	return UPDATE_CONTINUE;
+	return true;
 }
 
-update_status ModuleTime::Update(float dt)
+bool ModuleTime::Update(float dt)
 {
 	if(ImGui::Begin("##TimeWind", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		if (ImGui::Button("PLAY") && game_state < 2)
 		{
+			if (game_state == TS_Pause)
+				game_timer.Resume();
+			else if (game_state == TS_Stop)
+				game_timer.Start();
+
 			game_state = TS_Play;
 			UpdateCurrentMode();
 			last_saved_scene = App->scene->SaveScene();
@@ -46,12 +52,15 @@ update_status ModuleTime::Update(float dt)
 		if (ImGui::Button("PAUSE") && game_state != 1)
 		{
 			game_state = TS_Pause;
+			game_timer.Stop();
 			UpdateCurrentMode();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("STOP") && game_state > 0)
 		{
 			game_state = TS_Stop;
+			game_timer.Stop();
+			count_fps = 0;
 			UpdateCurrentMode();
 			App->scene->LoadSceneFile(last_saved_scene.c_str());
 		}
@@ -113,7 +122,7 @@ update_status ModuleTime::Update(float dt)
 	
 
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 float ModuleTime::GetFPS() const
@@ -136,7 +145,7 @@ void ModuleTime::Frame_Metrics()
 
 void ModuleTime::Game_Frame_Metrics()
 {
-	if (game_state != TS_Stop && game_state != TS_Error)
+	if (game_state >= 2)
 	{
 		game_dt = (float)game_timer.Read() / 1000.0f;
 		game_timer.Start();
@@ -214,7 +223,7 @@ float ModuleTime::GameDTMil() const
 
 Uint32 ModuleTime::StartupTime() const
 {
-	return real_timer.Read();
+	return total_time.Read();
 }
 
 void ModuleTime::UpdateCurrentMode()
@@ -253,4 +262,9 @@ void ModuleTime::UpdateCurrentMode()
 		break;
 	}
 
+}
+
+uint ModuleTime::GameFrames() const
+{
+	return count_fps;
 }

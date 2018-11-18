@@ -15,7 +15,6 @@ Application::Application()
 	input = new ModuleInput(this);
 	renderer3D = new ModuleRenderer3D(this);
 	camera = new ModuleCamera3D(this);
-	//physics = new ModulePhysics3D(this);
 	importer = new ModuleImport();
 	resources = new ModuleResourceManager(this);
 	ui = new ModuleUI(this);
@@ -127,6 +126,8 @@ bool Application::Init()
 	return ret;
 }
 
+
+
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
@@ -138,6 +139,8 @@ void Application::PrepareUpdate()
 
 		item++;
 	}
+
+	EventSystemBroadcast();
 }
 
 // ---------------------------------------------
@@ -169,41 +172,96 @@ void Application::FinishUpdate()
 
 
 // Call PreUpdate, Update and PostUpdate on all modules
-update_status Application::Update()
+bool Application::PreUpdate()
 {
-	update_status ret = UPDATE_CONTINUE;
-	PrepareUpdate();
-	
-	EventSystemBroadcast();
+	bool ret = true;
 
 	std::list<Module*>::iterator item = list_modules.begin();
 
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
+	while (item != list_modules.end() && ret)
 	{
-		ret = item._Ptr->_Myval->PreUpdate(time->GameDT());
+		ret = item._Ptr->_Myval->PreEditorUpdate(time->GetDT());
 
 		item++;
 	}
 
 	item = list_modules.begin();
 
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
+	while (item != list_modules.end() && ret)
 	{
-		ret = item._Ptr->_Myval->Update(time->GameDT());
+		ret = item._Ptr->_Myval->PreUpdate(time->GetDT());
 
 		item++;
 	}
 
-	item = list_modules.begin();
+	return ret;
+}
 
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
-	{
-		ret = item._Ptr->_Myval->PostUpdate(time->GameDT());
-		
-		item++;
-	}
+bool Application::Update()
+{
+	bool ret = true;
+	
+	PrepareUpdate();
+
+	ret = PreUpdate();
+	if(ret)
+		ret = DoUpdate();
+
+	if(ret)
+		ret = PostUpdate();	
 
 	FinishUpdate();
+
+	return ret;
+}
+
+bool Application::DoUpdate()
+{
+	bool ret = true;
+
+	std::list<Module*>::iterator item = list_modules.begin();
+
+	while (item != list_modules.end() && ret)
+	{
+		ret = item._Ptr->_Myval->EditorUpdate(time->GetDT());
+
+		item++;
+	}
+
+	item = list_modules.begin();
+
+	while (item != list_modules.end() && ret)
+	{
+		ret = item._Ptr->_Myval->Update(time->GetDT());
+
+		item++;
+	}
+
+	return ret;
+}
+
+bool Application::PostUpdate()
+{
+	std::list<Module*>::iterator item = list_modules.begin();
+
+	bool ret = true;
+
+	while (item != list_modules.end() && ret)
+	{
+		ret = item._Ptr->_Myval->PostEditorUpdate(time->GetDT());
+
+		item++;
+	}
+
+	item = list_modules.begin();
+
+	while (item != list_modules.end() && ret)
+	{
+		ret = item._Ptr->_Myval->PostUpdate(time->GetDT());
+
+		item++;
+	}
+
 	return ret;
 }
 
