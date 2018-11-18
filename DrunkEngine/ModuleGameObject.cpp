@@ -268,7 +268,7 @@ void ModuleGameObject::ManageGuizmo()
 													aux_vals[8], aux_vals[9], aux_vals[10], aux_vals[11],
 													aux_vals[12], aux_vals[13], aux_vals[14], aux_vals[15]);
 
-			if (!App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && ImGuizmo::IsUsing())
+			if (ImGuizmo::IsUsing() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT)
 			{
 				aiVector3D scale;
 				aiVector3D pos;

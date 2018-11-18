@@ -8,7 +8,7 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 
 #define MAX_KEYS 300
 
@@ -176,7 +176,7 @@ void ModuleInput::UpdateShortcuts()
 {
 	App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
 	App->ui->console_win->SetShortCut((SDL_Scancode)controls[CONSOLE_MENU]);
-	App->ui->inspector->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
+	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
 	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
 }
 

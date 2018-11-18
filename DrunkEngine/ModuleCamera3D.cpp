@@ -2,7 +2,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "ComponentCamera.h"
 #include "ResourceMesh.h"
 #include "KdTree.h"

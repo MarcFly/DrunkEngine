@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "ObjectPropertiesWindow.h"
+#include "Inspector.h"
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"

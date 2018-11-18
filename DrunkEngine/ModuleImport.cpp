@@ -1,7 +1,7 @@
 #include "ModuleImport.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "ComponentCamera.h"
 #include "MeshImport.h"
 #include "MaterialImport.h"
@@ -71,9 +71,9 @@ void ModuleImport::LoadScene(const char* path)
 		App->gameObj->NewScene();
 		par = App->gameObj->getRootObj();
 	}
-	else if (App->ui->inspector->selected_object != nullptr)
+	else if (App->ui->scene_viewer_window->selected_object != nullptr)
 	{
-		par = App->ui->inspector->selected_object;
+		par = App->ui->scene_viewer_window->selected_object;
 	}
 
 	for (i; i < json_array_get_count(obj_arr); i++)

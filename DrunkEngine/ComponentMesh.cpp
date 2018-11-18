@@ -1,7 +1,7 @@
 #include "ComponentMesh.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"

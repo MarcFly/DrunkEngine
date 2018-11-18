@@ -8,7 +8,7 @@
 #include "Assimp/include/cfileio.h"
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "ModuleWindow.h"
 #include "ComponentCamera.h"
 #include "ModuleRenderer3D.h"

@@ -6,7 +6,7 @@
 
 class GameObject;
 
-class Inspector: public Window
+class Inspector : public Window
 {
 public:
 	Inspector();
@@ -14,24 +14,27 @@ public:
 
 	void Draw() override;
 
-	void CreateObjLeaf(GameObject* obj, int st);
+	void CheckMeshInfo();
+
+	void ComponentInspector(Component* component);
+	void MeshInspector(ComponentMesh* mesh);
+	void MatInspector(ComponentMaterial* mat);
+	void CamInspector(ComponentCamera* cam);
+	void TransformInspector(ComponentTransform* transform);
 
 public:
+	int total_num_vertex;
+	int total_num_faces;
+
+	std::string tex_name;
 
 	bool check_info;
-	bool selected_mask;
 
-	int selection_mask;
-	int node_clicked;
+	bool radio_world = false;
+	bool radio_local = true;
 
-	int selection_mask_checker;
-	
-	GameObject* selected_object = nullptr;
-	std::vector<int> selection_mask_vec;
+	ImVec2 show_size = { 128,128 };
 
-	ImVec2 show_size = {128,128};
-	
 };
 
 #endif
-
