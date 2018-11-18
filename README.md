@@ -8,14 +8,16 @@ Github Page - https://github.com/MarcFly/DrunkEngine
 ## Authors
 The people currently working in this engine are Andreu Sacasas and Marc Torres, currently 3rd Year students coursing Design and Game Development at CITM, a center abscribed to the UPC.
 
-## Usage
+## How to use it
 DrunkEngine will automatically load an .FBX file with a street and some houses with textures.
 
-To move around the space, either orbit around with Alt+LeftClick or move in first person using RightClick+WASD. If you wander off to far, don't worry, press F to focus again to the current model.
+To move around the space, you can orbit around something with Alt+LeftClick or move in first person using RightClick+WASD. If you wander off to far, don't worry, press F to focus again to the current model.
 
 In the menu bar, an array of options are available, take some time to look into it. We specially recommend using the Inspector and the Scene Viewer. Besides clicking them on the menu you can also open them with Ctrl+I and Ctrl+V respectively (you can check and change other shortcuts on the "input" section in the Options menu).
-
 All keybindings are rebindable, make use of your perfect layout.
+
+To add new fbx into the scene, just select the object that will be the parent for it on the Scene Viewer, go to Menu->Import... and select the new asset.
+If you want to save the current scene or to load a new one, just go to Menu->Save/Load. 
 
 ## Innovation
 - KD-Tree (used on frustum and mouse-picking to accelerate static Objs)
