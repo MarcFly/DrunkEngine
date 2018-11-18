@@ -40,7 +40,7 @@ update_status ModuleTime::Update(float dt)
 		{
 			game_state = TS_Play;
 			UpdateCurrentMode();
-			last_saved_scene = App->scene->SaveScene("TimeSave");
+			last_saved_scene = App->scene->SaveScene();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("PAUSE") && game_state != 1)

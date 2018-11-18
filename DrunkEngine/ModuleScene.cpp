@@ -83,13 +83,13 @@ bool ModuleScene::LoadFBX(const char* file_path)
 
 bool ModuleScene::LoadSceneFile(const char* file_path)
 {
-	App->gameObj->NewScene();
-
 	JSON_Value* scene = json_parse_file(file_path);
 	JSON_Object* obj_g = json_value_get_object(scene);
 	JSON_Array* gos = json_object_get_array(obj_g, "scene");
 
-	for (int i = 0; i < json_array_get_count(gos); i++)
+	App->gameObj->NewScene(App->importer->prefab_i->ImportGameObject(file_path, json_array_get_value(gos, 0)));
+
+	for (int i = 1; i < json_array_get_count(gos); i++)
 	{
 		JSON_Value* val = json_array_get_value(gos, i);
 
@@ -148,9 +148,13 @@ bool ModuleScene::Save(JSON_Value * root_value)
 
 std::string ModuleScene::SaveScene(const char* filename)
 {
-	App->gameObj->getRootObj()->name = GetFileName(filename);
-	std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
+	GameObject* root = App->gameObj->getRootObj();
 
+	if(filename != "")
+		root->name = GetFileName(filename);
+
+	std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
+	
 	if (App->gameObj->getRootObj() != nullptr)
 	{
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
