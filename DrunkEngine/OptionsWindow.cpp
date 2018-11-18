@@ -623,7 +623,6 @@ void OptionsWindow::Draw()
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())
 				ShellExecute(NULL, "open", "http://www.assimp.org/", NULL, NULL, SW_SHOWNORMAL);
-
 			
 			ImGui::TextColored(HyperlinkColor, "MathGeoLib ");
 			if (ImGui::IsItemHovered())
@@ -651,6 +650,19 @@ void OptionsWindow::Draw()
 				ImGui::SetTooltip("Go to webpage");
 			if (ImGui::IsItemClicked())
 				ShellExecute(NULL, "open", "https://github.com/kgabis/parson", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::SameLine();
+			ImGui::TextColored(HyperlinkColor, "ImGuizmo");
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://github.com/CedricGuillemet/ImGuizmo", NULL, NULL, SW_SHOWNORMAL);
+
+			ImGui::TextColored(HyperlinkColor, "MD5");
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Go to webpage");
+			if (ImGui::IsItemClicked())
+				ShellExecute(NULL, "open", "https://bobobobo.wordpress.com/2010/10/17/md5-c-implementation/", NULL, NULL, SW_SHOWNORMAL);
 		}
 	}
 	ImGui::End();
