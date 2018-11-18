@@ -1,16 +1,16 @@
-#ifndef _OBJECTSPROP_WINDOW_
-#define _OBJECTSPROP_WINDOW_
+#ifndef _INSPECTOR_WINDOW_
+#define _INSPECTOR_WINDOW_
 
 #include "Window.h"
 #include "ModuleScene.h"
 
 class GameObject;
 
-class ObjectPropertiesWindow : public Window
+class Inspector : public Window
 {
 public:
-	ObjectPropertiesWindow();
-	virtual ~ObjectPropertiesWindow();
+	Inspector();
+	virtual ~Inspector();
 
 	void Draw() override;
 

@@ -11,6 +11,8 @@ public:
 
 	void Draw() override;
 
+	void CreateKDTree();
+
 public:
 	int elements_per_node, max_subdivisions;
 };

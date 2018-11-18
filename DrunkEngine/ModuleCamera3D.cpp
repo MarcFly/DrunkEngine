@@ -2,7 +2,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleUI.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "ComponentCamera.h"
 #include "ResourceMesh.h"
 #include "KdTree.h"
@@ -79,7 +79,11 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->gameObj->active_objects.size() > 0)
 			aux = aux / App->gameObj->active_objects.size();
 
-		main_camera->LookToActiveObjs(aux);
+		if (App->gameObj->active_objects.size() > 0)
+			main_camera->LookToActiveObjs(aux);
+
+		else
+			main_camera->LookAt(aux);
 	}
 
 	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !ImGuizmo::IsUsing() && !ImGuizmo::IsOver())
@@ -87,7 +91,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		vec aux = vec(0.0f, 0.0f, 0.0f);
+		float3 aux = vec(0.0f, 0.0f, 0.0f);
 
 		for (int i = 0; i < App->gameObj->active_objects.size(); i++)
 		{
@@ -97,9 +101,7 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->gameObj->active_objects.size() > 0)
 			aux = aux / App->gameObj->active_objects.size();
 
-		main_camera->Reference = aux;
-
-		main_camera->Rotate();
+		main_camera->RotateAround(aux);
 	}
 	else
 	{
@@ -162,10 +164,7 @@ void ModuleCamera3D::MousePicking()
 		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);*/
 
 	if (App->gameObj->GetSceneKDTree() != nullptr)
-	{
-		for (int i = 0; i < App->gameObj->GetSceneKDTree()->base_node->child.size(); i++)
-			TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node->child[i], picking, objects_to_check);
-	}
+		TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node, picking, objects_to_check);
 
 	TestIntersect(objects_to_check, picking, intersected);
 
@@ -223,15 +222,28 @@ float ModuleCamera3D::TestTris(LineSegment local, ComponentMesh* mesh)
 	local.Transform(global->Inverted());
 
 	int count_hits = 0;
+	ResourceMesh* r_mesh = mesh->r_mesh;
+
 	for (int i = 0; i < mesh->r_mesh->num_index;)
 	{
-		vec vertex1 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
-		vec vertex2 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
-		vec vertex3 = { mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3)], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 1], mesh->r_mesh->vertex[(mesh->r_mesh->index[i] * 3) + 2] }; i++;
+		vec vertex1 = { r_mesh->vertex[(r_mesh->index[i] * 3)], 
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 1],
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 2] }; 
+		i++;
+
+		vec vertex2 = { r_mesh->vertex[(r_mesh->index[i] * 3)], 
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 1],
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 2] }; 
+		i++;
+
+		vec vertex3 = { r_mesh->vertex[(r_mesh->index[i] * 3)], 
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 1],
+						r_mesh->vertex[(r_mesh->index[i] * 3) + 2] }; 
+		i++;
 		Triangle test = Triangle(vertex1, vertex2, vertex3);
-		float new_dist = INT_MAX;
-		bool check = local.ToRay().Intersects(test, &new_dist, nullptr);
-		new_dist = vec(((vertex1 + vertex2 + vertex3) / 3.0f) - local.a).Length();
+		vec intersect_point;
+		bool check = local.ToRay().Intersects(test, nullptr, &intersect_point);
+		float new_dist = (intersect_point - local.a).Length();
 		if (check && new_dist < ret)
 		{
 			ret = new_dist;

@@ -75,6 +75,9 @@ void ComponentTransform::SetLocalTransform()
 
 void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
 {
+	if (t == nullptr)
+		t = this;
+
 	t->update_bounding_box = true;
 	t->update_camera_transform = true;
 

@@ -180,9 +180,8 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		DebugT.Start();
 		ret = item._Ptr->_Myval->PreUpdate(time->GameDT());
-		PLOG("%d PreUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
+
 		item++;
 	}
 
@@ -190,9 +189,8 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		DebugT.Start();
 		ret = item._Ptr->_Myval->Update(time->GameDT());
-		PLOG("%d Update took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
+
 		item++;
 	}
 
@@ -200,9 +198,8 @@ update_status Application::Update()
 
 	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		DebugT.Start();
 		ret = item._Ptr->_Myval->PostUpdate(time->GameDT());
-		PLOG("%d PostUpdate took %d", item._Ptr->_Myval->GetType(), DebugT.Read());
+		
 		item++;
 	}
 

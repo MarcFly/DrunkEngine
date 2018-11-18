@@ -1,23 +1,24 @@
-#include "ObjectPropertiesWindow.h"
+#include "InspectorWindow.h"
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "KdTreeWindow.h"
 
-ObjectPropertiesWindow::ObjectPropertiesWindow() : Window("Object Properties")
+Inspector::Inspector() : Window("Inspector")
 {
 	total_num_vertex = 0;
 	total_num_faces = 0;
 	check_info = false;
 }
 
-ObjectPropertiesWindow::~ObjectPropertiesWindow()
+Inspector::~Inspector()
 {
 }
 
-void ObjectPropertiesWindow::Draw()
+void Inspector::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
@@ -47,7 +48,7 @@ void ObjectPropertiesWindow::Draw()
 	ImGui::End();
 }
 
-void ObjectPropertiesWindow::CheckMeshInfo()
+void Inspector::CheckMeshInfo()
 {
 	check_info = true;
 	total_num_vertex = 0;
@@ -56,7 +57,7 @@ void ObjectPropertiesWindow::CheckMeshInfo()
 
 //----------------------------
 // Component Inspectors
-void ObjectPropertiesWindow::ComponentInspector(Component* component)
+void Inspector::ComponentInspector(Component* component)
 {
 	switch (component->type)
 	{
@@ -67,7 +68,7 @@ void ObjectPropertiesWindow::ComponentInspector(Component* component)
 	}
 }
 
-void ObjectPropertiesWindow::MeshInspector(ComponentMesh* mesh)
+void Inspector::MeshInspector(ComponentMesh* mesh)
 {
 	if (ImGui::CollapsingHeader("Mesh"))
 	{
@@ -84,7 +85,7 @@ void ObjectPropertiesWindow::MeshInspector(ComponentMesh* mesh)
 	}
 }
 
-void ObjectPropertiesWindow::MatInspector(ComponentMaterial* mat)
+void Inspector::MatInspector(ComponentMaterial* mat)
 {
 	if (ImGui::CollapsingHeader("Material"))
 	{
@@ -126,7 +127,7 @@ void ObjectPropertiesWindow::MatInspector(ComponentMaterial* mat)
 	}
 }
 
-void ObjectPropertiesWindow::CamInspector(ComponentCamera* cam)
+void Inspector::CamInspector(ComponentCamera* cam)
 {
 	if (ImGui::CollapsingHeader("Camera"))
 	{
@@ -158,7 +159,7 @@ void ObjectPropertiesWindow::CamInspector(ComponentCamera* cam)
 	}
 }
 
-void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
+void Inspector::TransformInspector(ComponentTransform* transform)
 {
 	if (ImGui::CollapsingHeader("Transform"))
 	{
@@ -171,9 +172,19 @@ void ObjectPropertiesWindow::TransformInspector(ComponentTransform* transform)
 				App->gameObj->active_objects[0]->RecursiveSetStatic(transform->parent, transform->parent->is_static);
 
 				if (transform->parent->is_static)
+				{
 					App->gameObj->SetToStaticObjects(transform->parent);
+					App->ui->kdtree_win->CreateKDTree();
+				}
 				else
+				{
 					App->gameObj->DeleteFromStaticObjects(transform->parent);
+
+					if (App->gameObj->GetSceneKDTree() != nullptr)
+						App->gameObj->DeleteSceneKDTree();
+
+					App->ui->kdtree_win->CreateKDTree();
+				}
 			}
 		}
 		else

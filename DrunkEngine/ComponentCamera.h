@@ -24,6 +24,7 @@ public:
 	void MoveX(const float mov);
 	void Transport(const vec &Movement);
 	void Rotate();
+	void RotateAround(const float3 aux);
 	float3 RotateAngle(const float3 &u, float angle, const float3 &v);
 
 	void SetAspectRatio();

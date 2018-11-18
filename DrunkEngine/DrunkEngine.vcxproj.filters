@@ -603,13 +603,7 @@
     <ClInclude Include="Component.h">
       <Filter>Sources\Modules\GameObject Structure</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectPropertiesWindow.h">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClInclude>
     <ClInclude Include="LoadSaveWindows.h">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Inspector.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
     <ClInclude Include="KdTree.h">
@@ -662,6 +656,12 @@
     </ClInclude>
     <ClInclude Include="ModuleTime.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneViewerWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InspectorWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -887,13 +887,7 @@
     <ClCompile Include="Component.cpp">
       <Filter>Sources\Modules\GameObject Structure</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectPropertiesWindow.cpp">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClCompile>
     <ClCompile Include="LoadSaveWindows.cpp">
-      <Filter>Sources\Modules\UI\WindowSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Inspector.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
     <ClCompile Include="KdTree.cpp">
@@ -940,6 +934,12 @@
     </ClCompile>
     <ClCompile Include="ModuleTime.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneViewerWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InspectorWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

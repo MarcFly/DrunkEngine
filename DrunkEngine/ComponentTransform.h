@@ -23,8 +23,8 @@ public:
 
 	void SetLocalTransform();
 
-	void RecursiveSetChildrenToUpdate(ComponentTransform* t);
-	void RecursiveSetParentToUpdate(ComponentTransform* t);
+	void RecursiveSetChildrenToUpdate(ComponentTransform* t = nullptr);
+	void RecursiveSetParentToUpdate(ComponentTransform* t = nullptr);
 
 	void SetFromMatrix(const aiMatrix4x4* t);
 

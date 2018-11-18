@@ -21,6 +21,8 @@ OptionsWindow::OptionsWindow() : Window("Options")
 	key_repeated = false;
 	max_fps = 60;
 
+	change_camera_controls = false;
+
 	//ram_read_time.Start();
 
 	App->ui->console_win->AddLog("Created Options Window-----------------");
@@ -270,8 +272,10 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
+			{
 				input_change = MOVE_FORWARD;
-
+				change_camera_controls = true;
+			}
 			if (input_change == MOVE_FORWARD)
 			{
 				ImGui::SameLine();
@@ -285,8 +289,10 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
+			{
 				input_change = MOVE_BACK;
-
+				change_camera_controls = true;
+			}
 			if (input_change == MOVE_BACK)
 			{
 				ImGui::SameLine();
@@ -300,8 +306,10 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
+			{
 				input_change = MOVE_LEFT;
-
+				change_camera_controls = true;
+			}
 			if (input_change == MOVE_LEFT)
 			{
 				ImGui::SameLine();
@@ -315,8 +323,10 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
+			{
 				input_change = MOVE_RIGHT;
-
+				change_camera_controls = true;
+			}
 			if (input_change == MOVE_RIGHT)
 			{
 				ImGui::SameLine();
@@ -330,8 +340,10 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
+			{
 				input_change = FOCUS_CAMERA;
-
+				change_camera_controls = true;
+			}
 			if (input_change == FOCUS_CAMERA)
 			{
 				ImGui::SameLine();
@@ -345,8 +357,10 @@ void OptionsWindow::Draw()
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
+			{
 				input_change = ORBIT_CAMERA;
-
+				change_camera_controls = true;
+			}
 			if (input_change == ORBIT_CAMERA)
 			{
 				ImGui::SameLine();
@@ -360,8 +374,10 @@ void OptionsWindow::Draw()
 			ImGui::Separator();
 
 			//Options Window
-			ImGui::Text("Options Menu");
-			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[OPTIONS_MENU]));
+			ImGui::Text("Options Menu:");
+			aux = "Ctrl + ";
+			aux.append(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->menu_c[OPTIONS_MENU])));
+
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
@@ -375,8 +391,10 @@ void OptionsWindow::Draw()
 			}
 
 			//Console Window
-			ImGui::Text("Log Window"); //TODO Change to console for asg 2
-			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[CONSOLE_MENU]));
+			ImGui::Text("Log Window: "); //TODO Change to console for asg 2
+			aux = "Ctrl + ";
+			aux.append(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->menu_c[CONSOLE_MENU])));
+
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
@@ -389,15 +407,17 @@ void OptionsWindow::Draw()
 				key_repeated = false;
 			}
 
-			//Loaded Models Window
-			ImGui::Text("Loaded Models");
-			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[MESH_MENU]));
+			//Inspector Window
+			ImGui::Text("Inspector: ");
+			aux = "Ctrl + ";
+			aux.append(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->menu_c[INSPECTOR])));
+
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
-				input_change = MESH_MENU;
+				input_change = INSPECTOR;
 
-			if (input_change == MESH_MENU)
+			if (input_change == INSPECTOR)
 			{
 				ImGui::SameLine();
 				ImGui::Text("Select new Key");
@@ -405,8 +425,10 @@ void OptionsWindow::Draw()
 			}
 
 			//About Window
-			ImGui::Text("Engine Info");
-			aux = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->controls[ABOUT_MENU]));
+			ImGui::Text("Engine Info: ");
+			aux = "Ctrl + ";
+			aux.append(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->menu_c[ABOUT_MENU])));
+
 			ImGui::SameLine();
 
 			if (ImGui::Button(aux.c_str()))
@@ -419,8 +441,42 @@ void OptionsWindow::Draw()
 				key_repeated = false;
 			}
 
+			//Inspector Window
+			ImGui::Text("Scene Viewer: ");
+			aux = "Ctrl + ";
+			aux.append(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->menu_c[SCENE_VIEWER_MENU])));
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = SCENE_VIEWER_MENU;
+
+			if (input_change == SCENE_VIEWER_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
+			//KD Tree Window
+			ImGui::Text("KD-Tree: ");
+			aux = "Ctrl + ";
+			aux.append(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)App->input->menu_c[KD_TREE_MENU])));
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(aux.c_str()))
+				input_change = KD_TREE_MENU;
+
+			if (input_change == KD_TREE_MENU)
+			{
+				ImGui::SameLine();
+				ImGui::Text("Select new Key");
+				key_repeated = false;
+			}
+
 			//Check New Key
-			if (input_change != NULL_CONTROL)
+			if (input_change != Controls::NULL_CONTROL && input_change != Menu_Controls::NULL_CONTROL_M && App->input->GetKey(SDL_SCANCODE_LCTRL) != KEY_REPEAT)
 				CheckInputChange();
 
 			ImGui::Separator();
@@ -688,53 +744,84 @@ void OptionsWindow::CheckInputChange()
 	{
 		if (ImGui::IsKeyPressed(i))
 		{
-			for (int j = 0; j < NULL_CONTROL; j++)
+			if (change_camera_controls)
 			{
-				if (i == App->input->controls[j])
+				for (int j = 0; j < Controls::NULL_CONTROL; j++)
 				{
-					key_repeated = true;
-					repeated_key_time.Start();
-					input_change = NULL_CONTROL;
-					break;
+					if (i == App->input->controls[j])
+					{
+						key_repeated = true;
+						repeated_key_time.Start();
+						input_change = Controls::NULL_CONTROL;
+						change_camera_controls = false;
+						break;
+					}
+				}
+			}
+			else
+			{
+				for (int j = Controls::NULL_CONTROL + 1; j < Menu_Controls::NULL_CONTROL_M; j++)
+				{
+					if (i == App->input->menu_c[j])
+					{
+						key_repeated = true;
+						repeated_key_time.Start();
+						input_change = Menu_Controls::NULL_CONTROL_M;
+						break;
+					}
 				}
 			}
 
 			if (key_repeated)
 				break;
 
-			if (input_change == MOVE_FORWARD)
-				App->input->controls[MOVE_FORWARD] = i;
+			if (change_camera_controls)
+			{
+				if (input_change == MOVE_FORWARD)
+					App->input->controls[MOVE_FORWARD] = i;
 
-			else if (input_change == MOVE_BACK)
-				App->input->controls[MOVE_BACK] = i;
+				else if (input_change == MOVE_BACK)
+					App->input->controls[MOVE_BACK] = i;
 
-			else if (input_change == MOVE_LEFT)
-				App->input->controls[MOVE_LEFT] = i;
+				else if (input_change == MOVE_LEFT)
+					App->input->controls[MOVE_LEFT] = i;
 
-			else if (input_change == MOVE_RIGHT)
-				App->input->controls[MOVE_RIGHT] = i;
+				else if (input_change == MOVE_RIGHT)
+					App->input->controls[MOVE_RIGHT] = i;
 
-			else if (input_change == FOCUS_CAMERA)
-				App->input->controls[FOCUS_CAMERA] = i;
+				else if (input_change == FOCUS_CAMERA)
+					App->input->controls[FOCUS_CAMERA] = i;
 
-			else if (input_change == ORBIT_CAMERA)
-				App->input->controls[ORBIT_CAMERA] = i;
+				else if (input_change == ORBIT_CAMERA)
+					App->input->controls[ORBIT_CAMERA] = i;
 
-			else if (input_change == OPTIONS_MENU)
-				App->input->controls[OPTIONS_MENU] = i;
+				change_camera_controls = false;
+				
+			}
+			else
+			{
+				if (input_change == OPTIONS_MENU)
+					App->input->menu_c[OPTIONS_MENU] = i;
 
-			else if (input_change == CONSOLE_MENU)
-				App->input->controls[CONSOLE_MENU] = i;
+				else if (input_change == CONSOLE_MENU)
+					App->input->menu_c[CONSOLE_MENU] = i;
 
-			else if (input_change == MESH_MENU)
-				App->input->controls[MESH_MENU] = i;
+				else if (input_change == INSPECTOR)
+					App->input->menu_c[INSPECTOR] = i;
 
-			else if (input_change == ABOUT_MENU)
-				App->input->controls[ABOUT_MENU] = i;
+				else if (input_change == ABOUT_MENU)
+					App->input->menu_c[ABOUT_MENU] = i;
+
+				else if (input_change == SCENE_VIEWER_MENU)
+					App->input->menu_c[SCENE_VIEWER_MENU] = i;
+
+				else if (input_change == KD_TREE_MENU)
+					App->input->menu_c[KD_TREE_MENU] = i;
+			}
 
 			App->input->UpdateShortcuts();
 
-			input_change = NULL_CONTROL;
+			input_change = Controls::NULL_CONTROL;
 		}
 	}
 }

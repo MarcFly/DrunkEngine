@@ -9,7 +9,7 @@
 // Module for IMGUI use and implementation
 // Includes for imgui when necessary...
 
-#define NUM_WINDOWS 13
+#define NUM_WINDOWS 12
 
 class Window;
 class OptionsWindow;
@@ -18,9 +18,9 @@ class RandomGenWindow;
 class GEOMWindow;
 class OpenGLOptions;
 class ConsoleWindow;
-class Inspector;
+class SceneViewer;
 class KDTreeWindow;
-class ObjectPropertiesWindow;
+class Inspector;
 class SaveSceneWindow;
 class LoadSceneWindow;
 class ImportWindow;
@@ -47,16 +47,16 @@ public:
 	//void AddLog();
 
 public:
-	//NUM WINDOWS == 10
+	//NUM WINDOWS == 12
 	OptionsWindow* options_win = nullptr;
 	AboutWindow* about_win = nullptr;
 	RandomGenWindow* random_win = nullptr;
 	GEOMWindow* geometry_win = nullptr;
 	OpenGLOptions* opengl_win = nullptr;
 	ConsoleWindow* console_win = nullptr;
-	Inspector* inspector = nullptr;
-	KDTreeWindow* octree_win = nullptr;
-	ObjectPropertiesWindow* obj_properties_win = nullptr;
+	SceneViewer* scene_viewer_window = nullptr;
+	KDTreeWindow* kdtree_win = nullptr;
+	Inspector* inspector_win = nullptr;
 
 	// Data Windows
 	SaveSceneWindow* savescene_win = nullptr;

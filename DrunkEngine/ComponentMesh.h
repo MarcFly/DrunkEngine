@@ -38,8 +38,13 @@ public:
 	void Load(JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
+	bool CheckMeshValidity();
+
+	void LinkMat();
+
 public:
 	ResourceMesh* r_mesh;
+	ResourceMaterial* r_mat;
 	DGUID Material_Ind;
 	uint mat_ind;
 	AABB* BoundingBox;
@@ -60,6 +65,8 @@ public:
 		to_pop = false;
 
 		mat_ind = -1;
+
+		r_mat = nullptr;
 	}
 };
 

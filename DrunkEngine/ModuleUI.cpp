@@ -14,9 +14,9 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "KdTreeWindow.h"
-#include "ObjectPropertiesWindow.h"
+#include "InspectorWindow.h"
 #include "LoadSaveWindows.h"
 
 #define MEM_BUDGET_NVX 0x9048
@@ -49,9 +49,9 @@ bool ModuleUI::Init()
 	windows.push_back(about_win = new AboutWindow());
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow());
-	windows.push_back(inspector = new Inspector());
-	windows.push_back(octree_win = new KDTreeWindow());
-	windows.push_back(obj_properties_win = new ObjectPropertiesWindow());
+	windows.push_back(scene_viewer_window = new SceneViewer());
+	windows.push_back(kdtree_win = new KDTreeWindow());
+	windows.push_back(inspector_win = new Inspector());
 	windows.push_back(savescene_win = new SaveSceneWindow());
 	windows.push_back(loadscene_win = new LoadSceneWindow());
 	windows.push_back(import_win = new ImportWindow());
@@ -78,9 +78,9 @@ update_status ModuleUI::PreUpdate(float dt)
 
 	for (vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
 	{
-		Window* windows = (*it);
+		Window* windows = (*it);	
 
-		if (!CheckDataWindows() && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
+		if (!CheckDataWindows() && App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
 			windows->SwitchActive();
 
 		if (windows->IsActive())
@@ -167,14 +167,14 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Test Objects"))
 				geometry_win->SwitchActive();*/
 
-			if (ImGui::MenuItem("Inspector"))
-				inspector->SwitchActive();
+			if (ImGui::MenuItem("Scene Viewer"))
+				scene_viewer_window->SwitchActive();
 
-			if (ImGui::MenuItem("Object Properties"))
-				obj_properties_win->SwitchActive();
+			if (ImGui::MenuItem("Inspector"))
+				inspector_win->SwitchActive();
 
 			if (ImGui::MenuItem("K-D Tree"))
-				octree_win->SwitchActive();			
+				kdtree_win->SwitchActive();			
 
 			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
 				console_win->SwitchActive();		

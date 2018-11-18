@@ -2,13 +2,12 @@
 #include "ModuleInput.h"
 #include "ModuleUI.h"
 #include "ModuleScene.h"
-
 #include "OptionsWindow.h"
 #include "AboutWindow.h"
-#include "RandomGenWindow.h"
-#include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
+#include "KdTreeWindow.h"
+#include "InspectorWindow.h"
 
 #define MAX_KEYS 300
 
@@ -174,10 +173,12 @@ bool ModuleInput::CleanUp()
 
 void ModuleInput::UpdateShortcuts()
 {
-	App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
-	App->ui->console_win->SetShortCut((SDL_Scancode)controls[CONSOLE_MENU]);
-	App->ui->inspector->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
-	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
+	App->ui->options_win->SetShortCut((SDL_Scancode)menu_c[OPTIONS_MENU]);
+	App->ui->console_win->SetShortCut((SDL_Scancode)menu_c[CONSOLE_MENU]);
+	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)menu_c[INSPECTOR]);
+	App->ui->about_win->SetShortCut((SDL_Scancode)menu_c[ABOUT_MENU]);
+	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)menu_c[SCENE_VIEWER_MENU]);
+	App->ui->kdtree_win->SetShortCut((SDL_Scancode)menu_c[KD_TREE_MENU]);
 }
 
 void ModuleInput::SetDefaultControls()
@@ -191,10 +192,12 @@ void ModuleInput::SetDefaultControls()
 	controls[ORBIT_CAMERA] = SDL_SCANCODE_LALT;
 
 	//Menu Shortcuts
-	controls[OPTIONS_MENU] = SDL_SCANCODE_O;
-	controls[CONSOLE_MENU] = SDL_SCANCODE_C;
-	controls[MESH_MENU] = SDL_SCANCODE_M;
-	controls[ABOUT_MENU] = SDL_SCANCODE_I;
+	menu_c[OPTIONS_MENU] = SDL_SCANCODE_O;
+	menu_c[CONSOLE_MENU] = SDL_SCANCODE_C;
+	menu_c[INSPECTOR] = SDL_SCANCODE_I;
+	menu_c[ABOUT_MENU] = SDL_SCANCODE_A;
+	menu_c[SCENE_VIEWER_MENU] = SDL_SCANCODE_V;
+	menu_c[KD_TREE_MENU] = SDL_SCANCODE_T;
 
 	App->ui->console_win->AddLog("Input config set to default");
 }
@@ -214,10 +217,12 @@ bool ModuleInput::Load(JSON_Value * root_value)
 	controls[ORBIT_CAMERA] = json_object_dotget_number(json_object(root_value), "controls.orbit_camera");
 
 	//Menu Shortcuts
-	controls[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
-	controls[CONSOLE_MENU] = json_object_dotget_number(json_object(root_value), "controls.console_menu");
-	controls[MESH_MENU] = json_object_dotget_number(json_object(root_value), "controls.mesh_menu");
-	controls[ABOUT_MENU] = json_object_dotget_number(json_object(root_value), "controls.about_menu");
+	menu_c[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
+	menu_c[CONSOLE_MENU] = json_object_dotget_number(json_object(root_value), "controls.console_menu");
+	menu_c[INSPECTOR] = json_object_dotget_number(json_object(root_value), "controls.inspector_menu");
+	menu_c[ABOUT_MENU] = json_object_dotget_number(json_object(root_value), "controls.about_menu");
+	menu_c[SCENE_VIEWER_MENU] = json_object_dotget_number(json_object(root_value), "controls.scene_viewer_menu");
+	menu_c[KD_TREE_MENU] = json_object_dotget_number(json_object(root_value), "controls.kd_tree_menu");
 
 	ret = true;
 	return ret;
@@ -229,14 +234,22 @@ bool ModuleInput::Save(JSON_Value * root_value)
 
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
+	//Controls
 	json_object_dotset_number(root_obj, "controls.move_forward", controls[MOVE_FORWARD]);
 	json_object_dotset_number(root_obj, "controls.move_back", controls[MOVE_BACK]);
 	json_object_dotset_number(root_obj, "controls.move_left", controls[MOVE_LEFT]);
 	json_object_dotset_number(root_obj, "controls.move_right", controls[MOVE_RIGHT]);
 	json_object_dotset_number(root_obj, "controls.focus_camera", controls[FOCUS_CAMERA]);
 	json_object_dotset_number(root_obj, "controls.orbit_camera", controls[ORBIT_CAMERA]);
-	json_object_dotset_number(root_obj, "controls.options_menu", controls[OPTIONS_MENU]);
-	json_object_dotset_number(root_obj, "controls.mesh_menu", controls[MESH_MENU]);
+
+	//Menus
+	json_object_dotset_number(root_obj, "controls.options_menu", menu_c[OPTIONS_MENU]);
+	json_object_dotset_number(root_obj, "controls.console_menu", menu_c[CONSOLE_MENU]);
+	json_object_dotset_number(root_obj, "controls.inspector_menu", menu_c[INSPECTOR]);
+	json_object_dotset_number(root_obj, "controls.about_menu", menu_c[ABOUT_MENU]);
+	json_object_dotset_number(root_obj, "controls.scene_viewer_menu", menu_c[SCENE_VIEWER_MENU]);
+	json_object_dotset_number(root_obj, "controls.kd_tree_menu", menu_c[KD_TREE_MENU]);
+	
 
 	json_serialize_to_file(root_value, "config_data.json");
 

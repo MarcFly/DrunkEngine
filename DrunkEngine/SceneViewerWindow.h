@@ -1,16 +1,16 @@
-#ifndef _INSPECTOR_WINDOW_
-#define _INSPECTOR_WINDOW_
+#ifndef _SceneViewer_WINDOW_
+#define _SceneViewer_WINDOW_
 
 #include "Window.h"
 #include "ModuleScene.h"
 
 class GameObject;
 
-class Inspector: public Window
+class SceneViewer: public Window
 {
 public:
-	Inspector();
-	virtual ~Inspector();
+	SceneViewer();
+	virtual ~SceneViewer();
 
 	void Draw() override;
 

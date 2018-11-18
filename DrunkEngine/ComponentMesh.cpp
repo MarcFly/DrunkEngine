@@ -1,7 +1,7 @@
 #include "ComponentMesh.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
@@ -96,43 +96,36 @@ void ComponentMesh::Draw()
 	glPushMatrix();
 	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
-	if (App->gameObj->camera_rendering != nullptr)
+	if (CheckMeshValidity())
 	{
-		if (this->parent->is_static == false && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
-			|| App->gameObj->GetSceneKDTree() == nullptr && App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB())
-			|| this->parent->static_to_draw)
+		if (App->renderer3D->faces)
 		{
-			if (r_mesh->index != nullptr && r_mesh->vertex != nullptr)
-			{
-				if (App->renderer3D->faces)
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-					DrawMesh();
-				}
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-				if (App->renderer3D->wireframe)
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					DrawMeshWire();
-				}
-
-				// Set Default Color back
-				Color def = App->camera->background;
-				glColor4f(def.r, def.g, def.b, def.a);
-
-				if (App->renderer3D->render_normals)
-					this->DrawNormals();
-
-				this->parent->static_to_draw = false;
-			}
+			DrawMesh();
 		}
+
+		if (App->renderer3D->wireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			DrawMeshWire();
+		}
+
+		// Set Default Color back
+		Color def = App->camera->background;
+		glColor4f(def.r, def.g, def.b, def.a);
+
+		if (App->renderer3D->render_normals)
+			this->DrawNormals();
+
+		this->parent->static_to_draw = false;
+
 	}
 	glPopMatrix();
 }
 
 void ComponentMesh::DrawMesh()
 {
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -141,20 +134,7 @@ void ComponentMesh::DrawMesh()
 
 	if (r_mesh->tex_coords != nullptr)
 	{
-		ResourceMaterial* r_mat = nullptr;
-		if (Material_Ind.MD5ID[0] != '\0')
-		{
-			//	r_mat = App->resources->Library.at(Material_Ind);
-
-			for (int i = 0; i < parent->components.size(); i++)
-			{
-				if (parent->components[i]->UID == Material_Ind)
-				{
-					r_mat = parent->components[i]->AsMaterial()->r_mat;
-					break;
-				}
-			}
-		}
+		LinkMat();
 
 		if (r_mat != nullptr)
 		{
@@ -163,23 +143,25 @@ void ComponentMesh::DrawMesh()
 
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
-			if (r_mat->textures.size() > 0)
+			
+			for (int i = 0; i < r_mat->textures.size(); i++)
 			{
-				for (int i = 0; i < r_mat->textures.size(); i++)
-				{
-					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-					glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
-					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
+				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 
-					glBindTexture(GL_TEXTURE_2D, r_mat->textures[i].second->id_tex);
-				}
-			}
+				glBindTexture(GL_TEXTURE_2D, r_mat->textures[i].second->id_tex);
+			}	
 		}
 		else
 		{
-			Material_Ind.MD5ID[0] = '\0';
-			App->ui->console_win->AddLog("Tried to render non-existing Material!");
+			if(Material_Ind.CheckValidity())
+				App->ui->console_win->AddLog("The material is valid, but not found!");
+			else
+				App->ui->console_win->AddLog("Tried to render non-existing Material!");
 		}
+
+
 	}
 	else
 	{
@@ -238,6 +220,7 @@ void ComponentMesh::CleanUp()
 {
 	App->resources->Unused(UID);
 	r_mesh = nullptr;
+	r_mat = nullptr;
 
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
@@ -272,4 +255,39 @@ void ComponentMesh::Save(JSON_Array* comps)
 	json_array_append_value(comps, append);
 
 	App->importer->mesh_i->ExportMesh(this);
+}
+
+bool ComponentMesh::CheckMeshValidity()
+{
+	if (App->gameObj->camera_rendering != nullptr && r_mesh != nullptr)
+	{
+		if (this->parent->is_static == false)
+			return App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB());		
+
+		else
+		{
+			if (App->gameObj->GetSceneKDTree() == nullptr)
+				return App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB());
+			else
+				return this->parent->static_to_draw;
+		}
+				
+	}
+	return false;
+}
+
+void ComponentMesh::LinkMat()
+{
+	if(r_mat == nullptr)
+		if (Material_Ind.CheckValidity())
+		{
+			for (int i = 0; i < parent->components.size(); i++)
+			{
+				if (parent->components[i]->UID == Material_Ind)
+				{
+					r_mat = parent->components[i]->AsMaterial()->r_mat;
+					break;
+				}
+			}
+		}
 }

@@ -1,18 +1,18 @@
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "GameObject.h"
 
-Inspector::Inspector() : Window("Inspector")
+SceneViewer::SceneViewer() : Window("Scene Viewer")
 {
 	selection_mask = 0;
 	node_clicked = -1;
 	selection_mask_checker = 0;
 }
 
-Inspector::~Inspector()
+SceneViewer::~SceneViewer()
 {
 }
 
-void Inspector::Draw()
+void SceneViewer::Draw()
 {
 	ImGui::Begin(GetName().c_str(), &active);
 	{
@@ -21,7 +21,7 @@ void Inspector::Draw()
 	ImGui::End();
 }
 
-void Inspector::CreateObjLeaf(GameObject * obj, int st)
+void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 {
 	
 	//int num_child = 0;

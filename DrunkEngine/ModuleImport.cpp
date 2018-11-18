@@ -1,7 +1,7 @@
 #include "ModuleImport.h"
 #include "Application.h"
 #include "ConsoleWindow.h"
-#include "Inspector.h"
+#include "SceneViewerWindow.h"
 #include "ComponentCamera.h"
 #include "MeshImport.h"
 #include "MaterialImport.h"
@@ -68,14 +68,12 @@ void ModuleImport::LoadScene(const char* path)
 	{
 		App->gameObj->DeleteScene();
 		
-		App->gameObj->NewScene(prefab_i->ImportGameObject(path, val));
+		App->gameObj->NewScene();
 		par = App->gameObj->getRootObj();
-		par->name = GetFileName(path);
-		i++;
 	}
-	else if (App->ui->inspector->selected_object != nullptr)
+	else if (App->ui->scene_viewer_window->selected_object != nullptr)
 	{
-		par = App->ui->inspector->selected_object;
+		par = App->ui->scene_viewer_window->selected_object;
 	}
 
 	for (i; i < json_array_get_count(obj_arr); i++)
@@ -89,6 +87,10 @@ void ModuleImport::LoadScene(const char* path)
 	}
 
 	par->OrderChildren();
+
+	par->SetTransformedBoundBox();
+
+	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
 }
 
 void ModuleImport::ExportScene(const char* path)
@@ -117,7 +119,7 @@ void ModuleImport::ExportScene(const char* path)
 		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
 		matname.append(".matdrnk");
 		DGUID fID(matname.c_str());
-		if (fID.MD5ID[0] == -52)
+		if (!fID.CheckValidity())
 			mat_i->ExportAIMat(mat, i, path);
 	}
 
@@ -128,13 +130,13 @@ void ModuleImport::ExportScene(const char* path)
 		meshname += GetFileName(path) + "_Mesh_" + std::to_string(i);
 		meshname.append(".meshdrnk");
 		DGUID fID(meshname.c_str());
-		if (fID.MD5ID[0] == -52)
+		if (!fID.CheckValidity())
 			mesh_i->ExportAIMesh(mesh, i, path);
 	}
 
 	{
 		std::string scenename = ".\\Library\\";
-		scenename += GetFileName(path) + ".scenedrnk";
+		scenename += GetFileName(path) + ".prefabdrnk";
 		ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
 	}
 
@@ -151,17 +153,19 @@ void ModuleImport::ExportSceneNodes(const char* path, const aiNode* root_node, c
 		scene = json_value_init_object();
 		json_serialize_to_file(scene, path);
 		scene = json_parse_file(path);
+
+		JSON_Value* set_array = json_value_init_array();
+		JSON_Array* go = json_value_get_array(set_array);
+
+		prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
+
+		JSON_Object* set = json_value_get_object(scene);
+		json_object_set_value(set, "scene", set_array);
+		json_serialize_to_file(scene, path);
+
+		App->ui->console_win->AddLog("%s Scene exported", path);
 	}
-	JSON_Value* set_array = json_value_init_array();
-	JSON_Array* go = json_value_get_array(set_array);
-
-	prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
-
-	JSON_Object* set = json_value_get_object(scene);
-	json_object_set_value(set, "scene", set_array);
-	json_serialize_to_file(scene, path);
-
-	App->ui->console_win->AddLog("%s Scene exported", path);
+	
 }
 
 void ModuleImport::LoadFile(char * file)

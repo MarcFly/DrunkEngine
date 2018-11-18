@@ -33,12 +33,15 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 	json_object_dotset_number(curr, set_val.c_str(), par_UUID);
 
 	set_val = obj + "name";
-	json_object_dotset_string(curr, set_val.c_str(), node->mName.C_Str());
+	if (node->mParent == NULL)
+		json_object_dotset_string(curr, set_val.c_str(), name);
+	else
+		json_object_dotset_string(curr, set_val.c_str(), node->mName.C_Str());
 
 	JSON_Value* set_array = json_value_init_array();
 	JSON_Array* comps = json_value_get_array(set_array);
 
-	// Minimal Component Exports to be loaded from .scenedrnk file
+	// Minimal Component Exports to be loaded from .prefabdrnk file
 	{
 		ExportTransformNode(comps, &node->mTransformation);
 

@@ -155,7 +155,7 @@
     <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
-    <ClInclude Include="Inspector.h" />
+    <ClInclude Include="SceneViewerWindow.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
     <ClInclude Include="GLEW\include\GL\glew.h" />
     <ClInclude Include="GLEW\include\GL\glxew.h" />
@@ -235,7 +235,7 @@
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
     <ClInclude Include="ModuleTime.h" />
-    <ClInclude Include="ObjectPropertiesWindow.h" />
+    <ClInclude Include="InspectorWindow.h" />
     <ClInclude Include="KdTree.h" />
     <ClInclude Include="KdTreeWindow.h" />
     <ClInclude Include="OptionsWindow.h" />
@@ -284,7 +284,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="Inspector.cpp" />
+    <ClCompile Include="SceneViewerWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
     <ClCompile Include="LoadSaveWindows.cpp" />
     <ClCompile Include="MaterialImport.cpp" />
@@ -332,7 +332,7 @@
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="ModuleTime.cpp" />
-    <ClCompile Include="ObjectPropertiesWindow.cpp" />
+    <ClCompile Include="InspectorWindow.cpp" />
     <ClCompile Include="KdTree.cpp" />
     <ClCompile Include="KdTreeWindow.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
