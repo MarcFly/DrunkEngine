@@ -33,6 +33,10 @@ To change game speed you can change between modes:
 
 Currently game time is not used in any shape or form, but there is a structure prepared for future use of it, separating editor and game runtime code.
 
+When saving a scene, it will be created automatically under an Assets folder inside the Executable directory.
+
+If you make a mess loading things, you can clear up the editor at Options->Delete Scene.
+
 ## Innovation
 - KD-Tree (used on frustum and mouse-picking to accelerate static Objs)
 - Input window in options to change the camera controls and the window shortcuts.

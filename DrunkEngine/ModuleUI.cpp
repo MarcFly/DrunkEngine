@@ -152,6 +152,12 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Show/Hide Windows"))
 				ShowHideWindows();
 
+			if (ImGui::MenuItem("Delete Scene"))
+			{
+				App->gameObj->NewScene();
+				App->gameObj->CreateMainCam();
+			}
+
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
 

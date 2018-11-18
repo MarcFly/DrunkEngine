@@ -35,9 +35,7 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	App->gameObj->NewScene();
-	App->gameObj->CreateMainCam();
-	//LoadFBX("./Assets/Street environment_V01.FBX");
+	LoadFBX("./Assets/Street environment_V01.FBX");
 	//LoadFBX("./Assets/Ogre.fbx");
 	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 	//LoadFBX("./Assets/Cube3d.fbx");

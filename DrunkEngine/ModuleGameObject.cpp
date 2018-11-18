@@ -116,6 +116,8 @@ void ModuleGameObject::DeleteScene()
 	static_objects_in_scene.clear();
 	non_static_objects_in_scene.clear();
 
+	active_cameras.clear();
+
 	SetCameraRender(Main_Cam);
 	App->ui->inspector_win->main_cam = false;
 
@@ -259,6 +261,8 @@ void ModuleGameObject::ManageGuizmo()
 
 			if (active_objects[i]->GetComponent(CTypes::CT_Camera) != nullptr)
 				mCurrentGizmoMode = ImGuizmo::LOCAL;
+			else if (App->ui->inspector_win->radio_world == true)
+				mCurrentGizmoMode = ImGuizmo::WORLD;
 
 			if (mCurrentGizmoMode == ImGuizmo::LOCAL || mCurrentGizmoOperation == ImGuizmo::SCALE || active_objects[i]->parent == nullptr)
 				aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
