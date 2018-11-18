@@ -101,9 +101,10 @@ void ModuleGameObject::CreateMainCam()
 {
 	if (active_cameras.size() < 1)
 	{
-		GameObject* MainCam = new GameObject("Main Camera", Root_Object);
-		MainCam->components.push_back(new ComponentCamera(MainCam));
-		getRootObj()->children.push_back(MainCam);
+		GameObject* Game_camera = new GameObject("Main Camera", Root_Object);
+		Game_camera->components.push_back(new ComponentCamera(Game_camera));
+		getRootObj()->children.push_back(Game_camera);
+		Game_camera->GetTransform()->SetTransformPosition(0.f, 0.f, -100.f);
 	}
 }
 
@@ -250,6 +251,9 @@ void ModuleGameObject::ManageGuizmo()
 		{
 			float aux_vals[16];
 			float4x4 aux_mat;
+
+			if (active_objects[i]->GetComponent(CTypes::CT_Camera) != nullptr)
+				mCurrentGizmoMode = ImGuizmo::LOCAL;
 
 			if (mCurrentGizmoMode == ImGuizmo::LOCAL || mCurrentGizmoOperation == ImGuizmo::SCALE || active_objects[i]->parent == nullptr)
 				aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();

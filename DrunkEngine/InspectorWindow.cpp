@@ -133,6 +133,13 @@ void Inspector::CamInspector(ComponentCamera* cam)
 	{
 		ImGui::Spacing();
 		
+		if (ImGui::Checkbox("Main Cam", &main_cam))
+		{
+			if (main_cam)
+				App->gameObj->SetCameraRender(cam);
+			else
+				App->gameObj->SetCameraRender(App->gameObj->Main_Cam);
+		}
 		//float aux_fov = RadToDeg(cam->original_v_fov);  If scale is compatible whith camera
 		float aux_fov = RadToDeg(cam->frustum.verticalFov);
 		if (ImGui::DragFloat("FOV", &aux_fov, 1.0f, 0.0, 179))
@@ -196,23 +203,26 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 
 		ImGui::Spacing();
 
-		if (ImGui::RadioButton("World", radio_world))
+		if (transform->parent->GetComponent(CTypes::CT_Camera) == nullptr)
 		{
-			radio_world = true;
-			radio_local = false;
-			App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
+			if (ImGui::RadioButton("World", radio_world))
+			{
+				radio_world = true;
+				radio_local = false;
+				App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::RadioButton("Local", radio_local))
+			{
+				radio_world = false;
+				radio_local = true;
+				App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
+			}
+
+			ImGui::Spacing();
 		}
-
-		ImGui::SameLine();
-
-		if (ImGui::RadioButton("Local", radio_local))
-		{
-			radio_world = false;
-			radio_local = true;
-			App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
-		}
-
-		ImGui::Spacing();
 
 		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::LOCAL)
 		{
@@ -226,7 +236,7 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
 				transform->SetTransformRotation((float3)rot);
 		}
-		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::WORLD)
+		else if (App->gameObj->mCurrentGizmoMode == ImGuizmo::WORLD)
 		{	
 			float3 pos_vec;
 			Quat rot_quat;

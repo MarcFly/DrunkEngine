@@ -33,6 +33,8 @@ public:
 	bool radio_world = true;
 	bool radio_local = false;
 
+	bool main_cam = false;
+
 	ImVec2 show_size = { 128,128 };
 
 };
