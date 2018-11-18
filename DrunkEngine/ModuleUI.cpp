@@ -176,7 +176,7 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("K-D Tree"))
 				kdtree_win->SwitchActive();			
 
-			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
+			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 3
 				console_win->SwitchActive();		
 
 			ImGui::EndMenu();

@@ -43,10 +43,8 @@ void GameObject::Start()
 		this->children[i]->Start();
 
 	if (this->parent != nullptr)
-	{
-		SetBoundBox();
 		SetTransformedBoundBox();
-	}
+
 }
 
 void GameObject::Update(float dt)
@@ -130,7 +128,7 @@ void GameObject::DrawBB() const
 vec GameObject::getObjectCenter()
 {
 	if (this->BoundingBox == nullptr)
-		this->SetBoundBox();
+		this->SetTransformedBoundBox();
 
 	float aux_x = (this->BoundingBox->maxPoint.x + this->BoundingBox->minPoint.x) / 2;
 	float aux_y = (this->BoundingBox->maxPoint.y + this->BoundingBox->minPoint.y) / 2;
