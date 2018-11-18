@@ -8,8 +8,9 @@ enum TimeState
 {
 	TS_Error = -1,
 	TS_Stop,
-	TS_Play,
 	TS_Pause,
+	TS_Step,
+	TS_Play,
 	TS_Slow,
 	TS_Fast,
 	TS_Reverse,
@@ -26,7 +27,8 @@ public:
 	~ModuleTime();
 
 	void PrepareUpdate();
-	update_status PreUpdate();
+	update_status PreUpdate(float dt);
+	update_status Update(float dt);
 
 	// Real Timer
 	float GetFPS() const;
@@ -39,8 +41,6 @@ public:
 	// Game Timer
 	float GameDT() const;
 	float GameDTMil() const;
-	TimeState game_state;
-
 
 private:
 	// Real Timer
@@ -54,10 +54,17 @@ private:
 	// Game Timer
 	float game_speed;
 	float game_dt;
+	TimeState game_state;
+	
+
+	// Timer Controls
+	int curr_speed;
+	std::string CurrentMode;
 
 private:
 	void Frame_Metrics();
 	void Game_Frame_Metrics();
+	void UpdateCurrentMode();
 };
 
 #endif

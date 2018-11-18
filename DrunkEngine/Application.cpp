@@ -37,6 +37,7 @@ Application::Application()
 	AddModule(scene);
 	AddModule(gameObj);
 	AddModule(ui);
+	
 
 	// Renderer last!
 	AddModule(renderer3D);
