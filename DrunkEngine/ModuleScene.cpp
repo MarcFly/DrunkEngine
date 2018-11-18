@@ -145,13 +145,13 @@ bool ModuleScene::Save(JSON_Value * root_value)
 	return ret;
 }
 
-void ModuleScene::SaveScene(const char* filename)
+std::string ModuleScene::SaveScene(const char* filename)
 {
 	App->gameObj->getRootObj()->name = GetFileName(filename);
+	std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
 
 	if (App->gameObj->getRootObj() != nullptr)
 	{
-		std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());
 		if (scene == nullptr)
 		{
@@ -171,6 +171,8 @@ void ModuleScene::SaveScene(const char* filename)
 
 		App->ui->console_win->AddLog("%s Scene saved", Save_scene.c_str());
 	}
+
+	return Save_scene;
 }
 
 //-SET OBJ DATA------------------------------------------------------------------------------------------

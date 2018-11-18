@@ -31,7 +31,7 @@ public:
 	bool Load(JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
-	void SaveScene(const char* filename = "");
+	std::string SaveScene(const char* filename = "");
 
 	void OrderScene();
 

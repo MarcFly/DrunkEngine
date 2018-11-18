@@ -1,5 +1,6 @@
 #include "ModuleTime.h"
 #include "imgui/imgui.h"
+#include "Application.h"
 
 ModuleTime::ModuleTime(bool start_enabled) : Module(start_enabled, Type_Time)
 {
@@ -8,7 +9,7 @@ ModuleTime::ModuleTime(bool start_enabled) : Module(start_enabled, Type_Time)
 	count_fps = 0;
 	fps = 0;
 
-	game_state = TS_Play;
+	game_state = TS_Stop;
 	game_speed = 1;
 	curr_speed = 0;
 
@@ -39,6 +40,7 @@ update_status ModuleTime::Update(float dt)
 		{
 			game_state = TS_Play;
 			UpdateCurrentMode();
+			last_saved_scene = App->scene->SaveScene("TimeSave");
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("PAUSE") && game_state != 1)
@@ -51,6 +53,7 @@ update_status ModuleTime::Update(float dt)
 		{
 			game_state = TS_Stop;
 			UpdateCurrentMode();
+			App->scene->LoadSceneFile(last_saved_scene.c_str());
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Step"))

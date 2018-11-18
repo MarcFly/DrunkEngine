@@ -60,6 +60,7 @@ private:
 	// Timer Controls
 	int curr_speed;
 	std::string CurrentMode;
+	std::string last_saved_scene;
 
 private:
 	void Frame_Metrics();
