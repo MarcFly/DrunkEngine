@@ -79,7 +79,11 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->gameObj->active_objects.size() > 0)
 			aux = aux / App->gameObj->active_objects.size();
 
-		main_camera->LookToActiveObjs(aux);
+		if (App->gameObj->active_objects.size() > 0)
+			main_camera->LookToActiveObjs(aux);
+
+		else
+			main_camera->LookAt(aux);
 	}
 
 	if (!ImGui::IsAnyWindowFocused() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) == KEY_IDLE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !ImGuizmo::IsUsing() && !ImGuizmo::IsOver())
