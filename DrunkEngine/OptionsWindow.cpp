@@ -825,13 +825,15 @@ void OptionsWindow::TimeViewer()
 		{
 			realdt = App->time->GetDT();
 			gamedt = App->time->GetDT();
+			gametime = App->time->GameFrames() / 60.0f;
+			realtime = App->time->StartupTime();
 		}
 
-		ImGui::Text("Real DT: %f", realdt);
-		ImGui::Text("Real Time: %f", App->time->StartupTime());
+		ImGui::Text("Real DT: %.03f", realdt);
+		ImGui::Text("Real Time: %.03f", realtime / 1000);
 		ImGui::Separator();
-		ImGui::Text("Game DT: %f", gamedt);
-		ImGui::Text("Game Time: %f", App->time->GameFrames() / (float)App->time->GetFPS());
+		ImGui::Text("Game DT: %.03f", gamedt);
+		ImGui::Text("Game Time: %.03f", gametime);
 		
 	}
 

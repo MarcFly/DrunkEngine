@@ -45,6 +45,7 @@ public:
 
 private:
 	// Real Timer
+	Timer	total_time;
 	Timer	real_timer;
 	Timer	game_timer;
 	float	real_dt;

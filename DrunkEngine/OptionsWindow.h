@@ -47,7 +47,7 @@ public:
 	ImVec4 HyperlinkColor = { 30 / 250.f, 139 / 250.f, 18 / 250.f, 1 };
 
 private:
-	float realdt, gamedt;
+	float realdt, gamedt, gametime, realtime;
 	Timer dt_read_time;
 
 private:
