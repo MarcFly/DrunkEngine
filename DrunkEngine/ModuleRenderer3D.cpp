@@ -42,18 +42,18 @@ bool ModuleRenderer3D::Init()
 		App->ui->console_win->AddLog("Failed GLEW Initiation!\n");
 	}
 
-	if(context == NULL)
+	if (context == NULL)
 	{
 		App->ui->console_win->AddLog("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
-	
+
 	//Load(nullptr);
 
-	if(ret == true)
+	if (ret == true)
 	{
 		//Use Vsync
-		if(SDL_GL_SetSwapInterval(vsync) < 0)
+		if (SDL_GL_SetSwapInterval(vsync) < 0)
 			App->ui->console_win->AddLog("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
@@ -69,26 +69,25 @@ bool ModuleRenderer3D::Init()
 
 		//Check for error;
 		ret = CheckGLError();
-		
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glShadeModel(GL_SMOOTH);
 		glClearDepth(1.0f);
-		
+
 		//Initialize clear color
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // This blend is for transparency, with primitives sorted from far to near, also to antialiased points
-		// There are different ways to optimize different effects, polygon optimization is SRC_ALPHA_SATURATE, GL_ONE for example, and disable PolygonSmooth
+														   // There are different ways to optimize different effects, polygon optimization is SRC_ALPHA_SATURATE, GL_ONE for example, and disable PolygonSmooth
 		glDepthFunc(GL_LEQUAL);
 
 		//Check for error
 		ret = CheckGLError();
-		
+
 
 		glEnable(GL_BLEND);
 		glEnable(GL_ALPHA_TEST);
-    
+
 		if (depth_test)
 			glEnable(GL_DEPTH_TEST); // Tests depth when rendering
 		if (cull_face)
@@ -97,13 +96,13 @@ bool ModuleRenderer3D::Init()
 			glEnable(GL_LIGHTING); // Computes vertex color from lighting paramenters, else associates every vertex to current color
 		if (color_material)
 			glEnable(GL_COLOR_MATERIAL); // The color is tracked through ambient and diffuse parameters, instead of static
-		if(texture_2d)
+		if (texture_2d)
 			glEnable(GL_TEXTURE_2D); // Texturing is performed in 2D, important for activetexture
 
-		// Something about lights
-		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
+									 // Something about lights
+		GLfloat LightModelAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
-		
+
 		lights[0].ref = GL_LIGHT0;
 		lights[0].ambient.Set(0.25f, 0.25f, 0.25f, 1.0f);
 		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
@@ -112,18 +111,18 @@ bool ModuleRenderer3D::Init()
 		lights[0].Active(true);
 
 		// Something about materials
-		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		GLfloat MaterialAmbient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
 
-		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 	}
 
 	// Projection matrix for
 	OnResize();
-	
+
 	SetTextureParams();
-	
+
 	App->eventSys->Subscribe(EventType::Window_Resize, this);
 	App->eventSys->Subscribe(EventType::Camera_Modified, this);
 
@@ -134,7 +133,7 @@ bool ModuleRenderer3D::Init()
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
 	Color c = App->camera->background;
-	glClearColor(c.r,c.g,c.b,c.a);
+	glClearColor(c.r, c.g, c.b, c.a);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -154,7 +153,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	// Set light pos
 	lights[0].SetPos(App->gameObj->Main_Cam->frustum.pos.x, App->gameObj->Main_Cam->frustum.pos.y, App->gameObj->Main_Cam->frustum.pos.z);
 
-	for(uint i = 0; i < MAX_LIGHTS; ++i)
+	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
 	return UPDATE_CONTINUE;
@@ -170,7 +169,7 @@ update_status ModuleRenderer3D::Update(float dt)
 
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
-{	
+{
 	App->ui->RenderImGui();
 
 	SDL_GL_SwapWindow(App->window->window);
@@ -190,7 +189,7 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::Render(bool use_texture)
 {
-	
+
 }
 
 void ModuleRenderer3D::OnResize()
