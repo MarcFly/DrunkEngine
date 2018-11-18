@@ -1,4 +1,4 @@
-#include "Inspector.h"
+#include "InspectorWindow.h"
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"

@@ -36,6 +36,9 @@ public:
 
 	ImVec4 HyperlinkColor = { 30 / 250.f, 139 / 250.f, 18 / 250.f, 1 };
 
+private:
+	bool change_camera_controls;
+
 	PROCESS_MEMORY_COUNTERS mem = { 0 };
 	Timer ram_read_time;
 

@@ -5,7 +5,7 @@
 
 AboutWindow::AboutWindow() : Window("About...")
 {
-
+	
 }
 
 AboutWindow::~AboutWindow()

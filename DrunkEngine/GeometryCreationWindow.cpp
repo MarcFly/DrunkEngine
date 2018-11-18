@@ -3,7 +3,7 @@
 
 GEOMWindow::GEOMWindow() : Window("Create Objects")
 {
-
+	
 }
 
 GEOMWindow::~GEOMWindow() {}

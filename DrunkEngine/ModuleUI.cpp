@@ -16,7 +16,7 @@
 #include "ConsoleWindow.h"
 #include "SceneViewerWindow.h"
 #include "KdTreeWindow.h"
-#include "Inspector.h"
+#include "InspectorWindow.h"
 #include "LoadSaveWindows.h"
 
 #define MEM_BUDGET_NVX 0x9048
@@ -78,9 +78,9 @@ update_status ModuleUI::PreUpdate(float dt)
 
 	for (vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
 	{
-		Window* windows = (*it);
+		Window* windows = (*it);	
 
-		if (!CheckDataWindows() && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
+		if (!CheckDataWindows() && App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
 			windows->SwitchActive();
 
 		if (windows->IsActive())

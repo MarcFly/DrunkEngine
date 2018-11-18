@@ -657,7 +657,7 @@
     <ClInclude Include="SceneViewerWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Inspector.h">
+    <ClInclude Include="InspectorWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -932,7 +932,7 @@
     <ClCompile Include="SceneViewerWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Inspector.cpp">
+    <ClCompile Include="InspectorWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>

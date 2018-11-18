@@ -212,7 +212,7 @@
     <ClInclude Include="MGL\Math\TransformOps.h" />
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
-    <ClInclude Include="Inspector.h" />
+    <ClInclude Include="InspectorWindow.h" />
     <ClInclude Include="KdTree.h" />
     <ClInclude Include="KdTreeWindow.h" />
     <ClInclude Include="OptionsWindow.h" />
@@ -308,7 +308,7 @@
     <ClCompile Include="ModuleGameObject.cpp" />
     <ClCompile Include="ModuleImport.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
-    <ClCompile Include="Inspector.cpp" />
+    <ClCompile Include="InspectorWindow.cpp" />
     <ClCompile Include="KdTree.cpp" />
     <ClCompile Include="KdTreeWindow.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
