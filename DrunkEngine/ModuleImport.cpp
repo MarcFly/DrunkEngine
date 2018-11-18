@@ -94,8 +94,10 @@ void ModuleImport::LoadScene(const char* path)
 	par->GetTransform()->CalculateGlobalTransforms();
 	par->SetTransformedBoundBox();
 
+	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
 	App->gameObj->Main_Cam->LookToObj(par, par->max_distance_point);
 }
+
 
 void ModuleImport::ExportScene(const char* path)
 {
