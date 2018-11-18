@@ -16,7 +16,7 @@ bool ModuleResourceManager::Init()
 	return ret;
 }
 
-update_status ModuleResourceManager::PostUpdate(float dt)
+bool ModuleResourceManager::PostUpdate(float dt)
 {
 	std::map<DGUID, MetaResource*>::iterator it = (Library.begin());
 	for (int i = 0; i < Library.size(); i++, it++)
@@ -27,7 +27,7 @@ update_status ModuleResourceManager::PostUpdate(float dt)
 			item->Asset.UnloadFromMem();
 	}
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 bool ModuleResourceManager::CleanUp()

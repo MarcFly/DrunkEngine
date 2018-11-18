@@ -27,8 +27,8 @@ public:
 	~ModuleTime();
 
 	void PrepareUpdate();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
+	bool PreUpdate(float dt);
+	bool Update(float dt);
 
 	// Real Timer
 	float GetFPS() const;
@@ -41,6 +41,7 @@ public:
 	// Game Timer
 	float GameDT() const;
 	float GameDTMil() const;
+	uint GameFrames() const;
 
 private:
 	// Real Timer

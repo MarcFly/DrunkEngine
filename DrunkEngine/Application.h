@@ -48,7 +48,7 @@ public:
 
 	bool Init();
 	bool PreUpdate();
-	update_status Update();
+	bool Update();
 	bool DoUpdate();
 	bool PostUpdate();
 	bool CleanUp();

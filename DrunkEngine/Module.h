@@ -52,9 +52,9 @@ public:
 	{
 	}
 
-	virtual update_status PreUpdate(float game_dt)
+	virtual bool PreUpdate(float game_dt)
 	{
-		return UPDATE_CONTINUE;
+		return true;
 	}
 
 	virtual bool PreEditorUpdate(float real_dt)
@@ -62,9 +62,9 @@ public:
 		return true;
 	}
 
-	virtual update_status Update(float game_dt)
+	virtual bool Update(float game_dt)
 	{
-		return UPDATE_CONTINUE;
+		return true;
 	}
 
 	virtual bool EditorUpdate(float real_dt)
@@ -72,9 +72,9 @@ public:
 		return true;
 	}
 
-	virtual update_status PostUpdate(float game_dt)
+	virtual bool PostUpdate(float game_dt)
 	{
-		return UPDATE_CONTINUE;
+		return true;
 	}
 
 	virtual bool PostEditorUpdate(float real_dt)
@@ -91,12 +91,12 @@ public:
 
 	virtual bool Load(const JSON_Value* root_value)
 	{
-		return UPDATE_CONTINUE; 
+		return true; 
 	}
 
 	virtual bool Save(JSON_Value* root_value)
 	{
-		return UPDATE_CONTINUE; 
+		return true; 
 	}
 
 	virtual void SetDefault() {};

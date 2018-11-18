@@ -17,7 +17,7 @@ public:
 	~ModuleCamera3D();
 
 	bool Start();
-	update_status Update(float dt);
+	bool Update(float dt);
 	bool CleanUp();
 
 	bool Load(const JSON_Value* root_value);

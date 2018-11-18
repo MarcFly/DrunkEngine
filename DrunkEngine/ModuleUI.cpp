@@ -66,7 +66,7 @@ bool ModuleUI::Init()
 	return ret;
 }
 
-update_status ModuleUI::PreUpdate(float dt)
+bool ModuleUI::PreUpdate(float dt)
 {
 	
 	ImGui_ImplOpenGL2_NewFrame();
@@ -89,12 +89,12 @@ update_status ModuleUI::PreUpdate(float dt)
 	
 	
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
-update_status ModuleUI::PostUpdate(float dt)
+bool ModuleUI::PostUpdate(float dt)
 {
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 bool ModuleUI::CleanUp()

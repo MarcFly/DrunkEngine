@@ -18,6 +18,16 @@ public:
 
 	void CheckInputChange();
 
+	void Application();
+	void WindowOptions();
+	void RenderOptions();
+	void Camera();
+	void TextureParameters();
+	void InputOptions();
+	void HardwareInfo();
+	void LibrariesUsed();
+	void TimeViewer();
+
 public:
 
 	float fps;
@@ -35,6 +45,10 @@ public:
 	bool key_repeated;
 
 	ImVec4 HyperlinkColor = { 30 / 250.f, 139 / 250.f, 18 / 250.f, 1 };
+
+private:
+	float realdt, gamedt;
+	Timer dt_read_time;
 
 private:
 	bool change_camera_controls;

@@ -27,12 +27,12 @@ void ModuleTime::PrepareUpdate()
 	Game_Frame_Metrics();
 }
 
-update_status ModuleTime::PreUpdate(float dt)
+bool ModuleTime::PreUpdate(float dt)
 {
-	return UPDATE_CONTINUE;
+	return true;
 }
 
-update_status ModuleTime::Update(float dt)
+bool ModuleTime::Update(float dt)
 {
 	if(ImGui::Begin("##TimeWind", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -113,7 +113,7 @@ update_status ModuleTime::Update(float dt)
 	
 
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 float ModuleTime::GetFPS() const
@@ -253,4 +253,9 @@ void ModuleTime::UpdateCurrentMode()
 		break;
 	}
 
+}
+
+uint ModuleTime::GameFrames() const
+{
+	return count_fps;
 }
