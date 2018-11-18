@@ -114,8 +114,8 @@ bool ModuleTime::Update(float dt)
 			ImGui::EndCombo();
 		}
 
-		if (game_state > 2 && game_state != TS_Reverse)
-			ImGui::DragFloat("Playback Speed", &game_speed, 1, 1, 8);
+		if (game_state > 3 && game_state != TS_Reverse)
+			ImGui::SliderFloat("Playback Speed", &game_speed, 1, 8);
 
 		ImGui::End();
 	}

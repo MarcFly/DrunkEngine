@@ -840,10 +840,10 @@ void OptionsWindow::TimeViewer()
 {
 	if (ImGui::CollapsingHeader("Time Viewer"))
 	{
-		if (dt_read_time.Read() > 100)
+		if (dt_read_time.Read() > 250)
 		{
-			realdt = App->time->GetDT();
-			gamedt = App->time->GetDT();
+			realdt = App->time->DtMil();
+			gamedt = App->time->GameDTMil();
 			gametime = App->time->GameFrames() / 60.0f;
 			realtime = App->time->StartupTime();
 		}

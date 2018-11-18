@@ -19,6 +19,19 @@ All keybindings are rebindable, make use of your perfect layout.
 To add new fbx into the scene, just select the object that will be the parent for it on the Scene Viewer, go to Menu->Import... and select the new asset.
 If you want to save the current scene or to load a new one, just go to Menu->Save/Load. 
 
+In order to check out how time is flowing in-engine vs in-game, a simple collapsable header is under the Options Menu->Time Viewer.
+The first 2 values represent engine delta time and time since startup, the 2 below represent current game delta time and time since game startup.
+
+To change game speed you can change between modes:
+ - Play - Normal Playback speed
+ - Slow - Will slow gameplay by X times
+ - Fast - Will speed up gameplay by X times
+ - Reverse - Reverses play speed (negative delta time)
+ - RSlow - Reverses play speed and slows reverse time by X amount
+ - RFast - Reverses play speed and speeds reverse time by X amount
+
+Currently game time is not used in any shape or form, but there is a structure prepared for future use of it, separating editor and game runtime code.
+
 ## Innovation
 - KD-Tree (used on frustum and mouse-picking to accelerate static Objs)
 - Input window in options to change the camera controls and the window shortcuts.
@@ -49,7 +62,7 @@ If you want to save the current scene or to load a new one, just go to Menu->Sav
 
 ## MIT License
 
-Copyright (c) 2018 Marc Torres Jimenez & Andreu Sacasas Velázquez
+Copyright (c) 2018 Marc Torres Jimenez & Andreu Sacasas Velï¿½zquez
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
