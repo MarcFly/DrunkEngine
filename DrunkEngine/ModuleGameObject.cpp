@@ -2,6 +2,7 @@
 #include "ModuleGameObject.h"
 #include "ComponentCamera.h"
 #include "KdTree.h"
+#include "InspectorWindow.h"
 
 ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, Type_GameObj)
 {
@@ -113,6 +114,9 @@ void ModuleGameObject::DeleteScene()
 	objects_in_scene.clear();
 	static_objects_in_scene.clear();
 	non_static_objects_in_scene.clear();
+
+	SetCameraRender(Main_Cam);
+	App->ui->inspector_win->main_cam = false;
 
 	if (getRootObj() != nullptr)
 	{
