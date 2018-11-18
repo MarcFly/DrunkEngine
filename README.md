@@ -1,26 +1,51 @@
-## DrunkEngine
+# DrunkEngine
 
-# Info
-DrunkEngine is the the result of developing a 3D Game Engine for our third year subject Game Engines, being the current build related to the first delivery of said project. This release features a primitive .FBX model viewer and texture overview in .BMP,.DDS,.JPG and.PNG formats.
+## Info
+DrunkEngine is the the result of developing a 3D Game Engine for our third year subject of Game Engines. This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you will be able to save the scene and load it from the editor).
 
 Github Page - https://github.com/MarcFly/DrunkEngine
 
-# Authors
+## Authors
 The people currently working in this engine are Andreu Sacasas and Marc Torres, currently 3rd Year students coursing Design and Game Development at CITM, a center abscribed to the UPC.
 
-# Usage
-DrunkEngine will automatically load a preview .FBX with a house and a texture added, in order to view more just Drag&Drop other ones.
-If your model has textures already set, put all the files needed into the "Test Models and Textures" folder in order to have it properly loaded at the same time. You can also Drag&Drop textures to apply it to the whole model!
+## Usage
+DrunkEngine will automatically load an .FBX file with a street and some houses with textures.
 
 To move around the space, either orbit around with Alt+LeftClick or move in first person using RightClick+WASD. If you wander off to far, don't worry, press F to focus again to the current model.
 
-In the menu bar, an array of options are available, take some time to look into it. We specially recommend using the object properties window, under the Tools Tab, or open it with "M".
+In the menu bar, an array of options are available, take some time to look into it. We specially recommend using the Inspector and the Scene Viewer. Besides clicking them on the menu you can also open them with Ctrl+I and Ctrl+V respectively (you can check and change other shortcuts on the "input" section in the Options menu).
 
 All keybindings are rebindable, make use of your perfect layout.
 
-# Innovation
+## Innovation
+- KD-Tree (used on frustum and mouse-picking to accelerate static Objs)
+- Input window in options to change the camera controls and the window shortcuts.
 
-# MIT License
+## Each member's Work
+
+### Andreu Sacasas
+
+- Amplified Input options.
+- Frustum implementation (Editor camera + component Cameras & FOV).
+- Static System.
+- KD-Tree + implemented it on frustum culling / mouse picking optimizations.
+- ImGuizmo.
+- World / Local transformations to GameObjs.
+- Event System.
+- Scene Viewer (Objs Tree + Selection).
+
+### Marc Torres
+
+- Mouse Pick.
+- Recource Management.
+- Save/Load Scene.
+- Import Assets.
+- GameObject Components in the Inspector.
+- Export assets to our own format (into a hidden "Library" folder in Game).
+- Reference counting for resources.
+- Start/Pause/Stop options on the editor.
+
+## MIT License
 
 Copyright (c) 2018 Marc Torres Jimenez & Andreu Sacasas Velázquez
 

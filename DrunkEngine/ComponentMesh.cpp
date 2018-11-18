@@ -115,7 +115,7 @@ void ComponentMesh::Draw()
 		Color def = App->camera->background;
 		glColor4f(def.r, def.g, def.b, def.a);
 
-		if (App->renderer3D->render_normals)
+		if (App->renderer3D->render_normals && this->parent->active)
 			this->DrawNormals();
 
 		this->parent->static_to_draw = false;
