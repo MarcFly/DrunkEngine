@@ -134,7 +134,8 @@ update_status ModuleInput::PreUpdate(float dt)
 				}
 				break;
 			}
-
+			
+			/*
 			case SDL_DROPFILE:		// In case if dropped file
 			{      
 				char* dropped_filedir = nullptr;
@@ -147,6 +148,7 @@ update_status ModuleInput::PreUpdate(float dt)
 				SDL_free(dropped_filedir);
 				break;
 			}
+			*/
 		}
 	}
 

@@ -30,10 +30,11 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 	////num_child++;
 
 	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | (obj->active ? ImGuiTreeNodeFlags_Selected : 0);
-	
+	std::string LeafID = obj->name + "##" + std::to_string(st);
+
 	if (obj->children.size() != 0)		
-	{
-		bool n_open = ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+	{		
+		bool n_open = ImGui::TreeNodeEx(LeafID.c_str(), node_flags);
 		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->gameObj->active_objects.size() > 0)
 		{
 			bool repeated = false;
@@ -71,7 +72,7 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 	else
 	{
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
-		ImGui::TreeNodeEx(obj->name.c_str(), node_flags);
+		ImGui::TreeNodeEx(LeafID.c_str(), node_flags);
 		if (ImGui::IsItemClicked() && ImGui::GetIO().KeyCtrl && App->gameObj->active_objects.size() > 0)
 		{
 			bool repeated = false;

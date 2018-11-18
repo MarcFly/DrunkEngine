@@ -105,9 +105,6 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 
 	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
 
-	App->gameObj->SetSceneObjects();
-	App->gameObj->SetNonStaticList();
-
 	return true;
 }
 

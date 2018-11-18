@@ -60,9 +60,6 @@ void ModuleImport::LoadScene(const char* path)
 	JSON_Array* obj_arr = json_object_get_array(obj_g, "scene");
 
 	GameObject* par = App->gameObj->getRootObj();
-	
-	int i = 0;
-	JSON_Value* val = json_array_get_value(obj_arr, i);
 
 	if (App->gameObj->getRootObj() == nullptr)
 	{
@@ -74,9 +71,17 @@ void ModuleImport::LoadScene(const char* path)
 		par = App->ui->scene_viewer_window->selected_object;
 	}
 
-	for (i; i < json_array_get_count(obj_arr); i++)
 	{
-		val = json_array_get_value(obj_arr, i);
+		GameObject* add = prefab_i->ImportGameObject(path, json_array_get_value(obj_arr, 0));
+		add->parent = par;
+
+		par->children.push_back(add);
+		par = add;
+	}
+
+	for (int i = 1; i < json_array_get_count(obj_arr); i++)
+	{
+		JSON_Value* val = json_array_get_value(obj_arr, i);
 
 		GameObject* add = prefab_i->ImportGameObject(path, val);
 		add->parent = par;
@@ -188,9 +193,7 @@ void ModuleImport::LoadFile(char * file)
 void ModuleImport::LoadFileType(char * file, FileType type)
 {
 	if (type == FT_FBX)
-	{
-		ExportScene(file);
-	}
+		App->scene->LoadFBX(file);
 	else if (type == FT_Texture)
 		mat_i->ExportILTexture(file);
 	else if(type == FT_Error)

@@ -30,8 +30,8 @@ public:
 
 	bool check_info;
 
-	bool radio_world = false;
-	bool radio_local = true;
+	bool radio_world = true;
+	bool radio_local = false;
 
 	ImVec2 show_size = { 128,128 };
 

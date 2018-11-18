@@ -169,6 +169,24 @@ void ComponentTransform::Load(JSON_Object* comp)
 	SetTransformRotation(rotate_quat);
 
 	SetLocalTransform();
+
+	bool fromAINode = json_object_dotget_boolean(comp, "fromAINode");
+	std::string setname;
+	if (!fromAINode)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				setname = "world_pos." + std::to_string(j + i * 4);
+				world_pos.v[i][j] = json_object_dotget_number(comp, setname.c_str());
+
+				setname = "world_rot." + std::to_string(j + i * 4);
+				world_rot.v[i][j] = json_object_dotget_number(comp, setname.c_str());
+
+			}
+		}
+	}
 }
 
 void ComponentTransform::Save(JSON_Array* comps)
@@ -190,6 +208,21 @@ void ComponentTransform::Save(JSON_Array* comps)
 	json_object_dotset_number(curr, "properties.rotate_quat.x", rotate_quat.x);
 	json_object_dotset_number(curr, "properties.rotate_quat.y", rotate_quat.y);
 	json_object_dotset_number(curr, "properties.rotate_quat.z", rotate_quat.z);
+
+	json_object_dotset_boolean(curr, "properties.fromAINode", false);
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::string setname = "properties.world_pos." + std::to_string(j + i*4);
+			json_object_dotset_number(curr, setname.c_str(), world_pos.v[i][j]);
+
+			setname = "properties.world_rot." + std::to_string(j + i*4);
+			json_object_dotset_number(curr, setname.c_str(), world_rot.v[i][j]);
+
+		}
+	}
 
 	json_array_append_value(comps, append);
 }

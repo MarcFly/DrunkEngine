@@ -96,6 +96,8 @@ void PrefabImport::ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* tra
 	json_object_dotset_number(curr, "properties.rotate_quat.y", rotate_quat.y);
 	json_object_dotset_number(curr, "properties.rotate_quat.z", rotate_quat.z);
 
+	json_object_dotset_boolean(curr, "properties.fromAINode", true);
+
 	json_array_append_value(comps, append);
 }
 
