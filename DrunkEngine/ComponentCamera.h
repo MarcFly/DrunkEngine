@@ -32,8 +32,8 @@ public:
 	void CalculateViewMatrix();
 	float* GetViewMatrix();
 
-	void LookToObj(GameObject* obj, float vertex_aux);
-	void ComponentCamera::LookToActiveObjs(vec look_to);
+	void LookToObj(GameObject* obj, const float vertex_aux);
+	void ComponentCamera::LookToActiveObjs(const vec look_to);
 
 	void TransformPos(float3 pos);
 	void TransformRot(Quat rot);
@@ -41,7 +41,7 @@ public:
 
 	void SetbbFrustum();
 
-	void Load(JSON_Object* comp);
+	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 private:

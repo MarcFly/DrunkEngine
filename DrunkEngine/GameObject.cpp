@@ -75,7 +75,7 @@ void GameObject::Draw()
 		this->DrawBB();
 }
 
-void GameObject::DrawBB()
+void GameObject::DrawBB() const
 {
 	glDisable(GL_LIGHTING);
 
@@ -417,7 +417,7 @@ void GameObject::DestroyComponent()
 
 }
 
-void GameObject::Load(JSON_Value* go, const char* file)
+void GameObject::Load(const JSON_Value* go, const char* file)
 {
 	
 
@@ -482,7 +482,7 @@ std::vector<uint> GameObject::GetMeshProps()
 	return ret_v;
 }
 
-Component* GameObject::NewComponent(CTypes type)
+Component* GameObject::NewComponent(const CTypes type)
 {
 	if (type == CT_Mesh)
 		return new ComponentMesh(this);

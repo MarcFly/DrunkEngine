@@ -96,7 +96,7 @@ void OptionsWindow::Draw()
 			SDL_GetWindowSize(App->window->window, &win_w, &win_h);
 
 			if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0.0f, 1.0f))
-				App->window->SetBrightness(App->window->brightness);
+				App->window->SetBrightness();
 
 			if (ImGui::SliderInt("Width", &win_w, 400, App->window->screen_size_w - 1) && !App->window->fullscreen && !App->window->full_desktop)
 			{
@@ -120,10 +120,10 @@ void OptionsWindow::Draw()
 
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Resizable", &App->window->resizable))
-				App->window->SetResizable(App->window->resizable);
+				App->window->SetResizable();
 
 			if (ImGui::Checkbox("Borderless", &App->window->borderless))
-				App->window->SetBorderless(App->window->borderless);
+				App->window->SetBorderless();
 
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Full Desktop", &App->window->full_desktop))

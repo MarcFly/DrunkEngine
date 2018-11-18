@@ -37,7 +37,7 @@ public:
 
 	void CleanUp();
 
-	void Load(JSON_Object* comp);
+	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 public:

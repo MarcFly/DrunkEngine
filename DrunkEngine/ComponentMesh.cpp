@@ -177,7 +177,7 @@ void ComponentMesh::DrawMesh()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ComponentMesh::DrawMeshWire()
+void ComponentMesh::DrawMeshWire() const
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
@@ -195,7 +195,7 @@ void ComponentMesh::DrawMeshWire()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ComponentMesh::DrawNormals()
+void ComponentMesh::DrawNormals() const
 {
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
@@ -230,7 +230,7 @@ void ComponentMesh::CleanUp()
 	this->parent = nullptr;
 }
 
-void ComponentMesh::Load(JSON_Object* comp)
+void ComponentMesh::Load(const JSON_Object* comp)
 {
 	this->name = json_object_get_string(comp, "filename");
 	this->UID = DGUID(name.c_str());

@@ -18,16 +18,16 @@ public:
 	bool Init();
 	bool CleanUp();
 
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
 	void SetTitle(const char* title);
 
-	void SetFullscreen(bool fullscreen);
-	void SetResizable(bool resizable);
-	void SetBorderless(bool borderless);
-	void SetFullDesktop(bool full_desktop);
-	void SetBrightness(float brightness);
+	void SetFullscreen(const bool fullscreen);
+	void SetResizable();
+	void SetBorderless();
+	void SetFullDesktop(const bool full_desktop);
+	void SetBrightness();
 
 	void RecieveEvent(const Event & event);
 

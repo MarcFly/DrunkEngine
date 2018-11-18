@@ -39,7 +39,7 @@ public:
 	virtual void PostUpdate() {};
 	virtual void CleanUp() {};
 
-	virtual void Load(JSON_Object* comp) {};
+	virtual void Load(const JSON_Object* comp) {};
 	virtual void Save(JSON_Array* comps) {};
 
 	virtual void SetBaseVals()

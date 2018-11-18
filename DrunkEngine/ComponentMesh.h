@@ -30,12 +30,12 @@ public:
 	
 	void Draw();
 	void DrawMesh();
-	void DrawMeshWire();
-	void DrawNormals();
+	void DrawMeshWire() const;
+	void DrawNormals() const;
 
 	void CleanUp();
 
-	void Load(JSON_Object* comp);
+	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
 	bool CheckMeshValidity();

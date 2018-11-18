@@ -120,7 +120,7 @@ void ModuleWindow::SetTitle(const char* title)
 	SDL_SetWindowTitle(window, title);
 }
 
-void ModuleWindow::SetFullscreen(bool fullscreen)
+void ModuleWindow::SetFullscreen(const bool fullscreen)
 {
 	if (fullscreen)
 	{
@@ -137,17 +137,17 @@ void ModuleWindow::SetFullscreen(bool fullscreen)
 	}
 }
 
-void ModuleWindow::SetResizable(bool resizable)
+void ModuleWindow::SetResizable()
 {
 	SDL_SetWindowResizable(this->window, (SDL_bool)this->resizable);
 }
 
-void ModuleWindow::SetBorderless(bool borderless)
+void ModuleWindow::SetBorderless()
 {
 	SDL_SetWindowBordered(App->window->window, (SDL_bool)!this->borderless);
 }
 
-void ModuleWindow::SetFullDesktop(bool full_desktop)
+void ModuleWindow::SetFullDesktop(const bool full_desktop)
 {
 	if (full_desktop)
 		SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -155,7 +155,7 @@ void ModuleWindow::SetFullDesktop(bool full_desktop)
 		SDL_SetWindowFullscreen(this->window, 0);
 }
 
-void ModuleWindow::SetBrightness(float brightness)
+void ModuleWindow::SetBrightness()
 {
 	SDL_SetWindowBrightness(this->window, this->brightness);
 }
@@ -181,7 +181,7 @@ void ModuleWindow::RecieveEvent(const Event & event)
 }
 
 // SAVE & LOAD ----------------------------------------------------------------------------------------
-bool ModuleWindow::Load(JSON_Value* root_value)
+bool ModuleWindow::Load(const JSON_Value* root_value)
 {
 	bool ret = false;
 
@@ -195,16 +195,16 @@ bool ModuleWindow::Load(JSON_Value* root_value)
 	SetFullscreen(fullscreen);
 
 	resizable = json_object_dotget_boolean(json_object(root_value), "window.options.resizable");
-	SetResizable(resizable);
+	SetResizable();
 
 	borderless = json_object_dotget_boolean(json_object(root_value), "window.options.borderless");
-	SetBorderless(borderless);
+	SetBorderless();
 
 	full_desktop = json_object_dotget_boolean(json_object(root_value), "window.options.full_desktop");
 	SetFullDesktop(full_desktop);
 
 	brightness = json_object_dotget_number(json_object(root_value), "window.options.brightness");
-	SetBrightness(brightness);
+	SetBrightness();
 
 	ret = true;
 	return ret;
