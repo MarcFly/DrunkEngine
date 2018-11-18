@@ -25,9 +25,9 @@ public:
 
 	bool Init();
 	bool Start();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	bool PreUpdate(float dt);
+	bool Update(float dt);
+	bool PostUpdate(float dt);
 	bool CleanUp();
 
 	PhysBody3D* AddBody(const vec& center, PSphere& sphere, bool phys = true, float mass = 1.0f); // This creates a mathematical sphere and technically a renderable sphere (passed as the transform of a polyhedron)

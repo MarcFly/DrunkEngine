@@ -1,6 +1,6 @@
 #include "ConsoleWindow.h"
 
-ConsoleWindow::ConsoleWindow() : Window("Log")	//Change to "Console" for Assignment 2
+ConsoleWindow::ConsoleWindow() : Window("Log")	//Change to "Console" for Assignment 3
 {
 	ClearLog();
 	memset(InputBuf, 0, sizeof(InputBuf));

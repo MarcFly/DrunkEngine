@@ -22,11 +22,18 @@ enum Controls {
 	MOVE_RIGHT,
 	FOCUS_CAMERA,
 	ORBIT_CAMERA,
-	OPTIONS_MENU,
-	CONSOLE_MENU,
-	MESH_MENU,
-	ABOUT_MENU,
 	NULL_CONTROL
+};
+
+enum Menu_Controls {
+
+	OPTIONS_MENU = NULL_CONTROL + 1,
+	CONSOLE_MENU,
+	INSPECTOR,
+	ABOUT_MENU,
+	SCENE_VIEWER_MENU,
+	KD_TREE_MENU,
+	NULL_CONTROL_M
 };
 
 class ModuleInput : public Module
@@ -37,7 +44,7 @@ public:
 	~ModuleInput();
 
 	bool Init();
-	update_status PreUpdate(float dt);
+	bool PreUpdate(float dt);
 	bool CleanUp();
 
 	KEY_STATE GetKey(int id) const
@@ -83,7 +90,7 @@ public:
 	void UpdateShortcuts();
 	void SetDefaultControls();
 
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
 private:
@@ -99,8 +106,29 @@ private:
 public:
 
 	int controls[NULL_CONTROL];
+	int menu_c[NULL_CONTROL_M];
 
 	bool quit;
+
+private:
+	void SetDefault()
+	{
+		//Controls
+		controls[MOVE_FORWARD]	= 26;
+		controls[MOVE_BACK]		= 22;
+		controls[MOVE_LEFT]		= 4;
+		controls[MOVE_RIGHT]	= 7;
+		controls[FOCUS_CAMERA]	= 9;
+		controls[ORBIT_CAMERA]	= 226;
+
+		//Windows
+		menu_c[OPTIONS_MENU]		= 18;
+		menu_c[CONSOLE_MENU]		= 6;
+		menu_c[INSPECTOR]			= 12;
+		menu_c[ABOUT_MENU]			= 4;
+		menu_c[SCENE_VIEWER_MENU]	= 25;
+		menu_c[KD_TREE_MENU]		= 23;	
+	}
 };
 
 #endif

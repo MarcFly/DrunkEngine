@@ -9,54 +9,57 @@
 #include "ModuleInput.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
-//#include "ModulePhysics3D.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
+#include "ModuleImport.h"
+#include "ModuleEventSystem.h"
+#include "ModuleGameObject.h"
+#include "ModuleResourceManager.h"
+#include "ModuleTime.h"
 
 #include "ModuleUI.h"
-
 
 class Application
 {
 public:
+	ModuleTime* time;
 	ModuleWindow* window;
 	ModuleInput* input;
-	ModuleRenderer3D* renderer3D;
 	ModuleCamera3D* camera;
-	//ModulePhysics3D* physics;
+	ModuleRenderer3D* renderer3D;
+	ModuleImport* importer;
+	ModuleResourceManager* resources;
 	ModuleUI* ui;
-	ModuleManageMesh* mesh_loader;
+	ModuleScene* scene;
+	ModuleEventSystem* eventSys;
+	ModuleGameObject* gameObj;
+
+	std::string profile = "config_data.json";
 
 private:
-
-	Timer	ms_timer;
-	Timer	fps_timer;
-	float	dt;
-	int		count_fps;
-	int		fps;
-	int		fps_cap;
 	std::list<Module*> list_modules;
 
+	Timer	DebugT;
+
+	bool _isEditor;
 public:
 
 	Application();
 	~Application();
 
 	bool Init();
-	update_status Update();
+	bool PreUpdate();
+	bool Update();
+	bool DoUpdate();
+	bool PostUpdate();
 	bool CleanUp();
-
-	float GetFPS();
-	float GetDt();
-	void Cap_FPS(const int& cap);
 
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
-	void Frame_Metrics();
-
 	
+	void EventSystemBroadcast();
 };
 
 extern Application* App;

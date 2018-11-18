@@ -18,16 +18,18 @@ public:
 	bool Init();
 	bool CleanUp();
 
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
 	void SetTitle(const char* title);
 
-	void SetFullscreen(bool fullscreen);
-	void SetResizable(bool resizable);
-	void SetBorderless(bool borderless);
-	void SetFullDesktop(bool full_desktop);
-	void SetBrightness(float brightness);
+	void SetFullscreen(const bool fullscreen);
+	void SetResizable();
+	void SetBorderless();
+	void SetFullDesktop(const bool full_desktop);
+	void SetBrightness();
+
+	void RecieveEvent(const Event & event);
 
 public:
 	//The window we'll be rendering to
@@ -48,6 +50,18 @@ public:
 	bool full_desktop;
 	float brightness;
 
+private:
+	void SetDefault()
+	{
+		window_h = 0;
+		window_w = 0;
+
+		brightness = 1;
+		fullscreen = false;
+		resizable = true;
+		borderless = false;
+		full_desktop = false;
+	}
 };
 
 #endif // __ModuleWindow_H__

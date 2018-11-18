@@ -3,7 +3,7 @@
 
 GEOMWindow::GEOMWindow() : Window("Create Objects")
 {
-
+	
 }
 
 GEOMWindow::~GEOMWindow() {}
@@ -35,7 +35,7 @@ void GEOMWindow::Draw()
 		ImGui::SameLine();
 		if (ImGui::Button("Create Cube"))
 		{
-			//App->mesh_loader->CreatePrimitiveObject(box_center, PCube(box_size));
+			//App->scene->CreatePrimitiveObject(box_center, PCube(box_size));
 		}
 
 	}

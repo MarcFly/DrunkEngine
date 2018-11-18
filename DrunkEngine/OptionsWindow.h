@@ -18,6 +18,16 @@ public:
 
 	void CheckInputChange();
 
+	void Application();
+	void WindowOptions();
+	void RenderOptions();
+	void Camera();
+	void TextureParameters();
+	void InputOptions();
+	void HardwareInfo();
+	void LibrariesUsed();
+	void TimeViewer();
+
 public:
 
 	float fps;
@@ -36,9 +46,38 @@ public:
 
 	ImVec4 HyperlinkColor = { 30 / 250.f, 139 / 250.f, 18 / 250.f, 1 };
 
-	PROCESS_MEMORY_COUNTERS mem = { 0 };
-	Timer ram_read_time;
+private:
+	float realdt, gamedt, gametime, realtime;
+	Timer dt_read_time;
 
+private:
+	bool change_camera_controls;
+
+	// System Info Read
+	bool read_once;
+
+	PROCESS_MEMORY_COUNTERS mem = { 0 };
+	Timer info_read_time;
+
+	SDL_version sdl_ver;
+	int cpu_count;
+	int cache;
+	float SystemRam;
+	std::string gpu_vendor;
+	std::string GPU;
+	std::string Drivers;
+
+	GLint budget;
+	GLint available;
+	GLuint used_mem;
+
+	int gl_major, gl_minor;
+	int devil_a, devil_b, devil_c;
+	int ai_major, ai_minor, ai_revision;
+
+private:
+	void GetFixedSystemData();
+	void GetRuntimeSystemData();
 };
 
 #endif

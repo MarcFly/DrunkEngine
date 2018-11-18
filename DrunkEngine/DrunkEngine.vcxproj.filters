@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Sources">
@@ -118,14 +118,29 @@
     <Filter Include="Sources\Tools\GLEW\libx86\Release\Win32">
       <UniqueIdentifier>{bc58903d-a9f8-4d80-ad30-37c74a7aa548}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\GameObject">
+    <Filter Include="Sources\Modules\GameObject Structure">
       <UniqueIdentifier>{e62cf581-991b-4584-9238-f60d45800ed1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\GameObject\ComponentMesh">
-      <UniqueIdentifier>{4ccf75f6-65ff-434b-b5ce-b48ec293fa32}</UniqueIdentifier>
+    <Filter Include="Sources\Modules\GameObject Structure\Components">
+      <UniqueIdentifier>{b226c4eb-2984-4717-9a2b-2ac9059d041a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\GameObject\ComponentMaterial">
-      <UniqueIdentifier>{bbc28f04-7d9b-4a71-974c-2a43491c6999}</UniqueIdentifier>
+    <Filter Include="Sources\Modules\ResourceManager">
+      <UniqueIdentifier>{b1d457ba-8c5b-4f3e-9ca1-dac56be28b7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\ResourceManager\Resources">
+      <UniqueIdentifier>{34cce1c9-fafd-4988-8c6e-acb4aca80979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\FileHelpers">
+      <UniqueIdentifier>{072ed3b1-0c50-41e7-a2f7-503068589221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\ModuleImport">
+      <UniqueIdentifier>{22699cfd-1c77-4dc9-a255-60cf3482b4bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\ModuleImport\Importers">
+      <UniqueIdentifier>{6b51472b-2314-4641-9d03-efc2dc0dfdf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\UI\ImGuizmo">
+      <UniqueIdentifier>{ffc68ec3-3e46-470d-a2ca-cd432c35b6c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -426,9 +441,6 @@
     <ClInclude Include="glmath\glmath.h">
       <Filter>Sources\Tools\glmath</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleManageMesh.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Assimp\include\ai_assert.h">
       <Filter>Sources\Tools\Assimp\include</Filter>
     </ClInclude>
@@ -567,7 +579,88 @@
     <ClInclude Include="DevIL\include\IL\ilut_config.h">
       <Filter>Sources\Tools\DevIL\include\IL</Filter>
     </ClInclude>
-    <ClInclude Include="GeoPropertiesWindow.h">
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMesh.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMaterial.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTransform.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScene.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleImport.h">
+      <Filter>Sources\Modules\ModuleImport</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadSaveWindows.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="KdTree.h">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="KdTreeWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleEventSystem.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleGameObject.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Sources\Modules\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHelpers.h">
+      <Filter>Sources\Tools\FileHelpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleResourceManager.h">
+      <Filter>Sources\Modules\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMesh.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMaterial.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTexture.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="MD5.h">
+      <Filter>Sources\Tools\FileHelpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\Modules\UI\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcePrefab.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleTime.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneViewerWindow.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InspectorWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -767,13 +860,85 @@
     <ClCompile Include="glmath\glmath.cpp">
       <Filter>Sources\Tools\glmath</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleManageMesh.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="ConsoleWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
-    <ClCompile Include="GeoPropertiesWindow.cpp">
+    <ClCompile Include="ModuleScene.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMesh.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTransform.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMaterial.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleImport.cpp">
+      <Filter>Sources\Modules\ModuleImport</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadSaveWindows.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="KdTree.cpp">
+      <Filter>Sources\Modules\GameObject Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="KdTreeWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEventSystem.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleGameObject.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Sources\Modules\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="FileHelpers.cpp">
+      <Filter>Sources\Tools\FileHelpers</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleResourceManager.cpp">
+      <Filter>Sources\Modules\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMesh.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\Modules\UI\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMaterial.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleTime.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneViewerWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InspectorWindow.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>

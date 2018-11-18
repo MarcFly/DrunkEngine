@@ -1,18 +1,17 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleUI.h"
-#include "ModuleManageMesh.h"
-
+#include "ModuleScene.h"
 #include "OptionsWindow.h"
 #include "AboutWindow.h"
-#include "RandomGenWindow.h"
-#include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "SceneViewerWindow.h"
+#include "KdTreeWindow.h"
+#include "InspectorWindow.h"
 
 #define MAX_KEYS 300
 
-ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled)
+ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled, Type_Input)
 {
 	keyboard = new KEY_STATE[MAX_KEYS];
 	memset(keyboard, KEY_IDLE, sizeof(KEY_STATE) * MAX_KEYS);
@@ -22,7 +21,8 @@ ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled)
 // Destructor
 ModuleInput::~ModuleInput()
 {
-	delete[] keyboard;
+	if(keyboard != nullptr)
+		delete[] keyboard;
 }
 
 // Called before render is available
@@ -47,7 +47,7 @@ bool ModuleInput::Init()
 }
 
 // Called every draw update
-update_status ModuleInput::PreUpdate(float dt)
+bool ModuleInput::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
 
@@ -122,11 +122,20 @@ update_status ModuleInput::PreUpdate(float dt)
 
 			case SDL_WINDOWEVENT:
 			{
-				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
-					App->renderer3D->OnResize(e.window.data1, e.window.data2);
+				if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					int win_w, win_h;
+					SDL_GetWindowSize(App->window->window, &win_w, &win_h);
+
+					Event ev(EventType::Window_Resize, Event::UnionUsed::UsePoint2d);
+					ev.point2d.x = win_w;
+					ev.point2d.y = win_h;
+					App->eventSys->BroadcastEvent(ev);
+				}
 				break;
 			}
-
+			
+			/*
 			case SDL_DROPFILE:		// In case if dropped file
 			{      
 				char* dropped_filedir = nullptr;
@@ -134,53 +143,31 @@ update_status ModuleInput::PreUpdate(float dt)
 				dropped_filedir = e.drop.file;
 				// Shows directory of dropped file
 
-
-				SDL_ShowSimpleMessageBox(
-					SDL_MESSAGEBOX_INFORMATION,
-					"File dropped on window",
-					dropped_filedir,
-					App->window->window);
-
+				App->importer->LoadFile(dropped_filedir);
 				
-				
-				std::string extension = strrchr(dropped_filedir, '.');
-
-				if (extension == std::string(".fbx") || extension == std::string(".FBX"))
-					App->mesh_loader->LoadFBX(dropped_filedir);
-				else if (App->mesh_loader->Objects.size() > 0) // In case we have no objects
-				{
-					if (extension == std::string(".png") || extension == std::string(".PNG"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[App->mesh_loader->Objects.size() -1]);
-					else if (extension == std::string(".bmp") || extension == std::string(".BMP"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
-					else if (extension == std::string(".jpg") || extension == std::string(".JPG"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
-					else if (extension == std::string(".dds") || extension == std::string(".DDS"))
-						App->mesh_loader->LoadTextCurrentObj(dropped_filedir, &App->mesh_loader->Objects[0]);
-				}
-				else
-					App->ui->console_win->AddLog("File format not recognized!\n");
-
 				SDL_free(dropped_filedir);
 				break;
 			}
+			*/
 		}
 	}
 
 	if(quit == true)
-		return UPDATE_STOP;
+		return false;
 
 
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 // Called before quitting
 bool ModuleInput::CleanUp()
 {
-	App->ui->console_win->AddLog("Quitting SDL input event subsystem");
+	PLOG("Quitting SDL input event subsystem");
 
-	delete keyboard;
+	if(keyboard != nullptr)
+		delete[] keyboard;
+	keyboard = nullptr;
 
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
@@ -188,10 +175,12 @@ bool ModuleInput::CleanUp()
 
 void ModuleInput::UpdateShortcuts()
 {
-	App->ui->options_win->SetShortCut((SDL_Scancode)controls[OPTIONS_MENU]);
-	App->ui->console_win->SetShortCut((SDL_Scancode)controls[CONSOLE_MENU]);
-	App->ui->geo_properties_win->SetShortCut((SDL_Scancode)controls[MESH_MENU]);
-	App->ui->about_win->SetShortCut((SDL_Scancode)controls[ABOUT_MENU]);
+	App->ui->options_win->SetShortCut((SDL_Scancode)menu_c[OPTIONS_MENU]);
+	App->ui->console_win->SetShortCut((SDL_Scancode)menu_c[CONSOLE_MENU]);
+	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)menu_c[INSPECTOR]);
+	App->ui->about_win->SetShortCut((SDL_Scancode)menu_c[ABOUT_MENU]);
+	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)menu_c[SCENE_VIEWER_MENU]);
+	App->ui->kdtree_win->SetShortCut((SDL_Scancode)menu_c[KD_TREE_MENU]);
 }
 
 void ModuleInput::SetDefaultControls()
@@ -205,15 +194,17 @@ void ModuleInput::SetDefaultControls()
 	controls[ORBIT_CAMERA] = SDL_SCANCODE_LALT;
 
 	//Menu Shortcuts
-	controls[OPTIONS_MENU] = SDL_SCANCODE_O;
-	controls[CONSOLE_MENU] = SDL_SCANCODE_C;
-	controls[MESH_MENU] = SDL_SCANCODE_M;
-	controls[ABOUT_MENU] = SDL_SCANCODE_I;
+	menu_c[OPTIONS_MENU] = SDL_SCANCODE_O;
+	menu_c[CONSOLE_MENU] = SDL_SCANCODE_C;
+	menu_c[INSPECTOR] = SDL_SCANCODE_I;
+	menu_c[ABOUT_MENU] = SDL_SCANCODE_A;
+	menu_c[SCENE_VIEWER_MENU] = SDL_SCANCODE_V;
+	menu_c[KD_TREE_MENU] = SDL_SCANCODE_T;
 
 	App->ui->console_win->AddLog("Input config set to default");
 }
 
-bool ModuleInput::Load(JSON_Value * root_value)
+bool ModuleInput::Load(const JSON_Value * root_value)
 {
 	bool ret = false;
 
@@ -228,10 +219,12 @@ bool ModuleInput::Load(JSON_Value * root_value)
 	controls[ORBIT_CAMERA] = json_object_dotget_number(json_object(root_value), "controls.orbit_camera");
 
 	//Menu Shortcuts
-	controls[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
-	controls[CONSOLE_MENU] = json_object_dotget_number(json_object(root_value), "controls.console_menu");
-	controls[MESH_MENU] = json_object_dotget_number(json_object(root_value), "controls.mesh_menu");
-	controls[ABOUT_MENU] = json_object_dotget_number(json_object(root_value), "controls.about_menu");
+	menu_c[OPTIONS_MENU] = json_object_dotget_number(json_object(root_value), "controls.options_menu");
+	menu_c[CONSOLE_MENU] = json_object_dotget_number(json_object(root_value), "controls.console_menu");
+	menu_c[INSPECTOR] = json_object_dotget_number(json_object(root_value), "controls.inspector_menu");
+	menu_c[ABOUT_MENU] = json_object_dotget_number(json_object(root_value), "controls.about_menu");
+	menu_c[SCENE_VIEWER_MENU] = json_object_dotget_number(json_object(root_value), "controls.scene_viewer_menu");
+	menu_c[KD_TREE_MENU] = json_object_dotget_number(json_object(root_value), "controls.kd_tree_menu");
 
 	ret = true;
 	return ret;
@@ -241,22 +234,28 @@ bool ModuleInput::Save(JSON_Value * root_value)
 {
 	bool ret = false;
 
-
-	root_value = json_parse_file("config_data.json");
 	JSON_Object* root_obj = json_value_get_object(root_value);
 
+	//Controls
 	json_object_dotset_number(root_obj, "controls.move_forward", controls[MOVE_FORWARD]);
 	json_object_dotset_number(root_obj, "controls.move_back", controls[MOVE_BACK]);
 	json_object_dotset_number(root_obj, "controls.move_left", controls[MOVE_LEFT]);
 	json_object_dotset_number(root_obj, "controls.move_right", controls[MOVE_RIGHT]);
 	json_object_dotset_number(root_obj, "controls.focus_camera", controls[FOCUS_CAMERA]);
 	json_object_dotset_number(root_obj, "controls.orbit_camera", controls[ORBIT_CAMERA]);
-	json_object_dotset_number(root_obj, "controls.options_menu", controls[OPTIONS_MENU]);
-	json_object_dotset_number(root_obj, "controls.mesh_menu", controls[MESH_MENU]);
+
+	//Menus
+	json_object_dotset_number(root_obj, "controls.options_menu", menu_c[OPTIONS_MENU]);
+	json_object_dotset_number(root_obj, "controls.console_menu", menu_c[CONSOLE_MENU]);
+	json_object_dotset_number(root_obj, "controls.inspector_menu", menu_c[INSPECTOR]);
+	json_object_dotset_number(root_obj, "controls.about_menu", menu_c[ABOUT_MENU]);
+	json_object_dotset_number(root_obj, "controls.scene_viewer_menu", menu_c[SCENE_VIEWER_MENU]);
+	json_object_dotset_number(root_obj, "controls.kd_tree_menu", menu_c[KD_TREE_MENU]);
+	
 
 	json_serialize_to_file(root_value, "config_data.json");
 
-	App->ui->console_win->AddLog("Input config saved");
+	//App->ui->console_win->AddLog("Input config saved");
 
 	ret = true;
 	return ret;

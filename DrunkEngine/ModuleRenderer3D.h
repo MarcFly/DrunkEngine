@@ -16,7 +16,41 @@
 #define CHECKERS_HEIGHT 128
 #define CHECKERS_WIDTH 128
 
-struct mesh_data;
+enum TexParams {
+	Err = 0,
+
+	TP_TEXTURE_COMPARE_MODE,
+	TP_COMPARE_REF,
+	TP_NONE,
+
+	TP_TEXTURE_LOD_BIAS,
+
+	TP_TEXTURE_FILTERS, // Filters start here, mag and min types
+	TP_NEAREST,
+	TP_LINEAR,
+	TP_NEAREST_MIPMAP_NEAREST,
+	TP_LINEAR_MIPMAP_NEAREST,
+	TP_NEAREST_MIPMAP_LINEAR,
+	TP_LINEAR_MIPMAP_LINEAR,
+
+	TP_TEXTURE_MIN_LOD,
+	TP_TEXTURE_MAX_LOD,
+	TP_TEXTURE_MAX_LEVEL,
+
+	// Wraps
+	TP_TEXTURE_WRAP, // Wraps start here
+
+	// Wrap Modes
+	TP_CLAMP_TO_EDGE,	// coordinades clamped to range based on texture size
+	TP_CLAMP_TO_BORDER,	// similar to edge but in borders data is set by border color
+	TP_MIRRORED_REPEAT,	// coordinates set to the fractional part if goes beyond 1, so 1.1 = 1/1.1
+	TP_REPEAT,			// Integer of coordinates ignored, creatign repetition pattern after 1.0, 1.1 = 0.1
+	TP_MIRROR_CLAMP_TO_EDGE,	// repeat for 1 more int (until 2) then clamps to edge
+
+
+};
+
+class ComponentMesh;
 
 class ModuleRenderer3D : public Module
 {
@@ -25,23 +59,26 @@ public:
 	~ModuleRenderer3D();
 
 	bool Init();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	bool PreUpdate(float dt);
+	bool Update(float dt);
+	bool PostUpdate(float dt);
 	bool CleanUp();
 
-	void Render(bool use_texture);
-	void OnResize(int width, int height);
+	void OnResize();
 	void ChangeVsync();
 	bool CheckGLError();
-	void RenderGrid();
-	void RenderBoundBox(mesh_data* mesh);
+	void RenderGrid() const;
 	void SwapWireframe(bool active);
+
+	void SetTextureParams();
+	void GenTexParams() const;
 
 	void InitCheckTex();
 
+	void RecieveEvent(const Event & event);
+
 public:
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
 
 public:
@@ -49,7 +86,7 @@ public:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	mat3x3 NormalMatrix;
-	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 	bool vsync;
 
 	// Options
@@ -65,9 +102,33 @@ public:
 
 	bool bounding_box;
 
+	// Value as our Enum type
+	int curr_tws, curr_twt, curr_tmagf, curr_tminf;
+	// Value as GL Type
+	uint tws, twt, tmagf, tminf;
+
   // Checker Texture
 	GLubyte checkTexture[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
   
+private:
+	void SetDefault()
+	{
+		depth_test = true;
+		cull_face = true;
+		lighting = false;
+		color_material = false;
+		texture_2d = true;
+		wireframe = false;
+		faces = true;
+		render_normals = false;
+		normal_length = 1;
+		vsync = true;
+		bounding_box = false;
+		curr_tws = 0;
+		curr_twt = 0;
+		curr_tminf = 0;
+		curr_tmagf = 0;
+	}
 };
 
 #endif

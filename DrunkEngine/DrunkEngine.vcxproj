@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="GameBuild|Win32">
+      <Configuration>GameBuild</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -28,6 +32,10 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='GameBuild|Win32'">
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -73,6 +81,20 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GameBuild|Win32'">
+    <ClCompile>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AboutWindow.h" />
     <ClInclude Include="Application.h" />
@@ -114,6 +136,11 @@
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentCamera.h" />
+    <ClInclude Include="ComponentMaterial.h" />
+    <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ConsoleWindow.h" />
     <ClInclude Include="DevIL\include\IL\devil_cpp_wrapper.hpp" />
     <ClInclude Include="DevIL\include\IL\devil_internal_exports.h" />
@@ -123,14 +150,24 @@
     <ClInclude Include="DevIL\include\IL\ilut_config.h" />
     <ClInclude Include="DevIL\include\IL\ilu_region.h" />
     <ClInclude Include="DevIL\include\IL\il_wrap.h" />
+    <ClInclude Include="FileHelpers.h" />
+    <ClInclude Include="MD5.h" />
+    <ClInclude Include="ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
-    <ClInclude Include="GeoPropertiesWindow.h" />
+    <ClInclude Include="SceneViewerWindow.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
     <ClInclude Include="GLEW\include\GL\glew.h" />
     <ClInclude Include="GLEW\include\GL\glxew.h" />
     <ClInclude Include="GLEW\include\GL\wglew.h" />
     <ClInclude Include="glmath\glmath.h" />
-    <ClInclude Include="ModuleManageMesh.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="LoadSaveWindows.h" />
+    <ClInclude Include="MaterialImport.h" />
+    <ClInclude Include="MeshImport.h" />
+    <ClInclude Include="ModuleGameObject.h" />
+    <ClInclude Include="ModuleImport.h" />
+    <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="MGL\Algorithm\GJK.h" />
     <ClInclude Include="MGL\Algorithm\Random\LCG.h" />
     <ClInclude Include="MGL\Algorithm\SAT.h" />
@@ -197,6 +234,10 @@
     <ClInclude Include="MGL\Math\TransformOps.h" />
     <ClInclude Include="MGL\SysInfo\SystemInfo.h" />
     <ClInclude Include="MGL\Time\Clock.h" />
+    <ClInclude Include="ModuleTime.h" />
+    <ClInclude Include="InspectorWindow.h" />
+    <ClInclude Include="KdTree.h" />
+    <ClInclude Include="KdTreeWindow.h" />
     <ClInclude Include="OptionsWindow.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -217,8 +258,15 @@
     <ClInclude Include="parson\parson.h" />
     <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h" />
     <ClInclude Include="PhysBody3D.h" />
+    <ClInclude Include="PrefabImport.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RandomGenWindow.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ModuleResourceManager.h" />
+    <ClInclude Include="ResourceMaterial.h" />
+    <ClInclude Include="ResourceMesh.h" />
+    <ClInclude Include="ResourcePrefab.h" />
+    <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -226,10 +274,21 @@
     <ClCompile Include="AboutWindow.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentCamera.cpp" />
+    <ClCompile Include="ComponentMaterial.cpp" />
+    <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="ConsoleWindow.cpp" />
+    <ClCompile Include="FileHelpers.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
-    <ClCompile Include="GeoPropertiesWindow.cpp" />
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="SceneViewerWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
+    <ClCompile Include="LoadSaveWindows.cpp" />
+    <ClCompile Include="MaterialImport.cpp" />
+    <ClCompile Include="MeshImport.cpp" />
     <ClCompile Include="MGL\Algorithm\GJK.cpp" />
     <ClCompile Include="MGL\Algorithm\Random\LCG.cpp" />
     <ClCompile Include="MGL\Geometry\AABB.cpp" />
@@ -268,7 +327,14 @@
     <ClCompile Include="MGL\Math\TransformOps.cpp" />
     <ClCompile Include="MGL\SysInfo\SystemInfo.cpp" />
     <ClCompile Include="MGL\Time\Clock.cpp" />
-    <ClCompile Include="ModuleManageMesh.cpp" />
+    <ClCompile Include="ModuleEventSystem.cpp" />
+    <ClCompile Include="ModuleGameObject.cpp" />
+    <ClCompile Include="ModuleImport.cpp" />
+    <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="ModuleTime.cpp" />
+    <ClCompile Include="InspectorWindow.cpp" />
+    <ClCompile Include="KdTree.cpp" />
+    <ClCompile Include="KdTreeWindow.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -287,8 +353,14 @@
     <ClCompile Include="parson\parson.c" />
     <ClCompile Include="pcg-c-basic-0.9\pcg_basic.c" />
     <ClCompile Include="PhysBody3D.cpp" />
+    <ClCompile Include="PrefabImport.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RandomGenWindow.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ModuleResourceManager.cpp" />
+    <ClCompile Include="ResourceMaterial.cpp" />
+    <ClCompile Include="ResourceMesh.cpp" />
+    <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

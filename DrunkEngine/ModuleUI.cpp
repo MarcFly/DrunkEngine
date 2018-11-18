@@ -14,14 +14,17 @@
 #include "RandomGenWindow.h"
 #include "GeometryCreationWindow.h"
 #include "ConsoleWindow.h"
-#include "GeoPropertiesWindow.h"
+#include "SceneViewerWindow.h"
+#include "KdTreeWindow.h"
+#include "InspectorWindow.h"
+#include "LoadSaveWindows.h"
 
 #define MEM_BUDGET_NVX 0x9048
 #define MEM_AVAILABLE_NVX 0x9049
 
 using namespace std;
 
-ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled)
+ModuleUI::ModuleUI(bool start_enabled) : Module(start_enabled, Type_UI)
 {
 	ImGui::CreateContext();
 }
@@ -46,43 +49,52 @@ bool ModuleUI::Init()
 	windows.push_back(about_win = new AboutWindow());
 	windows.push_back(random_win = new RandomGenWindow());
 	windows.push_back(geometry_win = new GEOMWindow());
-	windows.push_back(geo_properties_win = new GeoPropertiesWindow());
+	windows.push_back(scene_viewer_window = new SceneViewer());
+	windows.push_back(kdtree_win = new KDTreeWindow());
+	windows.push_back(inspector_win = new Inspector());
+	windows.push_back(savescene_win = new SaveSceneWindow());
+	windows.push_back(loadscene_win = new LoadSceneWindow());
+	windows.push_back(import_win = new ImportWindow());
 
 	App->input->UpdateShortcuts();
 
 	for (int i = 0; i < NUM_WINDOWS; i++)
 		active_windows[i] = false;
 
+	ImGuizmo::Enable(true);
+
 	return ret;
 }
 
-update_status ModuleUI::PreUpdate(float dt)
+bool ModuleUI::PreUpdate(float dt)
 {
+	
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 
 	MainMenu();
 
 	for (vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
 	{
-		Window* windows = (*it);
+		Window* windows = (*it);	
 
-		if (App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
+		if (!CheckDataWindows() && App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
 			windows->SwitchActive();
 
 		if (windows->IsActive())
 			windows->Draw();
 	}
+	
+	
 
-	return UPDATE_CONTINUE;
+	return true;
 }
 
-update_status ModuleUI::PostUpdate(float dt)
+bool ModuleUI::PostUpdate(float dt)
 {
-	ImGui::Render();
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	return UPDATE_CONTINUE;
+	return true;
 }
 
 bool ModuleUI::CleanUp()
@@ -105,6 +117,12 @@ bool ModuleUI::CleanUp()
 	return ret;
 }
 
+void ModuleUI::RenderImGui()
+{
+	ImGui::Render();
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
+
 bool ModuleUI::MainMenu()
 {
 	bool ret = true;
@@ -116,14 +134,23 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Options"))
 				options_win->SwitchActive();				
 
+			if (ImGui::MenuItem("Save Scene"))
+			{
+				savescene_win->SwitchActive();
+			}
+
+			if (ImGui::MenuItem("Load Scene"))
+			{
+				loadscene_win->SwitchActive();
+			}
+
+			if (ImGui::MenuItem("Import..."))
+			{
+				import_win->SwitchActive();
+			}
+
 			if (ImGui::MenuItem("Show/Hide Windows"))
 				ShowHideWindows();
-
-			if (ImGui::MenuItem("About..."))
-				about_win->SwitchActive();
-
-			if (ImGui::MenuItem("Go to Github"))
-				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
 
 			if (ImGui::MenuItem("Exit"))
 				App->input->StopRunning();
@@ -140,10 +167,16 @@ bool ModuleUI::MainMenu()
 			if (ImGui::MenuItem("Test Objects"))
 				geometry_win->SwitchActive();*/
 
-			if (ImGui::MenuItem("Objects Properties"))
-				geo_properties_win->SwitchActive();			
+			if (ImGui::MenuItem("Scene Viewer"))
+				scene_viewer_window->SwitchActive();
 
-			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 2
+			if (ImGui::MenuItem("Inspector"))
+				inspector_win->SwitchActive();
+
+			if (ImGui::MenuItem("K-D Tree"))
+				kdtree_win->SwitchActive();			
+
+			if (ImGui::MenuItem("Log"))	//Change to "Console" for Assignment 3
 				console_win->SwitchActive();		
 
 			ImGui::EndMenu();
@@ -151,8 +184,14 @@ bool ModuleUI::MainMenu()
 
 		if (ImGui::BeginMenu("Help"))
 		{
-			/*if (ImGui::MenuItem("Examples"))
-				show_demo_window = !show_demo_window;*/
+			if (ImGui::MenuItem("Examples"))
+				show_demo_window = !show_demo_window;
+
+			if (ImGui::MenuItem("About..."))
+				about_win->SwitchActive();
+
+			if (ImGui::MenuItem("Go to Github"))
+				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine", NULL, NULL, SW_SHOWNORMAL);
 
 			if (ImGui::MenuItem("Download Latest"))
 				ShellExecute(NULL, "open", "https://github.com/MarcFly/DrunkEngine/releases", NULL, NULL, SW_SHOWNORMAL);
@@ -166,13 +205,12 @@ bool ModuleUI::MainMenu()
 			ImGui::EndMenu();
 		}
 
-		
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 		
 	}
 	ImGui::EndMainMenuBar();
 
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
 
 	return ret;
 }
@@ -209,4 +247,21 @@ void ModuleUI::ShowHideWindows()
 	}
 
 	show_demo_window = false;
+}
+
+bool ModuleUI::CheckDataWindows()
+{
+	bool ret = false;
+
+	ret = savescene_win->IsActive();
+	if (ret)
+		return ret;
+	ret = loadscene_win->IsActive();
+	if (ret)
+		return ret;
+	ret = import_win->IsActive();
+	if (ret)
+		return ret;
+
+	return ret;
 }

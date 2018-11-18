@@ -3,9 +3,12 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "ModuleManageMesh.h"
+#include "ModuleScene.h"
+#include "KdTree.h"
 
 #include "glmath/glmath.h"
+
+class ComponentCamera;
 
 class ModuleCamera3D : public Module
 {
@@ -14,36 +17,29 @@ public:
 	~ModuleCamera3D();
 
 	bool Start();
-	update_status Update(float dt);
+	bool Update(float dt);
 	bool CleanUp();
 
-	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
-	void LookAt(const vec3 &Spot);
-	void Move(const vec3 &Movement);
-	void Transport(const vec3 &Movement);
-	void Rotate();
-
-	void SetToObj(obj_data* obj, float vertex_aux);
-
-	float* GetViewMatrix();
-
-	bool Load(JSON_Value* root_value);
+	bool Load(const JSON_Value* root_value);
 	bool Save(JSON_Value* root_value);
-
-private:
-
-	void CalculateViewMatrix();
-
-public:
 	
-	vec3 X, Y, Z, Position, Reference;
-	Color background;
+	void MousePicking();
+	void TestIntersect(const std::vector<GameObject*>& objs, const LineSegment & ray, std::vector<GameObject*>& intersected);
+	void TreeTestIntersect(const KDTree::Node* node, const LineSegment& ray, std::vector<GameObject*>& objects_to_check);
+	float TestTris(LineSegment local, const ComponentMesh* mesh);
 
-	float mesh_multiplier;
+	void DrawRay(vec a, vec b) const;
+
+	void RecieveEvent(const Event & event);
+
+	void SetMainCamAspectRatio();
+
+public:	
+	Color background;
+	ComponentCamera * main_camera;
 
 private:
-
-	float4x4 ViewMatrix, ViewMatrixInverse;
+	LineSegment picking = LineSegment(vec::zero, vec::zero);
 };
 
 #endif
