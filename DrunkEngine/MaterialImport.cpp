@@ -263,8 +263,6 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 	std::string filename = ".\\Library\\";
 	filename += GetFileName(path) + "_Mat_" + std::to_string(mat_id);
 
-	PLOG("Material %d data copy took %d", mat_id, App->importer->DebugTimer.Read());
-
 	write_file.open((filename + ".matdrnk").c_str(), std::fstream::out | std::ios::binary);
 
 	write_file.write(data, buf_size);

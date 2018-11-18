@@ -4,7 +4,7 @@
 
 Application::Application()
 {
-#if GAME
+#if GameBuild
 	_isEditor = false;
 #else
 	_isEditor = true;

@@ -10,6 +10,7 @@ The people currently working in this engine are Andreu Sacasas and Marc Torres, 
 
 ## How to use it
 DrunkEngine will automatically load an .FBX file with a street and some houses with textures.
+It will export the files to our own format under a HIDDEN directory ./Library/
 
 To move around the space, you can orbit around something with Alt+LeftClick or move in first person using RightClick+WASD. If you wander off to far, don't worry, press F to focus again to the current model.
 
@@ -57,7 +58,7 @@ Currently game time is not used in any shape or form, but there is a structure p
 - Import Assets.
 - GameObject Components in the Inspector.
 - Export assets to our own format (into a hidden "Library" folder in Game).
-- Reference counting for resources.
+- Reference counting for Resource Management
 - Start/Pause/Stop options on the editor.
 
 ## MIT License

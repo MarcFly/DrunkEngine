@@ -146,28 +146,30 @@ GameObject * PrefabImport::ImportGameObject(const char* path, JSON_Value* go)
 	// Basically to get to the current gameobject
 	// You have to enter 2 values (CurrVal->Obj->Arry of objs Val->Curr Obj)
 	JSON_Object* curr = json_value_get_object(json_object_get_value_at(json_value_get_object(go), 0));
-
-	ret->UUID = json_object_dotget_number(curr, "UUID");
-	ret->par_UUID = json_object_get_number(curr, "par_UUID");
-	ret->name = json_object_get_string(curr, "name");
-
-	JSON_Array* comps = json_object_get_array(curr, "components");
-
-	for (int i = 0; i < json_array_get_count(comps); i++)
+	if (curr != nullptr)
 	{
-		JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(comps, i)), "properties");
-		JSON_Object* obj = json_value_get_object(val);
+		ret->UUID = json_object_dotget_number(curr, "UUID");
+		ret->par_UUID = json_object_get_number(curr, "par_UUID");
+		ret->name = json_object_get_string(curr, "name");
 
-		CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
-		Component* add = nullptr;
-		if (type == CT_Transform)
-			add = ret->GetTransform();
-		else
-			add = ret->NewComponent(type);
-		add->Load(obj);
-		add->parent = ret;
-		if(type != CT_Transform)
-			ret->components.push_back(add);
+		JSON_Array* comps = json_object_get_array(curr, "components");
+
+		for (int i = 0; i < json_array_get_count(comps); i++)
+		{
+			JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(comps, i)), "properties");
+			JSON_Object* obj = json_value_get_object(val);
+
+			CTypes type = (CTypes)(int)json_object_get_number(obj, "type");
+			Component* add = nullptr;
+			if (type == CT_Transform)
+				add = ret->GetTransform();
+			else
+				add = ret->NewComponent(type);
+			add->Load(obj);
+			add->parent = ret;
+			if (type != CT_Transform)
+				ret->components.push_back(add);
+		}
 	}
 
 	return ret;

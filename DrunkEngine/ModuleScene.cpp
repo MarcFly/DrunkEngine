@@ -150,6 +150,7 @@ std::string ModuleScene::SaveScene(const char* filename)
 	if(filename != "")
 		root->name = GetFileName(filename);
 
+	CreateDirectory(".\\Assets\\", NULL);
 	std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
 	
 	if (App->gameObj->getRootObj() != nullptr)

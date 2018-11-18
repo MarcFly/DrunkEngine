@@ -56,6 +56,7 @@ bool ModuleImport::CleanUp()
 void ModuleImport::LoadScene(const char* path)
 {
 	JSON_Value* scene = json_parse_file(path);
+	
 	JSON_Object* obj_g = json_value_get_object(scene);
 	JSON_Array* obj_arr = json_object_get_array(obj_g, "scene");
 
@@ -71,39 +72,40 @@ void ModuleImport::LoadScene(const char* path)
 		par = App->ui->scene_viewer_window->selected_object;
 	}
 
+	if (scene != nullptr)
 	{
-		GameObject* add = prefab_i->ImportGameObject(path, json_array_get_value(obj_arr, 0));
-		add->parent = par;
+		{
+			GameObject* add = prefab_i->ImportGameObject(path, json_array_get_value(obj_arr, 0));
+			add->parent = par;
 
-		par->children.push_back(add);
-		par = add;
+			par->children.push_back(add);
+			par = add;
+		}
+
+		for (int i = 1; i < json_array_get_count(obj_arr); i++)
+		{
+			JSON_Value* val = json_array_get_value(obj_arr, i);
+
+			GameObject* add = prefab_i->ImportGameObject(path, val);
+			add->parent = par;
+
+			par->children.push_back(add);
+		}
+
+		par->OrderChildren();
+
+		par->GetTransform()->CalculateGlobalTransforms();
+		par->SetTransformedBoundBox();
+
+		App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
+		App->gameObj->Main_Cam->LookToObj(par, par->max_distance_point);
 	}
-
-	for (int i = 1; i < json_array_get_count(obj_arr); i++)
-	{
-		JSON_Value* val = json_array_get_value(obj_arr, i);
-
-		GameObject* add = prefab_i->ImportGameObject(path, val);
-		add->parent = par;
-
-		par->children.push_back(add);
-	}
-
-	par->OrderChildren();
-
-	par->GetTransform()->CalculateGlobalTransforms();
-	par->SetTransformedBoundBox();
-
-	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
-	App->gameObj->Main_Cam->LookToObj(par, par->max_distance_point);
 }
 
 
 void ModuleImport::ExportScene(const char* path)
 {
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_Fast);
-
-	DebugTimer.Start();
 
 	if (scene == nullptr)
 	{
@@ -118,32 +120,35 @@ void ModuleImport::ExportScene(const char* path)
 			App->ui->console_win->AddLog("Failed to Load from file %s", path);
 	}
 
-	for (int i = 0; i < scene->mNumMaterials; i++)
+	if (scene != nullptr)
 	{
-		aiMaterial* mat = scene->mMaterials[i];
-		std::string matname = ".\\Library\\";
-		matname += GetFileName(path) + "_Mat_" + std::to_string(i);
-		matname.append(".matdrnk");
-		DGUID fID(matname.c_str());
-		if (!fID.CheckValidity())
-			mat_i->ExportAIMat(mat, i, path);
-	}
+		for (int i = 0; i < scene->mNumMaterials; i++)
+		{
+			aiMaterial* mat = scene->mMaterials[i];
+			std::string matname = ".\\Library\\";
+			matname += GetFileName(path) + "_Mat_" + std::to_string(i);
+			matname.append(".matdrnk");
+			DGUID fID(matname.c_str());
+			if (!fID.CheckValidity())
+				mat_i->ExportAIMat(mat, i, path);
+		}
 
-	for (int i = 0; i < scene->mNumMeshes; i++)
-	{
-		aiMesh* mesh = scene->mMeshes[i];
-		std::string meshname = ".\\Library\\";
-		meshname += GetFileName(path) + "_Mesh_" + std::to_string(i);
-		meshname.append(".meshdrnk");
-		DGUID fID(meshname.c_str());
-		if (!fID.CheckValidity())
-			mesh_i->ExportAIMesh(mesh, i, path);
-	}
+		for (int i = 0; i < scene->mNumMeshes; i++)
+		{
+			aiMesh* mesh = scene->mMeshes[i];
+			std::string meshname = ".\\Library\\";
+			meshname += GetFileName(path) + "_Mesh_" + std::to_string(i);
+			meshname.append(".meshdrnk");
+			DGUID fID(meshname.c_str());
+			if (!fID.CheckValidity())
+				mesh_i->ExportAIMesh(mesh, i, path);
+		}
 
-	{
-		std::string scenename = ".\\Library\\";
-		scenename += GetFileName(path) + ".prefabdrnk";
-		ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
+		{
+			std::string scenename = ".\\Library\\";
+			scenename += GetFileName(path) + ".prefabdrnk";
+			ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
+		}
 	}
 
 	//scene->mNumAnimations
