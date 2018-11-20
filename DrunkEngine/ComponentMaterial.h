@@ -32,6 +32,10 @@ public:
 	ResourceMaterial* r_mat = nullptr;
 	std::vector<ResourceTexture*> textures;
 
+	// Non Specific Resource Vals
+	bool AlphaTest;
+	float AlphaVal;
+
 public:
 	void SetBaseVals()
 	{
@@ -42,6 +46,9 @@ public:
 		this->parent = nullptr;
 
 		this->to_pop = false;
+
+		AlphaTest = false;
+		float AlphaVal = 1;
 	}
 };
 

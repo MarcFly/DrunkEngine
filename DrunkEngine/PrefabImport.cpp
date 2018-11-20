@@ -59,15 +59,8 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 	set_val = obj + "components";
 	json_object_dotset_value(curr, set_val.c_str(), set_array);
 
-	// Free Components Value
-	json_array_clear(comps);
-	json_value_free(set_array);
-
 	// Adding GO to file
 	json_array_append_value(go, append);
-
-	// Free Current GO Value
-	json_value_free(append);
 
 	for (int i = 0; i < node->mNumChildren; i++)
 		ExportAINode(scene, node->mChildren[i], go, UUID, name);

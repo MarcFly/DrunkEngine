@@ -123,6 +123,10 @@ void Inspector::MatInspector(ComponentMaterial* mat)
 			{
 			}
 				//mat->DestroyTexture(i);
+
+			ImGui::Checkbox("AlphaTest", &mat->AlphaTest);
+			ImGui::SliderFloat("AlphaVal", &mat->AlphaVal, 0, 1);
+
 		}
 	}
 }

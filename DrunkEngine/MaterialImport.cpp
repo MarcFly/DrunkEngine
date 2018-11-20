@@ -271,8 +271,6 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 	write_file.close();
 
 	ExportMeta(mat, mat_id, filename);
-
-	delete data;
 }
 
 void MatImport::ExportILTexture(const char * path, const char* full_path)
