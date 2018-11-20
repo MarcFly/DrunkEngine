@@ -118,12 +118,15 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 
 		App->ui->console_win->AddLog("New Material with %d textures loaded.", r_mat->textures.size());
 
+		delete data;
 	}
 	else
 	{
 		delete r_mat;
 		r_mat = nullptr;
 	}
+
+	read_file.close();
 
 	return r_mat;
 
@@ -268,6 +271,8 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 	write_file.close();
 
 	ExportMeta(mat, mat_id, filename);
+
+	delete data;
 }
 
 void MatImport::ExportILTexture(const char * path, const char* full_path)
@@ -313,87 +318,6 @@ void MatImport::ExportILTexture(const char * path, const char* full_path)
 	ilDeleteImages(1, &id_Image);
 }
 
-////////////------------------------------------------------------------------------------------------------------------------
-//-SaveDT-//------------------------------------------------------------------------------------------------------------------
-////////////------------------------------------------------------------------------------------------------------------------
-
-void MatImport::ExportMat(const ComponentMaterial* mat)
-{
-	uint prop_size = mat->r_mat->NumProperties;
-	uint text_size = mat->r_mat->NumDiffTextures;
-
-	uint buf_size = sizeof(uint) * 2;
-
-	float color[4] = { mat->r_mat->default_print.r,mat->r_mat->default_print.g,mat->r_mat->default_print.b,1 };
-
-	buf_size += sizeof(color);
-
-	// allocating a uint for size
-	buf_size += sizeof(uint);
-	std::string dir = ".\\Library\\";
-	buf_size += dir.length() + 2;
-
-	std::vector<uint> texture_ranges;
-	std::vector<std::string> textures; // Only Diffuse for now
-	for (int i = 0; i < text_size; i++)
-	{
-		MetaTexture* m_tex = (MetaTexture*)App->resources->Library.at(mat->r_mat->textures[i]);
-		if ( m_tex != nullptr)
-		{
-			textures.push_back(m_tex->file.c_str());
-
-			buf_size += textures[i].length() + GetExtSize(textures[i].c_str()) + 2; // It takes the . as an exit queue automatically? also if no \0 it breaks
-
-			texture_ranges.push_back(textures[i].length() + 2);
-		}
-	}
-
-	char* data = new char[buf_size];
-	char* cursor = data;
-
-	memcpy(cursor, &color[0], sizeof(color));
-	cursor += sizeof(color);
-
-	// I will memcpy the properties amount because its relevant
-	// but not the properties itself because we don't use them now
-	memcpy(cursor, &prop_size, sizeof(uint));
-	cursor += sizeof(uint);
-
-	memcpy(cursor, &text_size, sizeof(uint));
-	cursor += sizeof(uint);
-
-	uint dir_size = dir.length() + 2;
-	memcpy(cursor, &dir_size, sizeof(uint));
-	cursor += sizeof(uint);
-
-	memcpy(cursor, dir.c_str(), dir.length());
-	cursor += dir.length();
-
-	char* exitqueue = "\0";
-	memcpy(cursor, exitqueue, 2);
-	cursor += 2;
-
-	memcpy(cursor, &texture_ranges[0], sizeof(uint)*texture_ranges.size());
-	cursor += sizeof(uint) * texture_ranges.size();
-
-	for (int i = 0; i < textures.size(); i++)
-	{
-		memcpy(cursor, textures[i].c_str(), textures[i].length());
-		cursor += textures[i].length();
-		memcpy(cursor, exitqueue, 2);
-		cursor += 2;
-	}
-
-	std::ofstream write_file;
-
-	write_file.open(mat->name.c_str(), std::fstream::out | std::ios::binary);
-
-	write_file.write(data, buf_size);
-
-	write_file.close();
-
-}
-
 //--------------------------------------
 
 void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string& path)
@@ -407,6 +331,10 @@ void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string
 	json_object_dotset_string(meta_obj, "File", std::string(path + ".matdrnk").c_str());
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
+
+	// Free Meta Value
+	json_object_clear(meta_obj);
+	json_value_free(meta_file);
 }
 void MatImport::LoadMeta(const char* file, MetaMat* meta)
 {
@@ -416,6 +344,10 @@ void MatImport::LoadMeta(const char* file, MetaMat* meta)
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
 	meta->file = json_object_dotget_string(meta_obj, "File");
+
+	// Free Meta Value
+	json_object_clear(meta_obj);
+	json_value_free(meta_file);
 }
 
 void MatImport::ExportMetaTex(std::string path)
@@ -429,6 +361,10 @@ void MatImport::ExportMetaTex(std::string path)
 	json_object_dotset_string(meta_obj, "File", std::string(path + ".dds").c_str());
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
+
+	// Free Meta Value
+	json_object_clear(meta_obj);
+	json_value_free(meta_file);
 }
 void MatImport::LoadMetaTex(const char* file, MetaTexture* meta)
 {
@@ -438,4 +374,8 @@ void MatImport::LoadMetaTex(const char* file, MetaTexture* meta)
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
 	meta->file = json_object_dotget_string(meta_obj, "File");
+
+	// Free Meta Value
+	json_object_clear(meta_obj);
+	json_value_free(meta_file);
 }

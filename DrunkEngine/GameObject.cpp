@@ -467,8 +467,17 @@ void GameObject::Save(JSON_Array* go)
 
 	json_array_append_value(go, append);
 
+	// Free Meta Value
+	json_array_clear(comps);
+	json_value_free(set_array);
+
+
 	for(int i = 0; i < this->children.size(); i++)
 		this->children[i]->Save(go);
+
+	// Free Meta Value
+	json_object_clear(curr);
+	json_value_free(append);
 
 }
 
