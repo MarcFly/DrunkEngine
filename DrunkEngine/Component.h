@@ -10,7 +10,7 @@ class ComponentMaterial;
 class ComponentMesh;
 class ComponentCamera;
 class ComponentTransform;
-
+class ComponentBillboard;
 
 enum CTypes
 {
@@ -19,6 +19,7 @@ enum CTypes
 	CT_Material,
 	CT_Camera,
 	CT_Transform,
+	CT_Billboard,
 
 	CT_Max
 };
@@ -84,6 +85,13 @@ public:
 	ComponentCamera* AsCamera() {
 		if (type == CT_Camera)
 			return (ComponentCamera*)this;
+
+		return nullptr;
+	}
+
+	ComponentBillboard* AsBillboard() {
+		if (type == CT_Billboard)
+			return (ComponentBillboard*)this;
 
 		return nullptr;
 	}

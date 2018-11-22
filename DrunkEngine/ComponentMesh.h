@@ -56,7 +56,6 @@ public:
 	void SetBaseVals()
 	{
 		type = CT_Mesh;
-		multiple = true;
 
 		BoundingBox = nullptr;
 
