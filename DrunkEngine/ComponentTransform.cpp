@@ -119,8 +119,7 @@ void ComponentTransform::SetWorldRot(const Quat new_rot)
 
 void ComponentTransform::CalculateGlobalTransforms()
 {
-	//Check if the transform is from the root object or any of its childs
-	if (parent->parent != nullptr && parent->parent->parent != nullptr)
+	if (parent->parent != nullptr)
 		global_transform = world_pos * world_rot * parent->parent->GetTransform()->global_transform * local_transform;
 
 	else

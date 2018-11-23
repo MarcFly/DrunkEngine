@@ -64,10 +64,10 @@ public:
 public:
 	void SetBaseVals()
 	{
-		global_scale, global_pos, position = { 0,0,0 };
+		position = { 0,0,0 };
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
-		aux_world_pos = world_rot = world_pos = float4x4::identity;
+		local_transform = global_transform = aux_world_pos = world_rot = world_pos = float4x4::identity;
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;
