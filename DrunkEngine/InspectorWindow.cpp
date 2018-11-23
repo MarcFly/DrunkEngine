@@ -203,26 +203,23 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 
 		ImGui::Spacing();
 
-		if (transform->parent->GetComponent(CTypes::CT_Camera) == nullptr)
+		if (ImGui::RadioButton("World", radio_world))
 		{
-			if (ImGui::RadioButton("World", radio_world))
-			{
-				radio_world = true;
-				radio_local = false;
-				App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::RadioButton("Local", radio_local))
-			{
-				radio_world = false;
-				radio_local = true;
-				App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
-			}
-
-			ImGui::Spacing();
+			radio_world = true;
+			radio_local = false;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
 		}
+
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Local", radio_local))
+		{
+			radio_world = false;
+			radio_local = true;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
+		}
+
+		ImGui::Spacing();
 
 		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::LOCAL)
 		{

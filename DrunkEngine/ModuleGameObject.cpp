@@ -229,11 +229,6 @@ void ModuleGameObject::SetRootObject(GameObject * root)
 	Root_Object = root;
 }
 
-GameObject * ModuleGameObject::GetRootObject() const
-{
-	return Root_Object;
-}
-
 void ModuleGameObject::ManageGuizmo()
 {
 
@@ -258,11 +253,6 @@ void ModuleGameObject::ManageGuizmo()
 		{
 			float aux_vals[16];
 			float4x4 aux_mat;
-
-			if (active_objects[i]->GetComponent(CTypes::CT_Camera) != nullptr)
-				mCurrentGizmoMode = ImGuizmo::LOCAL;
-			else if (App->ui->inspector_win->radio_world == true)
-				mCurrentGizmoMode = ImGuizmo::WORLD;
 
 			if (mCurrentGizmoMode == ImGuizmo::LOCAL || mCurrentGizmoOperation == ImGuizmo::SCALE || active_objects[i]->parent == nullptr)
 				aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
@@ -386,10 +376,60 @@ void ModuleGameObject::RecieveEvent(const Event & event)
 	{
 	case EventType::Transform_Updated:
 	{
+		UpdateTransforms(event.game_object.ptr);
 		event.game_object.ptr->GetTransform()->CalculateGlobalTransforms();
 		break;
 	}
 	default:
 		break;
+	}
+}
+
+void ModuleGameObject::UpdateTransforms(GameObject * obj)
+{
+	if (obj->parent != nullptr)
+		RecursiveUpdateParents(obj->parent);
+
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveUpdateChilds(obj->children[i]);
+
+	// For the camera components
+	if (obj->GetComponent(CTypes::CT_Camera) != nullptr)
+	{
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformPos(obj->GetTransform()->global_pos);
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformRot(obj->GetTransform()->global_rot);
+
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
+	}
+
+}
+
+void ModuleGameObject::RecursiveUpdateParents(GameObject * obj)
+{
+	if (obj->parent != nullptr)
+		RecursiveUpdateParents(obj->parent);
+
+	// For the camera components
+	if (obj->GetComponent(CTypes::CT_Camera) != nullptr)
+	{
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformPos(obj->GetTransform()->global_pos);
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformRot(obj->GetTransform()->global_rot);
+
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
+	}
+}
+
+void ModuleGameObject::RecursiveUpdateChilds(GameObject * obj)
+{
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveUpdateChilds(obj->children[i]);
+
+	// For the camera components
+	if (obj->GetComponent(CTypes::CT_Camera) != nullptr)
+	{
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformPos(obj->GetTransform()->global_pos);
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformRot(obj->GetTransform()->global_rot);
+
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
 	}
 }

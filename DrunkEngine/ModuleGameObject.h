@@ -41,13 +41,17 @@ public:
 
 	//Root Obj
 	void SetRootObject(GameObject * root);
-	GameObject * GetRootObject() const;
+	GameObject * getRootObj() const { return Root_Object; };
 
 	void ManageGuizmo();
 
 	void SetCameraRender(ComponentCamera * cam);
 
 	void RecieveEvent(const Event & event);
+
+	void UpdateTransforms(GameObject * obj);
+	void RecursiveUpdateParents(GameObject * obj);
+	void RecursiveUpdateChilds(GameObject * obj);
 
 public:
 
@@ -65,7 +69,6 @@ private:
 	KDTree* Scene_KdTree = nullptr;
 
 public:
-	GameObject * getRootObj() const { return Root_Object; };
 	ComponentCamera * Main_Cam = nullptr;
 	ComponentCamera * camera_rendering = nullptr;
 

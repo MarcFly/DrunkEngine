@@ -10,8 +10,6 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 	SetFromMatrix(t);
 	parent = par;
 
-	world_rot = world_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
-
 	SetLocalTransform();
 }
 
@@ -79,7 +77,6 @@ void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
 		t = this;
 
 	t->update_bounding_box = true;
-	t->update_camera_transform = true;
 
 	for (int i = 0; i < t->parent->children.size(); i++)
 	{
@@ -90,7 +87,6 @@ void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
 void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
 {
 	t->update_bounding_box = true;
-	t->update_camera_transform = true;
 
 	if (t->parent->parent != nullptr)
 		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
@@ -123,11 +119,14 @@ void ComponentTransform::SetWorldRot(const Quat new_rot)
 
 void ComponentTransform::CalculateGlobalTransforms()
 {
-	if (parent->parent != nullptr)
+	//Check if the transform is from the root object or any of its childs
+	if (parent->parent != nullptr && parent->parent->parent != nullptr)
 		global_transform = world_pos * world_rot * parent->parent->GetTransform()->global_transform * local_transform;
 
 	else
 		global_transform = local_transform;
+
+	global_transform.Decompose(global_pos, global_rot, global_scale);
 
 	if (parent->children.size() > 0)
 	{

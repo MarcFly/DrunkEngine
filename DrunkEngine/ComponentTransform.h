@@ -57,12 +57,14 @@ public:
 
 	float4x4 aux_world_pos;		//The user sees this one
 
-	bool update_camera_transform;
+	float3 global_pos;
+	Quat global_rot;
+	float3 global_scale;
 
 public:
 	void SetBaseVals()
 	{
-		position = { 0,0,0 }; 
+		global_scale, global_pos, position = { 0,0,0 };
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
 		aux_world_pos = world_rot = world_pos = float4x4::identity;
@@ -71,8 +73,6 @@ public:
 		multiple = false;
     
 		update_bounding_box = true;
-
-		update_camera_transform = true;
 	}
 
 };
