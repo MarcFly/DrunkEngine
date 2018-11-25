@@ -517,33 +517,31 @@ void ModuleGameObject::CalculateBBs(GameObject * obj)
 		{
 			obj->BoundingBox->maxPoint = obj->GetTransform()->global_pos + float3(1, 1, 1);
 			obj->BoundingBox->minPoint = obj->GetTransform()->global_pos + float3(-1, -1, -1);
-
-			obj->BoundingBox->Enclose(obj->BoundingBox->minPoint, obj->BoundingBox->maxPoint);
 		}
 	}
 	else
 	{
 		for (int i = 0; i < obj->children.size(); i++)
 		{
-			if (obj->children[i]->BoundingBox == nullptr)
-				CalculateBBs(obj->children[i]);
+			if (obj->children[i]->BoundingBox != nullptr)
+			{
+				math::AABB* auxBB = obj->children[i]->BoundingBox;
 
-			math::AABB* auxBB = obj->children[i]->BoundingBox;
+				// Setting the BB min and max points with transforms
 
-			// Setting the BB min and max points with transforms
-
-			if (obj->BoundingBox->maxPoint.x < auxBB->maxPoint.x)
-				obj->BoundingBox->maxPoint.x = auxBB->maxPoint.x;
-			if (obj->BoundingBox->minPoint.x > auxBB->minPoint.x)
-				obj->BoundingBox->minPoint.x = auxBB->minPoint.x;
-			if (obj->BoundingBox->maxPoint.y < auxBB->maxPoint.y)
-				obj->BoundingBox->maxPoint.y = auxBB->maxPoint.y;
-			if (obj->BoundingBox->minPoint.y > auxBB->minPoint.y)
-				obj->BoundingBox->minPoint.y = auxBB->minPoint.y;
-			if (obj->BoundingBox->maxPoint.z < auxBB->maxPoint.z)
-				obj->BoundingBox->maxPoint.z = auxBB->maxPoint.z;
-			if (obj->BoundingBox->minPoint.z > auxBB->minPoint.z)
-				obj->BoundingBox->minPoint.z = auxBB->minPoint.z;
+				if (obj->BoundingBox->maxPoint.x < auxBB->maxPoint.x)
+					obj->BoundingBox->maxPoint.x = auxBB->maxPoint.x;
+				if (obj->BoundingBox->minPoint.x > auxBB->minPoint.x)
+					obj->BoundingBox->minPoint.x = auxBB->minPoint.x;
+				if (obj->BoundingBox->maxPoint.y < auxBB->maxPoint.y)
+					obj->BoundingBox->maxPoint.y = auxBB->maxPoint.y;
+				if (obj->BoundingBox->minPoint.y > auxBB->minPoint.y)
+					obj->BoundingBox->minPoint.y = auxBB->minPoint.y;
+				if (obj->BoundingBox->maxPoint.z < auxBB->maxPoint.z)
+					obj->BoundingBox->maxPoint.z = auxBB->maxPoint.z;
+				if (obj->BoundingBox->minPoint.z > auxBB->minPoint.z)
+					obj->BoundingBox->minPoint.z = auxBB->minPoint.z;
+			}
 		}
 	}
 
