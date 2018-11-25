@@ -3,6 +3,7 @@
 #include "ComponentCamera.h"
 #include "KdTree.h"
 #include "InspectorWindow.h"
+#include "ConsoleWindow.h"
 
 ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, Type_GameObj)
 {
@@ -225,8 +226,12 @@ KDTree * ModuleGameObject::GetSceneKDTree() const
 
 void ModuleGameObject::DeleteSceneKDTree()
 {
-	Scene_KdTree->CleanUp();
-	Scene_KdTree = nullptr;
+	if (Scene_KdTree != nullptr)
+	{
+		Scene_KdTree->CleanUp();
+		Scene_KdTree = nullptr;
+		App->ui->console_win->AddLog("KD-Tree Deleted.");
+	}
 }
 
 void ModuleGameObject::SetRootObject(GameObject * root)

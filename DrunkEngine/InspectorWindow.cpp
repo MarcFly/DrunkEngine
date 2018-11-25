@@ -186,10 +186,6 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 				else
 				{
 					App->gameObj->DeleteFromStaticObjects(transform->parent);
-
-					if (App->gameObj->GetSceneKDTree() != nullptr)
-						App->gameObj->DeleteSceneKDTree();
-
 					App->ui->kdtree_win->CreateKDTree();
 				}
 			}
