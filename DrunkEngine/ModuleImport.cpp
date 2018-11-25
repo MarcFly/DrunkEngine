@@ -95,9 +95,13 @@ void ModuleImport::LoadScene(const char* path)
 		par->OrderChildren();
 		par->RecursiveSetNewUUID();
 
-		Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-		ev.game_object.ptr = par;
-		App->eventSys->BroadcastEvent(ev);
+		Event evTrans(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+		evTrans.game_object.ptr = par;
+		App->eventSys->BroadcastEvent(evTrans);
+
+		Event evCam(EventType::Update_Cam_Focus, Event::UnionUsed::UseGameObject);
+		evCam.game_object.ptr = par;
+		App->eventSys->BroadcastEvent(evCam);
 	}
 }
 

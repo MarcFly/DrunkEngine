@@ -16,6 +16,7 @@ enum EventType
 	Camera_Modified,
 	File_Dropped,
 	Transform_Updated,
+	Update_Cam_Focus,
 	NULL_Event
 };
 

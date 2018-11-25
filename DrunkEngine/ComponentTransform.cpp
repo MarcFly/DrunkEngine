@@ -62,29 +62,17 @@ void ComponentTransform::SetTransformScale(const float scale_x, const float scal
 void ComponentTransform::SetLocalTransform()
 {
 	local_transform = float4x4::FromTRS(position, rotate_quat, scale);
-
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = parent;
-	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 {
 	aux_world_pos = aux_world_pos * new_transform;
 	world_pos = world_pos * new_transform;
-
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = parent;
-	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::SetWorldRot(const Quat new_rot)
 {
 	world_rot = world_rot * world_rot.FromQuat(new_rot, aux_world_pos.Col3(3) - world_pos.Col3(3));
-
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = parent;
-	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::CalculateGlobalTransforms()

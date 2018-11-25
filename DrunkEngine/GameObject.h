@@ -35,8 +35,6 @@ public:
 	void Load(const JSON_Value* scene, const char* file);
 
 	vec getObjectCenter();
-	void SetTransformedBoundBox();
-	void SetBoundBoxFromMeshes();
 
 	Component* NewComponent(const CTypes type);
 	void OrderChildren();
@@ -79,10 +77,10 @@ public:
 
 	AABB* GetBB()
 	{
-		if (BoundingBox == nullptr)
-			SetTransformedBoundBox();
-
-		return BoundingBox;
+		if (BoundingBox != nullptr)
+			return BoundingBox;
+		else
+			return nullptr;
 	}
 
 	ComponentTransform* GetTransform()

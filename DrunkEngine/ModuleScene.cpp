@@ -101,9 +101,13 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 	App->gameObj->getRootObj()->OrderChildren();
 	App->gameObj->getRootObj()->RecursiveSetNewUUID();
 
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = App->gameObj->getRootObj();
-	App->eventSys->BroadcastEvent(ev);
+	Event evTrans(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	evTrans.game_object.ptr = App->gameObj->getRootObj();
+	App->eventSys->BroadcastEvent(evTrans);
+
+	Event evCam(EventType::Update_Cam_Focus, Event::UnionUsed::UseGameObject);
+	evCam.game_object.ptr = App->gameObj->getRootObj();
+	App->eventSys->BroadcastEvent(evCam);
 
 	return true;
 }

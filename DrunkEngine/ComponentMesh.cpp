@@ -257,7 +257,7 @@ void ComponentMesh::Save(JSON_Array* comps)
 
 bool ComponentMesh::CheckMeshValidity()
 {
-	if (App->gameObj->camera_rendering != nullptr && r_mesh != nullptr)
+	if (App->gameObj->camera_rendering != nullptr && r_mesh != nullptr && this->parent->GetBB() != nullptr)
 	{
 		if (this->parent->is_static == false)
 			return App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB());		
