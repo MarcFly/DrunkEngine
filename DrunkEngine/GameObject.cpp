@@ -67,12 +67,6 @@ void GameObject::Draw()
 	for (int i = 0; i < this->components.size(); i++)		
 		this->components[i]->Draw();
 
-	if (this->BoundingBox != nullptr && this->GetTransform()->update_bounding_box)
-	{
-		SetTransformedBoundBox();
-		this->GetTransform()->update_bounding_box = false;
-	}
-
 	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
 		this->DrawBB();
 }
@@ -141,60 +135,6 @@ vec GameObject::getObjectCenter()
 	return vec(aux_x, aux_y, aux_z);
 }
 
-float GameObject::SetBoundBox()
-{
-	max_distance_point = 0;
-
-	this->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX),vec(INT_MIN, INT_MIN, INT_MIN));
-
-	if (this->children.size() == 0)
-	{
-		SetBoundBoxFromMeshes();
-	}
-	else
-	{
-		// Set Children Bounding Boxes
-		for (int i = 0; i < this->children.size(); i++)
-			this->children[i]->SetBoundBox();
-
-		for (int i = 0; i < this->children.size(); i++)
-		{
-
-			// Setting the BB min and max points
-
-			if (this->BoundingBox->maxPoint.x < this->children[i]->BoundingBox->maxPoint.x)
-				this->BoundingBox->maxPoint.x = this->children[i]->BoundingBox->maxPoint.x;		
-
-			if (this->BoundingBox->minPoint.x > this->children[i]->BoundingBox->minPoint.x)
-				this->BoundingBox->minPoint.x = this->children[i]->BoundingBox->minPoint.x;	
-
-			if (this->BoundingBox->maxPoint.y < this->children[i]->BoundingBox->maxPoint.y)
-				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;	
-
-			if (this->BoundingBox->minPoint.y > this->children[i]->BoundingBox->minPoint.y)
-				this->BoundingBox->minPoint.y = this->children[i]->BoundingBox->minPoint.y;
-
-			if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
-				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;	
-
-			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
-				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
-		}
-	}
-
-	// Set Return Value
-	{
-		if (abs(this->BoundingBox->maxPoint.x) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.x); }
-		if (abs(this->BoundingBox->maxPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.y); }
-		if (abs(this->BoundingBox->maxPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.z); }
-		if (abs(this->BoundingBox->minPoint.x) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.x); }
-		if (abs(this->BoundingBox->minPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.y); }
-		if (abs(this->BoundingBox->minPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.z); }
-	}
-
-	return max_distance_point;
-}
-
 void GameObject::SetTransformedBoundBox()
 {
 	max_distance_point = 0;
@@ -243,7 +183,7 @@ void GameObject::SetTransformedBoundBox()
 		// Set Children Bounding Boxes
 		for (int i = 0; i < this->children.size(); i++)
 			if (this->children[i]->BoundingBox == nullptr)
-				this->children[i]->SetBoundBox();
+				this->children[i]->SetTransformedBoundBox();
 
 		for (int i = 0; i < this->children.size(); i++)
 		{

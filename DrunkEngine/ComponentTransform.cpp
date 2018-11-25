@@ -63,42 +63,15 @@ void ComponentTransform::SetLocalTransform()
 {
 	local_transform = float4x4::FromTRS(position, rotate_quat, scale);
 
-	RecursiveSetChildrenToUpdate(this);
-	RecursiveSetParentToUpdate(this);
-
 	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
 	ev.game_object.ptr = parent;
 	App->eventSys->BroadcastEvent(ev);
-}
-
-void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
-{
-	if (t == nullptr)
-		t = this;
-
-	t->update_bounding_box = true;
-
-	for (int i = 0; i < t->parent->children.size(); i++)
-	{
-		RecursiveSetChildrenToUpdate(t->parent->children[i]->GetTransform());
-	}
-}
-
-void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
-{
-	t->update_bounding_box = true;
-
-	if (t->parent->parent != nullptr)
-		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
 }
 
 void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 {
 	aux_world_pos = aux_world_pos * new_transform;
 	world_pos = world_pos * new_transform;
-
-	RecursiveSetChildrenToUpdate(this);
-	RecursiveSetParentToUpdate(this);
 
 	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
 	ev.game_object.ptr = parent;
@@ -108,9 +81,6 @@ void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 void ComponentTransform::SetWorldRot(const Quat new_rot)
 {
 	world_rot = world_rot * world_rot.FromQuat(new_rot, aux_world_pos.Col3(3) - world_pos.Col3(3));
-
-	RecursiveSetChildrenToUpdate(this);
-	RecursiveSetParentToUpdate(this);
 
 	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
 	ev.game_object.ptr = parent;

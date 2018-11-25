@@ -47,7 +47,6 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 			{
 				App->gameObj->active_objects.push_back(obj);
 				obj->active = true;
-				obj->GetTransform()->update_bounding_box = true;
 			}
 		}
 		else if (ImGui::IsItemClicked())
@@ -55,7 +54,6 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 			App->gameObj->SetActiveFalse();
 			App->gameObj->active_objects.push_back(obj);
 			obj->active = true;
-			obj->GetTransform()->update_bounding_box = true;
 
 			selected_object = App->gameObj->active_objects[0];
 			check_info = true;

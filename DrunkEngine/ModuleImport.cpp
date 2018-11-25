@@ -95,11 +95,9 @@ void ModuleImport::LoadScene(const char* path)
 		par->OrderChildren();
 		par->RecursiveSetNewUUID();
 
-		par->GetTransform()->CalculateGlobalTransforms();
-		par->SetTransformedBoundBox();
-
-		App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
-		App->gameObj->Main_Cam->LookToObj(par, par->max_distance_point);
+		Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+		ev.game_object.ptr = par;
+		App->eventSys->BroadcastEvent(ev);
 	}
 }
 

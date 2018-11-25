@@ -53,6 +53,10 @@ public:
 	void RecursiveUpdateParents(GameObject * obj);
 	void RecursiveUpdateChilds(GameObject * obj);
 
+	void CalculateBBs(GameObject * obj);
+	void RecursiveCalcBBsParents(GameObject * obj);
+	void RecursiveCalcBBsChilds(GameObject * obj);
+
 public:
 
 	std::string scene_folder;

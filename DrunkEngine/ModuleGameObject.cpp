@@ -376,8 +376,12 @@ void ModuleGameObject::RecieveEvent(const Event & event)
 	{
 	case EventType::Transform_Updated:
 	{
-		UpdateTransforms(event.game_object.ptr);
 		event.game_object.ptr->GetTransform()->CalculateGlobalTransforms();
+		UpdateTransforms(event.game_object.ptr);
+
+		if (event.game_object.ptr->parent == nullptr)
+			App->gameObj->Main_Cam->LookToObj(event.game_object.ptr, event.game_object.ptr->max_distance_point);
+
 		break;
 	}
 	default:
@@ -402,6 +406,13 @@ void ModuleGameObject::UpdateTransforms(GameObject * obj)
 		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
 	}
 
+	//Calculating again BBs after the global transformations have been set.
+
+	//First the childs, as the BBs are calculated 
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveCalcBBsChilds(obj);	
+	if (obj->parent != nullptr)
+		RecursiveCalcBBsParents(obj);
 }
 
 void ModuleGameObject::RecursiveUpdateParents(GameObject * obj)
@@ -432,4 +443,93 @@ void ModuleGameObject::RecursiveUpdateChilds(GameObject * obj)
 
 		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
 	}
+}
+
+void ModuleGameObject::CalculateBBs(GameObject * obj)
+{
+	obj->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX), vec(INT_MIN, INT_MIN, INT_MIN));
+	obj->max_distance_point = 0;
+
+	std::vector<Component*> cmp_meshes;
+	cmp_meshes = obj->GetComponents(CT_Mesh);
+
+	if (obj->children.size() == 0)
+	{
+		if (cmp_meshes.size() > 0)
+		{
+			for (int i = 0; i < cmp_meshes.size(); i++)
+			{
+				math::AABB auxBB = *cmp_meshes[i]->AsMesh()->BoundingBox;
+				auxBB.TransformAsAABB(cmp_meshes[i]->AsMesh()->parent->GetTransform()->global_transform);
+
+				// Setting the BB min and max points
+
+				if (obj->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
+					obj->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
+				if (obj->BoundingBox->minPoint.x > auxBB.minPoint.x)
+					obj->BoundingBox->minPoint.x = auxBB.minPoint.x;
+				if (obj->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
+					obj->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
+				if (obj->BoundingBox->minPoint.y > auxBB.minPoint.y)
+					obj->BoundingBox->minPoint.y = auxBB.minPoint.y;
+				if (obj->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
+					obj->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
+				if (obj->BoundingBox->minPoint.z > auxBB.minPoint.z)
+					obj->BoundingBox->minPoint.z = auxBB.minPoint.z;
+			}
+		}
+		else
+		{
+			obj->BoundingBox->maxPoint = obj->GetTransform()->position + float3(1, 1, 1);
+			obj->BoundingBox->minPoint = obj->GetTransform()->position + float3(-1, -1, -1);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < obj->children.size(); i++)
+		{
+			math::AABB* auxBB = obj->children[i]->BoundingBox;
+
+			// Setting the BB min and max points with transforms
+
+			if (obj->BoundingBox->maxPoint.x < auxBB->maxPoint.x)
+				obj->BoundingBox->maxPoint.x = auxBB->maxPoint.x;
+			if (obj->BoundingBox->minPoint.x > auxBB->minPoint.x)
+				obj->BoundingBox->minPoint.x = auxBB->minPoint.x;
+			if (obj->BoundingBox->maxPoint.y < auxBB->maxPoint.y)
+				obj->BoundingBox->maxPoint.y = auxBB->maxPoint.y;
+			if (obj->BoundingBox->minPoint.y > auxBB->minPoint.y)
+				obj->BoundingBox->minPoint.y = auxBB->minPoint.y;
+			if (obj->BoundingBox->maxPoint.z < auxBB->maxPoint.z)
+				obj->BoundingBox->maxPoint.z = auxBB->maxPoint.z;
+			if (obj->BoundingBox->minPoint.z > auxBB->minPoint.z)
+				obj->BoundingBox->minPoint.z = auxBB->minPoint.z;
+		}
+	}
+
+	// Set maxPoint Value
+	{
+		if (abs(obj->BoundingBox->maxPoint.x) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->maxPoint.x); }
+		if (abs(obj->BoundingBox->maxPoint.y) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->maxPoint.y); }
+		if (abs(obj->BoundingBox->maxPoint.z) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->maxPoint.z); }
+		if (abs(obj->BoundingBox->minPoint.x) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->minPoint.x); }
+		if (abs(obj->BoundingBox->minPoint.y) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->minPoint.y); }
+		if (abs(obj->BoundingBox->minPoint.z) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->minPoint.z); }
+	}
+}
+
+void ModuleGameObject::RecursiveCalcBBsParents(GameObject * obj)
+{
+	CalculateBBs(obj);
+
+	if (obj->parent != nullptr)
+		RecursiveCalcBBsParents(obj->parent);
+}
+
+void ModuleGameObject::RecursiveCalcBBsChilds(GameObject * obj)
+{
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveCalcBBsChilds(obj->children[i]);
+
+	CalculateBBs(obj);
 }
