@@ -293,9 +293,8 @@ void ModuleGameObject::ManageGuizmo()
 				{
 					if (mCurrentGizmoMode == ImGuizmo::WORLD)
 					{
-						float4x4 new_transform = float4x4::FromTRS(float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z), Quat::identity, float3::one);
+						float4x4 new_transform = float4x4::FromTRS(float3(pos.x, pos.y, pos.z), Quat::identity, float3::one);
 						active_objects[i]->GetTransform()->SetWorldPos(new_transform);
-						previous_pos = float3(pos.x, pos.y, pos.z);
 
 						Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
 						ev.game_object.ptr = active_objects[i];
