@@ -342,7 +342,7 @@ void ModuleGameObject::ManageGuizmo()
 				case ImGuizmo::SCALE:
 				{
 					//Only Local
-					float3 scale_float3 = float3(scale.x - previous_scale.x, scale.y - previous_scale.y, scale.z - previous_scale.z) + active_objects[i]->GetTransform()->scale;
+					float3 scale_float3 = float3(scale.x - previous_scale.x, scale.y - previous_scale.y, scale.z - previous_scale.z).Mul(active_objects[i]->GetTransform()->scale) + active_objects[i]->GetTransform()->scale;
 					active_objects[i]->GetTransform()->SetTransformScale(scale_float3.x, scale_float3.y, scale_float3.z);
 					previous_scale = float3(scale.x, scale.y, scale.z);
 
