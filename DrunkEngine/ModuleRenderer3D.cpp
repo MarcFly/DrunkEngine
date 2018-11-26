@@ -79,6 +79,7 @@ bool ModuleRenderer3D::Init()
 		glClearColor(0.f, 1.0f, 0.f, 0.5f); // In theory, bright glow green
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // This blend is for transparency, with primitives sorted from far to near, also to antialiased points
 														   // There are different ways to optimize different effects, polygon optimization is SRC_ALPHA_SATURATE, GL_ONE for example, and disable PolygonSmooth
+
 		glDepthFunc(GL_LEQUAL);
 
 		//Check for error

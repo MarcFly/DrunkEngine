@@ -53,11 +53,13 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 				ExportMatNode(comps, scene->mMaterials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex], scene->mMeshes[node->mMeshes[i]]->mMaterialIndex, name);
 		}
 
+		
 	}
 	
 	set_val = obj + "components";
 	json_object_dotset_value(curr, set_val.c_str(), set_array);
 
+	// Adding GO to file
 	json_array_append_value(go, append);
 
 	for (int i = 0; i < node->mNumChildren; i++)
@@ -99,6 +101,10 @@ void PrefabImport::ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* tra
 	json_object_dotset_boolean(curr, "properties.fromAINode", true);
 
 	json_array_append_value(comps, append);
+
+	// Free Component Value
+	json_object_clear(curr);
+	json_value_free(append);
 }
 
 void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int mesh_id, std::string name)
@@ -112,6 +118,10 @@ void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const i
 	json_object_dotset_string(curr, "properties.filename", filename.c_str());
 
 	json_array_append_value(comps, append);
+
+	// Free Component Value
+	json_object_clear(curr);
+	json_value_free(append);
 }
 
 void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const int mat_id, std::string name)
@@ -125,6 +135,10 @@ void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const
 	json_object_dotset_string(curr, "properties.filename", filename.c_str());
 
 	json_array_append_value(comps, append);
+
+	// Free Component Value
+	json_object_clear(curr);
+	json_value_free(append);
 }
 
 void ExportMeta(const aiNode* obj, std::string& path)
@@ -170,7 +184,11 @@ GameObject * PrefabImport::ImportGameObject(const char* path, JSON_Value* go)
 			if (type != CT_Transform)
 				ret->components.push_back(add);
 		}
-	}
 
+		// Free GO Object
+		json_array_clear(comps);
+		json_object_clear(curr);
+	}
+	
 	return ret;
 }

@@ -38,7 +38,10 @@ public:
 
 	void Unused(DGUID uid)
 	{
-		Library.at(uid)->UseCount--;
+
+		MetaResource* meta = Library.at(uid);
+		if (meta != nullptr)
+			meta->UseCount--;
 	}
 
 };
