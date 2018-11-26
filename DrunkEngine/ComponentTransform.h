@@ -32,6 +32,8 @@ public:
 
 	void SetAuxWorldPos();
 
+	Quat GetRotFromMat(float4x4 mat);
+
 	void CleanUp();
 
 	void Load(const JSON_Object* comp);
@@ -67,7 +69,9 @@ public:
 		type = CT_Transform;
 		multiple = false;
 	}
-
+	template <typename T> int sgn(T val) {
+		return (T(0) < val) - (val < T(0));
+	}
 };
 
 #endif
