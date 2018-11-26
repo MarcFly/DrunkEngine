@@ -23,6 +23,8 @@ public:
 
 	void CleanUp();
 
+	void DrawTextures(ResourceMesh* r_mesh);
+	void DrawDiffuse(ResourceMesh* r_mesh, ResourceTexture* tex);
 
 	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);

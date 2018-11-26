@@ -144,22 +144,7 @@ void ComponentMesh::DrawMesh()
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
 			
-			for (int i = 0; i < c_mat->textures.size(); i++)
-			{
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
-				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
-
-				if (c_mat->AlphaTest)
-				{
-					glEnable(GL_ALPHA_TEST);
-					glAlphaFunc(GL_GREATER, c_mat->AlphaVal);
-				}
-
-				glBindTexture(GL_TEXTURE_2D, c_mat->textures[i]->id_tex);
-				
-				glDisable(GL_ALPHA_TEST);
-			}	
+			c_mat->DrawTextures(r_mesh);
 		}
 		else
 		{

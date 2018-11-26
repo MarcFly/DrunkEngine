@@ -45,6 +45,8 @@ ResourceTexture* MatImport::LinkTexture(DGUID fID)
 	if (!meta->Asset.IsLoaded())
 		meta->Asset.LoadToMem();
 
+	meta->Asset.texture.ptr->type = meta->tex_type;
+
 	meta->UseCount++;
 
 	return meta->Asset.texture.ptr;
@@ -78,6 +80,9 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 		memcpy(&r_mat->NumDiffTextures, cursor, sizeof(uint));
 		cursor += sizeof(uint);
 		
+		//  Specular, Ambient, Emissive, Height, Normals, 
+		// Shininess, Opacity, Displacement, LightMap, Reflection
+
 		uint dir_size;
 		memcpy(&dir_size, cursor, sizeof(uint));
 		cursor += sizeof(uint);
@@ -109,6 +114,7 @@ ResourceMaterial* MatImport::LoadMat(const char* file)
 				std::string meta_file = filename + ".meta";
 				map_tex->LoadMetaFile(meta_file.c_str());
 				tfID = DGUID(map_tex->file.c_str());
+				map_tex->tex_type = TM_DIFFUSE;
 				App->resources->Library[tfID] = map_tex;
 				
 			}		
@@ -190,8 +196,11 @@ ResourceTexture* MatImport::LoadTexture(const char * path)
 void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const char * path)
 {
 	uint prop_size = mat->mNumProperties;
-	uint text_size = mat->GetTextureCount(aiTextureType_DIFFUSE);
-	
+	uint diff_text_size = mat->GetTextureCount(aiTextureType_DIFFUSE);
+
+	//  Specular, Ambient, Emissive, Height, Normals, 
+	// Shininess, Opacity, Displacement, LightMap, Reflection
+
 	uint buf_size = sizeof(uint) * 2;
 
 	aiColor3D getc;
@@ -207,7 +216,7 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 
 	std::vector<uint> texture_ranges;
 	std::vector<std::string> textures; // Only Diffuse for now
-	for (int i = 0; i < text_size; i++)
+	for (int i = 0; i < diff_text_size; i++)
 	{
 		aiString aipath;
 		mat->GetTexture(aiTextureType_DIFFUSE, i, &aipath);
@@ -221,6 +230,9 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 		texture_ranges.push_back(textures[i].length() + 2);
 	}
 
+	//  Specular, Ambient, Emissive, Height, Normals, 
+	// Shininess, Opacity, Displacement, LightMap, Reflection
+
 	char* data = new char[buf_size];
 	char* cursor = data;
 
@@ -232,7 +244,7 @@ void MatImport::ExportAIMat(const aiMaterial * mat, const int& mat_id, const cha
 	memcpy(cursor, &prop_size, sizeof(uint));
 	cursor += sizeof(uint);
 
-	memcpy(cursor, &text_size, sizeof(uint));
+	memcpy(cursor, &diff_text_size, sizeof(uint));
 	cursor += sizeof(uint);
 
 	uint dir_size = dir.length() + 2;

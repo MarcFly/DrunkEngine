@@ -8,6 +8,7 @@
 #include "MaterialImport.h"
 #include "ResourceTexture.h"
 #include "ResourceMaterial.h"
+#include "ResourceMesh.h"
 
 ComponentMaterial::ComponentMaterial(GameObject* par)
 {
@@ -81,4 +82,36 @@ void ComponentMaterial::Save(JSON_Array* comps)
 	json_object_dotset_string(curr, "properties.filename", name.c_str());
 
 	json_array_append_value(comps, append);
+}
+
+void ComponentMaterial::DrawTextures(ResourceMesh* r_mesh)
+{
+	for (int i = 0; i < textures.size(); i++)
+	{
+		switch (textures[i]->type)
+		{
+		case TM_DIFFUSE:
+			DrawDiffuse(r_mesh, textures[i]);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void ComponentMaterial::DrawDiffuse(ResourceMesh* r_mesh, ResourceTexture* tex)
+{
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
+	glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+
+	if (AlphaTest)
+	{
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, AlphaVal);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, tex->id_tex);
+
+	glDisable(GL_ALPHA_TEST);
 }

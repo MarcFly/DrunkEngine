@@ -33,7 +33,7 @@ public:
 public:
 	void SetBaseVals()
 	{
-		type CT_Billboard;
+		type = CT_Billboard;
 		multiple = true;
 
 		to_pop = false;
