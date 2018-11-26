@@ -9,8 +9,8 @@ ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, T
 {
 	mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	mCurrentGizmoMode = ImGuizmo::WORLD;
-	previous_scale = float3::one;
-	previous_pos = float3::zero;
+	on_click_scale = float3::one;
+	on_click_pos = float3::zero;
 }
 
 ModuleGameObject::~ModuleGameObject()
@@ -278,6 +278,12 @@ void ModuleGameObject::ManageGuizmo()
 													aux_vals[8], aux_vals[9], aux_vals[10], aux_vals[11],
 													aux_vals[12], aux_vals[13], aux_vals[14], aux_vals[15]);
 
+			if (mCurrentGizmoOperation == ImGuizmo::SCALE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && ImGuizmo::IsOver())
+				on_click_scale = active_objects[i]->GetTransform()->scale;
+
+			if (mCurrentGizmoOperation == ImGuizmo::TRANSLATE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && ImGuizmo::IsOver())
+				on_click_pos = active_objects[i]->GetTransform()->position;
+
 			if (ImGuizmo::IsUsing() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT)
 			{
 				aiVector3D scale;
@@ -304,10 +310,9 @@ void ModuleGameObject::ManageGuizmo()
 					}
 					else	// LOCAL
 					{
-						float3 pos_float3 = float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z) + active_objects[i]->GetTransform()->position;
+						float3 pos_float3 = float3(pos.x, pos.y, pos.z) + on_click_pos;
 						active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
-						previous_pos = float3(pos.x, pos.y, pos.z);
-
+						
 						Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
 						ev.game_object.ptr = active_objects[i];
 						App->eventSys->BroadcastEvent(ev);
@@ -342,9 +347,8 @@ void ModuleGameObject::ManageGuizmo()
 				case ImGuizmo::SCALE:
 				{
 					//Only Local
-					float3 scale_float3 = float3(scale.x - previous_scale.x, scale.y - previous_scale.y, scale.z - previous_scale.z).Mul(active_objects[i]->GetTransform()->scale) + active_objects[i]->GetTransform()->scale;
-					active_objects[i]->GetTransform()->SetTransformScale(scale_float3.x, scale_float3.y, scale_float3.z);
-					previous_scale = float3(scale.x, scale.y, scale.z);
+					float3 scale_float3 = float3(scale.x - 1, scale.y - 1, scale.z - 1).Mul(on_click_scale);
+					active_objects[i]->GetTransform()->SetTransformScale(on_click_scale.x + scale_float3.x, on_click_scale.y + scale_float3.y, on_click_scale.z + scale_float3.z);
 
 					Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
 					ev.game_object.ptr = active_objects[i];
@@ -354,11 +358,6 @@ void ModuleGameObject::ManageGuizmo()
 				}
 				}
 
-			}
-			else
-			{
-				previous_scale = float3::one;
-				previous_pos = float3::zero;
 			}
 		}
 	}
