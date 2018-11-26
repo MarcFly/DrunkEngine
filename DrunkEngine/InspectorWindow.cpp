@@ -190,10 +190,6 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 				else
 				{
 					App->gameObj->DeleteFromStaticObjects(transform->parent);
-
-					if (App->gameObj->GetSceneKDTree() != nullptr)
-						App->gameObj->DeleteSceneKDTree();
-
 					App->ui->kdtree_win->CreateKDTree();
 				}
 			}
@@ -207,38 +203,47 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 
 		ImGui::Spacing();
 
-		if (transform->parent->GetComponent(CTypes::CT_Camera) == nullptr)
+		if (ImGui::RadioButton("World", radio_world))
 		{
-			if (ImGui::RadioButton("World", radio_world))
-			{
-				radio_world = true;
-				radio_local = false;
-				App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::RadioButton("Local", radio_local))
-			{
-				radio_world = false;
-				radio_local = true;
-				App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
-			}
-
-			ImGui::Spacing();
+			radio_world = true;
+			radio_local = false;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
 		}
+
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Local", radio_local))
+		{
+			radio_world = false;
+			radio_local = true;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
+		}
+
+		ImGui::Spacing();
 
 		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::LOCAL)
 		{
 			//Pos
 			float pos[3] = { transform->position.x, transform->position.y, transform->position.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+			{
 				transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+
+				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+				ev.game_object.ptr = transform->parent;
+				App->eventSys->BroadcastEvent(ev);
+			}
 
 			//Rot
 			float rot[3] = { transform->rotate_euler.x, transform->rotate_euler.y, transform->rotate_euler.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
+			{
 				transform->SetTransformRotation((float3)rot);
+
+				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+				ev.game_object.ptr = transform->parent;
+				App->eventSys->BroadcastEvent(ev);
+			}
 		}
 		else if (App->gameObj->mCurrentGizmoMode == ImGuizmo::WORLD)
 		{	
@@ -253,7 +258,13 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			//Pos
 			float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+			{
 				transform->SetWorldPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
+
+				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+				ev.game_object.ptr = transform->parent;
+				App->eventSys->BroadcastEvent(ev);
+			}
 
 			//Rot
 			float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
@@ -262,14 +273,23 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			{
 				Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z));
 				transform->SetWorldRot(rot_quat);
+
+				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+				ev.game_object.ptr = transform->parent;
+				App->eventSys->BroadcastEvent(ev);
 			}
 		}
 
 		//Scale
 		float scale[3] = { transform->scale.x, transform->scale.y, transform->scale.z };
 		if (!transform->parent->is_static && ImGui::DragFloat3("Scale", scale, 0.2f))
+		{
 			transform->SetTransformScale(scale[0], scale[1], scale[2]);
 
+			Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+			ev.game_object.ptr = transform->parent;
+			App->eventSys->BroadcastEvent(ev);
+		}
 		ImGui::Spacing();
 	}
 }

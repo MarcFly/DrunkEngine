@@ -187,7 +187,7 @@ void ModuleCamera3D::TestIntersect(const std::vector<GameObject*>& objs, const L
 {
 	for (int i = 0; i < objs.size(); i++)
 	{
-		if (ray.ToRay().Intersects(*objs[i]->GetBB()))
+		if (objs[i]->parent != nullptr && ray.ToRay().Intersects(*objs[i]->GetBB()))
 		{
 			if (objs[i]->GetComponent(CT_Mesh) != nullptr)
 				intersected.push_back(objs[i]);

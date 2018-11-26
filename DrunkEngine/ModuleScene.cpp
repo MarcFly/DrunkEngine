@@ -101,10 +101,13 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 	App->gameObj->getRootObj()->OrderChildren();
 	App->gameObj->getRootObj()->RecursiveSetNewUUID();
 
-	App->gameObj->getRootObj()->GetTransform()->CalculateGlobalTransforms();
-	App->gameObj->getRootObj()->SetTransformedBoundBox();
+	Event evTrans(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	evTrans.game_object.ptr = App->gameObj->getRootObj();
+	App->eventSys->BroadcastEvent(evTrans);
 
-	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
+	Event evCam(EventType::Update_Cam_Focus, Event::UnionUsed::UseGameObject);
+	evCam.game_object.ptr = App->gameObj->getRootObj();
+	App->eventSys->BroadcastEvent(evCam);
 
 	return true;
 }

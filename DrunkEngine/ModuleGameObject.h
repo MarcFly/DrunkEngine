@@ -41,13 +41,21 @@ public:
 
 	//Root Obj
 	void SetRootObject(GameObject * root);
-	GameObject * GetRootObject() const;
+	GameObject * getRootObj() const { return Root_Object; };
 
 	void ManageGuizmo();
 
 	void SetCameraRender(ComponentCamera * cam);
 
 	void RecieveEvent(const Event & event);
+
+	void UpdateTransforms(GameObject * obj);
+	void RecursiveUpdateParents(GameObject * obj);
+	void RecursiveUpdateChilds(GameObject * obj);
+
+	void CalculateBBs(GameObject * obj);
+	void RecursiveCalcBBsParents(GameObject * obj);
+	void RecursiveCalcBBsChilds(GameObject * obj);
 
 public:
 
@@ -65,7 +73,6 @@ private:
 	KDTree* Scene_KdTree = nullptr;
 
 public:
-	GameObject * getRootObj() const { return Root_Object; };
 	ComponentCamera * Main_Cam = nullptr;
 	ComponentCamera * camera_rendering = nullptr;
 
@@ -74,8 +81,8 @@ public:
 	ImGuizmo::OPERATION mCurrentGizmoOperation;
 	ImGuizmo::MODE mCurrentGizmoMode;
 	
-	float3 previous_scale;
-	float3 previous_pos;
+	float3 on_click_scale;
+	float3 on_click_pos;
 };
 
 #endif // !_MODULE_EVENTSYSTEM_H_
