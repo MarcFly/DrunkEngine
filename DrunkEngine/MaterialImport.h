@@ -17,9 +17,7 @@ public:
 	void Init();
 
 	void ExportAIMat(const aiMaterial * mat, const int& mat_id, const char * path);
-	void ExportMat(const ComponentMaterial* mat);
 	void ExportILTexture(const char* path, const char* full_path = nullptr);
-	void ExportTexture(ResourceTexture* tex);
 
 	ResourceMaterial* LoadMat(const char* file);
 	void ExportMeta(const aiMaterial* mat, const int& mat_id, std::string& path);

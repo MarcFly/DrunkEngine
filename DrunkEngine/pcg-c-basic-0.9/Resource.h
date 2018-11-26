@@ -80,36 +80,27 @@ struct DGUID
 union Resource
 {
 	Resource() {};
-	Resource(MetaResource* parent) {
-		bs.par = parent;
-	}
+	Resource(MetaResource* parent) : par{parent} {};
 
-	struct base
-	{
-		bool* filler = nullptr;
-		MetaResource* par = nullptr;
-	} bs;
 	struct mesh
 	{
 		ResourceMesh* ptr = nullptr;
-		MetaResource* par = nullptr;
 	} mesh;
 	struct material
 	{
 		ResourceMaterial* ptr = nullptr;
-		MetaResource* par = nullptr;
 	} mat;
 	struct tex
 	{
 		ResourceTexture* ptr = nullptr;
-		MetaResource* par = nullptr;
 	} texture;
 
-	
+	MetaResource* par = nullptr;
 
 public:
 	void LoadToMem();
 	void UnloadFromMem();
+	bool IsInUse();
 	bool IsLoaded();
 };
 
@@ -117,8 +108,7 @@ class MetaResource
 {
 public:
 	MetaResource() {
-		Asset.bs.filler = nullptr;
-		Asset.bs.par = this; 
+		Asset.par = this; 
 	};
 	virtual ~MetaResource() {};
 
@@ -129,7 +119,6 @@ public:
 	Resource Asset;
 
 	virtual void LoadMetaFile(const char* path) {};
-	bool InUse() { return UseCount > 0; };
 };
 
 #endif

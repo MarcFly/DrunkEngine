@@ -9,18 +9,18 @@
 
 void Resource::LoadToMem()
 {
-	switch (bs.par->type)
+	switch (par->type)
 	{
 	case RT_Prefab:
 		break;
 	case RT_Mesh:
-		mesh.ptr = App->importer->mesh_i->LoadMesh(bs.par->file.c_str());
+		mesh.ptr = App->importer->mesh_i->LoadMesh(par->file.c_str());
 		break;
 	case RT_Material:
-		mat.ptr = App->importer->mat_i->LoadMat(bs.par->file.c_str());
+		mat.ptr = App->importer->mat_i->LoadMat(par->file.c_str());
 		break;
 	case RT_Texture:
-		texture.ptr = App->importer->mat_i->LoadTexture(bs.par->file.c_str());
+		texture.ptr = App->importer->mat_i->LoadTexture(par->file.c_str());
 		break;
 	default:
 		break;
@@ -29,7 +29,7 @@ void Resource::LoadToMem()
 
 void Resource::UnloadFromMem()
 {
-	switch (bs.par->type)
+	switch (par->type)
 	{
 	case RT_Prefab:
 		break;
@@ -53,27 +53,26 @@ void Resource::UnloadFromMem()
 	}
 }
 
+bool Resource::IsInUse()
+{
+	return (par->UseCount > 0);
+}
+
 bool Resource::IsLoaded()
 {
-	bool ret = false;
-	switch(bs.par->type)
+	switch(par->type)
 	{
 	case RT_Prefab:
 		break;
 	case RT_Mesh:
-		ret = (mesh.ptr != nullptr);
-		break;
+		return (mesh.ptr != nullptr);
 	case RT_Material:
-		ret = (mat.ptr != nullptr);
-		break;
+		return (mat.ptr != nullptr);
 	case RT_Texture:
-		ret = (texture.ptr != nullptr);
-		break;
+		return (texture.ptr != nullptr);
 	default:
-		ret = false;
+		return false;
 	}
-
-	return ret;
 }
 
 //--------------------------------------

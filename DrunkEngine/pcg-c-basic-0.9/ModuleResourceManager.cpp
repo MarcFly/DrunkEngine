@@ -23,7 +23,9 @@ bool ModuleResourceManager::PostUpdate(float dt)
 	{
 		MetaResource* item = it._Ptr->_Myval.second;
 
-		if (!item->InUse())
+		item->Asset.par = item;
+
+		if (!item->Asset.IsInUse())
 			if(item->Asset.IsLoaded())
 				item->Asset.UnloadFromMem();
 	}
