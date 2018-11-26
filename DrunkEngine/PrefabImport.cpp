@@ -101,10 +101,6 @@ void PrefabImport::ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* tra
 	json_object_dotset_boolean(curr, "properties.fromAINode", true);
 
 	json_array_append_value(comps, append);
-
-	// Free Component Value
-	json_object_clear(curr);
-	json_value_free(append);
 }
 
 void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int mesh_id, std::string name)
@@ -118,10 +114,6 @@ void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const i
 	json_object_dotset_string(curr, "properties.filename", filename.c_str());
 
 	json_array_append_value(comps, append);
-
-	// Free Component Value
-	json_object_clear(curr);
-	json_value_free(append);
 }
 
 void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const int mat_id, std::string name)
@@ -135,10 +127,6 @@ void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const
 	json_object_dotset_string(curr, "properties.filename", filename.c_str());
 
 	json_array_append_value(comps, append);
-
-	// Free Component Value
-	json_object_clear(curr);
-	json_value_free(append);
 }
 
 void ExportMeta(const aiNode* obj, std::string& path)

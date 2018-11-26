@@ -160,23 +160,19 @@ void ModuleImport::ExportScene(const char* path)
 void ModuleImport::ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene)
 {
 	JSON_Value* scene = json_parse_file(path);
-	if (scene == nullptr)
-	{
-		scene = json_value_init_object();
-		json_serialize_to_file(scene, path);
-		scene = json_parse_file(path);
+	
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* go = json_value_get_array(set_array);
 
-		JSON_Value* set_array = json_value_init_array();
-		JSON_Array* go = json_value_get_array(set_array);
+	prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
 
-		prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
+	JSON_Object* set = json_value_get_object(scene = json_value_init_object());
+	json_object_set_value(set, "scene", set_array);
 
-		JSON_Object* set = json_value_get_object(scene);
-		json_object_set_value(set, "scene", set_array);
-		json_serialize_to_file(scene, path);
+	json_serialize_to_file(scene, path);
 
-		App->ui->console_win->AddLog("%s Scene exported", path);
-	}
+	App->ui->console_win->AddLog("%s Scene exported", path);
+	
 	
 }
 
