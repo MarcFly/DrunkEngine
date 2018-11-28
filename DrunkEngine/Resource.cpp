@@ -6,6 +6,7 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "ResourceSkeleton.h"
 
 void Resource::LoadToMem()
 {
@@ -21,6 +22,12 @@ void Resource::LoadToMem()
 		break;
 	case RT_Texture:
 		texture.ptr = App->importer->mat_i->LoadTexture(bs.par->file.c_str());
+		break;
+	case RT_Billboard:
+		//billboard.ptr = App->importer->mat_i->LoadTexture(bs.par->file.c_str());
+		break;
+	case RT_Skeleton:
+		skeleton.ptr = App->importer->skel_i->LoadSkeleton(bs.par->file.c_str());
 		break;
 	default:
 		break;
@@ -48,6 +55,16 @@ void Resource::UnloadFromMem()
 		delete texture.ptr;
 		texture.ptr = nullptr;
 		break;
+	case RT_Billboard:
+		/*billboard.ptr->UnloadMem();
+		delete billboard.ptr;
+		billboard.ptr = nullptr;*/
+		break;
+	case RT_Skeleton:
+		skeleton.ptr->UnloadMem();
+		delete skeleton.ptr;
+		skeleton.ptr = nullptr;
+		break;
 	default:
 		break;
 	}
@@ -68,6 +85,12 @@ bool Resource::IsLoaded()
 		break;
 	case RT_Texture:
 		ret = (texture.ptr != nullptr);
+		break;
+	case RT_Billboard:
+		//ret = (billboard.ptr != nullptr);
+		break;
+	case RT_Skeleton:
+		ret = (skeleton.ptr != nullptr);
 		break;
 	default:
 		ret = false;
@@ -165,4 +188,9 @@ bool DGUID::CheckValidity()
 	}
 
 	return ret;
+}
+
+void DGUID::cpyfromstring(std::string cmp_id)
+{
+	memcpy(MD5ID, cmp_id.c_str(), 32);
 }

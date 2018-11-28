@@ -4,7 +4,6 @@
 #include "SceneViewerWindow.h"
 #include "GameObject.h"
 #include "ComponentMaterial.h"
-#include "ComponentCamera.h"
 #include "MeshImport.h"
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
@@ -16,22 +15,12 @@ ComponentMesh::ComponentMesh()
 	SetBaseVals();
 }
 
-bool ComponentMesh::SetTexCoords(const aiMesh * mesh)
+ComponentMesh::ComponentMesh(GameObject* par) 
 {
-	bool ret = true;
+	SetBaseVals();
 
-	// Set TexCoordinates
-	if (mesh->HasTextureCoords(0))
-	{
-		r_mesh->num_uvs = r_mesh->num_vertex;
-		r_mesh->tex_coords = new float[r_mesh->num_uvs * 3];
-		memcpy(r_mesh->tex_coords, mesh->mTextureCoords[0], r_mesh->num_uvs * sizeof(float) * 3);
-	}
-	else
-		App->ui->console_win->AddLog("No texture coordinates to be set");
-
-	return ret;
-}
+	parent = par;
+};
 
 void ComponentMesh::SetNormals(const int& index)
 {

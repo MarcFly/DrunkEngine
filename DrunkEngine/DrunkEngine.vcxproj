@@ -141,6 +141,7 @@
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMaterial.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentSkeleton.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ConsoleWindow.h" />
     <ClInclude Include="DevIL\include\IL\devil_cpp_wrapper.hpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
+    <ClInclude Include="ResourceSkeleton.h" />
     <ClInclude Include="SceneViewerWindow.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
     <ClInclude Include="GLEW\include\GL\glew.h" />
@@ -268,6 +270,7 @@
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="ResourceTexture.h" />
+    <ClInclude Include="SkeletonImport.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -280,12 +283,14 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentSkeleton.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="ConsoleWindow.cpp" />
     <ClCompile Include="FileHelpers.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="ResourceSkeleton.cpp" />
     <ClCompile Include="SceneViewerWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
     <ClCompile Include="LoadSaveWindows.cpp" />
@@ -363,6 +368,7 @@
     <ClCompile Include="ResourceMaterial.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
+    <ClCompile Include="SkeletonImport.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

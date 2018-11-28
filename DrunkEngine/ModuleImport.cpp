@@ -17,6 +17,7 @@
 #include "ResourceMaterial.h"
 #include "MD5.h"
 #include "PrefabImport.h"
+#include "SkeletonImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -144,7 +145,10 @@ void ModuleImport::ExportScene(const char* path)
 			meshname.append(".meshdrnk");
 			DGUID fID(meshname.c_str());
 			if (!fID.CheckValidity())
+			{
 				mesh_i->ExportAIMesh(mesh, i, path);
+				skel_i->ExportAISkeleton(mesh, i, path);
+			}
 		}
 
 		{

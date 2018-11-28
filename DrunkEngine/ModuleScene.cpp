@@ -35,7 +35,7 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	LoadFBX("./Assets/Street environment_V01.FBX");
+	//LoadFBX("./Assets/Street environment_V01.FBX");
 	//LoadFBX("./Assets/Ogre.fbx");
 	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
 	//LoadFBX("./Assets/Cube3d.fbx");
@@ -155,8 +155,12 @@ std::string ModuleScene::SaveScene(const char* filename)
 		root->name = GetFileName(filename);
 
 	CreateDirectory(".\\Assets\\", NULL);
-	std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
-	
+	std::string Save_scene = ".\\Assets\\";
+	if (App->gameObj->getRootObj() != nullptr)
+		Save_scene += App->gameObj->getRootObj()->name + ".drnk";
+	else
+		Save_scene += "NullScene.drnk";
+
 	if (App->gameObj->getRootObj() != nullptr)
 	{
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());

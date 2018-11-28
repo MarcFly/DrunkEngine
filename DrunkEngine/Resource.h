@@ -6,10 +6,12 @@
 #include "FileHelpers.h"
 
 class GameObject;
-class ResourceMesh;
+struct ResourceMesh;
 struct ResourceMaterial;
 struct ResourceTexture;
 struct MetaResource;
+struct ResourceSkeleton;
+struct ResourceBillboard;
 
 enum ResourceTypes
 {
@@ -18,6 +20,8 @@ enum ResourceTypes
 	RT_Mesh,
 	RT_Material,
 	RT_Texture,
+	RT_Billboard,
+	RT_Skeleton,
 
 	RT_MAX
 };
@@ -74,6 +78,7 @@ struct DGUID
 
 	void SetInvalid();
 	bool CheckValidity();
+	void cpyfromstring(std::string cmp_id);
 	
 };
 
@@ -104,7 +109,16 @@ union Resource
 		ResourceTexture* ptr = nullptr;
 		MetaResource* par = nullptr;
 	} texture;
-
+	struct bb
+	{
+		ResourceBillboard* ptr = nullptr;
+		MetaResource* par = nullptr;
+	} billboard;
+	struct skel
+	{
+		ResourceSkeleton* ptr = nullptr;
+		MetaResource* par = nullptr;
+	} skeleton;
 	
 
 public:

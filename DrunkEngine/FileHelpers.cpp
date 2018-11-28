@@ -112,6 +112,42 @@ std::string GetMD5ID(std::string file)
 	return retstr;
 }
 
+std::string StringMD5ID(const char* str_pass)
+{
+	Timer checkmd5;
+
+	MD5 md5;
+	std::string str(str_pass);
+	char* dest = new char[str.length() + 1];
+	std::copy(str.begin(), str.end(), dest);
+	char* cursor = dest + str.length();
+	*cursor = '\0';
+	const char* ret = md5.digestString(dest);
+	std::string retstr(ret);
+
+	PLOG("MD5 creation took %d", checkmd5.Read());
+
+	return retstr;
+}
+
+std::string StringMD5ID(std::string str_pass)
+{
+	Timer checkmd5;
+
+	MD5 md5;
+	std::string str(str_pass);
+	char* dest = new char[str.length() + 1];
+	std::copy(str.begin(), str.end(), dest);
+	char* cursor = dest + str.length();
+	*cursor = '\0';
+	const char* ret = md5.digestString(dest);
+	std::string retstr(ret);
+
+	PLOG("MD5 creation took %d", checkmd5.Read());
+
+	return retstr;
+}
+
 FileType CheckExtension(std::string& ext)
 {
 	FileType ret = FT_Error;
@@ -124,5 +160,7 @@ FileType CheckExtension(std::string& ext)
 		ret = FT_Mesh;
 	else if (ext == std::string(".matdrnk"))
 		ret = FT_Material;
+	else if (ext == std::string(".skeldrnk"))
+		ret = FT_Skeleton;
 	return ret;
 }

@@ -7,6 +7,7 @@
 #include "MeshImport.h"
 #include "Resource.h"
 #include "Color.h"
+#include "ComponentTransform.h"
 
 struct ResourceMaterial;
 struct DGUID;
@@ -49,7 +50,8 @@ public:
 
 	DGUID Material_ind;
 	uint mat_ind;
-	
+	bool has_skeleton;
+
 	// More Load Options
 	void LoadMetaFile(const char* file);
 

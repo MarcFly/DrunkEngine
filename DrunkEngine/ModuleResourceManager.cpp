@@ -3,6 +3,8 @@
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
+#include "ResourceSkeleton.h"
+
 #include <map>
 ModuleResourceManager::ModuleResourceManager(bool start_enabled) : Module(start_enabled, Type_ResManager)
 {
@@ -81,6 +83,8 @@ MetaResource* ModuleResourceManager::NewResource(FileType type)
 		return new MetaMat();
 	case FT_Mesh:
 		return new MetaMesh();
+	case FT_Skeleton:
+		return new MetaSkeleton();
 	default:
 		return nullptr;
 	}

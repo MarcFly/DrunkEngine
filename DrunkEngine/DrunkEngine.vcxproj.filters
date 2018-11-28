@@ -666,6 +666,15 @@
     <ClInclude Include="ComponentBillboard.h">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceSkeleton.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSkeleton.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -945,6 +954,15 @@
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
     <ClCompile Include="ComponentBillboard.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceSkeleton.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSkeleton.cpp">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,6 +11,7 @@ class ComponentMesh;
 class ComponentCamera;
 class ComponentTransform;
 class ComponentBillboard;
+class ComponentSkeleton;
 
 enum CTypes
 {
@@ -20,6 +21,7 @@ enum CTypes
 	CT_Camera,
 	CT_Transform,
 	CT_Billboard,
+	CT_Skeleton,
 
 	CT_Max
 };
@@ -92,6 +94,13 @@ public:
 	ComponentBillboard* AsBillboard() {
 		if (type == CT_Billboard)
 			return (ComponentBillboard*)this;
+
+		return nullptr;
+	}
+
+	ComponentSkeleton* AsSkeleton() {
+		if (type == CT_Skeleton)
+			return (ComponentSkeleton*)this;
 
 		return nullptr;
 	}

@@ -19,6 +19,7 @@
 class MeshImport;
 class MatImport;
 class PrefabImport;
+class SkeletonImport;
 
 class ModuleImport : public Module {
 public:
@@ -44,6 +45,7 @@ public:
 	MeshImport* mesh_i;
 	MatImport* mat_i;
 	PrefabImport* prefab_i;
+	SkeletonImport* skel_i;
 
 	std::string tex_folder;
 	std::string mesh_folder;

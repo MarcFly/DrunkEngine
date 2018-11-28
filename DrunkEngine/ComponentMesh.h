@@ -5,7 +5,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
-#include "Assimp/include/scene.h"
 #include "Component.h"
 
 class GameObject;
@@ -15,16 +14,10 @@ class ComponentMesh : public Component
 {
 public:
 	ComponentMesh();
-	ComponentMesh(GameObject* par) {
-		SetBaseVals();
-
-		parent = par;
-	};
-	//ComponentMesh(const aiMesh* mesh, GameObject* par);
+	ComponentMesh(GameObject* par);
 
 	~ComponentMesh() {};
 
-	bool SetTexCoords(const aiMesh* mesh);
 	void SetNormals(const int& index);
 	void SetMeshBoundBox();
 	
@@ -50,21 +43,16 @@ public:
 	AABB* BoundingBox;
 
 public:
-	void SetTextTo(const DGUID& nUID);
-	void SetTextTo(ResourceMesh* nMesh);
+	void SetTexTo(const DGUID& nUID);
+	void SetTexTo(ResourceMesh* nMesh);
 
 	void SetBaseVals()
 	{
 		type = CT_Mesh;
-
 		BoundingBox = nullptr;
-
 		multiple = false;
-
 		to_pop = false;
-
 		mat_ind = -1;
-
 		c_mat = nullptr;
 	}
 };

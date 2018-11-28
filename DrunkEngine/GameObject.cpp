@@ -4,6 +4,8 @@
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
 #include "ResourceMesh.h"
+#include "ComponentBillboard.h"
+#include "ComponentSkeleton.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -334,6 +336,10 @@ Component* GameObject::NewComponent(const CTypes type)
 		return new ComponentCamera(this);
 	else if (type == CT_Transform)
 		return new ComponentTransform(this);
+	/*else if (type == CT_Billboard)
+		return new ComponentBillboard(this);*/
+	else if (type == CT_Skeleton)
+		return new ComponentSkeleton(this);
 	
 	return nullptr;
 }
