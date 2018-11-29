@@ -36,6 +36,7 @@ enum FileType
 	FT_Mesh,
 	FT_Bilboad,
 	FT_Skeleton,
+	FT_Animation,
 
 	FT_Files_Max
 };

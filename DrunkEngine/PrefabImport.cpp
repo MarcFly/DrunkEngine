@@ -24,8 +24,6 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 
 	if (!IgnoredNodes(node->mName.C_Str()))
 	{
-		
-
 		std::string obj = "gameobject.";
 		std::string set_val;
 

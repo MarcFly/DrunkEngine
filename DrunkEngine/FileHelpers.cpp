@@ -162,6 +162,8 @@ FileType CheckExtension(std::string& ext)
 		ret = FT_Material;
 	else if (ext == std::string(".skeldrnk"))
 		ret = FT_Skeleton;
+	else if (ext == std::string(".animdrnk"))
+		ret = FT_Animation;
 	return ret;
 }
 

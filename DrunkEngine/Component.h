@@ -12,6 +12,7 @@ class ComponentCamera;
 class ComponentTransform;
 class ComponentBillboard;
 class ComponentSkeleton;
+class ComponentAnimation;
 
 enum CTypes
 {
@@ -22,6 +23,7 @@ enum CTypes
 	CT_Transform,
 	CT_Billboard,
 	CT_Skeleton,
+	CT_Animation,
 
 	CT_Max
 };
@@ -105,6 +107,12 @@ public:
 		return nullptr;
 	}
 	
+	ComponentAnimation* AsAnimation() {
+		if (type = CT_Animation)
+			return (ComponentAnimation*)this;
+
+		return nullptr;
+	}
 
 };
 

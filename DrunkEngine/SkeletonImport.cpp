@@ -105,102 +105,102 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 
 void SkeletonImport::ExportAISkeleton(const aiMesh* mesh, const int& mesh_id, const char* path)
 {
-	if (mesh->HasBones())
+	
+	std::string filename = ".\\Library\\";
+	filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id) + "_Skel";
+
+	std::fstream write_file;
+
+	write_file.open((filename + ".skeldrnk").c_str(), std::fstream::out | std::fstream::binary);
+
+	uint buf_size = 0;
+
+	uint skeleton_size = mesh->mNumBones;
+	uint weight_size = sizeof(float) + sizeof(uint);
+	uint id_size = 32;
+	uint bone_size = id_size + sizeof(uint) + sizeof(float) * 16;
+
+	char* data = new char[sizeof(uint)];
+	memcpy(data, &skeleton_size, sizeof(uint));
+	write_file.write(data, sizeof(uint));
+
+	delete data;
+	data = nullptr;
+
+	write_file.close();
+	write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
+
+	for (int i = 0; i < skeleton_size; i++)
 	{
-		std::string filename = ".\\Library\\";
-		filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id) + "_Skel";
+		buf_size = 0;
 
-		std::fstream write_file;
+		
+		uint num_weights = mesh->mBones[i]->mNumWeights;
 
-		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::out | std::fstream::binary);
+		std::string name = mesh->mBones[i]->mName.C_Str();
+		uint name_size = name.length() + 1;
 
-		uint buf_size = 0;
+		DGUID id;
+		id.cpyfromstring(StringMD5ID(name));
 
-		uint skeleton_size = mesh->mNumBones;
-		uint weight_size = sizeof(float) + sizeof(uint);
-		uint bone_size = sizeof(char[32]) + sizeof(uint) + sizeof(float) * 16;
+		buf_size = bone_size + sizeof(uint) + name_size + weight_size * num_weights;
 
-		char* data = new char[sizeof(uint)];
-		memcpy(data, &skeleton_size, sizeof(uint));
-		write_file.write(data, sizeof(uint));
+		data = new char[buf_size];
+		char* cursor = data;
+
+		// Bone Info Copy
+		memcpy(data, id.MD5ID, id_size);
+		cursor += id_size;
+		memcpy(cursor, &num_weights, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, &name_size, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, name.c_str(), name.length());
+		cursor += name.length();
+		memcpy(cursor, "\0", 1);
+		cursor += 1;
+
+		// Weights Copy
+		for (int j = 0; j < num_weights; j++)
+		{
+			memcpy(cursor, &mesh->mBones[i]->mWeights[j].mVertexId, sizeof(uint));
+			cursor += sizeof(uint);
+			memcpy(cursor, &mesh->mBones[i]->mWeights[j].mWeight, sizeof(float));
+			cursor += sizeof(float);
+		}
+
+		// OffsetMatrix Copy
+		{
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d4, sizeof(float));	cursor += sizeof(float);
+		}
+		write_file.write(data, buf_size);
 
 		delete data;
 		data = nullptr;
-
-		write_file.close();
-		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
-
-		for (int i = 0; i < skeleton_size; i++)
-		{
-			buf_size = 0;
-
-			uint id_size = 32;
-			uint num_weights = mesh->mBones[i]->mNumWeights;
-
-			std::string name = mesh->mBones[i]->mName.C_Str();
-			uint name_size = name.length() + 1;
-
-			DGUID id;
-			id.cpyfromstring(StringMD5ID(name));
-
-			buf_size = bone_size + sizeof(uint) + name_size + weight_size * num_weights;
-
-			data = new char[buf_size];
-			char* cursor = data;
-
-			// Bone Info Copy
-			memcpy(data, id.MD5ID, 32);
-			cursor += 32;
-			memcpy(cursor, &num_weights, sizeof(uint));
-			cursor += sizeof(uint);
-			memcpy(cursor, &name_size, sizeof(uint));
-			cursor += sizeof(uint);
-			memcpy(cursor, name.c_str(), name.length());
-			cursor += name.length();
-			memcpy(cursor, "\0", 1);
-			cursor += 1;
-
-			// Weights Copy
-			for (int j = 0; j < num_weights; j++)
-			{
-				memcpy(cursor, &mesh->mBones[i]->mWeights[j].mVertexId, sizeof(uint));
-				cursor += sizeof(uint);
-				memcpy(cursor, &mesh->mBones[i]->mWeights[j].mWeight, sizeof(float));
-				cursor += sizeof(float);
-			}
-
-			// OffsetMatrix Copy
-			{
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d4, sizeof(float));	cursor += sizeof(float);
-			}
-			write_file.write(data, buf_size);
-
-			delete data;
-			data = nullptr;
-		}
-
-		write_file.close();
-
-		ExportMeta(mesh, mesh_id, path);
 	}
+
+	write_file.close();
+
+	ExportMeta(mesh, mesh_id, path);
+	
 }
 
 void SkeletonImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path)

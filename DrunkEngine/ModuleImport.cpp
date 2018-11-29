@@ -18,6 +18,7 @@
 #include "MD5.h"
 #include "PrefabImport.h"
 #include "SkeletonImport.h"
+#include "AnimationImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -37,6 +38,7 @@ bool ModuleImport::Init()
 	mat_i = new MatImport();
 	prefab_i = new PrefabImport();
 	skel_i = new SkeletonImport();
+	anim_i = new AnimationImport();
 
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -52,6 +54,8 @@ bool ModuleImport::CleanUp()
 	delete mat_i;
 	delete prefab_i;
 	delete skel_i;
+	delete anim_i;
+
 	return true;
 }
 
@@ -148,8 +152,22 @@ void ModuleImport::ExportScene(const char* path)
 			if (!fID.CheckValidity())
 			{
 				mesh_i->ExportAIMesh(mesh, i, path);
-				skel_i->ExportAISkeleton(mesh, i, path);
+				if(mesh->HasBones())
+					skel_i->ExportAISkeleton(mesh, i, path);
+				
+				//scene->mAnimations[0]->
 			}
+		}
+
+		for (int i = 0; i < scene->mNumAnimations; i++)
+		{
+			aiAnimation* anim = scene->mAnimations[i];
+			std::string animname = ".\\Library\\";
+			animname += GetFileName(path) + "_Anim_" + std::to_string(i);
+			animname.append(".animdrnk");
+			DGUID fID(animname.c_str());
+			if (!fID.CheckValidity())
+				anim_i->ExportAIAnimation(anim, i, path);
 		}
 
 		{
