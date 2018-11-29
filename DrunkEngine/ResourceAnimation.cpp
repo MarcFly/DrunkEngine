@@ -3,16 +3,18 @@
 
 void AnimChannel::UnloadMem()
 {
-	for (int i = 0; i < num_translation_keys; i++)
-		delete &TranslationKeys[i];
+	if(TranslationKeys != nullptr)
+		delete[] TranslationKeys;
+	TranslationKeys = nullptr;
 	num_translation_keys = 0;
-
-	for (int i = 0; i < num_rotation_keys; i++)
-		delete &RotationKeys[i];
+	if(RotationKeys != nullptr)
+		delete[] RotationKeys;
+	RotationKeys = nullptr;
 	num_rotation_keys = 0;
 
-	for (int i = 0; i < num_scaling_keys; i++)
-		delete &ScalingKeys[i];
+	if(ScalingKeys != nullptr)
+		delete[] ScalingKeys;
+	ScalingKeys = nullptr;
 	num_scaling_keys = 0;
 }
 

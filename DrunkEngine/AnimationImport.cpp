@@ -57,8 +57,8 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 	memcpy(cursor, &num_channels, sizeof(uint));
 	cursor += sizeof(uint);
 
-	write_file.write(data, sizeof(buf_size));
-	delete data;
+	write_file.write(data, buf_size);
+	delete[] data;
 	data = nullptr;
 
 	write_file.close();
@@ -73,7 +73,7 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 		buf_size += sizeof(uint) + name_size + sizeof(uint) * 3;
 		buf_size += (sizeof(double) + sizeof(float) * 3) * curr->mNumPositionKeys;
 		buf_size += (sizeof(double) + sizeof(float) * 3) * curr->mNumScalingKeys;
-		buf_size += sizeof(Quat) * curr->mNumRotationKeys;
+		buf_size += (sizeof(double) + sizeof(Quat)) * curr->mNumRotationKeys;
 		data = new char[buf_size];
 		cursor = data;
 		
@@ -102,7 +102,7 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 	
 		write_file.write(data, buf_size);
 
-		delete data;
+		delete[] data;
 		data = nullptr;
 	}
 
@@ -130,8 +130,12 @@ ResourceAnimation* AnimationImport::LoadAnimation(const char* file)
 		uint name_size;
 		memcpy(&name_size, cursor, sizeof(uint));
 		cursor += sizeof(uint);
-		memcpy(&ret->name, cursor, name_size);
+
+		char* cpy_name = new char[name_size];
+		memcpy(cpy_name, cursor, name_size);
 		cursor += name_size;
+		ret->name = std::string(cpy_name, name_size);
+		delete[] cpy_name;
 		
 		uint num_channels;
 		memcpy(&num_channels, cursor, sizeof(uint));
@@ -144,8 +148,12 @@ ResourceAnimation* AnimationImport::LoadAnimation(const char* file)
 			name_size = 0;
 			memcpy(&name_size, cursor, sizeof(uint));
 			cursor += sizeof(uint);
-			memcpy(&curr->bone_name, cursor, name_size);
+
+			cpy_name = new char[name_size];
+			memcpy(cpy_name, cursor, name_size);
 			cursor += name_size;
+			curr->bone_name = std::string(cpy_name, name_size);
+			delete[] cpy_name;
 
 			memcpy(&curr->num_translation_keys, cursor, sizeof(uint));
 			cursor += sizeof(uint);
@@ -154,12 +162,17 @@ ResourceAnimation* AnimationImport::LoadAnimation(const char* file)
 			memcpy(&curr->num_scaling_keys, cursor, sizeof(uint));
 			cursor += sizeof(uint);
 
-			memcpy(curr->TranslationKeys, cursor, (sizeof(double) + sizeof(float) * 3) * curr->num_translation_keys);
-			cursor += (sizeof(double) + sizeof(float) * 3) * curr->num_translation_keys;
-			memcpy(curr->RotationKeys, cursor, (sizeof(double) + sizeof(Quat)) * curr->num_rotation_keys);
-			cursor += (sizeof(double) + sizeof(Quat)) * curr->num_rotation_keys;
-			memcpy(curr->ScalingKeys, cursor, (sizeof(double) + sizeof(float) * 3) * curr->num_scaling_keys);
-			cursor += (sizeof(double) + sizeof(float) * 3) * curr->num_scaling_keys;
+			curr->TranslationKeys = new float3Key[curr->num_translation_keys];
+			memcpy(curr->TranslationKeys, cursor, sizeof(float3Key) * curr->num_translation_keys);
+			cursor += sizeof(float3Key) * curr->num_translation_keys;
+
+			curr->RotationKeys = new QuatKey[curr->num_rotation_keys];
+			memcpy(curr->RotationKeys, cursor, sizeof(QuatKey) * curr->num_rotation_keys);
+			cursor += sizeof(QuatKey) * curr->num_rotation_keys;
+
+			curr->ScalingKeys = new float3Key[curr->num_scaling_keys];
+			memcpy(curr->ScalingKeys, cursor, sizeof(float3Key) * curr->num_scaling_keys);
+			cursor += sizeof(float3Key) * curr->num_scaling_keys;
 
 			ret->channels.push_back(curr);
 		}

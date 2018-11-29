@@ -20,19 +20,20 @@ struct float3Key {
 };
 
 struct AnimChannel{
-	std::string bone_name;
+	std::string bone_name = "UnknownBone";
 
-	float3Key* TranslationKeys;
-	uint num_translation_keys;
+	float3Key* TranslationKeys = nullptr;
+	uint num_translation_keys = 0;
 
-	QuatKey* RotationKeys;
-	uint num_rotation_keys;
+	QuatKey* RotationKeys = nullptr;
+	uint num_rotation_keys = 0;
 
-	float3Key* ScalingKeys;
-	uint num_scaling_keys;
+	float3Key* ScalingKeys = nullptr;
+	uint num_scaling_keys = 0;
 
 	void UnloadMem();
 
+	AnimChannel() {};
 	~AnimChannel() {
 		UnloadMem();
 	}

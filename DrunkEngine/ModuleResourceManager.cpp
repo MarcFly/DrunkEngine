@@ -4,6 +4,7 @@
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
 #include "ResourceSkeleton.h"
+#include "ResourceAnimation.h"
 
 #include <map>
 ModuleResourceManager::ModuleResourceManager(bool start_enabled) : Module(start_enabled, Type_ResManager)
@@ -85,6 +86,8 @@ MetaResource* ModuleResourceManager::NewResource(FileType type)
 		return new MetaMesh();
 	case FT_Skeleton:
 		return new MetaSkeleton();
+	case FT_Animation:
+		return new MetaAnimation();
 	default:
 		return nullptr;
 	}
