@@ -13,13 +13,13 @@ public:
 	AnimationImport() { Init(); };
 	~AnimationImport() {};
 
-	void Init() {};
+	void Init();
 
 	void ExportAIAnimation(const aiAnimation* anim, const int& anim_id, const char* name);
-	void LoadAnimation(const char* file);
+	ResourceAnimation* LoadAnimation(const char* file);
 	void LinkAnim(DGUID fID, ComponentAnimation* anim);
 
-	void ExportMeta(const aiAnimation* anim, std::string& path);
+	void ExportMeta(const aiAnimation* anim, const int& anim_id, std::string path);
 	void LoadMeta(const char* file, MetaAnimation* meta);
 };
 #endif

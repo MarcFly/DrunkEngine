@@ -7,6 +7,7 @@
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
 #include "ResourceSkeleton.h"
+#include "ResourceAnimation.h"
 
 void Resource::LoadToMem()
 {

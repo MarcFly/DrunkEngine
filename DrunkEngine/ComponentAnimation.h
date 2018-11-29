@@ -11,13 +11,19 @@ class GameObject;
 class ComponentAnimation : public Component
 {
 public:
-	ComponentAnimation(GameObject* gameobject);
+	ComponentAnimation();
+	ComponentAnimation(GameObject* par);
 	~ComponentAnimation();
 
 	void Start();
 	void Update(const float dt);
 	void Draw();
 	void CleanUp();
+
+	void LinkMesh();
+
+	void Load(const JSON_Object* comp);
+	void Save(JSON_Array* comps);
 
 public:
 	ResourceAnimation* r_anim;

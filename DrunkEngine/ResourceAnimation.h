@@ -9,40 +9,54 @@
 #include "Color.h"
 #include "ComponentAnimation.h"
 
-struct AnimChannels{
-	std::string bone_name;
-	std::vector<float3> TranslationKeys;
-	std::vector<Quat> RotationKeys;
-	std::vector<float3> ScalingKeys;
+struct QuatKey {
+	double time;
+	Quat value;	
+};
 
-	~AnimChannels() {
-		TranslationKeys.clear();
-		RotationKeys.clear();
-		ScalingKeys.clear();
-		bone_name.clear();
+struct float3Key {
+	double time;
+	float3 value;
+};
+
+struct AnimChannel{
+	std::string bone_name;
+
+	float3Key* TranslationKeys;
+	uint num_translation_keys;
+
+	QuatKey* RotationKeys;
+	uint num_rotation_keys;
+
+	float3Key* ScalingKeys;
+	uint num_scaling_keys;
+
+	void UnloadMem();
+
+	~AnimChannel() {
+		UnloadMem();
 	}
 };
 
 struct ResourceAnimation {
 	std::string name = "UnknownLink";
-	std::vector<AnimChannels*> channels;
+	std::vector<AnimChannel*> channels;
+	void UnloadMem();
 
 	~ResourceAnimation() {
-		for (int i = 0; i < channels.size(); i++)
-		{
-			delete channels[i];
-			channels[i] = nullptr;
-		}
-		channels.clear();
+		UnloadMem();
 	}
 };
 
 class MetaAnimation : public MetaResource {
+public:
 	MetaAnimation() { type = RT_Animation; };
 	~MetaAnimation() {};
 
-	DGUID origin_skeleton;
-
+	DGUID og_skel_id;
+	std::string og_skel_str;
+	double duration;
+	double tickrate;
 	void LoadMetaFile(const char* file);
 };
 

@@ -39,7 +39,9 @@ void ComponentSkeleton::Draw()
 
 void ComponentSkeleton::CleanUp()
 {
-
+	App->resources->Unused(UID);
+	r_skel = nullptr;
+	c_mesh = nullptr;
 }
 
 void ComponentSkeleton::Load(const JSON_Object* comp)
@@ -74,5 +76,13 @@ bool CkeckSkeletonValidity()
 
 void ComponentSkeleton::LinkMesh()
 {
-
+	if (c_mesh == nullptr)
+		for (int i = 0; i < parent->components.size(); i++)
+		{
+			if (parent->components[i]->type == CT_Mesh)
+			{
+				c_mesh = parent->components[i]->AsMesh();
+				break;
+			}
+		}		
 }

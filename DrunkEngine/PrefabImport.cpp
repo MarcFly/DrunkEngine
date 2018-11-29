@@ -110,7 +110,7 @@ void PrefabImport::ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* tra
 	json_array_append_value(comps, append);
 }
 
-void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int mesh_id, std::string name)
+void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int& mesh_id, std::string name)
 {
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
@@ -123,7 +123,7 @@ void PrefabImport::ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const i
 	json_array_append_value(comps, append);
 }
 
-void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const int mat_id, std::string name)
+void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const int& mat_id, std::string name)
 {
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
@@ -136,7 +136,7 @@ void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const
 	json_array_append_value(comps, append);
 }
 
-void PrefabImport::ExportBonesNode(JSON_Array* comps, const aiMesh* mesh, const int mesh_id, std::string name)
+void PrefabImport::ExportBonesNode(JSON_Array* comps, const aiMesh* mesh, const int& mesh_id, std::string name)
 {
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
