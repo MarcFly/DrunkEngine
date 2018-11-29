@@ -36,6 +36,7 @@ bool ModuleImport::Init()
 	mesh_i = new MeshImport();
 	mat_i = new MatImport();
 	prefab_i = new PrefabImport();
+	skel_i = new SkeletonImport();
 
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -50,7 +51,7 @@ bool ModuleImport::CleanUp()
 	delete mesh_i;
 	delete mat_i;
 	delete prefab_i;
-
+	delete skel_i;
 	return true;
 }
 

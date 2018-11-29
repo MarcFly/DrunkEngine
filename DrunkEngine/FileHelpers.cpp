@@ -164,3 +164,23 @@ FileType CheckExtension(std::string& ext)
 		ret = FT_Skeleton;
 	return ret;
 }
+
+int StringToInt(std::string str)
+{
+	int ret = 0;
+
+	for (int i = 0, j = str.length() - 1; i < str.length(); i++, j--)
+		ret += (str[i] - 48) * (std::pow(10,j));
+
+	return ret;
+}
+
+int StringToInt(const char* str, int size)
+{
+	int ret = 0;
+
+	for (int i = 0, j = size - 1; i < size; i++, j--)
+		ret += (str[i] - 48) * (std::pow(10, j));
+
+	return ret;
+}

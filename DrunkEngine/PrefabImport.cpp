@@ -22,51 +22,59 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
 
-	std::string obj = "gameobject.";
-	std::string set_val;
-
-	set_val = obj + "UUID";
-	Uint32 UUID = GetUUID();
-	json_object_dotset_number(curr, set_val.c_str(), UUID);
-
-	set_val = obj + "par_UUID";
-	json_object_dotset_number(curr, set_val.c_str(), par_UUID);
-
-	set_val = obj + "name";
-	if (node->mParent == NULL)
-		json_object_dotset_string(curr, set_val.c_str(), name);
-	else
-		json_object_dotset_string(curr, set_val.c_str(), node->mName.C_Str());
-
-	JSON_Value* set_array = json_value_init_array();
-	JSON_Array* comps = json_value_get_array(set_array);
-
-	// Minimal Component Exports to be loaded from .prefabdrnk file
+	if (!IgnoredNodes(node->mName.C_Str()))
 	{
-		ExportTransformNode(comps, &node->mTransformation);
+		
 
-		for (int i = 0; i < node->mNumMeshes; i++)
+		std::string obj = "gameobject.";
+		std::string set_val;
+
+		set_val = obj + "UUID";
+		Uint32 UUID = GetUUID();
+		json_object_dotset_number(curr, set_val.c_str(), UUID);
+
+		set_val = obj + "par_UUID";
+		json_object_dotset_number(curr, set_val.c_str(), par_UUID);
+
+		set_val = obj + "name";
+		if (node->mParent == NULL)
+			json_object_dotset_string(curr, set_val.c_str(), name);
+		else
+			json_object_dotset_string(curr, set_val.c_str(), node->mName.C_Str());
+
+		JSON_Value* set_array = json_value_init_array();
+		JSON_Array* comps = json_value_get_array(set_array);
+
+		// Minimal Component Exports to be loaded from .prefabdrnk file
 		{
-			ExportMeshNode(comps, scene->mMeshes[node->mMeshes[i]], node->mMeshes[i], name);
+			ExportTransformNode(comps, &node->mTransformation);
 
-			if(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex != -1)
-				ExportMatNode(comps, scene->mMaterials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex], scene->mMeshes[node->mMeshes[i]]->mMaterialIndex, name);
-			
-			if (scene->mMeshes[node->mMeshes[i]]->HasBones())
-				ExportBonesNode(comps, scene->mMeshes[node->mMeshes[i]], node->mMeshes[i], name);
+			for (int i = 0; i < node->mNumMeshes; i++)
+			{
+				ExportMeshNode(comps, scene->mMeshes[node->mMeshes[i]], node->mMeshes[i], name);
+
+				if (scene->mMeshes[node->mMeshes[i]]->mMaterialIndex != -1)
+					ExportMatNode(comps, scene->mMaterials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex], scene->mMeshes[node->mMeshes[i]]->mMaterialIndex, name);
+
+				if (scene->mMeshes[node->mMeshes[i]]->HasBones())
+					ExportBonesNode(comps, scene->mMeshes[node->mMeshes[i]], node->mMeshes[i], name);
+			}
 		}
+
+		set_val = obj + "components";
+		json_object_dotset_value(curr, set_val.c_str(), set_array);
+
+		// Adding GO to file
+		json_array_append_value(go, append);
+
+		for (int i = 0; i < node->mNumChildren; i++)
+			ExportAINode(scene, node->mChildren[i], go, UUID, name);
 	}
-	
-	set_val = obj + "components";
-	json_object_dotset_value(curr, set_val.c_str(), set_array);
-
-	// Adding GO to file
-	json_array_append_value(go, append);
-
-	for (int i = 0; i < node->mNumChildren; i++)
-		ExportAINode(scene, node->mChildren[i], go, UUID, name);
-
-
+	else
+	{
+		for (int i = 0; i < node->mNumChildren; i++)
+			ExportAINode(scene, node->mChildren[i], go, par_UUID, name);
+	}
 }
 
 void PrefabImport::ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* trans)
@@ -194,5 +202,37 @@ GameObject * PrefabImport::ImportGameObject(const char* path, JSON_Value* go)
 		json_object_clear(curr);
 	}
 	
+	return ret;
+}
+
+bool PrefabImport::IgnoredNodes(const char* node_name)
+{
+	std::string test = std::string(node_name).substr(0,3);
+	int cmp = StringToInt(test);
+
+	bool ret = false;
+
+	if (cmp <= IN_Error || cmp >= IN_Max)
+		ret = IgnoredStrings(node_name);
+	else if (cmp >= IN_NOT_IGNORED)
+		ret = false;
+	else if (cmp == IN_Joint)
+			ret = true;
+	else if (cmp == IN_Handle)
+		ret = true;
+	
+	return ret;
+}
+
+bool PrefabImport::IgnoredStrings(const char* node_name)
+{
+	bool ret = false;
+
+	std::string cmp_str = node_name;
+	if (cmp_str.find("joint") != std::string::npos)
+		ret = true;
+	else if (cmp_str.find("handle") != std::string::npos)
+		ret = true;
+
 	return ret;
 }

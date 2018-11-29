@@ -23,6 +23,9 @@ std::string GetMD5ID(std::string file);
 std::string StringMD5ID(const char* str_pass);
 std::string StringMD5ID(std::string str_pass);
 
+int StringToInt(std::string str);
+int StringToInt(const char* str, int size);
+
 enum FileType
 {
 	FT_Error = -1,

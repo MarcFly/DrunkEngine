@@ -4,6 +4,18 @@
 #include "Assimp/include/scene.h"
 #include "GameObject.h"
 
+enum NodeToIgnore {
+	// Are Ignored
+	IN_Error = 000,
+	IN_Joint = 001,
+	IN_Handle = 002,
+
+	// Are Not Ignored
+	IN_NOT_IGNORED,
+	// Ignored
+	IN_Max
+};
+
 struct ResourcePrefab;
 class MetaPrefab;
 
@@ -29,7 +41,9 @@ public:
 	void CopyPrefab(DGUID fID, GameObject* gobj);
 	
 	GameObject* ImportGameObject(const char* path, JSON_Value* go);
-	
+
+	bool IgnoredNodes(const char* node_name);
+	bool IgnoredStrings(const char* node_name);
 };
 
 #endif
