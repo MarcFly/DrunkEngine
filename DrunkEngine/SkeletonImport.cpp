@@ -86,7 +86,7 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 				bone->weights.push_back(weight);
 			}
 
-			memcpy(bone->matrix, cursor, sizeof(float) * 16);
+			memcpy(bone->matrix.v, cursor, sizeof(float) * 16);
 			cursor += sizeof(float) * 16;
 
 			ret->bones.push_back(bone);

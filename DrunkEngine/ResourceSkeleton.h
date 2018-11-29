@@ -19,7 +19,7 @@ struct Bone
 	std::string name = "Unknown_Bone";
 	uint num_weights = 0;
 	std::vector<BoneWeight*> weights;
-	float matrix[4][4];
+	float4x4 matrix;
 
 	~Bone()
 	{
