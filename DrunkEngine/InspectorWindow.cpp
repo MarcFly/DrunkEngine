@@ -3,8 +3,13 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
+#include "ComponentBillboard.h"
+#include "ComponentSkeleton.h"
+#include "ComponentAnimation.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "ResourceSkeleton.h"
+#include "ResourceAnimation.h"
 #include "KdTreeWindow.h"
 
 Inspector::Inspector() : Window("Inspector")
@@ -12,6 +17,9 @@ Inspector::Inspector() : Window("Inspector")
 	total_num_vertex = 0;
 	total_num_faces = 0;
 	check_info = false;
+
+	last_bone = nullptr;
+	last_skeleton = nullptr;
 }
 
 Inspector::~Inspector()
@@ -65,6 +73,9 @@ void Inspector::ComponentInspector(Component* component)
 	case CT_Material: MatInspector(component->AsMaterial()); break;
 	case CT_Camera: CamInspector(component->AsCamera()); break;
 	case CT_Transform: TransformInspector(component->AsTransform()); break;
+	case CT_Billboard: BillboardInspector(component->AsBillboard()); break;
+	case CT_Skeleton: SkeletonInspector(component->AsSkeleton()); break;
+	case CT_Animation: AnimationInspector(component->AsAnimation()); break;
 	}
 }
 
@@ -291,5 +302,64 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			App->eventSys->BroadcastEvent(ev);
 		}
 		ImGui::Spacing();
+	}
+}
+
+void Inspector::BillboardInspector(ComponentBillboard* billboard)
+{
+
+}
+
+void Inspector::SkeletonInspector(ComponentSkeleton* skel)
+{
+	if (ImGui::CollapsingHeader("Skeleton"))
+	{
+		ImGui::Text("Bone Amount: %i", skel->r_skel->bones.size());
+		if (last_skeleton != skel->r_skel)
+		{
+			last_skeleton_bones.clear();
+			for (int i = 0; i < skel->r_skel->bones.size(); i++)
+				last_skeleton_bones.push_back(skel->r_skel->bones[i]->name.c_str());
+
+			last_skeleton = skel->r_skel;
+		}
+
+		bool trigger_new_read = false;
+		if (ImGui::Combo("##Bone", &bone_ind, &last_skeleton_bones[0], last_skeleton_bones.size()))
+		{
+			last_bone = last_skeleton->bones[bone_ind];
+			trigger_new_read = true;
+		}
+		
+		if (last_bone != nullptr)
+		{
+			if (ImGui::CollapsingHeader(last_bone->name.c_str()))
+			{
+				if (trigger_new_read)
+				{
+					for (int i = 0; i < last_bone_weights.size(); i++)
+						delete last_bone_weights[i];
+					last_bone_weights.clear();
+					for (int i = 0; i < last_bone->weights.size(); i++)
+						last_bone_weights.push_back(std::to_string(last_bone->weights[i]->VertexID).c_str());
+				}
+				ImGui::Text("Weight Amount: %i", last_bone->weights.size());
+				/*
+				BoneWeight* curr_weight = nullptr;
+				if (ImGui::Combo("##Weight", &weight_ind, &last_bone_weights[0], last_bone_weights.size()))
+					curr_weight = last_bone->weights[weight_ind];*/
+			}
+		}
+
+		//Show bone
+
+	}
+}
+
+void Inspector::AnimationInspector(ComponentAnimation* anim)
+{
+	if (ImGui::CollapsingHeader("Animation"))
+	{
+
 	}
 }

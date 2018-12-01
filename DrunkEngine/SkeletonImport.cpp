@@ -61,7 +61,8 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			cursor += 32;
 			bone->ID.cpyfromstring(std::string(id, 32));
 
-			memcpy(&bone->num_weights, cursor, sizeof(uint));
+			uint num_weights;
+			memcpy(&num_weights, cursor, sizeof(uint));
 			cursor += sizeof(uint);
 
 			uint name_size;
@@ -74,7 +75,7 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			bone->name.clear();
 			bone->name = std::string(cpy_name, name_size);
 
-			for (int j = 0; j < bone->num_weights; j++)
+			for (int j = 0; j < num_weights; j++)
 			{
 				BoneWeight* weight = new BoneWeight();
 				memcpy(&weight->VertexID, cursor, sizeof(uint));

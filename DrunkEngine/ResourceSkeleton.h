@@ -17,7 +17,6 @@ struct Bone
 
 	DGUID ID;
 	std::string name = "Unknown_Bone";
-	uint num_weights = 0;
 	std::vector<BoneWeight*> weights;
 	float4x4 matrix;
 
