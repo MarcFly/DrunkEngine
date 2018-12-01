@@ -6,6 +6,7 @@
 
 class GameObject;
 struct Bone;
+struct BoneWeight;
 
 class Inspector : public Window
 {
@@ -45,9 +46,11 @@ public:
 	std::vector<const char*> last_bone_weights;
 	ResourceSkeleton* last_skeleton;
 	Bone* last_bone;
+	BoneWeight* last_weight;
+
 	int bone_ind = 0;
 	int weight_ind = 0;
-
+	bool trigger_new_read;
 };
 
 #endif

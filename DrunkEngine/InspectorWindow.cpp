@@ -20,6 +20,8 @@ Inspector::Inspector() : Window("Inspector")
 
 	last_bone = nullptr;
 	last_skeleton = nullptr;
+	last_weight = nullptr;
+	trigger_new_read = false;
 }
 
 Inspector::~Inspector()
@@ -324,7 +326,7 @@ void Inspector::SkeletonInspector(ComponentSkeleton* skel)
 			last_skeleton = skel->r_skel;
 		}
 
-		bool trigger_new_read = false;
+		
 		if (ImGui::Combo("##Bone", &bone_ind, &last_skeleton_bones[0], last_skeleton_bones.size()))
 		{
 			last_bone = last_skeleton->bones[bone_ind];
@@ -333,22 +335,34 @@ void Inspector::SkeletonInspector(ComponentSkeleton* skel)
 		
 		if (last_bone != nullptr)
 		{
+			ImGui::Indent(25);
 			if (ImGui::CollapsingHeader(last_bone->name.c_str()))
 			{
 				if (trigger_new_read)
 				{
-					for (int i = 0; i < last_bone_weights.size(); i++)
-						delete last_bone_weights[i];
+					for (int j = 0; j < last_bone_weights.size(); j++)
+						delete last_bone_weights[j];
 					last_bone_weights.clear();
 					for (int i = 0; i < last_bone->weights.size(); i++)
-						last_bone_weights.push_back(std::to_string(last_bone->weights[i]->VertexID).c_str());
+					{
+						char* test;
+						std::string cpy = std::to_string(last_bone->weights[i]->VertexID) + "\0";
+						test = new char[cpy.length() + 1];
+						char* cursor = test;
+						memcpy(cursor, cpy.c_str(), cpy.length());
+						cursor += cpy.length();
+						memcpy(cursor, "\0", 1);
+						
+						last_bone_weights.push_back(test);
+					}
+					trigger_new_read = false;
 				}
 				ImGui::Text("Weight Amount: %i", last_bone->weights.size());
-				/*
-				BoneWeight* curr_weight = nullptr;
+				
 				if (ImGui::Combo("##Weight", &weight_ind, &last_bone_weights[0], last_bone_weights.size()))
-					curr_weight = last_bone->weights[weight_ind];*/
+					last_weight = last_bone->weights[weight_ind];
 			}
+			ImGui::Indent(-25);
 		}
 
 		//Show bone
