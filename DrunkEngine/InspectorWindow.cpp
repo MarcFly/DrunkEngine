@@ -359,13 +359,15 @@ void Inspector::SkeletonInspector(ComponentSkeleton* skel)
 				}
 				ImGui::Text("Weight Amount: %i", last_bone->weights.size());
 				
+				ImGui::Indent(25);
 				if (ImGui::Combo("##Weight", &weight_ind, &last_bone_weights[0], last_bone_weights.size()))
 					last_weight = last_bone->weights[weight_ind];
+				if (last_weight != nullptr)
+					ImGui::SliderFloat("Weight Value", &last_weight->w, 0, 1);
+				ImGui::Indent(-25);
 			}
 			ImGui::Indent(-25);
 		}
-
-		//Show bone
 
 	}
 }
@@ -374,6 +376,16 @@ void Inspector::AnimationInspector(ComponentAnimation* anim)
 {
 	if (ImGui::CollapsingHeader("Animation"))
 	{
+		ImGui::Text("Duration in Frames: ");
+		ImGui::SameLine();
+		if (anim->duration < 0)
+			anim->duration = 0;
+		ImGui::DragInt("##Duration", &anim->duration, 0, 9999999);
 
+		ImGui::Text("Framerate: ");
+		ImGui::SameLine();
+		if (anim->tickrate < 1)
+			anim->tickrate = 1;
+		ImGui::DragInt("##Framerate", &anim->tickrate, 1, 9999999);
 	}
 }

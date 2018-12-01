@@ -28,8 +28,8 @@ public:
 public:
 	ResourceAnimation* r_anim;
 	ComponentMesh* c_mesh;
-	uint duration;
-	uint tickrate;
+	int duration;
+	int tickrate;
 
 public:
 	void SetBaseVals()
