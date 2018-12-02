@@ -104,6 +104,71 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 	return ret;
 }
 
+std::vector<const aiNode*> SkeletonImport::FindSkeletons(const aiScene* scene, const aiNode* root)
+{
+	std::vector<const aiNode*> SkeletonRoots;
+	std::vector<const aiNode*> BoneNodes;
+
+	FindBoneNodes(scene->mMeshes, root, BoneNodes);
+	GetSkeletonRoots(BoneNodes, SkeletonRoots);
+	
+
+
+	return SkeletonRoots;
+}
+
+void SkeletonImport::GetSkeletonRoots(std::vector<const aiNode*>& BoneNodes, std::vector<const aiNode*>& SkeletonRoots)
+{
+	for (int i = 0; i < BoneNodes.size(); i++)
+	{
+		if (BoneNodes[i] != nullptr)
+		{
+			const aiNode* SkelRoot = nullptr;
+			const aiNode* curr_par = BoneNodes[i];
+			while (SkelRoot == nullptr)
+			{
+				if (curr_par->mNumChildren > 1)
+				{
+					bool par_swap = false;
+					for (int j = 0; j < curr_par->mNumChildren; j++)
+						if (curr_par->mChildren[i]->mNumMeshes > 0)
+						{
+							par_swap = true;
+							curr_par = curr_par->mParent;
+							break;
+						}
+					if (!par_swap)
+						SkelRoot = curr_par;
+				}
+				else
+					curr_par = curr_par->mParent;
+			}
+
+			for (int j = 0; j < BoneNodes.size(); j++)
+			{
+				if (SkelRoot->FindNode(BoneNodes[j]->mName))
+					BoneNodes[j] = nullptr;
+			}
+
+			SkeletonRoots.push_back(SkelRoot);
+		}
+	}
+}
+
+void SkeletonImport::FindBoneNodes(const aiMesh** meshes, const aiNode* node, std::vector<const aiNode*>& bone_nodes)
+{
+	for (int i = 0; i < node->mNumChildren; i++)
+	{
+		for (int j = 0; j < node->mNumMeshes; j++)
+		{
+			if (meshes[node->mMeshes[j]]->HasBones())
+				bone_nodes.push_back(node);
+		}
+
+		FindBoneNodes(meshes, node->mChildren[i], bone_nodes);
+	}
+}
+
 void SkeletonImport::ExportAISkeleton(const aiNode* root, const aiMesh* mesh, const int& mesh_id, const char* path)
 {
 	
@@ -135,7 +200,6 @@ void SkeletonImport::ExportAISkeleton(const aiNode* root, const aiMesh* mesh, co
 	{
 		buf_size = 0;
 
-		
 		uint num_weights = mesh->mBones[i]->mNumWeights;
 
 		std::string name = mesh->mBones[i]->mName.C_Str();

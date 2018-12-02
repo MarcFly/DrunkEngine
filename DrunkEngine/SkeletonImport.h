@@ -21,6 +21,9 @@ public:
 	void LinkSkeleton(DGUID fID, ComponentSkeleton* skel);
 	ResourceSkeleton* LoadSkeleton(const char* file);
 
+	std::vector<const aiNode*> FindSkeletons(const aiScene* scene, const aiNode* root);
+	void FindBoneNodes(const aiMesh** scene, const aiNode* node, std::vector<const aiNode*>& bone_nodes);
+	void GetSkeletonRoots(std::vector<const aiNode*>& BoneNodes, std::vector<const aiNode*>& SkeletonRoots);
 	void ExportAISkeleton(const aiNode* root, const aiMesh* mesh, const int& mesh_id, const char* path = nullptr);
 
 	void ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path);
