@@ -153,7 +153,7 @@ void ModuleImport::ExportScene(const char* path)
 			{
 				mesh_i->ExportAIMesh(mesh, i, path);
 				if(mesh->HasBones())
-					skel_i->ExportAISkeleton(mesh, i, path);
+					skel_i->ExportAISkeleton(scene->mRootNode, mesh, i, path);
 			}
 		}
 

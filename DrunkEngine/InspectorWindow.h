@@ -18,14 +18,14 @@ public:
 
 	void CheckMeshInfo();
 
-	void ComponentInspector(Component* component);
-	void MeshInspector(ComponentMesh* mesh);
-	void MatInspector(ComponentMaterial* mat);
-	void CamInspector(ComponentCamera* cam);
-	void TransformInspector(ComponentTransform* transform); 
-	void BillboardInspector(ComponentBillboard* billboard);
-	void SkeletonInspector(ComponentSkeleton* skel);
-	void AnimationInspector(ComponentAnimation* anim);
+	void ComponentInspector(Component* component, const int& cmpt_id);
+	void MeshInspector(ComponentMesh* mesh, const int& cmpt_id);
+	void MatInspector(ComponentMaterial* mat, const int& cmpt_id);
+	void CamInspector(ComponentCamera* cam, const int& cmpt_id);
+	void TransformInspector(ComponentTransform* transform, const int& cmpt_id);
+	void BillboardInspector(ComponentBillboard* billboard, const int& cmpt_id);
+	void SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id);
+	void AnimationInspector(ComponentAnimation* anim, const int& cmpt_id);
 
 public:
 	int total_num_vertex;

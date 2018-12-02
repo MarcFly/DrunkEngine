@@ -21,12 +21,12 @@ ComponentSkeleton::ComponentSkeleton(GameObject* par)
 
 void ComponentSkeleton::Draw()
 {
-
 	glBegin(GL_LINES);
+
 	glColor3f(1.0f, 0.1f, 0.0f);
 	for (int i = 0; i < r_skel->bones.size(); i++)
 	{
-		if (i == r_skel->bones.size() - 1)
+		if (i == 0)
 			glVertex3f(0, 1, 0);
 		else
 			glVertex3f(r_skel->bones[i - 1]->matrix.Col3(3).x, r_skel->bones[i - 1]->matrix.Col3(3).y, r_skel->bones[i - 1]->matrix.Col3(3).z);
@@ -34,6 +34,7 @@ void ComponentSkeleton::Draw()
 		
 	}
 	glColor3f(0, 1, 0);
+
 	glEnd();
 }
 

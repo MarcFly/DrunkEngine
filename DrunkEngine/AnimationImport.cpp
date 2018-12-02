@@ -61,19 +61,19 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 	delete[] data;
 	data = nullptr;
 
-	write_file.close();
-	write_file.open((filename + ".animdrnk").c_str(), std::fstream::app | std::fstream::binary);
-
 	for (int i = 0; i < num_channels; i++)
 	{
+		write_file.close();
+		write_file.open((filename + ".animdrnk").c_str(), std::fstream::app | std::fstream::binary);
+
 		aiNodeAnim* curr = anim->mChannels[i];
 		buf_size = 0;
 		name = curr->mNodeName.C_Str();
 		name_size = name.length() + 1;
 		buf_size += sizeof(uint) + name_size + sizeof(uint) * 3;
-		buf_size += (sizeof(double) + sizeof(float) * 3) * curr->mNumPositionKeys;
-		buf_size += (sizeof(double) + sizeof(float) * 3) * curr->mNumScalingKeys;
-		buf_size += (sizeof(double) + sizeof(Quat)) * curr->mNumRotationKeys;
+		buf_size += (sizeof(float3Key)) * curr->mNumPositionKeys;
+		buf_size += (sizeof(float3Key)) * curr->mNumScalingKeys;
+		buf_size += (sizeof(QuatKey)) * curr->mNumRotationKeys;
 		data = new char[buf_size];
 		cursor = data;
 		
@@ -91,22 +91,21 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 		memcpy(cursor, &curr->mNumScalingKeys, sizeof(uint));
 		cursor += sizeof(uint);
 
-		memcpy(cursor, &curr->mPositionKeys, (sizeof(double) + sizeof(float) * 3) * curr->mNumPositionKeys);
-		cursor += (sizeof(double) + sizeof(float) * 3) * curr->mNumPositionKeys;
+		memcpy(cursor, &curr->mPositionKeys, (sizeof(float3Key)) * curr->mNumPositionKeys);
+		cursor += (sizeof(float3Key)) * curr->mNumPositionKeys;
 
-		memcpy(cursor, &curr->mRotationKeys, (sizeof(double) + sizeof(Quat)) * curr->mNumRotationKeys);
-		cursor += (sizeof(double) + sizeof(Quat)) * curr->mNumRotationKeys;
+		memcpy(cursor, &curr->mRotationKeys, (sizeof(QuatKey)) * curr->mNumRotationKeys);
+		cursor += (sizeof(QuatKey)) * curr->mNumRotationKeys;
 
-		memcpy(cursor, &curr->mScalingKeys, (sizeof(double) + sizeof(float) * 3) * curr->mNumScalingKeys);
-		cursor += (sizeof(double) + sizeof(float) * 3) * curr->mNumScalingKeys;
+		memcpy(cursor, &curr->mScalingKeys, (sizeof(float3Key)) * curr->mNumScalingKeys);
+		cursor += (sizeof(float3Key)) * curr->mNumScalingKeys;
 	
 		write_file.write(data, buf_size);
+		write_file.close();
 
 		delete[] data;
 		data = nullptr;
 	}
-
-	write_file.close();
 
 	ExportMeta(anim, anim_id, path);
 }

@@ -21,7 +21,7 @@ public:
 	void LinkSkeleton(DGUID fID, ComponentSkeleton* skel);
 	ResourceSkeleton* LoadSkeleton(const char* file);
 
-	void ExportAISkeleton(const aiMesh* mesh, const int& mesh_id, const char* path = nullptr);
+	void ExportAISkeleton(const aiNode* root, const aiMesh* mesh, const int& mesh_id, const char* path = nullptr);
 
 	void ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path);
 	void LoadMeta(const char* file, MetaSkeleton* meta);

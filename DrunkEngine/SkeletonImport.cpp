@@ -104,7 +104,7 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 	return ret;
 }
 
-void SkeletonImport::ExportAISkeleton(const aiMesh* mesh, const int& mesh_id, const char* path)
+void SkeletonImport::ExportAISkeleton(const aiNode* root, const aiMesh* mesh, const int& mesh_id, const char* path)
 {
 	
 	std::string filename = ".\\Library\\";
@@ -172,25 +172,27 @@ void SkeletonImport::ExportAISkeleton(const aiMesh* mesh, const int& mesh_id, co
 
 		// OffsetMatrix Copy
 		{
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a1, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a2, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a3, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a4, sizeof(float));	cursor += sizeof(float);
+			const aiMatrix4x4* cpy = &root->FindNode(mesh->mBones[i]->mName)->mTransformation;
 
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b1, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b2, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b3, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b4, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->a1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->a2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->a3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->a4, sizeof(float));	cursor += sizeof(float);
 
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c1, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c2, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c3, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c4, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->b1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->b2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->b3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->b4, sizeof(float));	cursor += sizeof(float);
 
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d1, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d2, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d3, sizeof(float));	cursor += sizeof(float);
-			memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d4, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->c1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->c2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->c3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->c4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &cpy->d1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->d2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->d3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy->d4, sizeof(float));	cursor += sizeof(float);
 		}
 		write_file.write(data, buf_size);
 
