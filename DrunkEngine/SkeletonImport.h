@@ -18,6 +18,9 @@ struct BoneCrumb {
 	const aiBone* Bone;
 	const aiNode* BoneNode;
 	const aiMesh* Mesh;	
+
+	uint fast_id;
+	uint fast_par_id;
 };
 
 class SkeletonImport {

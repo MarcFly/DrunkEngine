@@ -21,6 +21,16 @@ struct Bone
 	std::vector<BoneWeight*> weights;
 	float4x4 matrix;
 
+	std::vector<Bone*> children;
+
+	uint fast_id = 0;
+	uint fast_par_id = 0;
+	Bone* parent = nullptr;
+
+	void OrderBones();
+	void AdjustChildren(const int& i);
+	Bone*  GetChild(const uint& par_id);
+
 	~Bone()
 	{
 		for(int i = 0; i < weights.size(); i++)
@@ -36,6 +46,10 @@ struct Bone
 struct ResourceSkeleton
 {
 	std::vector<Bone*> bones;
+
+	void OrderBones();
+	void AdjustChildren(const int& i);
+	Bone*  GetChild(const uint& par_id);
 
 	void UnloadMem();
 	~ResourceSkeleton();

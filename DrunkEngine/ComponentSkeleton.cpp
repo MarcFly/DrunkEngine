@@ -25,17 +25,22 @@ void ComponentSkeleton::Draw()
 
 	glColor3f(1.0f, 0.1f, 0.0f);
 	for (int i = 0; i < r_skel->bones.size(); i++)
-	{
-		if (i == 0)
-			glVertex3f(0, 1, 0);
-		else
-			glVertex3f(r_skel->bones[i - 1]->matrix.Col3(3).x, r_skel->bones[i - 1]->matrix.Col3(3).y, r_skel->bones[i - 1]->matrix.Col3(3).z);
-		glVertex3f(r_skel->bones[i]->matrix.Col3(3).x, r_skel->bones[i]->matrix.Col3(3).y, r_skel->bones[i]->matrix.Col3(3).z);
-		
-	}
+		DrawToChildren(r_skel->bones[i]);
+
 	glColor3f(0, 1, 0);
 
 	glEnd();
+}
+
+void ComponentSkeleton::DrawToChildren(Bone* bone)
+{
+	for (int i = 0; i < bone->children.size(); i++)
+	{
+		glVertex3f(bone->matrix.Col3(3).x, bone->matrix.Col3(3).y, bone->matrix.Col3(3).z);
+		glVertex3f(bone->children[i]->matrix.Col3(3).x, bone->children[i]->matrix.Col3(3).y, bone->children[i]->matrix.Col3(3).z);
+
+		DrawToChildren(bone->children[i]);
+	}
 }
 
 void ComponentSkeleton::CleanUp()
