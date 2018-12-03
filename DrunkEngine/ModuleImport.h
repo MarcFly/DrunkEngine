@@ -36,7 +36,7 @@ public:
 	void LoadScene(const char* path);
 
 	void ExportScene(const char* path);
-	void ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene);
+	void ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, const aiNode* root_node, const aiScene* aiscene);
 
 	void LoadFile(char* file);
 	

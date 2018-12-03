@@ -17,6 +17,7 @@ struct Bone
 
 	DGUID ID;
 	std::string name = "Unknown_Bone";
+	std::string affected_mesh = "UnknownMesh";
 	std::vector<BoneWeight*> weights;
 	float4x4 matrix;
 

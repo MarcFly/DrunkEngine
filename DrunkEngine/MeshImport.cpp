@@ -280,7 +280,6 @@ void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string 
 	write[32] = '\0';
 	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
 	json_object_dotset_number(meta_obj, "mat_ind", mesh->mMaterialIndex);
-	json_object_dotset_boolean(meta_obj, "has_skeleton", mesh->HasBones());
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
 
@@ -299,7 +298,6 @@ void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 	meta->file = json_object_dotget_string(meta_obj, "File");
 	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
 	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
-	meta->has_skeleton = json_object_dotget_boolean(meta_obj, "has_skeleton");
 
 	// Free Meta Value
 	json_object_clear(meta_obj);

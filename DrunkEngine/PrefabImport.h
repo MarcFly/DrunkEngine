@@ -26,11 +26,12 @@ public:
 
 	void Init() {};
 
-	void ExportAINode(const aiScene* scene, const aiNode* obj, JSON_Array* go, const Uint32 par_UUID, const char* name);
+	void ExportAINode(const aiScene* scene, std::vector<const aiNode*>& NodesWithSkeleton,  const aiNode* obj, JSON_Array* go, const Uint32 par_UUID, const char* name);
+	
 	void ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* trans);
 	void ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int& mesh_id, std::string name);
 	void ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const int& mat_id, std::string name);
-	void ExportBonesNode(JSON_Array* comps, const aiMesh* mesh, const int& mesh_id, std::string name);
+	void ExportBonesNode(JSON_Array* comps, const int& skeleton_id, std::string name);
 	void ExportAnimNode(JSON_Array* comps, const aiAnimation* anim, const int& anim_id, std::string name);
 	ResourcePrefab* LoadPrefab(const char* file);
 

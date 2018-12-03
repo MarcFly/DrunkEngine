@@ -17,7 +17,7 @@ ResourcePrefab* PrefabImport::LoadPrefab(const char* file)
 	return r_prefab;
 }
 
-void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_Array* go, const Uint32 par_UUID, const char* name)
+void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>& NodesWithSkeleton, const aiNode* node, JSON_Array* go, const Uint32 par_UUID, const char* name)
 {
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
@@ -54,8 +54,6 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 				if (scene->mMeshes[node->mMeshes[i]]->mMaterialIndex != -1)
 					ExportMatNode(comps, scene->mMaterials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex], scene->mMeshes[node->mMeshes[i]]->mMaterialIndex, name);
 
-				if (scene->mMeshes[node->mMeshes[i]]->HasBones())
-					ExportBonesNode(comps, scene->mMeshes[node->mMeshes[i]], node->mMeshes[i], name);
 
 				for (int j = 0; j < scene->mNumAnimations; j++)
 					for(int k = 0; k < scene->mAnimations[j]->mNumChannels; k++)
@@ -68,6 +66,15 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 					
 					
 			}
+
+			for (int j = 0; j < NodesWithSkeleton.size(); j++)
+			{
+				if (NodesWithSkeleton[j] == node)
+				{
+					ExportBonesNode(comps, j, name);
+					break;
+				}
+			}
 		}
 
 		set_val = obj + "components";
@@ -77,12 +84,12 @@ void PrefabImport::ExportAINode(const aiScene* scene, const aiNode* node, JSON_A
 		json_array_append_value(go, append);
 
 		for (int i = 0; i < node->mNumChildren; i++)
-			ExportAINode(scene, node->mChildren[i], go, UUID, name);
+			ExportAINode(scene, NodesWithSkeleton, node->mChildren[i], go, UUID, name);
 	}
 	else
 	{
 		for (int i = 0; i < node->mNumChildren; i++)
-			ExportAINode(scene, node->mChildren[i], go, par_UUID, name);
+			ExportAINode(scene, NodesWithSkeleton, node->mChildren[i], go, par_UUID, name);
 	}
 }
 
@@ -147,14 +154,14 @@ void PrefabImport::ExportMatNode(JSON_Array* comps, const aiMaterial* mat, const
 	json_array_append_value(comps, append);
 }
 
-void PrefabImport::ExportBonesNode(JSON_Array* comps, const aiMesh* mesh, const int& mesh_id, std::string name)
+void PrefabImport::ExportBonesNode(JSON_Array* comps, const int& skel_id, std::string name)
 {
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
 
 	json_object_dotset_number(curr, "properties.type", CT_Skeleton);
 
-	std::string filename = ".\\Library\\" + name + "_Mesh_" + std::to_string(mesh_id) + "_Skel.skeldrnk";
+	std::string filename = ".\\Library\\" + name + "_Skel_" + std::to_string(skel_id) + ".skeldrnk";
 	json_object_dotset_string(curr, "properties.filename", filename.c_str());
 
 	json_array_append_value(comps, append);
