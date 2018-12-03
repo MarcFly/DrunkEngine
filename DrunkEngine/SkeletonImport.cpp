@@ -333,17 +333,21 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 		for (it = skel.begin(); it != skel.end(); it++)
 		{
 			std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
-			while(low != skel.begin() && low != skel.end())
+			if(low != skel.begin() && low != skel.end())
 			{
 				const aiNode* curr_par = it->second->BoneNode->mParent;
+				do {
+					low--;
+					std::multimap<uint, BoneCrumb*>::iterator it2 = low;
+					do {
+						if (curr_par == it2->second->BoneNode)
+							it->second->fast_par_id = it2->second->fast_id;
 
-				if(curr_par == low->second->BoneNode)
-				{
-					it->second->fast_par_id = low->second->fast_id;
-					break;
-				}
+						it2--;
+					} while (it2 != skel.begin() && it->second->fast_par_id == 0);
 
-				low--;				
+					curr_par = curr_par->mParent;
+				} while (low != skel.begin() && it->second->fast_par_id == 0);				
 			}
 			
 		}
