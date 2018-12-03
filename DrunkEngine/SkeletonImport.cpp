@@ -103,8 +103,11 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 				bone->weights.push_back(weight);
 			}
 
-			memcpy(bone->matrix.v, cursor, sizeof(float) * 16);
+			aiMatrix4x4 get_matrix;
+			memcpy(&get_matrix, cursor, sizeof(float) * 16);
 			cursor += sizeof(float) * 16;
+			
+			bone->transform.SetFromMatrix(&get_matrix);
 
 			ret->bones.push_back(bone);
 		}
@@ -209,12 +212,12 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 
 		// OffsetMatrix Copy
 		aiMatrix4x4 cpy = it->second->Bone->mOffsetMatrix;
-		cpy *= it->second->BoneNode->mTransformation;
+		cpy = cpy * it->second->BoneNode->mTransformation;
 
 		const aiNode* curr_par = it->second->BoneNode->mParent;
 		while (curr_par != SkelRoot)
 		{
-			cpy *= curr_par->mTransformation;
+			cpy = cpy * curr_par->mTransformation;
 			curr_par = curr_par->mParent;
 		}
 
@@ -305,17 +308,22 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 				{
 					BoneCrumb* crumb = new BoneCrumb();
 					crumb->BoneNode = SkeletonRoots[l]->FindNode(bone_mesh->mBones[k]->mName);
-					uint par_num = 0;
-					const aiNode* curr = crumb->BoneNode;
-					while (curr != scene->mRootNode) {
-						par_num++;
-						curr = curr->mParent;
-					}
-					crumb->Bone = bone_mesh->mBones[k];
-					crumb->Mesh = bone_mesh;
+					if (crumb->BoneNode != nullptr)
+					{
+						uint par_num = 0;
+						const aiNode* curr = crumb->BoneNode;
+						while (curr != scene->mRootNode) {
+							par_num++;
+							curr = curr->mParent;
+						}
+						crumb->Bone = bone_mesh->mBones[k];
+						crumb->Mesh = bone_mesh;
 
-					crumb->fast_id = skel.size() + 1;
-					skel.insert(std::pair<uint, BoneCrumb*>(par_num, crumb));
+						crumb->fast_id = skel.size() + 1;
+						skel.insert(std::pair<uint, BoneCrumb*>(par_num, crumb));
+					}
+					else
+						delete crumb;
 				}
 			}
 		}
@@ -324,22 +332,21 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 		std::multimap<uint, BoneCrumb*>::iterator it;
 		for (it = skel.begin(); it != skel.end(); it++)
 		{
-			std::pair<std::multimap<uint, BoneCrumb*>::iterator, std::multimap<uint, BoneCrumb*>::iterator> possible_parents = skel.equal_range(it->first - 1);
-			if (possible_parents.first->first != it->first)
+			std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
+			while(low != skel.begin() && low != skel.end())
 			{
-				std::multimap<uint, BoneCrumb*>::iterator it2 = possible_parents.first;
-				while (it2->first == it->first - 1)
-				{
-					if (it->second->BoneNode->mParent == it2->second->BoneNode)
-					{
-						it->second->fast_par_id = it2->second->fast_id; 
-						break;
-					}
-					it2++;
-				}
-			}
-		}
+				const aiNode* curr_par = it->second->BoneNode->mParent;
 
+				if(curr_par == low->second->BoneNode)
+				{
+					it->second->fast_par_id = low->second->fast_id;
+					break;
+				}
+
+				low--;				
+			}
+			
+		}
 		
 		Skeletons.push_back(skel);
 	}

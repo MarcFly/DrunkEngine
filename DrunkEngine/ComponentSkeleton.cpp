@@ -36,8 +36,8 @@ void ComponentSkeleton::DrawToChildren(Bone* bone)
 {
 	for (int i = 0; i < bone->children.size(); i++)
 	{
-		glVertex3f(bone->matrix.Col3(3).x, bone->matrix.Col3(3).y, bone->matrix.Col3(3).z);
-		glVertex3f(bone->children[i]->matrix.Col3(3).x, bone->children[i]->matrix.Col3(3).y, bone->children[i]->matrix.Col3(3).z);
+		glVertex3f(bone->transform.position.x, bone->transform.position.y, bone->transform.position.z);
+		glVertex3f(bone->children[i]->transform.position.x, bone->children[i]->transform.position.y, bone->children[i]->transform.position.z);
 
 		DrawToChildren(bone->children[i]);
 	}

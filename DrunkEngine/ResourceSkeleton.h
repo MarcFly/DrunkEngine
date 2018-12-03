@@ -19,7 +19,7 @@ struct Bone
 	std::string name = "Unknown_Bone";
 	std::string affected_mesh = "UnknownMesh";
 	std::vector<BoneWeight*> weights;
-	float4x4 matrix;
+	ComponentTransform transform;
 
 	std::vector<Bone*> children;
 
