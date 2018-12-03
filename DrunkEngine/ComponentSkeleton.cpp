@@ -41,6 +41,11 @@ void ComponentSkeleton::DrawToChildren(Bone* bone)
 
 		DrawToChildren(bone->children[i]);
 	}
+	if (bone->children.size() == 0)
+	{
+		glVertex3f(bone->transform.position.x, bone->transform.position.y, bone->transform.position.z);
+		glVertex3f(0, 0, 0);
+	}
 }
 
 void ComponentSkeleton::CleanUp()

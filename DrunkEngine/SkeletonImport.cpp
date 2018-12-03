@@ -212,7 +212,7 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 
 		// OffsetMatrix Copy
 		aiMatrix4x4 cpy = it->second->Bone->mOffsetMatrix;
-		cpy = cpy * it->second->BoneNode->mTransformation;
+		cpy =  cpy * it->second->BoneNode->mTransformation;
 
 		const aiNode* curr_par = it->second->BoneNode->mParent;
 		while (curr_par != SkelRoot)
@@ -360,7 +360,7 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 
 void SkeletonImport::GetSkeletonRoots(std::vector<const aiNode*>& BoneNodes, std::vector<const aiNode*>& SkeletonRoots)
 {
-	for (int i = 0; i < BoneNodes.size(); i++)
+ 	for (int i = 0; i < BoneNodes.size(); i++)
 	{
 		if (BoneNodes[i] != nullptr)
 		{
@@ -372,20 +372,26 @@ void SkeletonImport::GetSkeletonRoots(std::vector<const aiNode*>& BoneNodes, std
 				if (SkeletonRoots[j]->FindNode(curr_par->mName))
 					par_found = true;
 
-			while (!par_found && SkelRoot == nullptr)
+			while (!par_found && SkelRoot == nullptr && curr_par != nullptr)
 			{
-				if (curr_par->mNumChildren > 1)
+				if (curr_par->mNumChildren > 1 || curr_par->mParent == nullptr )
 				{
 					bool par_swap = false;
+					const aiNode* last_par = curr_par;
 					for (int j = 0; j < curr_par->mNumChildren; j++)
-						if (curr_par->mChildren[i]->mNumMeshes > 0)
+					{
+						last_par = curr_par;
+						if (std::string(curr_par->mName.C_Str()).find("$AssimpFbx$", 0) > 0)
 						{
 							par_swap = true;
 							curr_par = curr_par->mParent;
 							break;
 						}
+					}
 					if (!par_swap)
 						SkelRoot = curr_par;
+					if (curr_par == nullptr)
+						SkelRoot = last_par;
 				}
 				else
 					curr_par = curr_par->mParent;
