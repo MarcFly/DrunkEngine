@@ -111,6 +111,9 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 
 			ret->bones.push_back(bone);
 		}
+		ret->OrderBones();
+
+		ret->CalculateSkeletonTransforms();
 	}
 	else
 	{
@@ -118,9 +121,7 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 		ret = nullptr;
 	}
 
-	read_file.close();
-
-	ret->OrderBones();
+	read_file.close();	
 
 	return ret;
 }
@@ -154,25 +155,37 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
 		
 		uint buf_size = 0;
-		uint num_weights = it->second->Bone->mNumWeights;
-
-		std::string name = it->second->Bone->mName.C_Str();
-		uint name_size = name.length() + 1;
-
+		uint num_weights = 0;
+		uint name_size = 1;
 		DGUID id;
-		id.cpyfromstring(StringMD5ID(name));
+		std::string name = "";
+		if (it->second->Bone != nullptr)
+		{
+			num_weights = it->second->Bone->mNumWeights;
 
-		std::string affected_mesh = GetFileName(path) + "_Mesh_";
-		uint mesh_id;
-		for (int j = 0; j < scene->mNumMeshes; j++)
-			if (scene->mMeshes[j] == it->second->Mesh)
-			{
-				mesh_id = j; 
-				break;
-			}
-		affected_mesh += std::to_string(mesh_id) + ".meshdrnk";
+			name = it->second->Bone->mName.C_Str();
+			name_size += name.length();
 
-		uint mesh_name_size = affected_mesh.length() + 1;
+			id.cpyfromstring(StringMD5ID(name));
+		}
+
+		std::string affected_mesh = ""; 
+		uint mesh_id = INT_MAX;
+		uint mesh_name_size = 1;
+		if (it->second->Mesh != nullptr)
+		{
+			affected_mesh = GetFileName(path) + "_Mesh_";
+
+			for (int j = 0; j < scene->mNumMeshes; j++)
+				if (scene->mMeshes[j] == it->second->Mesh)
+				{
+					mesh_id = j;
+					break;
+				}
+			affected_mesh += std::to_string(mesh_id) + ".meshdrnk";
+
+			mesh_name_size += affected_mesh.length();
+		}
 
 		buf_size = bone_size + sizeof(uint) * 4 + name_size + mesh_name_size + weight_size * num_weights;
 
@@ -211,16 +224,7 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		}
 
 		// OffsetMatrix Copy
-		aiMatrix4x4 cpy = it->second->Bone->mOffsetMatrix;
-		cpy =  cpy * it->second->BoneNode->mTransformation;
-
-		const aiNode* curr_par = it->second->BoneNode->mParent;
-		while (curr_par != SkelRoot)
-		{
-			cpy = cpy * curr_par->mTransformation;
-			curr_par = curr_par->mParent;
-		}
-
+		aiMatrix4x4 cpy = it->second->BoneNode->mTransformation;
 		{
 			memcpy(cursor, &cpy.a1, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &cpy.a2, sizeof(float));	cursor += sizeof(float);
@@ -333,21 +337,26 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 		for (it = skel.begin(); it != skel.end(); it++)
 		{
 			std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
-			if(low != skel.begin() && low != skel.end())
+			while (true) 
 			{
-				const aiNode* curr_par = it->second->BoneNode->mParent;
-				do {
+				if (low->second->BoneNode == it->second->BoneNode->mParent)
+				{
+					it->second->fast_par_id = low->second->fast_id;
+					break;
+				}
+
+				if (low == skel.begin())
+					break;
+				else
 					low--;
-					std::multimap<uint, BoneCrumb*>::iterator it2 = low;
-					do {
-						if (curr_par == it2->second->BoneNode)
-							it->second->fast_par_id = it2->second->fast_id;
+			}				
+			if (it->second->fast_par_id == 0)
+			{
+				it->second->fast_par_id = skel.size() + 1;
+				BoneCrumb* push = new BoneCrumb(it->second->BoneNode->mParent);
+				push->fast_id = skel.size() + 1;
+				skel.insert(std::pair<uint, BoneCrumb*>(it->first - 1, push));
 
-						it2--;
-					} while (it2 != skel.begin() && it->second->fast_par_id == 0);
-
-					curr_par = curr_par->mParent;
-				} while (low != skel.begin() && it->second->fast_par_id == 0);				
 			}
 			
 		}

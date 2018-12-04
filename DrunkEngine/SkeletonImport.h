@@ -15,12 +15,15 @@ struct DGUID;
 class MetaSkeleton;
 
 struct BoneCrumb {
-	const aiBone* Bone;
-	const aiNode* BoneNode;
-	const aiMesh* Mesh;	
+	const aiBone* Bone = nullptr;
+	const aiNode* BoneNode = nullptr;
+	const aiMesh* Mesh = nullptr;
 
-	uint fast_id;
-	uint fast_par_id;
+	uint fast_id = 0;
+	uint fast_par_id = 0;
+
+	BoneCrumb() {};
+	BoneCrumb(const aiNode* EmptyBone) { BoneNode = EmptyBone; };
 };
 
 class SkeletonImport {

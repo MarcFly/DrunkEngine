@@ -30,6 +30,7 @@ struct Bone
 	void OrderBones();
 	void AdjustChildren(const int& i);
 	Bone*  GetChild(const uint& par_id);
+	void CalculateBoneGlobalTransforms();
 
 	~Bone()
 	{
@@ -50,6 +51,8 @@ struct ResourceSkeleton
 	void OrderBones();
 	void AdjustChildren(const int& i);
 	Bone*  GetChild(const uint& par_id);
+
+	void CalculateSkeletonTransforms();
 
 	void UnloadMem();
 	~ResourceSkeleton();

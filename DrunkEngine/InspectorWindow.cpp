@@ -326,12 +326,12 @@ void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
 			last_skeleton = skel->r_skel;
 		}
 
-		
-		if (ImGui::Combo("##Bone", &bone_ind, &last_skeleton_bones[0], last_skeleton_bones.size()))
-		{
-			last_bone = last_skeleton->bones[bone_ind];
-			trigger_new_read = true;
-		}
+		if(last_skeleton_bones.size() > 0)
+			if (ImGui::Combo("##Bone", &bone_ind, &last_skeleton_bones[0], last_skeleton_bones.size()))
+			{
+				last_bone = last_skeleton->bones[bone_ind];
+				trigger_new_read = true;
+			}
 		
 		if (last_bone != nullptr)
 		{
@@ -360,10 +360,13 @@ void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
 				ImGui::Text("Weight Amount: %i", last_bone->weights.size());
 				
 				ImGui::Indent(25);
-				if (ImGui::Combo("##Weight", &weight_ind, &last_bone_weights[0], last_bone_weights.size()))
-					last_weight = last_bone->weights[weight_ind];
-				if (last_weight != nullptr)
-					ImGui::SliderFloat("Weight Value", &last_weight->w, 0, 1);
+				if (last_bone_weights.size() > 0)
+				{
+					if (ImGui::Combo("##Weight", &weight_ind, &last_bone_weights[0], last_bone_weights.size()))
+						last_weight = last_bone->weights[weight_ind];
+					if (last_weight != nullptr)
+						ImGui::SliderFloat("Weight Value", &last_weight->w, 0, 1);
+				}
 				ImGui::Indent(-25);
 			}
 			ImGui::Indent(-25);
