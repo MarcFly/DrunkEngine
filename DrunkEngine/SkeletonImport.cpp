@@ -106,8 +106,8 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			uint matrix_num;
 			memcpy(&matrix_num, cursor, sizeof(uint));
 			cursor += sizeof(uint);
-			// Matrix Order, there are between 2 and 6 transforms saved per node
-			// $AssimpFbx$ transforms are not always created:
+			// Matrix Order, there are between 1 and 5 transforms saved per node
+			// $AssimpFbx$ transforms are not all always created:
 			// 0 - Bone Node mTransform
 			// 1 - $AssimpFbx$_Scaling mTransform
 			// 2 - $AssimpFbx$_Rotation mTransform
