@@ -168,6 +168,13 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 
 			id.cpyfromstring(StringMD5ID(name));
 		}
+		else
+		{
+			name = it->second->BoneNode->mName.C_Str();
+			name_size += name.length();
+
+			id.cpyfromstring(StringMD5ID(name));
+		}
 
 		std::string affected_mesh = ""; 
 		uint mesh_id = INT_MAX;
@@ -224,7 +231,7 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		}
 
 		// OffsetMatrix Copy
-		aiMatrix4x4 cpy = it->second->BoneNode->mTransformation;
+		aiMatrix4x4 cpy = it->second->AddedTransform * it->second->BoneNode->mTransformation;
 		{
 			memcpy(cursor, &cpy.a1, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &cpy.a2, sizeof(float));	cursor += sizeof(float);
@@ -317,7 +324,10 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 						uint par_num = 0;
 						const aiNode* curr = crumb->BoneNode;
 						while (curr != scene->mRootNode) {
-							par_num++;
+							if (std::string(curr->mName.C_Str()).find("$AssimpFbx$") != std::string::npos)
+								crumb->AddedTransform *= curr->mTransformation * crumb->AddedTransform;
+							else
+								par_num++;
 							curr = curr->mParent;
 						}
 						crumb->Bone = bone_mesh->mBones[k];
@@ -337,9 +347,13 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 		for (it = skel.begin(); it != skel.end(); it++)
 		{
 			std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
-			while (true) 
+			aiNode* nonAssimpFbx_par = it->second->BoneNode->mParent;
+			while (std::string(nonAssimpFbx_par->mName.C_Str()).find("$AssimpFbx$") != std::string::npos)
+				nonAssimpFbx_par = nonAssimpFbx_par->mParent;
+
+			while (true && low != skel.end()) 
 			{
-				if (low->second->BoneNode == it->second->BoneNode->mParent)
+				if (low->second->BoneNode == nonAssimpFbx_par)
 				{
 					it->second->fast_par_id = low->second->fast_id;
 					break;
@@ -353,7 +367,7 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 			if (it->second->fast_par_id == 0)
 			{
 				it->second->fast_par_id = skel.size() + 1;
-				BoneCrumb* push = new BoneCrumb(it->second->BoneNode->mParent);
+				BoneCrumb* push = new BoneCrumb(nonAssimpFbx_par);
 				push->fast_id = skel.size() + 1;
 				skel.insert(std::pair<uint, BoneCrumb*>(it->first - 1, push));
 

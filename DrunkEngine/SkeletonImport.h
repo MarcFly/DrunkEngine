@@ -22,6 +22,8 @@ struct BoneCrumb {
 	uint fast_id = 0;
 	uint fast_par_id = 0;
 
+	aiMatrix4x4 AddedTransform;
+
 	BoneCrumb() {};
 	BoneCrumb(const aiNode* EmptyBone) { BoneNode = EmptyBone; };
 };
