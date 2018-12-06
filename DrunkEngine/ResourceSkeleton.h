@@ -15,6 +15,7 @@ struct Bone
 {
 	Bone() {};
 
+	bool active = false;
 	DGUID ID;
 	std::string name = "Unknown_Bone";
 	std::string affected_mesh = "UnknownMesh";

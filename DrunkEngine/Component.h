@@ -54,6 +54,7 @@ public:
 	}
 
 public:
+	bool active = true;
 	DGUID UID;
 	CTypes type;
 	bool multiple;

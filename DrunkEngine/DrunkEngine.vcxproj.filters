@@ -684,6 +684,9 @@
     <ClInclude Include="ComponentAnimation.h">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletonInspector.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -982,6 +985,9 @@
     </ClCompile>
     <ClCompile Include="ComponentAnimation.cpp">
       <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonInspector.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

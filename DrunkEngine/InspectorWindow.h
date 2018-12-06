@@ -5,6 +5,7 @@
 #include "ModuleScene.h"
 
 class GameObject;
+class SkeletonInspectorWin;
 struct Bone;
 struct BoneWeight;
 
@@ -24,8 +25,10 @@ public:
 	void CamInspector(ComponentCamera* cam, const int& cmpt_id);
 	void TransformInspector(ComponentTransform* transform, const int& cmpt_id);
 	void BillboardInspector(ComponentBillboard* billboard, const int& cmpt_id);
-	void SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id);
+	
 	void AnimationInspector(ComponentAnimation* anim, const int& cmpt_id);
+
+	void SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id);
 
 public:
 	int total_num_vertex;
@@ -42,15 +45,10 @@ public:
 
 	ImVec2 show_size = { 128,128 };
 
-	std::vector<const char*> last_skeleton_bones;
-	std::vector<const char*> last_bone_weights;
-	ResourceSkeleton* last_skeleton;
-	Bone* last_bone;
-	BoneWeight* last_weight;
+	// Skeleton Inspector
+	SkeletonInspectorWin* skel_ins = nullptr;
 
-	int bone_ind = 0;
-	int weight_ind = 0;
-	bool trigger_new_read;
+
 };
 
 #endif
