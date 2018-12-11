@@ -15,11 +15,23 @@ struct Bone
 {
 	Bone() {};
 
+	bool active = false;
 	DGUID ID;
 	std::string name = "Unknown_Bone";
-	uint num_weights = 0;
+	std::string affected_mesh = "UnknownMesh";
 	std::vector<BoneWeight*> weights;
-	float4x4 matrix;
+	ComponentTransform transform;
+
+	std::vector<Bone*> children;
+
+	uint fast_id = 0;
+	uint fast_par_id = 0;
+	Bone* parent = nullptr;
+
+	void OrderBones();
+	void AdjustChildren(const int& i);
+	Bone*  GetChild(const uint& par_id);
+	void CalculateBoneGlobalTransforms();
 
 	~Bone()
 	{
@@ -36,6 +48,12 @@ struct Bone
 struct ResourceSkeleton
 {
 	std::vector<Bone*> bones;
+
+	void OrderBones();
+	void AdjustChildren(const int& i);
+	Bone*  GetChild(const uint& par_id);
+
+	void CalculateSkeletonTransforms();
 
 	void UnloadMem();
 	~ResourceSkeleton();

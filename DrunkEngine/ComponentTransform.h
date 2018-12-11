@@ -11,6 +11,7 @@ class ComponentMesh;
 class ComponentTransform : public Component
 {
 public:
+	ComponentTransform() { SetBaseVals(); }
 	ComponentTransform(GameObject* par) { parent = par; SetBaseVals();  }
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 
@@ -29,6 +30,7 @@ public:
 	void SetWorldRot(const Quat new_rot);
 
 	void CalculateGlobalTransforms();
+	//void CalculateGlobalTransforms(GameObject* parent);
 
 	void SetAuxWorldPos();
 

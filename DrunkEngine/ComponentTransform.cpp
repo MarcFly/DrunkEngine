@@ -79,7 +79,6 @@ void ComponentTransform::CalculateGlobalTransforms()
 {
 	if (parent->parent != nullptr)
 		global_transform = world_pos * world_rot * parent->parent->GetTransform()->global_transform * local_transform;
-
 	else
 		global_transform = local_transform;
 

@@ -56,12 +56,19 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 		for (int i = 0; i < num_bones; i++)
 		{
 			Bone* bone = new Bone();
+
+			memcpy(&bone->fast_id, cursor, sizeof(uint));
+			cursor += sizeof(uint);
+			memcpy(&bone->fast_par_id, cursor, sizeof(uint));
+			cursor += sizeof(uint);
+
 			char id[32];
 			memcpy(id, cursor, 32);
 			cursor += 32;
 			bone->ID.cpyfromstring(std::string(id, 32));
 
-			memcpy(&bone->num_weights, cursor, sizeof(uint));
+			uint num_weights;
+			memcpy(&num_weights, cursor, sizeof(uint));
 			cursor += sizeof(uint);
 
 			uint name_size;
@@ -74,7 +81,17 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			bone->name.clear();
 			bone->name = std::string(cpy_name, name_size);
 
-			for (int j = 0; j < bone->num_weights; j++)
+			uint mesh_name_size;
+			memcpy(&mesh_name_size, cursor, sizeof(uint));
+			cursor += sizeof(uint);
+
+			char* cpy_mesh_name = new char[mesh_name_size];
+			memcpy(cpy_mesh_name, cursor, mesh_name_size);
+			cursor += mesh_name_size;
+			bone->affected_mesh.clear();
+			bone->affected_mesh = std::string(cpy_mesh_name, mesh_name_size);
+
+			for (int j = 0; j < num_weights; j++)
 			{
 				BoneWeight* weight = new BoneWeight();
 				memcpy(&weight->VertexID, cursor, sizeof(uint));
@@ -86,11 +103,33 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 				bone->weights.push_back(weight);
 			}
 
-			memcpy(bone->matrix.v, cursor, sizeof(float) * 16);
-			cursor += sizeof(float) * 16;
+			uint matrix_num;
+			memcpy(&matrix_num, cursor, sizeof(uint));
+			cursor += sizeof(uint);
+			// Matrix Order, there are between 1 and 5 transforms saved per node
+			// $AssimpFbx$ transforms are not all always created:
+			// 0 - Bone Node mTransform
+			// 1 - $AssimpFbx$_Scaling mTransform
+			// 2 - $AssimpFbx$_Rotation mTransform
+			// 3 - $AssimpFbx$_Pre-Rotation mTransform
+			// 4 - $AssimpFbx$_Translate mTransform
+
+			std::vector<aiMatrix4x4> get_matrices;
+			for (int k = 0; k < matrix_num; k++) {
+				aiMatrix4x4 get_matrix;
+				memcpy(&get_matrix, cursor, sizeof(float) * 16);
+				cursor += sizeof(float) * 16;
+				get_matrices.push_back(get_matrix);
+			}
+			
+			// For now only push first bone matrix
+			bone->transform.SetFromMatrix(&get_matrices[0]);
 
 			ret->bones.push_back(bone);
 		}
+		ret->OrderBones();
+
+		ret->CalculateSkeletonTransforms();
 	}
 	else
 	{
@@ -98,127 +137,193 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 		ret = nullptr;
 	}
 
-	read_file.close();
+	read_file.close();	
 
 	return ret;
 }
 
-void SkeletonImport::ExportAISkeleton(const aiMesh* mesh, const int& mesh_id, const char* path)
+void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelRoot, std::multimap<uint, BoneCrumb*>& Skeleton, const int& skel_id, const aiNode* root, const char* path)
 {
-	if (mesh->HasBones())
+	std::string filename = ".\\Library\\";
+	filename += GetFileName(path) + "_Skel_" + std::to_string(skel_id);
+
+	std::fstream write_file;
+
+	write_file.open((filename + ".skeldrnk").c_str(), std::fstream::out | std::fstream::binary);
+
+	uint buf_size = 0;
+	uint skeleton_size = Skeleton.size();
+	uint weight_size = sizeof(float) + sizeof(uint);
+	uint id_size = 32;
+	uint bone_size = id_size + sizeof(uint);
+
+	char* data = new char[sizeof(uint)];
+	memcpy(data, &skeleton_size, sizeof(uint));
+	write_file.write(data, sizeof(uint));
+
+	delete data;
+	data = nullptr;
+	std::multimap<uint, BoneCrumb*>::iterator it = Skeleton.begin();
+
+	for (int i = 0; i < skeleton_size; i++, it++)
 	{
-		std::string filename = ".\\Library\\";
-		filename += GetFileName(path) + "_Mesh_" + std::to_string(mesh_id) + "_Skel";
-
-		std::fstream write_file;
-
-		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::out | std::fstream::binary);
-
+		write_file.close();
+		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
+		
 		uint buf_size = 0;
+		uint num_weights = 0;
+		uint name_size = 1;
+		DGUID id;
+		std::string name = "";
+		if (it->second->Bone != nullptr)
+		{
+			num_weights = it->second->Bone->mNumWeights;
 
-		uint skeleton_size = mesh->mNumBones;
-		uint weight_size = sizeof(float) + sizeof(uint);
-		uint bone_size = sizeof(char[32]) + sizeof(uint) + sizeof(float) * 16;
+			name = it->second->Bone->mName.C_Str();
+			name_size += name.length();
 
-		char* data = new char[sizeof(uint)];
-		memcpy(data, &skeleton_size, sizeof(uint));
-		write_file.write(data, sizeof(uint));
+			id.cpyfromstring(StringMD5ID(name));
+		}
+		else
+		{
+			name = it->second->BoneNode->mName.C_Str();
+			name_size += name.length();
+
+			id.cpyfromstring(StringMD5ID(name));
+		}
+
+		std::string affected_mesh = ""; 
+		uint mesh_id = INT_MAX;
+		uint mesh_name_size = 1;
+		if (it->second->Mesh != nullptr)
+		{
+			affected_mesh = GetFileName(path) + "_Mesh_";
+
+			for (int j = 0; j < scene->mNumMeshes; j++)
+				if (scene->mMeshes[j] == it->second->Mesh)
+				{
+					mesh_id = j;
+					break;
+				}
+			affected_mesh += std::to_string(mesh_id) + ".meshdrnk";
+
+			mesh_name_size += affected_mesh.length();
+		}
+
+		// These are the original bone, bone node and the transformations between nodes
+		// Between nodes sometimes assimp create $AssimpFbx$ nodes that only explain transformations
+		uint transforms_sizes = it->second->AddedTransform.size() + 1;
+
+		buf_size = bone_size + sizeof(uint) * 4 + name_size + mesh_name_size + weight_size * num_weights + sizeof(uint) + transforms_sizes * sizeof(float) * 16;
+
+		data = new char[buf_size];
+		char* cursor = data;
+
+		// Bone Info Copy
+		memcpy(cursor, &it->second->fast_id, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, &it->second->fast_par_id, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, id.MD5ID, id_size);
+		cursor += id_size;
+		memcpy(cursor, &num_weights, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, &name_size, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, name.c_str(), name.length());
+		cursor += name.length();
+		memcpy(cursor, "\0", 1);
+		cursor += 1;
+		memcpy(cursor, &mesh_name_size, sizeof(uint));
+		cursor += sizeof(uint);
+		memcpy(cursor, affected_mesh.c_str(), affected_mesh.length());
+		cursor += affected_mesh.length();
+		memcpy(cursor, "\0", 1);
+		cursor += 1;
+
+		// Weights Copy
+		for (int j = 0; j < num_weights; j++)
+		{
+			memcpy(cursor, &it->second->Bone->mWeights[j].mVertexId, sizeof(uint));
+			cursor += sizeof(uint);
+			memcpy(cursor, &it->second->Bone->mWeights[j].mWeight, sizeof(float));
+			cursor += sizeof(float);
+		}
+
+		// OffsetMatrix Copy
+		memcpy(cursor, &transforms_sizes, sizeof(uint));
+		cursor += sizeof(uint);
+
+		aiMatrix4x4 cpy = cpy = it->second->BoneNode->mTransformation;
+		{
+			memcpy(cursor, &cpy.a1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.a2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.a3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.a4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &cpy.b1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.b2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.b3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.b4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &cpy.c1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.c2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.c3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.c4, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &cpy.d1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.d2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.d3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &cpy.d4, sizeof(float));	cursor += sizeof(float);
+		}
+
+		for (int k = 0; k < transforms_sizes - 1; k++)
+		{
+			aiMatrix4x4 cpy = it->second->AddedTransform[k];
+			{
+				memcpy(cursor, &cpy.a1, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.a2, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.a3, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.a4, sizeof(float));	cursor += sizeof(float);
+
+				memcpy(cursor, &cpy.b1, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.b2, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.b3, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.b4, sizeof(float));	cursor += sizeof(float);
+
+				memcpy(cursor, &cpy.c1, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.c2, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.c3, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.c4, sizeof(float));	cursor += sizeof(float);
+
+				memcpy(cursor, &cpy.d1, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.d2, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.d3, sizeof(float));	cursor += sizeof(float);
+				memcpy(cursor, &cpy.d4, sizeof(float));	cursor += sizeof(float);
+			}
+		}
+
+		write_file.write(data, buf_size);
 
 		delete data;
 		data = nullptr;
-
-		write_file.close();
-		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
-
-		for (int i = 0; i < skeleton_size; i++)
-		{
-			buf_size = 0;
-
-			uint id_size = 32;
-			uint num_weights = mesh->mBones[i]->mNumWeights;
-
-			std::string name = mesh->mBones[i]->mName.C_Str();
-			uint name_size = name.length() + 1;
-
-			DGUID id;
-			id.cpyfromstring(StringMD5ID(name));
-
-			buf_size = bone_size + sizeof(uint) + name_size + weight_size * num_weights;
-
-			data = new char[buf_size];
-			char* cursor = data;
-
-			// Bone Info Copy
-			memcpy(data, id.MD5ID, 32);
-			cursor += 32;
-			memcpy(cursor, &num_weights, sizeof(uint));
-			cursor += sizeof(uint);
-			memcpy(cursor, &name_size, sizeof(uint));
-			cursor += sizeof(uint);
-			memcpy(cursor, name.c_str(), name.length());
-			cursor += name.length();
-			memcpy(cursor, "\0", 1);
-			cursor += 1;
-
-			// Weights Copy
-			for (int j = 0; j < num_weights; j++)
-			{
-				memcpy(cursor, &mesh->mBones[i]->mWeights[j].mVertexId, sizeof(uint));
-				cursor += sizeof(uint);
-				memcpy(cursor, &mesh->mBones[i]->mWeights[j].mWeight, sizeof(float));
-				cursor += sizeof(float);
-			}
-
-			// OffsetMatrix Copy
-			{
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.a4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.b4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.c4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &mesh->mBones[i]->mOffsetMatrix.d4, sizeof(float));	cursor += sizeof(float);
-			}
-			write_file.write(data, buf_size);
-
-			delete data;
-			data = nullptr;
-		}
-
-		write_file.close();
-
-		ExportMeta(mesh, mesh_id, path);
 	}
+	
+	write_file.close();
+
+	ExportMeta(filename);
 }
 
-void SkeletonImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string path)
+
+void SkeletonImport::ExportMeta(std::string& filename)
 {
-	std::string meta_name = ".\\Library\\" + GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id) + "_Skel.meta";
-	JSON_Value* meta_file = json_parse_file(path.c_str());
+	std::string meta_name = filename + ".meta";
+	JSON_Value* meta_file = json_parse_file(meta_name.c_str());
 	meta_file = json_value_init_object();
 
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	std::string write = ".\\Library\\" + GetFileName(path.c_str()) + "_Mesh_" + std::to_string(mesh_id);
-	
-	json_object_dotset_string(meta_obj,"File", std::string(write + "_Skel.skeldrnk").c_str());
-	
-	write += ".meshdrnk";
-	write = DGUID(write.c_str()).MD5ID;
-	write[32] = '\0';
-	json_object_dotset_string(meta_obj, "Mesh", write.c_str());
+	json_object_dotset_string(meta_obj,"File", std::string(filename + ".skeldrnk").c_str());
 
 	json_serialize_to_file(meta_file, meta_name.c_str());
 
@@ -235,9 +340,152 @@ void SkeletonImport::LoadMeta(const char* file, MetaSkeleton* meta)
 	JSON_Object* meta_obj = json_value_get_object(meta_file);
 
 	meta->file = json_object_dotget_string(meta_obj, "File");
-	meta->origin_mesh = json_object_dotget_string(meta_obj, "Mesh");
 
 	// Free Meta Value
 	json_object_clear(meta_obj);
 	json_value_free(meta_file);
+}
+
+
+// SKELETON RECONSTRUCTION HELPERS------------------------------------------
+
+
+std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeletons(const aiScene* scene, std::vector<const aiNode*>& SkeletonRoots, std::vector<const aiNode*>& BoneNodes)
+{
+	std::vector<std::multimap<uint, BoneCrumb*>> Skeletons;
+
+	for (int l = 0; l < SkeletonRoots.size(); l++)
+	{
+		std::multimap<uint, BoneCrumb*> skel;
+
+		for (int i = 0; i < BoneNodes.size(); i++)
+		{
+			for (int j = 0; j < BoneNodes[i]->mNumMeshes; j++)
+			{
+				aiMesh* bone_mesh = scene->mMeshes[BoneNodes[i]->mMeshes[j]];
+
+				for (int k = 0; k < bone_mesh->mNumBones; k++)
+				{
+					BoneCrumb* crumb = new BoneCrumb();
+					crumb->BoneNode = SkeletonRoots[l]->FindNode(bone_mesh->mBones[k]->mName);
+					if (crumb->BoneNode != nullptr)
+					{
+						uint par_num = 0;
+						const aiNode* curr = crumb->BoneNode;
+						while (curr != scene->mRootNode) {
+							if (std::string(curr->mName.C_Str()).find("$AssimpFbx$") == std::string::npos)
+								par_num++;
+							curr = curr->mParent;
+						}
+						crumb->Bone = bone_mesh->mBones[k];
+						crumb->Mesh = bone_mesh;
+
+						crumb->fast_id = skel.size() + 1;
+						skel.insert(std::pair<uint, BoneCrumb*>(par_num, crumb));
+					}
+					else
+						delete crumb;
+				}
+			}
+		}
+		
+		// Set Par_ids for load
+		std::multimap<uint, BoneCrumb*>::iterator it;
+		for (it = skel.begin(); it != skel.end(); it++)
+		{
+			std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
+			aiNode* nonAssimpFbx_par = it->second->BoneNode->mParent;
+			while (std::string(nonAssimpFbx_par->mName.C_Str()).find("$AssimpFbx$") != std::string::npos)
+			{
+				it->second->AddedTransform.push_back(nonAssimpFbx_par->mTransformation);
+				nonAssimpFbx_par = nonAssimpFbx_par->mParent;
+			}
+
+			while (true && low != skel.end()) 
+			{
+				if (low->second->BoneNode == nonAssimpFbx_par)
+				{
+					it->second->fast_par_id = low->second->fast_id;
+					break;
+				}
+
+				if (low == skel.begin())
+					break;
+				else
+					low--;
+			}				
+			if (it->second->fast_par_id == 0)
+			{
+				it->second->fast_par_id = skel.size() + 1;
+				BoneCrumb* push = new BoneCrumb(nonAssimpFbx_par);
+				push->fast_id = skel.size() + 1;
+				skel.insert(std::pair<uint, BoneCrumb*>(it->first - 1, push));
+
+			}
+			
+		}
+		
+		Skeletons.push_back(skel);
+	}
+
+	return Skeletons;
+}
+
+void SkeletonImport::GetSkeletonRoots(std::vector<const aiNode*>& BoneNodes, std::vector<const aiNode*>& SkeletonRoots)
+{
+ 	for (int i = 0; i < BoneNodes.size(); i++)
+	{
+		if (BoneNodes[i] != nullptr)
+		{
+			const aiNode* SkelRoot = nullptr;
+			const aiNode* curr_par = BoneNodes[i];
+
+			bool par_found = false;
+			for (int j = 0; j < SkeletonRoots.size(); j++)
+				if (SkeletonRoots[j]->FindNode(curr_par->mName))
+					par_found = true;
+
+			while (!par_found && SkelRoot == nullptr && curr_par != nullptr)
+			{
+				if (curr_par->mNumChildren > 1 || curr_par->mParent == nullptr )
+				{
+					bool par_swap = false;
+					const aiNode* last_par = curr_par;
+					for (int j = 0; j < curr_par->mNumChildren; j++)
+					{
+						last_par = curr_par;
+						if (std::string(curr_par->mName.C_Str()).find("$AssimpFbx$", 0) > 0)
+						{
+							par_swap = true;
+							curr_par = curr_par->mParent;
+							break;
+						}
+					}
+					if (!par_swap)
+						SkelRoot = curr_par;
+					if (curr_par == nullptr)
+						SkelRoot = last_par;
+				}
+				else
+					curr_par = curr_par->mParent;
+			}
+
+			if(SkelRoot != nullptr)
+				SkeletonRoots.push_back(SkelRoot);
+
+			
+		}
+	}
+}
+
+void SkeletonImport::FindBoneNodes(aiMesh** meshes, const aiNode* node, std::vector<const aiNode*>& bone_nodes)
+{
+	for (int j = 0; j < node->mNumMeshes; j++)
+	{
+		if (meshes[node->mMeshes[j]]->HasBones())
+			bone_nodes.push_back(node);
+	}
+	for (int i = 0; i < node->mNumChildren; i++)
+		FindBoneNodes(meshes, node->mChildren[i], bone_nodes);
+	
 }

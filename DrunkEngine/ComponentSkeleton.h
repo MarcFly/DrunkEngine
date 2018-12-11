@@ -9,6 +9,7 @@
 
 class GameObject;
 struct ResourceSkeleton;
+struct Bone;
 
 class ComponentSkeleton : public Component
 {
@@ -19,7 +20,8 @@ public:
 	~ComponentSkeleton() {};
 
 	void Draw();
-
+	void DrawToChildren(Bone* bone);
+	
 	void CleanUp();
 
 	void Load(const JSON_Object* comp);

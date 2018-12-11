@@ -3,19 +3,31 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
+#include "ComponentBillboard.h"
+#include "ComponentSkeleton.h"
+#include "ComponentAnimation.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "ResourceAnimation.h"
 #include "KdTreeWindow.h"
+#include "SkeletonInspector.h"
 
 Inspector::Inspector() : Window("Inspector")
 {
 	total_num_vertex = 0;
 	total_num_faces = 0;
 	check_info = false;
+
+	skel_ins = new SkeletonInspectorWin();
+
 }
 
 Inspector::~Inspector()
 {
+
+	delete skel_ins;
+	skel_ins = nullptr;
+
 }
 
 void Inspector::Draw()
@@ -30,20 +42,15 @@ void Inspector::Draw()
 			{
 				for (int i = 0; i < App->gameObj->active_objects[0]->components.size(); i++)
 				{
-					ComponentInspector(App->gameObj->active_objects[0]->components[i]);
+					ComponentInspector(App->gameObj->active_objects[0]->components[i], i);
 				}
-
 			}
 		}
 
-		else if (App->gameObj->active_objects.size() > 1) //objects.size() > 0)
+		else if (App->gameObj->active_objects.size() > 1)
 		{
 			ImGui::Text("+ 1 obj selected");
 		}
-
-		//if (ImGui::Button("Select")) {}
-		//ImGui::SameLine();
-		//if (ImGui::Button("Save")) {}
 	}
 	ImGui::End();
 }
@@ -57,20 +64,27 @@ void Inspector::CheckMeshInfo()
 
 //----------------------------
 // Component Inspectors
-void Inspector::ComponentInspector(Component* component)
+void Inspector::ComponentInspector(Component* component, const int& cmpt_id)
 {
+	std::string cb_active_name = "##active_" + component->name;
+	ImGui::Checkbox(cb_active_name.c_str(), &component->active);
+	ImGui::SameLine();
 	switch (component->type)
 	{
-	case CT_Mesh: MeshInspector(component->AsMesh()); break;
-	case CT_Material: MatInspector(component->AsMaterial()); break;
-	case CT_Camera: CamInspector(component->AsCamera()); break;
-	case CT_Transform: TransformInspector(component->AsTransform()); break;
+	case CT_Mesh: MeshInspector(component->AsMesh(), cmpt_id); break;
+	case CT_Material: MatInspector(component->AsMaterial(), cmpt_id); break;
+	case CT_Camera: CamInspector(component->AsCamera(), cmpt_id); break;
+	case CT_Transform: TransformInspector(component->AsTransform(), cmpt_id); break;
+	case CT_Billboard: BillboardInspector(component->AsBillboard(), cmpt_id); break;
+	case CT_Skeleton: SkeletonInspector(component->AsSkeleton(), cmpt_id); break;
+	case CT_Animation: AnimationInspector(component->AsAnimation(), cmpt_id); break;
 	}
 }
 
-void Inspector::MeshInspector(ComponentMesh* mesh)
+void Inspector::MeshInspector(ComponentMesh* mesh, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Mesh"))
+	std::string HeaderID = "Mesh: " + mesh->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 		if (check_info)
 		{
@@ -85,9 +99,10 @@ void Inspector::MeshInspector(ComponentMesh* mesh)
 	}
 }
 
-void Inspector::MatInspector(ComponentMaterial* mat)
+void Inspector::MatInspector(ComponentMaterial* mat, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Material"))
+	std::string HeaderID = "Matrial: " + mat->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 
 		for (int i = 0; mat != nullptr && i < mat->r_mat->textures.size(); i++)
@@ -131,9 +146,10 @@ void Inspector::MatInspector(ComponentMaterial* mat)
 	}
 }
 
-void Inspector::CamInspector(ComponentCamera* cam)
+void Inspector::CamInspector(ComponentCamera* cam, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Camera"))
+	std::string HeaderID = "Camera: " + cam->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 		ImGui::Spacing();
 		
@@ -170,9 +186,10 @@ void Inspector::CamInspector(ComponentCamera* cam)
 	}
 }
 
-void Inspector::TransformInspector(ComponentTransform* transform)
+void Inspector::TransformInspector(ComponentTransform* transform, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Transform"))
+	std::string HeaderID = "Transform: " + transform->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 		ImGui::Spacing();
 
@@ -291,5 +308,39 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 			App->eventSys->BroadcastEvent(ev);
 		}
 		ImGui::Spacing();
+	}
+}
+
+void Inspector::BillboardInspector(ComponentBillboard* billboard, const int& cmpt_id)
+{
+
+}
+
+void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
+{
+	if (ImGui::Button("OpenSkeletonInspector"))
+	{
+		skel_ins->active = true;
+		skel_ins->base_skel = skel;
+	}
+	skel_ins->Draw();
+}
+
+void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
+{
+	std::string HeaderID = "Animation: " + anim->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
+	{
+		ImGui::Text("Duration in Frames: ");
+		ImGui::SameLine();
+		if (anim->duration < 0)
+			anim->duration = 0;
+		ImGui::DragInt("##Duration", &anim->duration, 0, 9999999);
+
+		ImGui::Text("Framerate: ");
+		ImGui::SameLine();
+		if (anim->tickrate < 1)
+			anim->tickrate = 1;
+		ImGui::DragInt("##Framerate", &anim->tickrate, 1, 9999999);
 	}
 }

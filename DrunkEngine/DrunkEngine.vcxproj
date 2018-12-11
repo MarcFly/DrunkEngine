@@ -97,6 +97,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AboutWindow.h" />
+    <ClInclude Include="AnimationImport.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Assimp\include\ai_assert.h" />
     <ClInclude Include="Assimp\include\anim.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentAnimation.h" />
     <ClInclude Include="ComponentBillboard.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMaterial.h" />
@@ -157,6 +159,7 @@
     <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="ModuleEventSystem.h" />
     <ClInclude Include="GeometryCreationWindow.h" />
+    <ClInclude Include="ResourceAnimation.h" />
     <ClInclude Include="ResourceSkeleton.h" />
     <ClInclude Include="SceneViewerWindow.h" />
     <ClInclude Include="GLEW\include\GL\eglew.h" />
@@ -271,14 +274,17 @@
     <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="SkeletonImport.h" />
+    <ClInclude Include="SkeletonInspector.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutWindow.cpp" />
+    <ClCompile Include="AnimationImport.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentAnimation.cpp" />
     <ClCompile Include="ComponentBillboard.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
@@ -290,6 +296,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryCreationWindow.cpp" />
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="ResourceAnimation.cpp" />
     <ClCompile Include="ResourceSkeleton.cpp" />
     <ClCompile Include="SceneViewerWindow.cpp" />
     <ClCompile Include="glmath\glmath.cpp" />
@@ -369,6 +376,7 @@
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="SkeletonImport.cpp" />
+    <ClCompile Include="SkeletonInspector.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

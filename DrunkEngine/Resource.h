@@ -12,6 +12,7 @@ struct ResourceTexture;
 struct MetaResource;
 struct ResourceSkeleton;
 struct ResourceBillboard;
+struct ResourceAnimation;
 
 enum ResourceTypes
 {
@@ -22,6 +23,7 @@ enum ResourceTypes
 	RT_Texture,
 	RT_Billboard,
 	RT_Skeleton,
+	RT_Animation,
 
 	RT_MAX
 };
@@ -119,6 +121,11 @@ union Resource
 		ResourceSkeleton* ptr = nullptr;
 		MetaResource* par = nullptr;
 	} skeleton;
+	struct anim
+	{
+		ResourceAnimation* ptr = nullptr;
+		MetaResource* par = nullptr;
+	} animation;
 	
 
 public:

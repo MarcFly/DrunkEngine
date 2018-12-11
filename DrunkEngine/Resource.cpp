@@ -7,6 +7,7 @@
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
 #include "ResourceSkeleton.h"
+#include "ResourceAnimation.h"
 
 void Resource::LoadToMem()
 {
@@ -28,6 +29,9 @@ void Resource::LoadToMem()
 		break;
 	case RT_Skeleton:
 		skeleton.ptr = App->importer->skel_i->LoadSkeleton(bs.par->file.c_str());
+		break;
+	case RT_Animation:
+		animation.ptr = App->importer->anim_i->LoadAnimation(bs.par->file.c_str());
 		break;
 	default:
 		break;
@@ -65,6 +69,11 @@ void Resource::UnloadFromMem()
 		delete skeleton.ptr;
 		skeleton.ptr = nullptr;
 		break;
+	case RT_Animation:
+		animation.ptr->UnloadMem();
+		delete animation.ptr;
+		animation.ptr = nullptr;
+		break;
 	default:
 		break;
 	}
@@ -91,6 +100,9 @@ bool Resource::IsLoaded()
 		break;
 	case RT_Skeleton:
 		ret = (skeleton.ptr != nullptr);
+		break;
+	case RT_Animation:
+		ret = (animation.ptr != nullptr);
 		break;
 	default:
 		ret = false;

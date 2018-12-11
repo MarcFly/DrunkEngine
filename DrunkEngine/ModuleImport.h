@@ -20,6 +20,7 @@ class MeshImport;
 class MatImport;
 class PrefabImport;
 class SkeletonImport;
+class AnimationImport;
 
 class ModuleImport : public Module {
 public:
@@ -35,7 +36,7 @@ public:
 	void LoadScene(const char* path);
 
 	void ExportScene(const char* path);
-	void ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene);
+	void ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, const aiNode* root_node, const aiScene* aiscene);
 
 	void LoadFile(char* file);
 	
@@ -46,6 +47,7 @@ public:
 	MatImport* mat_i;
 	PrefabImport* prefab_i;
 	SkeletonImport* skel_i;
+	AnimationImport* anim_i;
 
 	std::string tex_folder;
 	std::string mesh_folder;
