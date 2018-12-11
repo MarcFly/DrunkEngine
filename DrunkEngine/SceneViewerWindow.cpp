@@ -26,7 +26,7 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 
 	if (obj != nullptr)
 	{
-		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | (obj->active ? ImGuiTreeNodeFlags_Selected : 0);
+		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | (obj->sv_active? ImGuiTreeNodeFlags_Selected : 0);
 		std::string LeafID = obj->name + "##" + std::to_string(st);
 
 		if (obj->children.size() != 0)
@@ -43,14 +43,14 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 				if (!repeated)
 				{
 					App->gameObj->active_objects.push_back(obj);
-					obj->active = true;
+					obj->sv_active= true;
 				}
 			}
 			else if (ImGui::IsItemClicked())
 			{
 				App->gameObj->SetActiveFalse();
 				App->gameObj->active_objects.push_back(obj);
-				obj->active = true;
+				obj->sv_active= true;
 
 				selected_object = App->gameObj->active_objects[0];
 				check_info = true;
@@ -79,14 +79,14 @@ void SceneViewer::CreateObjLeaf(GameObject * obj, int st)
 				if (!repeated)
 				{
 					App->gameObj->active_objects.push_back(obj);
-					obj->active = true;
+					obj->sv_active= true;
 				}
 			}
 			else if (ImGui::IsItemClicked())
 			{
 				App->gameObj->SetActiveFalse();
 				App->gameObj->active_objects.push_back(obj);
-				obj->active = true;
+				obj->sv_active= true;
 
 				selected_object = App->gameObj->active_objects[0];
 				check_info = true;

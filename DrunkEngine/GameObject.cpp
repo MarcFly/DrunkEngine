@@ -53,20 +53,35 @@ void GameObject::Start()
 void GameObject::Update(float dt)
 {
 	for (int i = 0; i < this->components.size(); i++)
-		this->components[i]->Update(dt);
+	{
+		if (this->components[i]->active)
+		{
+			this->components[i]->Update(dt);
+		}
+	}
 
 	for (int i = 0; i < this->children.size(); i++)
-		this->children[i]->Update(dt);
-	
+	{
+		if(this->children[i]->active)
+		{
+			this->children[i]->Update(dt);
+		}
+	}
+
 	Draw();
 }
 
 void GameObject::Draw()
 {
-	for (int i = 0; i < this->components.size(); i++)		
-		this->components[i]->Draw();
+	for (int i = 0; i < this->components.size(); i++)
+	{
+		if (this->components[i]->active)
+		{
+			this->components[i]->Draw();
+		}
+	}
 
-	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
+	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->sv_active))
 		this->DrawBB();
 }
 

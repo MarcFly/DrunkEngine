@@ -5,7 +5,6 @@
 #include <string>
 #include "Assimp/include/scene.h"
 #include "MGL/MathGeoLib.h"
-#include <Windows.h>
 #include <math.h>
 #include "parson/parson.h"
 #include "ComponentTransform.h"
@@ -66,7 +65,8 @@ public:
 
 	bool to_pop = false;
 	bool static_pop = false;
-	bool active = false;
+	bool active = true;
+	bool sv_active = false;
 	bool is_static = false;
 
 	bool static_to_draw = false;

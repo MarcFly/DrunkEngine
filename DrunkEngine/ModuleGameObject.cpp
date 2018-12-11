@@ -77,7 +77,7 @@ void ModuleGameObject::SetActiveFalse()
 {
 	for (int i = 0; i < active_objects.size(); i++)
 	{
-		active_objects[i]->active = false;
+		active_objects[i]->sv_active = false;
 	}
 	active_objects.clear();
 }
