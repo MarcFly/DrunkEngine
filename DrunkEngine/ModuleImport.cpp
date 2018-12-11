@@ -164,10 +164,9 @@ void ModuleImport::ExportScene(const char* path)
 		{
 			std::vector<const aiNode*> BoneNodes;
 
-			skel_i->FindBoneNodes(scene->mMeshes, scene->mRootNode, BoneNodes);
-			skel_i->GetSkeletonRoots(BoneNodes, NodesWithSkeleton);
+			skel_i->FindBoneNodes(scene->mMeshes, scene->mRootNode, NodesWithSkeleton);
 
-			std::vector<std::multimap<uint, BoneCrumb*>> Skeletons = skel_i->ReconstructSkeletons(scene, NodesWithSkeleton, BoneNodes);
+			std::vector<std::multimap<uint, BoneCrumb*>> Skeletons = skel_i->ReconstructSkeletons(scene, NodesWithSkeleton);
 
 			for (int i = 0; i < Skeletons.size(); i++)
 			{

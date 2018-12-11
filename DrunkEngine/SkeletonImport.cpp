@@ -350,16 +350,15 @@ void SkeletonImport::LoadMeta(const char* file, MetaSkeleton* meta)
 // SKELETON RECONSTRUCTION HELPERS------------------------------------------
 
 
-std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeletons(const aiScene* scene, std::vector<const aiNode*>& SkeletonRoots, std::vector<const aiNode*>& BoneNodes)
+std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeletons(const aiScene* scene, std::vector<const aiNode*>& BoneNodes)
 {
 	std::vector<std::multimap<uint, BoneCrumb*>> Skeletons;
 
-	for (int l = 0; l < SkeletonRoots.size(); l++)
-	{
-		std::multimap<uint, BoneCrumb*> skel;
 
 		for (int i = 0; i < BoneNodes.size(); i++)
 		{
+			std::multimap<uint, BoneCrumb*> skel;
+
 			for (int j = 0; j < BoneNodes[i]->mNumMeshes; j++)
 			{
 				aiMesh* bone_mesh = scene->mMeshes[BoneNodes[i]->mMeshes[j]];
@@ -367,7 +366,7 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 				for (int k = 0; k < bone_mesh->mNumBones; k++)
 				{
 					BoneCrumb* crumb = new BoneCrumb();
-					crumb->BoneNode = SkeletonRoots[l]->FindNode(bone_mesh->mBones[k]->mName);
+					crumb->BoneNode = scene->mRootNode->FindNode(bone_mesh->mBones[k]->mName);
 					if (crumb->BoneNode != nullptr)
 					{
 						uint par_num = 0;
@@ -387,95 +386,44 @@ std::vector<std::multimap<uint, BoneCrumb*>> SkeletonImport::ReconstructSkeleton
 						delete crumb;
 				}
 			}
-		}
-		
-		// Set Par_ids for load
-		std::multimap<uint, BoneCrumb*>::iterator it;
-		for (it = skel.begin(); it != skel.end(); it++)
-		{
-			std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
-			aiNode* nonAssimpFbx_par = it->second->BoneNode->mParent;
-			while (std::string(nonAssimpFbx_par->mName.C_Str()).find("$AssimpFbx$") != std::string::npos)
-			{
-				it->second->AddedTransform.push_back(nonAssimpFbx_par->mTransformation);
-				nonAssimpFbx_par = nonAssimpFbx_par->mParent;
-			}
 
-			while (true && low != skel.end()) 
+			// Set Par_ids for load
+			std::multimap<uint, BoneCrumb*>::iterator it;
+			for (it = skel.begin(); it != skel.end(); it++)
 			{
-				if (low->second->BoneNode == nonAssimpFbx_par)
+				std::multimap<uint, BoneCrumb*>::iterator low = skel.upper_bound(it->first - 1);
+				aiNode* nonAssimpFbx_par = it->second->BoneNode->mParent;
+				while (std::string(nonAssimpFbx_par->mName.C_Str()).find("$AssimpFbx$") != std::string::npos)
 				{
-					it->second->fast_par_id = low->second->fast_id;
-					break;
+					it->second->AddedTransform.push_back(nonAssimpFbx_par->mTransformation);
+					nonAssimpFbx_par = nonAssimpFbx_par->mParent;
 				}
 
-				if (low == skel.begin())
-					break;
-				else
-					low--;
-			}				
-			if (it->second->fast_par_id == 0)
-			{
-				it->second->fast_par_id = skel.size() + 1;
-				BoneCrumb* push = new BoneCrumb(nonAssimpFbx_par);
-				push->fast_id = skel.size() + 1;
-				skel.insert(std::pair<uint, BoneCrumb*>(it->first - 1, push));
+				while (true && low != skel.end())
+				{
+					if (low->second->BoneNode == nonAssimpFbx_par)
+					{
+						it->second->fast_par_id = low->second->fast_id;
+						break;
+					}
 
+					if (low == skel.begin())
+						break;
+					else
+						low--;
+				}
+				if (it->second->fast_par_id == 0)
+				{
+					it->second->fast_par_id = skel.size() + 1;
+					BoneCrumb* push = new BoneCrumb(nonAssimpFbx_par);
+					push->fast_id = skel.size() + 1;
+					skel.insert(std::pair<uint, BoneCrumb*>(it->first - 1, push));
+				}
 			}
-			
-		}
-		
-		Skeletons.push_back(skel);
-	}
+			Skeletons.push_back(skel);
+		}		
 
 	return Skeletons;
-}
-
-void SkeletonImport::GetSkeletonRoots(std::vector<const aiNode*>& BoneNodes, std::vector<const aiNode*>& SkeletonRoots)
-{
- 	for (int i = 0; i < BoneNodes.size(); i++)
-	{
-		if (BoneNodes[i] != nullptr)
-		{
-			const aiNode* SkelRoot = nullptr;
-			const aiNode* curr_par = BoneNodes[i];
-
-			bool par_found = false;
-			for (int j = 0; j < SkeletonRoots.size(); j++)
-				if (SkeletonRoots[j]->FindNode(curr_par->mName))
-					par_found = true;
-
-			while (!par_found && SkelRoot == nullptr && curr_par != nullptr)
-			{
-				if (curr_par->mNumChildren > 1 || curr_par->mParent == nullptr )
-				{
-					bool par_swap = false;
-					const aiNode* last_par = curr_par;
-					for (int j = 0; j < curr_par->mNumChildren; j++)
-					{
-						last_par = curr_par;
-						if (std::string(curr_par->mName.C_Str()).find("$AssimpFbx$", 0) > 0)
-						{
-							par_swap = true;
-							curr_par = curr_par->mParent;
-							break;
-						}
-					}
-					if (!par_swap)
-						SkelRoot = curr_par;
-					if (curr_par == nullptr)
-						SkelRoot = last_par;
-				}
-				else
-					curr_par = curr_par->mParent;
-			}
-
-			if(SkelRoot != nullptr)
-				SkeletonRoots.push_back(SkelRoot);
-
-			
-		}
-	}
 }
 
 void SkeletonImport::FindBoneNodes(aiMesh** meshes, const aiNode* node, std::vector<const aiNode*>& bone_nodes)

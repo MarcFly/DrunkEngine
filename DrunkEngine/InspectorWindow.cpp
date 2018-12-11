@@ -43,6 +43,7 @@ void Inspector::Draw()
 				for (int i = 0; i < App->gameObj->active_objects[0]->components.size(); i++)
 				{
 					ComponentInspector(App->gameObj->active_objects[0]->components[i], i);
+					ImGui::Separator();
 				}
 			}
 		}
@@ -319,10 +320,9 @@ void Inspector::BillboardInspector(ComponentBillboard* billboard, const int& cmp
 void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
 {
 	if (ImGui::Button("OpenSkeletonInspector"))
-	{
 		skel_ins->active = true;
-		skel_ins->base_skel = skel;
-	}
+
+	skel_ins->base_skel = skel;
 	skel_ins->Draw();
 }
 
