@@ -12,7 +12,7 @@
 *.lastbuildstate
 *.exe
 *DrunkEngine/Game/Library/
-*imgui.ini
+*DrunkEngine/Game/imgui.ini
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

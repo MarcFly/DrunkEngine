@@ -58,11 +58,23 @@ void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>
 				for (int j = 0; j < scene->mNumAnimations; j++)
 					for(int k = 0; k < scene->mAnimations[j]->mNumChannels; k++)
 						for (int l = 0; l < scene->mMeshes[node->mMeshes[i]]->mNumBones; l++)
-							if(scene->mMeshes[node->mMeshes[i]]->mBones[l]->mName == scene->mAnimations[j]->mChannels[k]->mNodeName)
+						{
+							std::vector<std::string> bonesnames;
+							bonesnames.push_back(scene->mMeshes[node->mMeshes[i]]->mBones[l]->mName.C_Str());
+							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Scaling");
+							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Rotation");
+							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Pre-Rotation"); 
+							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Translation");
+							for (int m = 0; m < bonesnames.size(); m++)
 							{
-								ExportAnimNode(comps, scene->mAnimations[j], j, name);
-								break;
+								if(bonesnames[m] == scene->mAnimations[j]->mChannels[k]->mNodeName.C_Str())
+								{
+									ExportAnimNode(comps, scene->mAnimations[j], j, name);
+									break;
+								}
 							}
+						}
+							
 					
 					
 			}
@@ -221,7 +233,7 @@ GameObject * PrefabImport::ImportGameObject(const char* path, JSON_Value* go)
 				add = ret->GetTransform();
 			else
 				add = ret->NewComponent(type);
-			if (type == 5)
+			if (type == CT_Animation)
 				bool ret = false;
 			add->Load(obj);
 			add->parent = ret;
