@@ -161,12 +161,13 @@ void ModuleImport::ExportScene(const char* path)
 		// I don't know how to check if the skeleton is written
 		// As it has to be reconstructed before being able to export it
 		std::vector<const aiNode*> NodesWithSkeleton;
+		std::vector<std::multimap<uint, BoneCrumb*>> Skeletons;
 		{
 			std::vector<const aiNode*> BoneNodes;
 
 			skel_i->FindBoneNodes(scene->mMeshes, scene->mRootNode, NodesWithSkeleton);
 
-			std::vector<std::multimap<uint, BoneCrumb*>> Skeletons = skel_i->ReconstructSkeletons(scene, NodesWithSkeleton);
+			Skeletons = skel_i->ReconstructSkeletons(scene, NodesWithSkeleton);
 
 			for (int i = 0; i < Skeletons.size(); i++)
 			{
@@ -175,6 +176,11 @@ void ModuleImport::ExportScene(const char* path)
 		}
 
 		// Export Animations
+		for (int i = 0; i < Skeletons.size(); i++)
+		{
+
+		}
+
 		for (int i = 0; i < scene->mNumAnimations; i++)
 		{
 			aiAnimation* anim = scene->mAnimations[i];

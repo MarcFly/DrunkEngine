@@ -15,6 +15,8 @@ public:
 
 	void Init();
 
+
+
 	void ExportAIAnimation(const aiAnimation* anim, const int& anim_id, const char* name);
 	ResourceAnimation* LoadAnimation(const char* file);
 	void LinkAnim(DGUID fID, ComponentAnimation* anim);
