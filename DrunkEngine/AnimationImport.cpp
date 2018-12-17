@@ -2,6 +2,7 @@
 #include "ResourceAnimation.h"
 #include "ComponentAnimation.h"
 #include "Application.h"
+#include "SkeletonImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -9,6 +10,30 @@
 void AnimationImport::Init()
 {
 
+}
+
+AnimToExport AnimationImport::PrepSkeletonAnimationExport(std::multimap<uint, BoneCrumb*>& Skeleton, aiAnimation* anim)
+{
+	AnimToExport ret;
+	ret.LinkedAnim = anim;
+
+	for (int i = 0; i < anim->mNumChannels; i++)
+	{
+		aiNodeAnim* curr = anim->mChannels[i];
+		std::string curr_channel_name = curr->mNodeName.C_Str();
+		for (std::multimap<uint, BoneCrumb*>::iterator it = Skeleton.begin(); it != Skeleton.end(); it++)
+		{
+			std::string cmp_name = it->second->BoneNode->mName.C_Str();
+			if (curr_channel_name.find(cmp_name) != std::string::npos)
+			{
+				ret.AnimNodes.push_back(curr);
+				break;
+			}
+		}
+		
+	}
+
+	return ret;
 }
 
 void AnimationImport::LinkAnim(DGUID fID, ComponentAnimation* anim)

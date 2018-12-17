@@ -178,7 +178,13 @@ void ModuleImport::ExportScene(const char* path)
 		// Export Animations
 		for (int i = 0; i < Skeletons.size(); i++)
 		{
-
+			std::vector<AnimToExport> anim_exports;
+			for (int j = 0; j < scene->mNumAnimations; j++)
+				anim_exports.push_back(anim_i->PrepSkeletonAnimationExport(Skeletons[i], scene->mAnimations[j]));
+			
+			
+			// Lookup animation channels if they correspond to any node in skeleton
+			// Add them as said skeleton channels
 		}
 
 		for (int i = 0; i < scene->mNumAnimations; i++)

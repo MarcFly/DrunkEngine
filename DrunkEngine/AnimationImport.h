@@ -7,6 +7,23 @@
 struct ResourceAnimation;
 class MetaAnimation;
 class ComponentAnimation;
+struct BoneCrumb;
+
+struct AnimToExport
+{
+	std::vector<aiNodeAnim*> AnimNodes;
+	aiAnimation* LinkedAnim;
+
+	~AnimToExport()
+	{
+		LinkedAnim = nullptr;
+		AnimNodes.clear();
+	}
+};
+	
+	
+	
+	
 
 class AnimationImport {
 public:
@@ -15,7 +32,9 @@ public:
 
 	void Init();
 
+	AnimToExport PrepSkeletonAnimationExport(std::multimap<uint, BoneCrumb*>& Skeleton, aiAnimation* anim);
 
+	void ExportSkelAnimation(std::multimap<uint, BoneCrumb*>& Skeleton, aiAnimation* anim, const char* name);
 
 	void ExportAIAnimation(const aiAnimation* anim, const int& anim_id, const char* name);
 	ResourceAnimation* LoadAnimation(const char* file);
