@@ -103,27 +103,13 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 				bone->weights.push_back(weight);
 			}
 
-			uint matrix_num;
-			memcpy(&matrix_num, cursor, sizeof(uint));
-			cursor += sizeof(uint);
-			// Matrix Order, there are between 1 and 5 transforms saved per node
-			// $AssimpFbx$ transforms are not all always created:
-			// 0 - Bone Node mTransform
-			// 1 - $AssimpFbx$_Scaling mTransform
-			// 2 - $AssimpFbx$_Rotation mTransform
-			// 3 - $AssimpFbx$_Pre-Rotation mTransform
-			// 4 - $AssimpFbx$_Translate mTransform
-
-			std::vector<aiMatrix4x4> get_matrices;
-			for (int k = 0; k < matrix_num; k++) {
-				aiMatrix4x4 get_matrix;
-				memcpy(&get_matrix, cursor, sizeof(float) * 16);
-				cursor += sizeof(float) * 16;
-				get_matrices.push_back(get_matrix);
-			}
+			
+			aiMatrix4x4 get_matrix;
+			memcpy(&get_matrix, cursor, sizeof(float) * 16);
+			cursor += sizeof(float) * 16;
 			
 			// For now only push first bone matrix
-			bone->transform.SetFromMatrix(&get_matrices[0]);
+			bone->transform.SetFromMatrix(&get_matrix);
 
 			ret->bones.push_back(bone);
 		}
@@ -212,9 +198,8 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 
 		// These are the original bone, bone node and the transformations between nodes
 		// Between nodes sometimes assimp create $AssimpFbx$ nodes that only explain transformations
-		uint transforms_sizes = it->second->AddedTransform.size() + 1;
 
-		buf_size = bone_size + sizeof(uint) * 4 + name_size + mesh_name_size + weight_size * num_weights + sizeof(uint) + transforms_sizes * sizeof(float) * 16;
+		buf_size = bone_size + sizeof(uint) * 3 + name_size + mesh_name_size + weight_size * num_weights + sizeof(uint) +  sizeof(float) * 16;
 
 		data = new char[buf_size];
 		char* cursor = data;
@@ -251,10 +236,15 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		}
 
 		// OffsetMatrix Copy
-		memcpy(cursor, &transforms_sizes, sizeof(uint));
-		cursor += sizeof(uint);
 
-		aiMatrix4x4 cpy = cpy = it->second->BoneNode->mTransformation;
+		aiMatrix4x4 cpy = it->second->BoneNode->mTransformation;
+		if (it->second->AddedTransform.size() > 0)
+			cpy = it->second->AddedTransform[it->second->AddedTransform.size() - 1];
+		for (int k = it->second->AddedTransform.size() - 2; k >= 0; k--)
+			cpy *= it->second->AddedTransform[k];
+
+		if(cpy != it->second->BoneNode->mTransformation)
+			cpy *= it->second->BoneNode->mTransformation;
 		{
 			memcpy(cursor, &cpy.a1, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &cpy.a2, sizeof(float));	cursor += sizeof(float);
@@ -275,32 +265,6 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 			memcpy(cursor, &cpy.d2, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &cpy.d3, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &cpy.d4, sizeof(float));	cursor += sizeof(float);
-		}
-
-		for (int k = 0; k < transforms_sizes - 1; k++)
-		{
-			aiMatrix4x4 cpy = it->second->AddedTransform[k];
-			{
-				memcpy(cursor, &cpy.a1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.a2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.a3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.a4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &cpy.b1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.b2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.b3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.b4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &cpy.c1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.c2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.c3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.c4, sizeof(float));	cursor += sizeof(float);
-
-				memcpy(cursor, &cpy.d1, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.d2, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.d3, sizeof(float));	cursor += sizeof(float);
-				memcpy(cursor, &cpy.d4, sizeof(float));	cursor += sizeof(float);
-			}
 		}
 
 		write_file.write(data, buf_size);
