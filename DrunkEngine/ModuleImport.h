@@ -15,6 +15,7 @@
 #include <fstream>
 
 #include "FileHelpers.h"
+#include "ResourceAnimation.h"
 
 class MeshImport;
 class MatImport;
@@ -36,7 +37,7 @@ public:
 	void LoadScene(const char* path);
 
 	void ExportScene(const char* path);
-	void ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, const aiNode* root_node, const aiScene* aiscene);
+	void ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, std::vector<std::vector<AnimToExport>>& Animations, const aiNode* root_node, const aiScene* aiscene);
 
 	void LoadFile(char* file);
 	
@@ -75,10 +76,6 @@ public:
 	void SetDirectories()
 	{
 		CreateHiddenDir(".\\Library");
-		/*CreateHiddenDir(".\\Library\\Meshes");
-		CreateHiddenDir(".\\Library\\Materials");
-		CreateHiddenDir(".\\Library\\Textures");
-		CreateHiddenDir(".\\Library\\Cameras");*/
 	}
 
 

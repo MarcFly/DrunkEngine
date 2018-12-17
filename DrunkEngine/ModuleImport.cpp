@@ -176,33 +176,24 @@ void ModuleImport::ExportScene(const char* path)
 		}
 
 		// Export Animations
+		std::vector<std::vector<AnimToExport>> Animations;
 		for (int i = 0; i < Skeletons.size(); i++)
 		{
 			std::vector<AnimToExport> anim_exports;
 			for (int j = 0; j < scene->mNumAnimations; j++)
 				anim_exports.push_back(anim_i->PrepSkeletonAnimationExport(Skeletons[i], scene->mAnimations[j]));
 			
-			
-			// Lookup animation channels if they correspond to any node in skeleton
-			// Add them as said skeleton channels
-		}
+			for (int j = 0; j < anim_exports.size(); j++)
+				anim_i->ExportSkelAnimation(Skeletons[i], anim_exports[j], i, path);
 
-		for (int i = 0; i < scene->mNumAnimations; i++)
-		{
-			aiAnimation* anim = scene->mAnimations[i];
-			std::string animname = ".\\Library\\";
-			animname += GetFileName(path) + "_Anim_" + std::to_string(i);
-			animname.append(".animdrnk");
-			DGUID fID(animname.c_str());
-			if (!fID.CheckValidity())
-				anim_i->ExportAIAnimation(anim, i, path);
+			Animations.push_back(anim_exports);
 		}
 
 		// Export Scene as Prefab
 		{
 			std::string scenename = ".\\Library\\";
 			scenename += GetFileName(path) + ".prefabdrnk";
-			ExportSceneNodes(scenename.c_str(), NodesWithSkeleton, scene->mRootNode, scene);
+			ExportSceneNodes(scenename.c_str(), NodesWithSkeleton, Animations, scene->mRootNode, scene);
 		}
 	}
 
@@ -211,14 +202,14 @@ void ModuleImport::ExportScene(const char* path)
 	//scene->mNumLights
 }
 
-void ModuleImport::ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, const aiNode* root_node, const aiScene* aiscene)
+void ModuleImport::ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, std::vector<std::vector<AnimToExport>>& Animations, const aiNode* root_node, const aiScene* aiscene)
 {
 	JSON_Value* scene = json_parse_file(path);
 	
 	JSON_Value* set_array = json_value_init_array();
 	JSON_Array* go = json_value_get_array(set_array);
 
-	prefab_i->ExportAINode(aiscene, NodesWithSkeleton, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
+	prefab_i->ExportAINode(aiscene, NodesWithSkeleton, Animations, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
 
 	JSON_Object* set = json_value_get_object(scene = json_value_init_object());
 	json_object_set_value(set, "scene", set_array);

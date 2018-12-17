@@ -3,6 +3,7 @@
 #include "parson/parson.h"
 #include "Application.h"
 
+
 void CopyPrefab(DGUID fID, GameObject* gobj)
 {
 	//We are not yet creating prefabs
@@ -17,7 +18,7 @@ ResourcePrefab* PrefabImport::LoadPrefab(const char* file)
 	return r_prefab;
 }
 
-void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>& NodesWithSkeleton, const aiNode* node, JSON_Array* go, const Uint32 par_UUID, const char* name)
+void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>& NodesWithSkeleton, std::vector<std::vector<AnimToExport>>& Animations, const aiNode* node, JSON_Array* go, const Uint32 par_UUID, const char* name)
 {
 	JSON_Value* append = json_value_init_object();
 	JSON_Object* curr = json_value_get_object(append);
@@ -53,30 +54,6 @@ void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>
 
 				if (scene->mMeshes[node->mMeshes[i]]->mMaterialIndex != -1)
 					ExportMatNode(comps, scene->mMaterials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex], scene->mMeshes[node->mMeshes[i]]->mMaterialIndex, name);
-
-
-				for (int j = 0; j < scene->mNumAnimations; j++)
-					for(int k = 0; k < scene->mAnimations[j]->mNumChannels; k++)
-						for (int l = 0; l < scene->mMeshes[node->mMeshes[i]]->mNumBones; l++)
-						{
-							std::vector<std::string> bonesnames;
-							bonesnames.push_back(scene->mMeshes[node->mMeshes[i]]->mBones[l]->mName.C_Str());
-							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Scaling");
-							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Rotation");
-							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Pre-Rotation"); 
-							bonesnames.push_back(bonesnames[0] + "_$AssimpFbx$_Translation");
-							for (int m = 0; m < bonesnames.size(); m++)
-							{
-								if(bonesnames[m] == scene->mAnimations[j]->mChannels[k]->mNodeName.C_Str())
-								{
-									ExportAnimNode(comps, scene->mAnimations[j], j, name);
-									break;
-								}
-							}
-						}
-							
-					
-					
 			}
 
 			for (int j = 0; j < NodesWithSkeleton.size(); j++)
@@ -84,6 +61,9 @@ void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>
 				if (NodesWithSkeleton[j] == node)
 				{
 					ExportBonesNode(comps, j, name);
+					for (int k = 0; k < Animations[j].size(); k++)
+						ExportAnimNode(comps, Animations[j][k].LinkedAnim, j, name);
+
 					break;
 				}
 			}
@@ -96,12 +76,12 @@ void PrefabImport::ExportAINode(const aiScene* scene, std::vector<const aiNode*>
 		json_array_append_value(go, append);
 
 		for (int i = 0; i < node->mNumChildren; i++)
-			ExportAINode(scene, NodesWithSkeleton, node->mChildren[i], go, UUID, name);
+			ExportAINode(scene, NodesWithSkeleton, Animations, node->mChildren[i], go, UUID, name);
 	}
 	else
 	{
 		for (int i = 0; i < node->mNumChildren; i++)
-			ExportAINode(scene, NodesWithSkeleton, node->mChildren[i], go, par_UUID, name);
+			ExportAINode(scene, NodesWithSkeleton, Animations, node->mChildren[i], go, par_UUID, name);
 	}
 }
 

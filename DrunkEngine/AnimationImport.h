@@ -21,10 +21,6 @@ struct AnimToExport
 	}
 };
 	
-	
-	
-	
-
 class AnimationImport {
 public:
 	AnimationImport() { Init(); };
@@ -34,7 +30,7 @@ public:
 
 	AnimToExport PrepSkeletonAnimationExport(std::multimap<uint, BoneCrumb*>& Skeleton, aiAnimation* anim);
 
-	void ExportSkelAnimation(std::multimap<uint, BoneCrumb*>& Skeleton, aiAnimation* anim, const char* name);
+	void ExportSkelAnimation(std::multimap<uint, BoneCrumb*>& Skeleton, AnimToExport& anim, const int& anim_id, const char* path);
 
 	void ExportAIAnimation(const aiAnimation* anim, const int& anim_id, const char* name);
 	ResourceAnimation* LoadAnimation(const char* file);
