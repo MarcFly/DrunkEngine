@@ -36,15 +36,10 @@ void ComponentSkeleton::DrawToChildren(Bone* bone)
 {
 	for (int i = 0; i < bone->children.size(); i++)
 	{
-		glVertex3f(bone->transform.position.x, bone->transform.position.y, bone->transform.position.z);
-		glVertex3f(bone->children[i]->transform.position.x, bone->children[i]->transform.position.y, bone->children[i]->transform.position.z);
+		glVertex3f(bone->transform.global_pos.x, bone->transform.global_pos.y, bone->transform.global_pos.z);
+		glVertex3f(bone->children[i]->transform.global_pos.x, bone->children[i]->transform.global_pos.y, bone->children[i]->transform.global_pos.z);
 
 		DrawToChildren(bone->children[i]);
-	}
-	if (bone->children.size() == 0)
-	{
-		glVertex3f(bone->transform.position.x, bone->transform.position.y, bone->transform.position.z);
-		glVertex3f(0, 10, 0);
 	}
 }
 

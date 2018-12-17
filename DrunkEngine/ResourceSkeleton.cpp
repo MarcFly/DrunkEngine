@@ -52,9 +52,9 @@ void Bone::CalculateBoneGlobalTransforms()
 	for (int i = 0; i < children.size(); i++)
 	{
 		ComponentTransform* b_child = &children[i]->transform;
-		b_child->global_transform = b_child->world_pos * b_child->world_rot * transform.global_transform * b_child->local_transform;
+		b_child->global_transform = b_child->world_pos * b_child->world_rot * children[i]->parent->transform.global_transform * b_child->local_transform;
 
-		b_child->global_pos = b_child->global_transform.Col3(4);
+		b_child->global_pos = b_child->global_transform.Col3(3);
 		b_child->global_rot = b_child->GetRotFromMat(b_child->global_transform);
 		b_child->global_scale = b_child->global_transform.GetScale();
 
