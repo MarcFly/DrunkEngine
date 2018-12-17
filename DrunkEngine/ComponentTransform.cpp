@@ -73,6 +73,11 @@ void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 void ComponentTransform::SetWorldRot(const Quat new_rot)
 {
 	world_rot = world_rot * world_rot.FromQuat(new_rot, aux_world_pos.Col3(3) - world_pos.Col3(3));
+
+	//world_rot[0][0] = 1.f;
+	//world_rot[1][1] = 1.f;
+	//world_rot[2][2] = 1.f;
+
 }
 
 void ComponentTransform::CalculateGlobalTransforms()

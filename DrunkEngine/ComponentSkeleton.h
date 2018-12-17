@@ -19,6 +19,8 @@ public:
 
 	~ComponentSkeleton() {};
 
+	void Update(const float dt);
+
 	void Draw();
 	void DrawToChildren(Bone* bone);
 	
@@ -27,12 +29,21 @@ public:
 	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
+	void UpdateTransform();
+
 	bool CheckSkeletonValidity();
 	void LinkMesh();
 
 public:
 	ResourceSkeleton* r_skel;
 	ComponentMesh* c_mesh;
+
+private:
+	float3 initial_pos;
+	Quat initial_rot;
+	float3 initial_scale;
+
+	int check_vecs;
 
 public:
 	void SetBaseVals()
@@ -42,6 +53,7 @@ public:
 		to_pop = false;
 		c_mesh = nullptr;
 		r_skel = nullptr;
+		check_vecs = 0;
 	}
 };
 

@@ -19,6 +19,20 @@ ComponentSkeleton::ComponentSkeleton(GameObject* par)
 	parent = par;
 };
 
+void ComponentSkeleton::Update(const float dt)
+{
+	if (check_vecs < 2)
+	{
+		initial_pos = parent->GetTransform()->global_transform.Col3(3);
+		initial_rot = parent->GetTransform()->GetRotFromMat(parent->GetTransform()->global_transform);
+		initial_scale = parent->GetTransform()->global_transform.GetScale();
+
+		check_vecs++;
+	}
+
+	UpdateTransform();
+}
+
 void ComponentSkeleton::Draw()
 {
 	glBegin(GL_LINES);
@@ -36,8 +50,11 @@ void ComponentSkeleton::DrawToChildren(Bone* bone)
 {
 	for (int i = 0; i < bone->children.size(); i++)
 	{
-		glVertex3f(bone->transform.global_pos.x, bone->transform.global_pos.y, bone->transform.global_pos.z);
-		glVertex3f(bone->children[i]->transform.global_pos.x, bone->children[i]->transform.global_pos.y, bone->children[i]->transform.global_pos.z);
+		if (bone->parent != nullptr)
+		{
+			glVertex3f(bone->transform.global_pos.x, bone->transform.global_pos.y, bone->transform.global_pos.z);
+			glVertex3f(bone->children[i]->transform.global_pos.x, bone->children[i]->transform.global_pos.y, bone->children[i]->transform.global_pos.z);
+		}
 
 		DrawToChildren(bone->children[i]);
 	}
@@ -73,6 +90,38 @@ void ComponentSkeleton::Save(JSON_Array* comps)
 
 	json_array_append_value(comps, append);
 
+}
+
+void ComponentSkeleton::UpdateTransform()
+{
+	ComponentTransform* root_transform = &r_skel->bones[0]->transform;
+	
+	root_transform->global_transform = this->parent->GetTransform()->global_transform;
+
+	//Global values
+	root_transform->global_pos = root_transform->global_transform.Col3(3) - initial_pos;
+	root_transform->global_rot = root_transform->GetRotFromMat(root_transform->global_transform);
+	root_transform->global_scale = float3(root_transform->global_transform[0][0] / initial_scale.x, root_transform->global_transform[1][1] / initial_scale.y, root_transform->global_transform[2][2] / initial_scale.z);
+
+	//Position
+	root_transform->global_transform.SetCol3(3, root_transform->global_pos);
+
+	//Rotation
+	root_transform->global_rot.x = root_transform->global_rot.x - initial_rot.x;
+	root_transform->global_rot.y = root_transform->global_rot.y - initial_rot.y;
+	root_transform->global_rot.z = root_transform->global_rot.z - initial_rot.z;
+	root_transform->global_rot.w = root_transform->global_rot.w - initial_rot.w;
+
+	root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
+
+	//Scale
+	//root_transform->global_transform[0][0] = root_transform->global_scale.x;
+	//root_transform->global_transform[1][1] = root_transform->global_scale.y;
+	//root_transform->global_transform[2][2] = root_transform->global_scale.z;
+
+	root_transform->global_transform.Scale(root_transform->global_scale, parent->getObjectCenter()); //not working
+
+	r_skel->CalculateSkeletonTransforms();
 }
 
 bool CkeckSkeletonValidity()

@@ -139,11 +139,16 @@ void GameObject::DrawBB() const
 
 vec GameObject::getObjectCenter()
 {
-	float aux_x = (BoundingBox->maxPoint.x + BoundingBox->minPoint.x) / 2;
-	float aux_y = (BoundingBox->maxPoint.y + BoundingBox->minPoint.y) / 2;
-	float aux_z = (BoundingBox->maxPoint.z + BoundingBox->minPoint.z) / 2;
+	if (BoundingBox != nullptr)
+	{
+		float aux_x = (BoundingBox->maxPoint.x + BoundingBox->minPoint.x) / 2;
+		float aux_y = (BoundingBox->maxPoint.y + BoundingBox->minPoint.y) / 2;
+		float aux_z = (BoundingBox->maxPoint.z + BoundingBox->minPoint.z) / 2;
 
-	return vec(aux_x, aux_y, aux_z);
+		return vec(aux_x, aux_y, aux_z);
+	}
+
+	return vec(0, 0, 0);
 }
 
 void GameObject::OrderChildren()
