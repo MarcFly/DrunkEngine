@@ -17,6 +17,7 @@ public:
 
 	void Start();
 	void Update(const float dt);
+	void EditorUpdate(const float dt);
 	void Draw();
 	void CleanUp();
 
@@ -29,7 +30,7 @@ public:
 	ResourceAnimation* r_anim;
 	ComponentMesh* c_mesh;
 	ComponentSkeleton* c_skel;
-	int duration;
+	int duration; // In Frames
 	int tickrate;
 	
 	float timer;
@@ -43,6 +44,8 @@ public:
 
 		r_anim = nullptr;
 		c_mesh = nullptr;
+		c_skel = nullptr;
+		timer = 0;
 	}
 };
 

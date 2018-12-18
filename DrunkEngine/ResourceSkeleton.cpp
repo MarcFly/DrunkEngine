@@ -68,7 +68,7 @@ Bone * Bone::FindBone(const std::string & bonename)
 
 	for (int i = 0; i < children.size() && ret == nullptr; i++)
 	{
-		if (bonename == children[i]->name)
+		if (bonename.find(children[i]->name.c_str()) != std::string::npos)
 			ret = children[i];
 		if (ret == nullptr)
 			ret = children[i]->FindBone(bonename);
@@ -148,7 +148,7 @@ Bone * ResourceSkeleton::FindBone(const std::string & bonename)
 
 	for (int i = 0; i < bones.size() && ret == nullptr; i++)
 	{
-		if (bonename == bones[i]->name)
+		if (bonename.find(bones[i]->name) != std::string::npos)
 			ret = bones[i];
 		if (ret == nullptr)
 			ret = bones[i]->FindBone(bonename);

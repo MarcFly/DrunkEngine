@@ -27,9 +27,16 @@ void ComponentAnimation::Update(const float dt)
 {
 	timer += dt;
 
-	r_anim->channels[0]->bone_name
+	/*for (int i = 0; i < r_anim->channels.size(); i++)
+	{
+		if (r_anim->channels[i]->curr_bone != nullptr)
+		{
+			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate);
+			r_anim->channels[i]->curr_bone->transform.global_transform * curr_step;
+		}
+	}*/
 
-	if (timer > duration)
+	if (timer > duration * (1000 / tickrate))
 		timer = 0;
 }
 
@@ -52,6 +59,8 @@ void ComponentAnimation::Load(const JSON_Object* comp)
 		this->UID = App->resources->AddResource(name.c_str());
 	if (App->resources->InLibrary(UID))
 		App->importer->anim_i->LinkAnim(UID, this);
+
+	LinkMesh();
 }
 
 void ComponentAnimation::Save(JSON_Array* comps)
