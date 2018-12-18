@@ -96,30 +96,54 @@ void ComponentSkeleton::UpdateTransform()
 {
 	ComponentTransform* root_transform = &r_skel->bones[0]->transform;
 	
-	root_transform->global_transform = this->parent->GetTransform()->global_transform;
+	
+	//1
+	//{
+	//	root_transform->global_transform = this->parent->GetTransform()->global_transform;
 
-	//Global values
-	root_transform->global_pos = root_transform->global_transform.Col3(3) - initial_pos;
-	root_transform->global_rot = root_transform->GetRotFromMat(root_transform->global_transform);
-	root_transform->global_scale = float3(root_transform->global_transform[0][0] / initial_scale.x, root_transform->global_transform[1][1] / initial_scale.y, root_transform->global_transform[2][2] / initial_scale.z);
+	//	//Global values
+	//	root_transform->global_pos = root_transform->global_transform.Col3(3) - initial_pos;
+	//	root_transform->global_rot = root_transform->GetRotFromMat(root_transform->global_transform);
 
-	//Position
-	root_transform->global_transform.SetCol3(3, root_transform->global_pos);
+	//	//root_transform->global_transform.Decompose(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
 
-	//Rotation
-	root_transform->global_rot.x = root_transform->global_rot.x - initial_rot.x;
-	root_transform->global_rot.y = root_transform->global_rot.y - initial_rot.y;
-	root_transform->global_rot.z = root_transform->global_rot.z - initial_rot.z;
-	root_transform->global_rot.w = root_transform->global_rot.w - initial_rot.w;
+	//	//root_transform->global_pos -= initial_pos;
+	//	root_transform->global_scale = float3(root_transform->global_transform[0][0] / initial_scale.x, root_transform->global_transform[1][1] / initial_scale.y, root_transform->global_transform[2][2] / initial_scale.z);
 
-	root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
+	//	//Position
+	//	root_transform->global_transform.SetCol3(3, root_transform->global_pos);
 
-	//Scale
-	//root_transform->global_transform[0][0] = root_transform->global_scale.x;
-	//root_transform->global_transform[1][1] = root_transform->global_scale.y;
-	//root_transform->global_transform[2][2] = root_transform->global_scale.z;
+	//	//Rotation
+	//	root_transform->global_rot.x = root_transform->global_rot.x - initial_rot.x;
+	//	root_transform->global_rot.y = root_transform->global_rot.y - initial_rot.y;
+	//	root_transform->global_rot.z = root_transform->global_rot.z - initial_rot.z;
+	//	root_transform->global_rot.w = root_transform->global_rot.w - initial_rot.w;
 
-	root_transform->global_transform.Scale(root_transform->global_scale, parent->getObjectCenter()); //not working
+	//	root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
+
+	//	//Scale
+	//	//root_transform->global_transform[0][0] = root_transform->global_scale.x;
+	//	//root_transform->global_transform[1][1] = root_transform->global_scale.y;
+	//	//root_transform->global_transform[2][2] = root_transform->global_scale.z;
+
+	//	root_transform->global_transform.Scale(root_transform->global_scale, parent->GetTransform()->global_pos); //not working
+	//}
+
+	//2
+	{
+		root_transform->global_pos = this->parent->GetTransform()->global_pos - initial_pos;
+
+		root_transform->global_rot.x = this->parent->GetTransform()->global_rot.x;
+		root_transform->global_rot.y = this->parent->GetTransform()->global_rot.y;
+		root_transform->global_rot.z = this->parent->GetTransform()->global_rot.z;
+		root_transform->global_rot.w = this->parent->GetTransform()->global_rot.w;
+
+		root_transform->global_scale = float3(this->parent->GetTransform()->global_scale.x / initial_scale.x, this->parent->GetTransform()->global_scale.y / initial_scale.y, this->parent->GetTransform()->global_scale.z / initial_scale.z);
+
+		root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
+
+	}
+
 
 	r_skel->CalculateSkeletonTransforms();
 }

@@ -77,6 +77,7 @@ void ComponentTransform::SetWorldRot(const Quat new_rot)
 	//world_rot[0][0] = 1.f;
 	//world_rot[1][1] = 1.f;
 	//world_rot[2][2] = 1.f;
+	//world_rot[3][3] = 1.f;
 
 }
 
@@ -87,7 +88,7 @@ void ComponentTransform::CalculateGlobalTransforms()
 	else
 		global_transform = local_transform;
 
-	global_pos = global_transform.Col3(4);
+	global_pos = global_transform.Col3(3);
 	global_rot = GetRotFromMat(global_transform);
 	global_scale = global_transform.GetScale();
 
