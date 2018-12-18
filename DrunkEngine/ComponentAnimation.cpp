@@ -1,6 +1,8 @@
 #include "ComponentAnimation.h"
 #include "Application.h"
 #include "AnimationImport.h"
+#include "ComponentSkeleton.h"
+#include "ResourceSkeleton.h"
 
 ComponentAnimation::ComponentAnimation()
 {
@@ -23,6 +25,19 @@ void ComponentAnimation::Start()
 
 void ComponentAnimation::Update(const float dt)
 {
+	timer += dt;
+
+	/*for (int i = 0; i < r_anim->channels.size(); i++)
+	{
+		if (r_anim->channels[i]->curr_bone != nullptr)
+		{
+			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate);
+			r_anim->channels[i]->curr_bone->transform.global_transform * curr_step;
+		}
+	}*/
+
+	if (timer > duration * (1000 / tickrate))
+		timer = 0;
 }
 
 void ComponentAnimation::Draw()
@@ -44,6 +59,8 @@ void ComponentAnimation::Load(const JSON_Object* comp)
 		this->UID = App->resources->AddResource(name.c_str());
 	if (App->resources->InLibrary(UID))
 		App->importer->anim_i->LinkAnim(UID, this);
+
+	LinkMesh();
 }
 
 void ComponentAnimation::Save(JSON_Array* comps)
@@ -72,4 +89,19 @@ void ComponentAnimation::LinkMesh()
 				break;
 			}
 		}
+
+	if (c_skel == nullptr)
+		for (int i = 0; i < parent->components.size(); i++)
+		{
+			if (parent->components[i]->type == CT_Skeleton)
+			{
+				c_skel = parent->components[i]->AsSkeleton();
+				break;
+			}
+		}
+
+	for (int i = 0; i < r_anim->channels.size(); i++)
+	{
+		r_anim->channels[i]->curr_bone = c_skel->r_skel->FindBone(r_anim->channels[i]->bone_name);
+	}
 }

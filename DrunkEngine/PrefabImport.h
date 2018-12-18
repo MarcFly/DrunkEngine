@@ -3,6 +3,7 @@
 
 #include "Assimp/include/scene.h"
 #include "GameObject.h"
+#include "ResourceAnimation.h"
 
 enum NodeToIgnore {
 	// Are Ignored
@@ -26,7 +27,7 @@ public:
 
 	void Init() {};
 
-	void ExportAINode(const aiScene* scene, std::vector<const aiNode*>& NodesWithSkeleton,  const aiNode* obj, JSON_Array* go, const Uint32 par_UUID, const char* name);
+	void ExportAINode(const aiScene* scene, std::vector<const aiNode*>& NodesWithSkeleton, std::vector<std::vector<AnimToExport>>& Animations,  const aiNode* obj, JSON_Array* go, const Uint32 par_UUID, const char* name);
 	
 	void ExportTransformNode(JSON_Array* comps, const aiMatrix4x4* trans);
 	void ExportMeshNode(JSON_Array* comps, const aiMesh* mesh, const int& mesh_id, std::string name);

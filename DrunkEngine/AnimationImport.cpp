@@ -2,6 +2,7 @@
 #include "ResourceAnimation.h"
 #include "ComponentAnimation.h"
 #include "Application.h"
+#include "SkeletonImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -11,37 +12,43 @@ void AnimationImport::Init()
 
 }
 
-void AnimationImport::LinkAnim(DGUID fID, ComponentAnimation* anim)
+AnimToExport AnimationImport::PrepSkeletonAnimationExport(std::multimap<uint, BoneCrumb*>& Skeleton, aiAnimation* anim)
 {
-	MetaAnimation* res = (MetaAnimation*)App->resources->Library.at(fID);
+	AnimToExport ret;
+	ret.LinkedAnim = anim;
 
-	anim->name = res->file;
+	for (int i = 0; i < anim->mNumChannels; i++)
+	{
+		aiNodeAnim* curr = anim->mChannels[i];
+		std::string curr_channel_name = curr->mNodeName.C_Str();
+		for (std::multimap<uint, BoneCrumb*>::iterator it = Skeleton.begin(); it != Skeleton.end(); it++)
+		{
+			std::string cmp_name = it->second->BoneNode->mName.C_Str();
+			if (curr_channel_name.find(cmp_name) != std::string::npos)
+			{
+				ret.AnimNodes.push_back(curr);
+				break;
+			}
+		}
+		
+	}
 
-	if (!res->Asset.IsLoaded())
-		res->Asset.LoadToMem();
-
-	anim->r_anim = res->Asset.animation.ptr;
-	anim->UID = fID;
-	anim->duration = res->duration;
-	anim->tickrate = res->tickrate;
-
-	res->UseCount++;
+	return ret;
 }
 
-void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim_id, const char* path)
+void AnimationImport::ExportSkelAnimation(std::multimap<uint, BoneCrumb*>& Skeleton, AnimToExport& anim, const int& anim_id, const char* path)
 {
 	std::string filename = ".\\Library\\";
-	filename += GetFileName(path) + "_Anim_" + std::to_string(anim_id);
+	filename += GetFileName(path) + "_Anim_" += std::to_string(anim_id);
 
 	std::fstream write_file;
 
 	write_file.open((filename + ".animdrnk").c_str(), std::fstream::out | std::fstream::binary);
 
 	uint buf_size = 0;
+	uint num_channels = anim.AnimNodes.size();
 
-	uint num_channels = anim->mNumChannels;
-
-	std::string name = anim->mName.C_Str();
+	std::string name = anim.LinkedAnim->mName.C_Str();
 	uint name_size = name.length() + 1;
 
 	buf_size = sizeof(uint) + name_size + sizeof(uint);
@@ -61,12 +68,12 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 	delete[] data;
 	data = nullptr;
 
-	for (int i = 0; i < num_channels; i++)
+	for (int i = 0; i < anim.AnimNodes.size(); i++)
 	{
 		write_file.close();
 		write_file.open((filename + ".animdrnk").c_str(), std::fstream::app | std::fstream::binary);
 
-		aiNodeAnim* curr = anim->mChannels[i];
+		aiNodeAnim* curr = anim.AnimNodes[i];
 		buf_size = 0;
 		name = curr->mNodeName.C_Str();
 		name_size = name.length() + 1;
@@ -76,7 +83,7 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 		buf_size += (sizeof(QuatKey)) * curr->mNumRotationKeys;
 		data = new char[buf_size];
 		cursor = data;
-		
+
 		memcpy(cursor, &name_size, sizeof(uint));
 		cursor += sizeof(uint);
 		memcpy(cursor, name.c_str(), name.length());
@@ -99,7 +106,7 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 
 		memcpy(cursor, &curr->mScalingKeys, (sizeof(float3Key)) * curr->mNumScalingKeys);
 		cursor += (sizeof(float3Key)) * curr->mNumScalingKeys;
-	
+
 		write_file.write(data, buf_size);
 		write_file.close();
 
@@ -107,7 +114,24 @@ void AnimationImport::ExportAIAnimation(const aiAnimation* anim, const int& anim
 		data = nullptr;
 	}
 
-	ExportMeta(anim, anim_id, path);
+	ExportMeta(anim.LinkedAnim, anim_id, path);
+}
+
+void AnimationImport::LinkAnim(DGUID fID, ComponentAnimation* anim)
+{
+	MetaAnimation* res = (MetaAnimation*)App->resources->Library.at(fID);
+
+	anim->name = res->file;
+
+	if (!res->Asset.IsLoaded())
+		res->Asset.LoadToMem();
+
+	anim->r_anim = res->Asset.animation.ptr;
+	anim->UID = fID;
+	anim->duration = res->duration;
+	anim->tickrate = res->tickrate;
+
+	res->UseCount++;
 }
 
 ResourceAnimation* AnimationImport::LoadAnimation(const char* file)

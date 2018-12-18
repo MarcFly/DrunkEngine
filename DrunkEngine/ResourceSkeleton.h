@@ -32,6 +32,7 @@ struct Bone
 	void AdjustChildren(const int& i);
 	Bone*  GetChild(const uint& par_id);
 	void CalculateBoneGlobalTransforms();
+	Bone* FindBone(const std::string &bonename);
 
 	~Bone()
 	{
@@ -52,7 +53,7 @@ struct ResourceSkeleton
 	void OrderBones();
 	void AdjustChildren(const int& i);
 	Bone*  GetChild(const uint& par_id);
-
+	Bone* FindBone(const std::string &bonename);
 	void CalculateSkeletonTransforms();
 
 	void UnloadMem();
