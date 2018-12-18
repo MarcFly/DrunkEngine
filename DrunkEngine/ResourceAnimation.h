@@ -9,6 +9,8 @@
 #include "Color.h"
 #include "ComponentAnimation.h"
 
+struct Bone;
+
 struct QuatKey {
 	double time;
 	Quat value;	
@@ -21,7 +23,7 @@ struct float3Key {
 
 struct AnimChannel{
 	std::string bone_name = "UnknownBone";
-
+	Bone* curr_bone = nullptr;
 	float3Key* TranslationKeys = nullptr;
 	uint num_translation_keys = 0;
 

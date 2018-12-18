@@ -62,6 +62,21 @@ void Bone::CalculateBoneGlobalTransforms()
 	}
 }
 
+Bone * Bone::FindBone(const std::string & bonename)
+{
+	Bone* ret = nullptr;
+
+	for (int i = 0; i < children.size() && ret == nullptr; i++)
+	{
+		if (bonename == children[i]->name)
+			ret = children[i];
+		if (ret == nullptr)
+			ret = children[i]->FindBone(bonename);
+	}
+
+	return ret;
+}
+
 //------------------------------------------------------------------------------------
 
 ResourceSkeleton::~ResourceSkeleton()
@@ -125,6 +140,21 @@ Bone* ResourceSkeleton::GetChild(const uint & par_id)
 
 	return ret;
 
+}
+
+Bone * ResourceSkeleton::FindBone(const std::string & bonename)
+{
+	Bone* ret = nullptr;
+
+	for (int i = 0; i < bones.size() && ret == nullptr; i++)
+	{
+		if (bonename == bones[i]->name)
+			ret = bones[i];
+		if (ret == nullptr)
+			ret = bones[i]->FindBone(bonename);
+	}
+
+	return ret;
 }
 
 void ResourceSkeleton::CalculateSkeletonTransforms()

@@ -1,6 +1,8 @@
 #include "ComponentAnimation.h"
 #include "Application.h"
 #include "AnimationImport.h"
+#include "ComponentSkeleton.h"
+#include "ResourceSkeleton.h"
 
 ComponentAnimation::ComponentAnimation()
 {
@@ -23,6 +25,12 @@ void ComponentAnimation::Start()
 
 void ComponentAnimation::Update(const float dt)
 {
+	timer += dt;
+
+	r_anim->channels[0]->bone_name
+
+	if (timer > duration)
+		timer = 0;
 }
 
 void ComponentAnimation::Draw()
@@ -72,4 +80,19 @@ void ComponentAnimation::LinkMesh()
 				break;
 			}
 		}
+
+	if (c_skel == nullptr)
+		for (int i = 0; i < parent->components.size(); i++)
+		{
+			if (parent->components[i]->type == CT_Skeleton)
+			{
+				c_skel = parent->components[i]->AsSkeleton();
+				break;
+			}
+		}
+
+	for (int i = 0; i < r_anim->channels.size(); i++)
+	{
+		r_anim->channels[i]->curr_bone = c_skel->r_skel->FindBone(r_anim->channels[i]->bone_name);
+	}
 }
