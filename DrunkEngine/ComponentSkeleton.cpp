@@ -31,6 +31,8 @@ void ComponentSkeleton::Update(const float dt)
 	}
 
 	UpdateTransform();
+
+
 }
 
 void ComponentSkeleton::Draw()

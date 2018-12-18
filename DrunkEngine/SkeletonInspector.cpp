@@ -41,9 +41,25 @@ void SkeletonInspectorWin::Draw()
 						ImGui::BeginChild("Bone Data"), ImVec2(0, -ImGui::GetFrameHeightWithSpacing());
 						{
 							ShowBoneData();
+
+							if (selected_bone != nullptr && selected_bone->parent != nullptr)
+							{
+								//Pos
+								float pos[3] = { selected_bone->transform.position.x, selected_bone->transform.position.y, selected_bone->transform.position.z };
+								if (ImGui::DragFloat3("Position", pos, 0.2f))
+								{
+									selected_bone->transform.SetTransformPosition(pos[0], pos[1], pos[2]);
+
+									Event ev(EventType::Bone_Updated, Event::UnionUsed::UseBone);
+									ev.bone.ptr = selected_bone;
+									App->eventSys->BroadcastEvent(ev);
+								}
+							}
 						}
 						ImGui::EndChild();
 					}
+					
+					
 				}
 				ImGui::EndGroup();
 			}

@@ -4,6 +4,7 @@
 #include "Module.h"
 
 class GameObject;
+class Bone;
 
 enum EventType
 {
@@ -17,6 +18,7 @@ enum EventType
 	File_Dropped,
 	Transform_Updated,
 	Update_Cam_Focus,
+	Bone_Updated,
 	NULL_Event
 };
 
@@ -28,7 +30,7 @@ struct Event
 	{
 		struct
 		{
-			const char* ptr;
+			const char* ptr = nullptr;
 		} string;
 
 		struct
@@ -38,8 +40,13 @@ struct Event
 
 		struct
 		{
-			GameObject * ptr;
+			GameObject * ptr = nullptr;
 		} game_object;
+
+		struct
+		{
+			Bone * ptr = nullptr;
+		} bone;
 	};
 
 	enum UnionUsed
@@ -47,6 +54,7 @@ struct Event
 		UseString,
 		UsePoint2d,
 		UseGameObject,
+		UseBone,
 		UseNull
 
 	} unionSelector;
@@ -60,6 +68,8 @@ struct Event
 			delete string.ptr;
 		case Event::UseGameObject:
 			game_object.ptr = nullptr;
+		case Event::UseBone:
+			bone.ptr = nullptr;
 		}
 	}
 };

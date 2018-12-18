@@ -177,7 +177,7 @@ void ModuleInput::UpdateShortcuts()
 {
 	App->ui->options_win->SetShortCut((SDL_Scancode)menu_c[OPTIONS_MENU]);
 	App->ui->console_win->SetShortCut((SDL_Scancode)menu_c[CONSOLE_MENU]);
-	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)menu_c[INSPECTOR]);
+	App->ui->inspector_win->SetShortCut((SDL_Scancode)menu_c[INSPECTOR]);
 	App->ui->about_win->SetShortCut((SDL_Scancode)menu_c[ABOUT_MENU]);
 	App->ui->scene_viewer_window->SetShortCut((SDL_Scancode)menu_c[SCENE_VIEWER_MENU]);
 	App->ui->kdtree_win->SetShortCut((SDL_Scancode)menu_c[KD_TREE_MENU]);
