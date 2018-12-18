@@ -98,39 +98,39 @@ void ComponentSkeleton::UpdateTransform()
 	
 	
 	//1
-	//{
-	//	root_transform->global_transform = this->parent->GetTransform()->global_transform;
+	{
+		root_transform->global_transform = this->parent->GetTransform()->global_transform;
 
-	//	//Global values
-	//	root_transform->global_pos = root_transform->global_transform.Col3(3) - initial_pos;
-	//	root_transform->global_rot = root_transform->GetRotFromMat(root_transform->global_transform);
+		//Global values
+		root_transform->global_pos = root_transform->global_transform.Col3(3) - initial_pos;
+		root_transform->global_rot = root_transform->GetRotFromMat(root_transform->global_transform);
 
-	//	//root_transform->global_transform.Decompose(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
+		//root_transform->global_transform.Decompose(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
 
-	//	//root_transform->global_pos -= initial_pos;
-	//	root_transform->global_scale = float3(root_transform->global_transform[0][0] / initial_scale.x, root_transform->global_transform[1][1] / initial_scale.y, root_transform->global_transform[2][2] / initial_scale.z);
+		//root_transform->global_pos -= initial_pos;
+		root_transform->global_scale = float3(root_transform->global_transform[0][0] / initial_scale.x, root_transform->global_transform[1][1] / initial_scale.y, root_transform->global_transform[2][2] / initial_scale.z);
 
-	//	//Position
-	//	root_transform->global_transform.SetCol3(3, root_transform->global_pos);
+		//Position
+		root_transform->global_transform.SetCol3(3, root_transform->global_pos);
 
-	//	//Rotation
-	//	root_transform->global_rot.x = root_transform->global_rot.x - initial_rot.x;
-	//	root_transform->global_rot.y = root_transform->global_rot.y - initial_rot.y;
-	//	root_transform->global_rot.z = root_transform->global_rot.z - initial_rot.z;
-	//	root_transform->global_rot.w = root_transform->global_rot.w - initial_rot.w;
+		//Rotation
+		root_transform->global_rot.x = root_transform->global_rot.x - initial_rot.x;
+		root_transform->global_rot.y = root_transform->global_rot.y - initial_rot.y;
+		root_transform->global_rot.z = root_transform->global_rot.z - initial_rot.z;
+		root_transform->global_rot.w = root_transform->global_rot.w - initial_rot.w;
 
-	//	root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
+		//root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
 
-	//	//Scale
-	//	//root_transform->global_transform[0][0] = root_transform->global_scale.x;
-	//	//root_transform->global_transform[1][1] = root_transform->global_scale.y;
-	//	//root_transform->global_transform[2][2] = root_transform->global_scale.z;
+		//Scale
+		//root_transform->global_transform[0][0] = root_transform->global_scale.x;
+		//root_transform->global_transform[1][1] = root_transform->global_scale.y;
+		//root_transform->global_transform[2][2] = root_transform->global_scale.z;
 
-	//	root_transform->global_transform.Scale(root_transform->global_scale, parent->GetTransform()->global_pos); //not working
-	//}
+		root_transform->global_transform.Scale(root_transform->global_scale, parent->GetTransform()->global_pos); //not working
+	}
 
 	//2
-	{
+	/*{
 		root_transform->global_pos = this->parent->GetTransform()->global_pos - initial_pos;
 
 		root_transform->global_rot.x = this->parent->GetTransform()->global_rot.x;
@@ -142,7 +142,7 @@ void ComponentSkeleton::UpdateTransform()
 
 		root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
 
-	}
+	}*/
 
 
 	r_skel->CalculateSkeletonTransforms();
