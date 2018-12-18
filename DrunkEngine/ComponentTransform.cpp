@@ -53,9 +53,13 @@ void ComponentTransform::SetTransformRotation(const float3 rot_vec)
 
 void ComponentTransform::SetTransformScale(const float scale_x, const float scale_y, const float scale_z)
 {	
-	scale.x = scale_x;
-	scale.y = scale_y;
-	scale.z = scale_z;
+	if (scale.x != scale_x && scale_x > 0.1f)
+		scale.x = scale_x;
+	if (scale.y != scale_y && scale_y > 0.1f)
+		scale.y = scale_y;
+	if (scale.z != scale_z && scale_z > 0.1f)
+		scale.z = scale_z;
+
 	SetLocalTransform();
 }
 
@@ -88,9 +92,10 @@ void ComponentTransform::CalculateGlobalTransforms()
 	else
 		global_transform = local_transform;
 
-	global_pos = global_transform.Col3(3);
-	global_rot = GetRotFromMat(global_transform);
-	global_scale = global_transform.GetScale();
+	global_transform.Decompose(global_pos, global_rot, global_scale);
+	//global_pos = global_transform.Col3(3);
+	//global_rot = GetRotFromMat(global_transform);
+	//global_scale = global_transform.GetScale();
 
 	if (parent->children.size() > 0)
 	{
@@ -118,9 +123,9 @@ Quat ComponentTransform::GetRotFromMat(float4x4 mat)
 	rot.y = Sqrt(max(0, 1 - mat.Diagonal3().x + mat.Diagonal3().y - mat.Diagonal3().z)) / 2;
 	rot.z = Sqrt(max(0, 1 - mat.Diagonal3().x - mat.Diagonal3().y + mat.Diagonal3().z)) / 2;
 
-	rot.x *= sgn(rot.x * (mat.Col3(3).y - mat.Col3(2).z));
-	rot.y *= sgn(rot.y * (mat.Col3(1).z - mat.Col3(3).x));
-	rot.z *= sgn(rot.z * (mat.Col3(2).x - mat.Col3(1).y));
+	rot.x *= sgn(rot.x * (mat.Col3(2).y - mat.Col3(1).z));
+	rot.y *= sgn(rot.y * (mat.Col3(0).z - mat.Col3(2).x));
+	rot.z *= sgn(rot.z * (mat.Col3(1).x - mat.Col3(0).y));
 
 	rot.x = -rot.x;
 	rot.y = -rot.y;
