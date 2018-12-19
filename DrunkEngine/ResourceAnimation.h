@@ -35,7 +35,7 @@ struct AnimChannel{
 
 	void UnloadMem();
 
-	float4x4 CurrMatrix(float time, float duration, float tickrate);
+	std::vector<float4x4> CurrMatrix(float time, float duration, float tickrate);
 
 	AnimChannel() {};
 	~AnimChannel() {

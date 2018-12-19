@@ -29,7 +29,8 @@ void ComponentAnimation::Update(const float dt)
 	{
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
-			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate);
+			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate)[0];
+			float4x4 next_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate)[1];
 
 			float3 step_pos;
 			Quat step_rot;
