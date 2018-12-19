@@ -17,51 +17,112 @@ void AnimChannel::UnloadMem()
 	ScalingKeys = nullptr;
 	num_scaling_keys = 0;
 }
-std::vector<float4x4> AnimChannel::CurrMatrix(float time, float duration, float tickrate)
-{
-	std::vector<float4x4> ret;
 
-	float3 Translate, TB;
-	Quat Rotate, RB;
-	float3 Scale, SB;
-	for (int i = 0; i < num_translation_keys; i++)
+float3Key* AnimChannel::LastTKey(float time, float duration, float tickrate)
+{
+	for (int i = 0; i < num_translation_keys; ++i)
 	{
 		if (time <= TranslationKeys[i].time || i == num_translation_keys - 1)
-		{
-			Translate = TranslationKeys[i].value;
-			if (i == num_translation_keys - 1)
-				TB = TranslationKeys[0].value;
-			else
-				TB = TranslationKeys[i + 1].value;
-			break;
-		}
+			return &TranslationKeys[i];
 	}
-	for (int i = 0; i < num_rotation_keys; i++)
+}
+
+QuatKey* AnimChannel::LastRKey(float time, float duration, float tickrate)
+{
+	for (int i = 0; i < num_rotation_keys; ++i)
 	{
 		if (time <= RotationKeys[i].time || i == num_rotation_keys - 1)
-		{
-			Rotate = RotationKeys[i].value;
-			if (i == num_rotation_keys - 1)
-				RB = RotationKeys[0].value;
-			else
-				RB = RotationKeys[i + 1].value;
-			break;
-		}
+			return &RotationKeys[i];
 	}
-	for (int i = 0; i < num_scaling_keys; i++)
+}
+
+float3Key* AnimChannel::LastSKey(float time, float duration, float tickrate)
+{
+	for (int i = 0; i < num_scaling_keys; ++i)
 	{
 		if (time <= ScalingKeys[i].time || i == num_scaling_keys - 1)
+			return &ScalingKeys[i];
+	}
+}
+
+float3Key* AnimChannel::NextTKey(float time, float duration, float tickrate)
+{
+	for (int i = 0; i < num_translation_keys; ++i)
+	{
+		if (time <= TranslationKeys[i].time)
 		{
-			Scale = ScalingKeys[i].value;
-			if (i == num_scaling_keys - 1)
-				SB = ScalingKeys[0].value;
+			if (i == num_translation_keys - 1)
+				return &TranslationKeys[0];
 			else
-				SB = ScalingKeys[i + 1].value;
-			break;
+				return &TranslationKeys[i + 1];
 		}
 	}
-	ret.push_back(float4x4::FromTRS(Translate, Rotate, Scale));
-	ret.push_back(float4x4::FromTRS(TB, RB, SB));
+}
+
+QuatKey* AnimChannel::NextRKey(float time, float duration, float tickrate)
+{
+	for (int i = 0; i < num_rotation_keys; ++i)
+	{
+		if (time <= RotationKeys[i].time)
+		{
+			if (i == num_rotation_keys - 1)
+				return &RotationKeys[0];
+			else
+				return &RotationKeys[i + 1];
+		}
+	}
+}
+
+float3Key* AnimChannel::NextSKey(float time, float duration, float tickrate)
+{
+	for (int i = 0; i < num_scaling_keys; ++i)
+	{
+		if (time <= ScalingKeys[i].time)
+		{
+			if (i == num_scaling_keys - 1)
+				return &ScalingKeys[0];
+			else
+				return &ScalingKeys[i + 1];
+		}
+	}
+}
+
+
+float4x4 AnimChannel::GetMatrix(float time, float duration, float tickrate)
+{
+	float4x4 ret;
+
+	float3Key* CurrTrans = LastTKey(time, duration, tickrate);
+	float3Key* NextTrans = NextTKey(time, duration, tickrate);
+	QuatKey* CurrRot = LastRKey(time, duration, tickrate);
+	QuatKey* NextRot = NextRKey(time, duration, tickrate);
+	float3Key* CurrScale = LastSKey(time, duration, tickrate);
+	float3Key* NextScale = NextSKey(time, duration, tickrate);
+
+	float3 Trans;
+	Quat Rot;
+	float3 Scale;
+
+	if (CurrTrans == NextTrans)
+		Trans = CurrTrans->value;
+	else
+	{
+
+	}
+
+	if (CurrRot == NextRot)
+		Rot = CurrRot->value;
+	else
+	{
+
+	}
+
+	if (CurrScale == NextScale)
+		Scale = CurrScale->value;
+	else
+	{
+
+	}
 
 	return ret;
 }
