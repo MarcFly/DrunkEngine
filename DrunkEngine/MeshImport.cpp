@@ -62,10 +62,17 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 		cursor += sizeof(ranges);
 
 		ret->num_vertex = ranges[0] / 3;
-		if ( ret->num_vertex)
+		if ( ret->num_vertex > 0)
 		{
 			ret->vertex = new GLfloat[ret->num_vertex * 3];
 			memcpy(ret->vertex, cursor, ret->num_vertex * 3 * sizeof(GLfloat));
+		}
+		cursor += (ret->num_vertex * 3 * sizeof(GLfloat));
+
+		if (ret->num_vertex > 0)
+		{
+			ret->vert_normals = new GLfloat[ret->num_vertex * 3];
+			memcpy(ret->vert_normals, cursor, ret->num_vertex * 3 * sizeof(GLfloat));
 		}
 		cursor += (ret->num_vertex * 3 * sizeof(GLfloat));
 
@@ -124,8 +131,9 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 {
 	uint buf_size = 0;
 
-	uint vertex_size = (mesh->mNumVertices * 3); 
-	buf_size += sizeof(GLfloat)*vertex_size;
+	uint vertex_size = (mesh->mNumVertices * 3);
+	// Allocate double the vertex size for vertex normals, which are float3 and vertex_size in size
+	buf_size += sizeof(GLfloat)*vertex_size * 2;
 	uint index_size = 0;
 	uint normal_size = 0;
 	if (mesh->HasFaces())
@@ -168,6 +176,18 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 		vertex_aux.push_back(mesh->mVertices[j].x);
 		vertex_aux.push_back(mesh->mVertices[j].y);
 		vertex_aux.push_back(mesh->mVertices[j].z);
+	}
+	if (vertex_aux.size() > 0)
+	{
+		memcpy(cursor, &vertex_aux[0], sizeof(GLfloat)*vertex_size);
+		cursor += (sizeof(GLfloat)*vertex_size);
+	}
+	
+	for (uint j = 0; j < mesh->mNumVertices; ++j)
+	{
+		vertex_aux[j] = mesh->mNormals[j].x; ++j;
+		vertex_aux[j] = mesh->mNormals[j].y; ++j;
+		vertex_aux[j] = mesh->mNormals[j].z;
 	}
 	if (vertex_aux.size() > 0)
 	{

@@ -6,6 +6,7 @@
 #include "ComponentMesh.h"
 #include "ResourceSkeleton.h"
 #include "FileHelpers.h"
+#include "ResourceMesh.h"
 
 ComponentSkeleton::ComponentSkeleton()
 {
@@ -45,7 +46,28 @@ void ComponentSkeleton::Draw()
 
 	glColor3f(0, 1, 0);
 
+	DrawDeformedMesh();
+
 	glEnd();
+}
+
+void ComponentSkeleton::DrawDeformedMesh()
+{
+	deformable_mesh->UnloadBuffers();
+	deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
+
+	/*if (deformable_mesh != nullptr)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, deformable_mesh->id_vertex);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * deformable_mesh->num_vertex * 3,
+			deformable_mesh->vertex, GL_DYNAMIC_DRAW); // compare to GL_STATIC_DRAW
+		if (deformable_mesh->normal != nullptr)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, deformable_mesh->id_vert_normals);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformable_mesh->num_vertex * 3,
+				deformable_mesh->vertex, GL_DYNAMIC_DRAW);
+		}
+	}*/
 }
 
 void ComponentSkeleton::DrawToChildren(Bone* bone)
@@ -67,6 +89,9 @@ void ComponentSkeleton::CleanUp()
 	App->resources->Unused(UID);
 	r_skel = nullptr;
 	c_mesh = nullptr;
+
+	delete deformable_mesh;
+	deformable_mesh = nullptr;
 }
 
 void ComponentSkeleton::Load(const JSON_Object* comp)
@@ -79,6 +104,8 @@ void ComponentSkeleton::Load(const JSON_Object* comp)
 		this->UID = App->resources->AddResource(name.c_str());
 	if (App->resources->InLibrary(UID))
 		App->importer->skel_i->LinkSkeleton(UID, this);
+
+	CreateDeformableMesh();
 }
 
 void ComponentSkeleton::Save(JSON_Array* comps)
@@ -160,7 +187,13 @@ bool CkeckSkeletonValidity()
 	return true;
 }
 
+/*
 void ComponentSkeleton::LinkMesh()
+{
+		
+}*/
+
+void ComponentSkeleton::CreateDeformableMesh()
 {
 	if (c_mesh == nullptr)
 		for (int i = 0; i < parent->components.size(); i++)
@@ -170,5 +203,9 @@ void ComponentSkeleton::LinkMesh()
 				c_mesh = parent->components[i]->AsMesh();
 				break;
 			}
-		}		
+		}
+
+	deformable_mesh = new ResourceMesh(c_mesh->r_mesh);
+
+
 }

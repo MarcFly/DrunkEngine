@@ -22,6 +22,7 @@ public:
 	void Update(const float dt);
 
 	void Draw();
+	void DrawDeformedMesh();
 	void DrawToChildren(Bone* bone);
 	
 	void CleanUp();
@@ -32,11 +33,13 @@ public:
 	void UpdateTransform();
 
 	bool CheckSkeletonValidity();
-	void LinkMesh();
+	//void LinkMesh();
+	void CreateDeformableMesh();
 
 public:
 	ResourceSkeleton* r_skel;
 	ComponentMesh* c_mesh;
+	ResourceMesh* deformable_mesh;
 
 private:
 	float3 initial_pos;
