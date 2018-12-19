@@ -1,6 +1,20 @@
 #include "ResourceSkeleton.h"
 #include "Application.h"
 
+Bone::Bone(const Bone* cpy)
+{
+	this->active = cpy->active;
+	this->ID = cpy->ID;
+	this->fast_id = cpy->fast_id;
+	this->fast_par_id = cpy->fast_par_id;
+	this->name = cpy->name;
+	this->affected_mesh = cpy->affected_mesh;
+	for (int i = 0; i < cpy->weights.size(); ++i)
+		this->weights.push_back(new BoneWeight(cpy->weights[i]));
+
+	this->transform = cpy->transform;
+}
+
 void Bone::OrderBones()
 {
 	for (int i = 0; i < children.size(); i++)
@@ -93,6 +107,12 @@ void ResourceSkeleton::UnloadMem()
 		delete bones[i];
 		bones[i] = nullptr;
 	}
+	for (int i = 0; i < AnimSkel.size(); ++i)
+	{
+		delete AnimSkel[i];
+		AnimSkel[i] = nullptr;
+	}
+
 	bones.clear();
 }
 
@@ -111,6 +131,8 @@ void ResourceSkeleton::OrderBones()
 			i--;
 		}
 	}
+
+	CreateAnimSkel(bones);
 }
 
 void ResourceSkeleton::AdjustChildren(const int& i)
@@ -161,6 +183,24 @@ void ResourceSkeleton::CalculateSkeletonTransforms()
 {
 	for (int i = 0; i < bones.size(); i++)
 		bones[i]->CalculateBoneGlobalTransforms();
+}
+
+void ResourceSkeleton::CreateAnimSkel(std::vector<Bone*>& bones_to_cpy, Bone* AnimBone)
+{
+	if(AnimBone == nullptr)
+		for (int i = 0; i < bones_to_cpy.size(); ++i)
+		{
+			AnimSkel.push_back(new Bone(bones_to_cpy[i]));
+			CreateAnimSkel(bones_to_cpy[i]->children, AnimSkel[i]);
+		}
+	else
+		for (int i = 0; i < bones_to_cpy.size(); ++i)
+		{
+			AnimBone->children.push_back(new Bone(bones_to_cpy[i]));
+			CreateAnimSkel(bones_to_cpy[i]->children, AnimBone->children[i]);
+		}
+
+
 }
 
 //------------------------------------------------------------------------------------

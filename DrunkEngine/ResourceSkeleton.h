@@ -7,13 +7,26 @@ struct DGUID;
 
 struct BoneWeight
 {
+	BoneWeight() {};
 	uint VertexID = -1;
 	float w = 0;
+
+	BoneWeight(const BoneWeight* cpy)
+	{
+		VertexID = cpy->VertexID;
+		w = cpy->w;
+	}
+	void operator=(const BoneWeight& cpy)
+	{
+		VertexID = cpy.VertexID;
+		w = cpy.w;
+	}
 };
 
 struct Bone
 {
 	Bone() {};
+	Bone(const Bone* cpy);
 
 	bool active = false;
 	DGUID ID;
@@ -42,6 +55,14 @@ struct Bone
 			weights[i] = nullptr;
 		}
 		weights.clear();
+
+		for (int i = 0; i < children.size(); ++i)
+		{
+			delete children[i];
+			children[i] = nullptr;
+		}
+		children.clear();
+
 		name.clear();	
 	}
 };
@@ -50,11 +71,15 @@ struct ResourceSkeleton
 {
 	std::vector<Bone*> bones;
 
+	std::vector<Bone*> AnimSkel;
+
 	void OrderBones();
 	void AdjustChildren(const int& i);
 	Bone*  GetChild(const uint& par_id);
 	Bone* FindBone(const std::string &bonename);
 	void CalculateSkeletonTransforms();
+	
+	void CreateAnimSkel(std::vector<Bone*>& bones_to_cpy, Bone* AnimBone = nullptr);
 
 	void UnloadMem();
 	~ResourceSkeleton();
