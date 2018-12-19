@@ -23,6 +23,7 @@ public:
 
 	void Draw();
 	void DrawDeformedMesh();
+	void DeformMesh(std::vector<Bone*>& bones, ResourceMesh* deformable_mesh);
 	void DrawToChildren(Bone* bone);
 	
 	void CleanUp();
@@ -39,7 +40,6 @@ public:
 public:
 	ResourceSkeleton* r_skel;
 	ComponentMesh* c_mesh;
-	ResourceMesh* deformable_mesh;
 
 private:
 	float3 initial_pos;

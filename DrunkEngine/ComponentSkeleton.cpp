@@ -53,21 +53,38 @@ void ComponentSkeleton::Draw()
 
 void ComponentSkeleton::DrawDeformedMesh()
 {
-	deformable_mesh->UnloadBuffers();
-	deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
+	c_mesh->deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
+	
+	DeformMesh(r_skel->bones, c_mesh->deformable_mesh);
+}
 
-	/*if (deformable_mesh != nullptr)
+void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones, ResourceMesh * deformable_mesh)
+{
+	for (int i = 0; i < bones.size(); ++i)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, deformable_mesh->id_vertex);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * deformable_mesh->num_vertex * 3,
-			deformable_mesh->vertex, GL_DYNAMIC_DRAW); // compare to GL_STATIC_DRAW
-		if (deformable_mesh->normal != nullptr)
+
+		float4x4 b_trans = bones[i]->transform.global_transform;
+
+		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, deformable_mesh->id_vert_normals);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformable_mesh->num_vertex * 3,
-				deformable_mesh->vertex, GL_DYNAMIC_DRAW);
+			GLfloat* curr_vertex = &deformable_mesh->vertex[deformable_mesh->index[bones[i]->weights[j]->VertexID]/3];
+			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
+			movement = b_trans.TransformPos(movement);
+			curr_vertex[0] += movement.x * bones[i]->weights[j]->w;
+			curr_vertex[1] += movement.y * bones[i]->weights[j]->w;
+			curr_vertex[2] += movement.z * bones[i]->weights[j]->w;
+
+			GLfloat* curr_normal = &deformable_mesh->vert_normals[deformable_mesh->index[bones[i]->weights[j]->VertexID]/3];
+			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
+			movement = b_trans.TransformPos(movement);
+			curr_normal[0] += movement.x * bones[i]->weights[j]->w;
+			curr_normal[1] += movement.y * bones[i]->weights[j]->w;
+			curr_normal[2] += movement.z * bones[i]->weights[j]->w;
 		}
-	}*/
+
+		for (int j = 0; j < bones[i]->children.size(); ++j)
+			DeformMesh(bones[i]->children, deformable_mesh);
+	}
 }
 
 void ComponentSkeleton::DrawToChildren(Bone* bone)
@@ -90,8 +107,8 @@ void ComponentSkeleton::CleanUp()
 	r_skel = nullptr;
 	c_mesh = nullptr;
 
-	delete deformable_mesh;
-	deformable_mesh = nullptr;
+	//delete deformable_mesh;
+	//deformable_mesh = nullptr;
 }
 
 void ComponentSkeleton::Load(const JSON_Object* comp)
@@ -205,7 +222,7 @@ void ComponentSkeleton::CreateDeformableMesh()
 			}
 		}
 
-	deformable_mesh = new ResourceMesh(c_mesh->r_mesh);
+	c_mesh->deformable_mesh = new ResourceMesh(c_mesh->r_mesh);
 
 
 }

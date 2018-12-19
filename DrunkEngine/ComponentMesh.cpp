@@ -115,13 +115,26 @@ void ComponentMesh::Draw()
 
 void ComponentMesh::DrawMesh()
 {
+	ResourceMesh* used_mesh = r_mesh;
+	if (deformable_mesh != nullptr)
+		used_mesh = deformable_mesh;
+
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
+
+	if (deformable_mesh != nullptr)
+	{
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vert_normals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
+	}
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
 
-	if (r_mesh->tex_coords != nullptr)
+	if (used_mesh->tex_coords != nullptr)
 	{
 		LinkMat();
 
@@ -133,7 +146,7 @@ void ComponentMesh::DrawMesh()
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
 			
-			c_mat->DrawTextures(r_mesh);
+			c_mat->DrawTextures(used_mesh);
 		}
 		else
 		{
@@ -147,11 +160,11 @@ void ComponentMesh::DrawMesh()
 	}
 	else
 	{
-		glColor4f(r_mesh->def_color.r, r_mesh->def_color.g, r_mesh->def_color.b, r_mesh->def_color.a);
+		glColor4f(used_mesh->def_color.r, used_mesh->def_color.g, used_mesh->def_color.b, used_mesh->def_color.a);
 	}
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, used_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -208,6 +221,9 @@ void ComponentMesh::CleanUp()
 		delete this->BoundingBox;
 		this->BoundingBox = nullptr;
 	}
+
+	delete deformable_mesh;
+	deformable_mesh = nullptr;
 
 	this->parent = nullptr;
 }

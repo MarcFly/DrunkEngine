@@ -96,9 +96,10 @@ void ResourceMesh::UnloadBuffers()
 
 	/*if (normal != nullptr)
 		glDeleteBuffers(1, &id_normal);
+		*/
 
 	if (vert_normals != nullptr)
-		glDeleteBuffers(1, &id_vert_normals)*/
+		glDeleteBuffers(1, &id_vert_normals);
 }
 
 void ResourceMesh::UnloadMem()
