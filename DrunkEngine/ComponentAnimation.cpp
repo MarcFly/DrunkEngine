@@ -25,18 +25,40 @@ void ComponentAnimation::Start()
 
 void ComponentAnimation::Update(const float dt)
 {
-
 	for (int i = 0; i < r_anim->channels.size(); i++)
 	{
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
 			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate);
-			float4x4 base_local_t = float4x4::FromTRS(r_anim->channels[i]->curr_bone->permanent_local_pos, r_anim->channels[i]->curr_bone->permanent_local_rot, r_anim->channels[i]->curr_bone->permanent_local_scale);
+
+			float3 step_pos;
+			Quat step_rot;
+			float3 step_scale;
+
+			curr_step.Decompose(step_pos, step_rot, step_scale);
 
 			// Do the animation calculations for skeleton here
-			r_anim->channels[i]->curr_bone->transform.local_transform = base_local_t * curr_step;
-			r_anim->channels[i]->curr_bone->CalculateBoneGlobalTransforms();
+
+			//Pos
+			if (r_anim->channels[i]->num_translation_keys > 1)
+			{
+				r_anim->channels[i]->curr_bone->transform.SetTransformPosition(r_anim->channels[i]->curr_bone->permanent_local_pos.x + step_pos.x, r_anim->channels[i]->curr_bone->permanent_local_pos.y + step_pos.y, r_anim->channels[i]->curr_bone->permanent_local_pos.z + step_pos.z);
+			}
+
+			//Rot
+			if (r_anim->channels[i]->num_rotation_keys > 1)
+			{
+				r_anim->channels[i]->curr_bone->transform.SetTransformRotation(r_anim->channels[i]->curr_bone->permanent_local_rot * step_rot);
+			}
+
+			//Scale
+			if (r_anim->channels[i]->num_scaling_keys > 1)
+			{
+				r_anim->channels[i]->curr_bone->transform.SetTransformScale(r_anim->channels[i]->curr_bone->permanent_local_scale.x + step_scale.x, r_anim->channels[i]->curr_bone->permanent_local_scale.y + step_scale.y, r_anim->channels[i]->curr_bone->permanent_local_scale.z + step_scale.z);
+			}		
 		}
+
+
 	}
 
 	timer += tickrate / (1 / dt);
