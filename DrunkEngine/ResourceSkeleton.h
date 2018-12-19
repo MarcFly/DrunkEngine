@@ -22,6 +22,10 @@ struct Bone
 	std::vector<BoneWeight*> weights;
 	ComponentTransform transform;
 
+	float3 permanent_local_pos = float3::zero;
+	Quat permanent_local_rot = Quat::identity;
+	float3 permanent_local_scale = float3::one;
+
 	std::vector<Bone*> children;
 
 	uint fast_id = 0;

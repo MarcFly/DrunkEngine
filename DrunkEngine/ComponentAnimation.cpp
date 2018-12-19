@@ -25,19 +25,23 @@ void ComponentAnimation::Start()
 
 void ComponentAnimation::Update(const float dt)
 {
-	timer += dt;
 
 	for (int i = 0; i < r_anim->channels.size(); i++)
 	{
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
 			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate);
-			// Do the animation calculations for skeleton here
+			float4x4 base_local_t = float4x4::FromTRS(r_anim->channels[i]->curr_bone->permanent_local_pos, r_anim->channels[i]->curr_bone->permanent_local_rot, r_anim->channels[i]->curr_bone->permanent_local_scale);
 
+			// Do the animation calculations for skeleton here
+			r_anim->channels[i]->curr_bone->transform.local_transform = base_local_t * curr_step;
+			r_anim->channels[i]->curr_bone->CalculateBoneGlobalTransforms();
 		}
 	}
 
-	if (timer > duration * (1000 / tickrate))
+	timer += tickrate / (1 / dt);
+
+	if (timer > duration)
 		timer = 0;
 }
 

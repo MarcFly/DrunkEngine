@@ -49,17 +49,17 @@ Bone* Bone::GetChild(const uint & par_id)
 
 void Bone::CalculateBoneGlobalTransforms()
 {
-	for (int i = 0; i < children.size(); i++)
+	if (parent != nullptr)
 	{
-		ComponentTransform* b_child = &children[i]->transform;
-		b_child->global_transform = b_child->world_pos * b_child->world_rot * children[i]->parent->transform.global_transform * b_child->local_transform;
+		transform.global_transform = transform.world_pos * transform.world_rot * parent->transform.global_transform * transform.local_transform;
 
-		b_child->global_pos = b_child->global_transform.Col3(3);
-		b_child->global_rot = b_child->GetRotFromMat(b_child->global_transform);
-		b_child->global_scale = b_child->global_transform.GetScale();
-
-		children[i]->CalculateBoneGlobalTransforms();
+		transform.global_pos = transform.global_transform.Col3(3);
+		transform.global_rot = transform.GetRotFromMat(transform.global_transform);
+		transform.global_scale = transform.global_transform.GetScale();
 	}
+
+	for (int i = 0; i < children.size(); i++)
+		children[i]->CalculateBoneGlobalTransforms();
 }
 
 Bone * Bone::FindBone(const std::string & bonename)

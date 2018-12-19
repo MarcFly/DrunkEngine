@@ -111,6 +111,7 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			// For now only push first bone matrix
 			bone->transform.SetFromMatrix(&get_matrix);
 			bone->transform.global_transform = bone->transform.local_transform;
+			bone->transform.global_transform.Decompose(bone->permanent_local_pos, bone->permanent_local_rot, bone->permanent_local_scale);
 
 			ret->bones.push_back(bone);
 		}
