@@ -32,7 +32,8 @@ void ComponentAnimation::Update(const float dt)
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
 			float4x4 curr_step = r_anim->channels[i]->CurrMatrix(timer, duration, tickrate);
-			r_anim->channels[i]->curr_bone->transform.global_transform.Mul(curr_step);
+			// Do the animation calculations for skeleton here
+
 		}
 	}
 
