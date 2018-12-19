@@ -78,9 +78,9 @@ void AnimationImport::ExportSkelAnimation(std::multimap<uint, BoneCrumb*>& Skele
 		name = curr->mNodeName.C_Str();
 		name_size = name.length() + 1;
 		buf_size += sizeof(uint) + name_size + sizeof(uint) * 3;
-		buf_size += (sizeof(float3Key)) * curr->mNumPositionKeys;
-		buf_size += (sizeof(float3Key)) * curr->mNumScalingKeys;
-		buf_size += (sizeof(QuatKey)) * curr->mNumRotationKeys;
+		buf_size += (sizeof(double) + sizeof(float3)) * curr->mNumPositionKeys;
+		buf_size += (sizeof(double) + sizeof(aiQuaternion)) * curr->mNumRotationKeys;
+		buf_size += (sizeof(double) + sizeof(float3)) * curr->mNumScalingKeys;
 		data = new char[buf_size];
 		cursor = data;
 
@@ -98,14 +98,36 @@ void AnimationImport::ExportSkelAnimation(std::multimap<uint, BoneCrumb*>& Skele
 		memcpy(cursor, &curr->mNumScalingKeys, sizeof(uint));
 		cursor += sizeof(uint);
 
-		memcpy(cursor, &curr->mPositionKeys, (sizeof(float3Key)) * curr->mNumPositionKeys);
-		cursor += (sizeof(float3Key)) * curr->mNumPositionKeys;
+		for (int j = 0; j < curr->mNumPositionKeys; j++)
+		{
+			memcpy(cursor, &curr->mPositionKeys[j].mTime, sizeof(double));
+			cursor += sizeof(double);
+			memcpy(cursor, &curr->mPositionKeys[j].mValue, sizeof(aiVector3D));
+			cursor += sizeof(aiVector3D);
+		}
+		//memcpy(cursor, &curr->mPositionKeys, (sizeof(float3Key)) * curr->mNumPositionKeys);
+		//cursor += (sizeof(float3Key)) * curr->mNumPositionKeys;
 
-		memcpy(cursor, &curr->mRotationKeys, (sizeof(QuatKey)) * curr->mNumRotationKeys);
-		cursor += (sizeof(QuatKey)) * curr->mNumRotationKeys;
+		for (int j = 0; j < curr->mNumRotationKeys; j++)
+		{
+			memcpy(cursor, &curr->mRotationKeys[j].mTime, sizeof(double));
+			cursor += sizeof(double);
+			memcpy(cursor, &curr->mRotationKeys[j].mValue, sizeof(aiQuaternion));
+			cursor += sizeof(aiQuaternion);
+		}
+		//memcpy(cursor, &curr->mRotationKeys, (sizeof(QuatKey)) * curr->mNumRotationKeys);
+		//cursor += (sizeof(QuatKey)) * curr->mNumRotationKeys;
 
-		memcpy(cursor, &curr->mScalingKeys, (sizeof(float3Key)) * curr->mNumScalingKeys);
-		cursor += (sizeof(float3Key)) * curr->mNumScalingKeys;
+		for (int j = 0; j < curr->mNumScalingKeys; j++)
+		{
+			memcpy(cursor, &curr->mScalingKeys[j].mTime, sizeof(double));
+			cursor += sizeof(double);
+			memcpy(cursor, &curr->mScalingKeys[j].mValue, sizeof(aiVector3D));
+			cursor += sizeof(aiVector3D);
+		}
+
+		//memcpy(cursor, &curr->mScalingKeys, (sizeof(float3Key)) * curr->mNumScalingKeys);
+		//cursor += (sizeof(float3Key)) * curr->mNumScalingKeys;
 
 		write_file.write(data, buf_size);
 		write_file.close();
@@ -186,16 +208,34 @@ ResourceAnimation* AnimationImport::LoadAnimation(const char* file)
 			cursor += sizeof(uint);
 
 			curr->TranslationKeys = new float3Key[curr->num_translation_keys];
-			memcpy(curr->TranslationKeys, cursor, sizeof(float3Key) * curr->num_translation_keys);
-			cursor += sizeof(float3Key) * curr->num_translation_keys;
+			for (int j = 0; j < curr->num_translation_keys; j++)
+			{
+				memcpy(&curr->TranslationKeys[j].time, cursor, sizeof(double));
+				cursor += sizeof(double);
+				memcpy(&curr->TranslationKeys[j].value, cursor, sizeof(float3));
+				cursor += sizeof(float3);
+			}
 
 			curr->RotationKeys = new QuatKey[curr->num_rotation_keys];
-			memcpy(curr->RotationKeys, cursor, sizeof(QuatKey) * curr->num_rotation_keys);
-			cursor += sizeof(QuatKey) * curr->num_rotation_keys;
+			for (int j = 0; j < curr->num_rotation_keys; j++)
+			{
+				memcpy(&curr->RotationKeys[j].time, cursor, sizeof(double));
+				cursor += sizeof(double);
+				memcpy(&curr->RotationKeys[j].value, cursor, sizeof(Quat));
+				float intermediate = curr->RotationKeys[j].value.w;
+				curr->RotationKeys[j].value.w = curr->RotationKeys[j].value.x;
+				curr->RotationKeys[j].value.x = intermediate;
+				cursor += sizeof(Quat);
+			}
 
 			curr->ScalingKeys = new float3Key[curr->num_scaling_keys];
-			memcpy(curr->ScalingKeys, cursor, sizeof(float3Key) * curr->num_scaling_keys);
-			cursor += sizeof(float3Key) * curr->num_scaling_keys;
+			for (int j = 0; j < curr->num_scaling_keys; j++)
+			{
+				memcpy(&curr->ScalingKeys[j].time, cursor, sizeof(double));
+				cursor += sizeof(double);
+				memcpy(&curr->ScalingKeys[j].value, cursor, sizeof(float3));
+				cursor += sizeof(float3);
+			}
 
 			ret->channels.push_back(curr);
 		}

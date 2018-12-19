@@ -48,7 +48,7 @@ float4x4 AnimChannel::CurrMatrix(float time, float duration, float tickrate)
 			break;
 		}
 	}
-	ret.FromTRS(Translate, Rotate, Scale);
+	ret = float4x4::FromTRS(Translate, Rotate, Scale);
 
 	return ret;
 }
