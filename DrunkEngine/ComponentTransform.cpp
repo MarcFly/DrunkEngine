@@ -28,6 +28,17 @@ void ComponentTransform::SetFromMatrix(const aiMatrix4x4* t)
 	SetTransformRotation(rotate_quat);
 }
 
+void ComponentTransform::SetFromMatrix(const float4x4 * t)
+{
+	float3 local_scale;
+	float3 pos;
+	Quat rot;
+
+	t->Decompose(position, rotate_quat, scale);
+
+	SetTransformRotation(rotate_quat);
+}
+
 void ComponentTransform::SetTransformPosition(const float pos_x, const float pos_y, const float pos_z)
 {
 	position.x = pos_x;

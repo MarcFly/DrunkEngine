@@ -22,7 +22,10 @@ float3Key* AnimChannel::LastTKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_translation_keys; ++i)
 	{
-		if (time <= TranslationKeys[i].time || i == num_translation_keys - 1)
+		if (time < TranslationKeys[0].time || num_rotation_keys == 1)
+			return &TranslationKeys[num_translation_keys - 1];
+
+		if (i == num_translation_keys - 1 || (time > TranslationKeys[i].time && time < TranslationKeys[i + 1].time))
 			return &TranslationKeys[i];
 	}
 }
@@ -31,7 +34,10 @@ QuatKey* AnimChannel::LastRKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_rotation_keys; ++i)
 	{
-		if (time <= RotationKeys[i].time || i == num_rotation_keys - 1)
+		if (time < RotationKeys[0].time || num_rotation_keys == 1)
+			return &RotationKeys[num_rotation_keys - 1];
+
+		if (i == num_rotation_keys - 1 || (time > RotationKeys[i].time && time < RotationKeys[i + 1].time))
 			return &RotationKeys[i];
 	}
 }
@@ -40,7 +46,10 @@ float3Key* AnimChannel::LastSKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_scaling_keys; ++i)
 	{
-		if (time <= ScalingKeys[i].time || i == num_scaling_keys - 1)
+		if (time < ScalingKeys[i].time || num_rotation_keys == 1)
+			return &ScalingKeys[num_scaling_keys - 1];
+
+		if (i == num_scaling_keys - 1 || (time > ScalingKeys[i].time && time < ScalingKeys[i + 1].time))
 			return &ScalingKeys[i];
 	}
 }
@@ -49,42 +58,30 @@ float3Key* AnimChannel::NextTKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_translation_keys; ++i)
 	{
-		if (time <= TranslationKeys[i].time)
-		{
-			if (i == num_translation_keys - 1)
-				return &TranslationKeys[0];
-			else
-				return &TranslationKeys[i + 1];
-		}
+		if (time < TranslationKeys[i].time || num_translation_keys == 1)
+			return &TranslationKeys[i];
 	}
+	return &TranslationKeys[0];
 }
 
 QuatKey* AnimChannel::NextRKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_rotation_keys; ++i)
 	{
-		if (time <= RotationKeys[i].time)
-		{
-			if (i == num_rotation_keys - 1)
-				return &RotationKeys[0];
-			else
-				return &RotationKeys[i + 1];
-		}
+		if (time < RotationKeys[i].time || num_rotation_keys == 1)
+			return &RotationKeys[i];
 	}
+	return &RotationKeys[0];
 }
 
 float3Key* AnimChannel::NextSKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_scaling_keys; ++i)
 	{
-		if (time <= ScalingKeys[i].time)
-		{
-			if (i == num_scaling_keys - 1)
-				return &ScalingKeys[0];
-			else
-				return &ScalingKeys[i + 1];
-		}
+		if (time < ScalingKeys[i].time || num_scaling_keys == 1)
+			return &ScalingKeys[i];
 	}
+	return &ScalingKeys[0];
 }
 
 
@@ -99,32 +96,58 @@ float4x4 AnimChannel::GetMatrix(float time, float duration, float tickrate)
 	float3Key* CurrScale = LastSKey(time, duration, tickrate);
 	float3Key* NextScale = NextSKey(time, duration, tickrate);
 
-	float3 Trans;
-	Quat Rot;
-	float3 Scale;
+	float3 trans;
+	Quat rot;
+	float3 scale;
 
+	//Pos
 	if (CurrTrans == NextTrans)
-		Trans = CurrTrans->value;
+		trans = CurrTrans->value;
 	else
 	{
+		float time_between_keys = GetInBetweenKeysTime(time, CurrTrans->time, NextTrans->time, duration);
 
+		trans = NextTrans->value * time_between_keys;
+		trans += CurrTrans->value * (1 - time_between_keys);
 	}
 
+	//Rot
 	if (CurrRot == NextRot)
-		Rot = CurrRot->value;
+		rot = CurrRot->value;
 	else
 	{
+		rot = CurrRot->value;
 
+		//float time_between_keys = GetInBetweenKeysTime(time, CurrRot->time, NextRot->time, duration);
+		
+		//rot = NextRot->value * time_between_keys;
+		//rot = rot + CurrRot->value * (1 - time_between_keys);
+
+		//for (int i = 0; i < 16; i++)
+		//	NextRot->value[i] *= time_between_keys;
 	}
 
+	//Scale
 	if (CurrScale == NextScale)
-		Scale = CurrScale->value;
+		scale = CurrScale->value;
 	else
 	{
+		float time_between_keys = GetInBetweenKeysTime(time, CurrScale->time, NextScale->time, duration);
 
+		scale = NextScale->value * time_between_keys;
+		scale += CurrScale->value * (1 - time_between_keys);
 	}
 
+	ret = float4x4::FromTRS(trans, rot, scale);
+	
 	return ret;
+}
+float AnimChannel::GetInBetweenKeysTime(float curr_time, float key1_time, float key2_time, float total_time) const
+{
+	if (key1_time < key2_time)
+		return (curr_time - key1_time) / (key2_time - key1_time);
+	else
+		return (curr_time - key1_time) / (key2_time - key1_time + total_time);
 }
 void ResourceAnimation::UnloadMem()
 {

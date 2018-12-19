@@ -44,6 +44,8 @@ struct AnimChannel{
 
 	float4x4 GetMatrix(float time, float duration, float tickrate);
 
+	float GetInBetweenKeysTime(float curr_time, float key1_time, float key2_time, float total_time) const;
+
 	AnimChannel() {};
 	~AnimChannel() {
 		UnloadMem();

@@ -25,6 +25,7 @@ public:
 	void SetLocalTransform();
 
 	void SetFromMatrix(const aiMatrix4x4* t);
+	void SetFromMatrix(const float4x4* t);
 
 	void SetWorldPos(const float4x4 new_transform);
 	void SetWorldRot(const Quat new_rot);
