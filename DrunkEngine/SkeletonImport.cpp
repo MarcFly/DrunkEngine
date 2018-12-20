@@ -56,7 +56,9 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 		for (int i = 0; i < num_bones; i++)
 		{
 			Bone* bone = new Bone();
-
+			bool is_bone;
+			memcpy(&is_bone, cursor, sizeof(bool));
+			cursor += sizeof(bool);
 			memcpy(&bone->fast_id, cursor, sizeof(uint));
 			cursor += sizeof(uint);
 			memcpy(&bone->fast_par_id, cursor, sizeof(uint));
@@ -103,7 +105,12 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 				bone->weights.push_back(weight);
 			}
 
-			
+			if (is_bone)
+			{
+				memcpy(&bone->OffsetMatrix, cursor, sizeof(float) * 16);
+				cursor += sizeof(float) * 16;
+			}
+
 			aiMatrix4x4 get_matrix;
 			memcpy(&get_matrix, cursor, sizeof(float) * 16);
 			cursor += sizeof(float) * 16;
@@ -158,6 +165,7 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		write_file.close();
 		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
 		
+		bool is_bone = false;
 		uint buf_size = 0;
 		uint num_weights = 0;
 		uint name_size = 1;
@@ -165,6 +173,7 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		std::string name = "";
 		if (it->second->Bone != nullptr)
 		{
+			is_bone = true;
 			num_weights = it->second->Bone->mNumWeights;
 
 			name = it->second->Bone->mName.C_Str();
@@ -201,12 +210,14 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		// These are the original bone, bone node and the transformations between nodes
 		// Between nodes sometimes assimp create $AssimpFbx$ nodes that only explain transformations
 
-		buf_size = bone_size + sizeof(uint) * 3 + name_size + mesh_name_size + weight_size * num_weights + sizeof(uint) +  sizeof(float) * 16;
+		buf_size = sizeof(bool) + bone_size + sizeof(uint) * 3 + name_size + mesh_name_size + weight_size * num_weights + sizeof(uint) +  2 * sizeof(float) * 16;
 
 		data = new char[buf_size];
 		char* cursor = data;
 
 		// Bone Info Copy
+		memcpy(&cursor, &is_bone, sizeof(bool));
+		cursor += sizeof(bool);
 		memcpy(cursor, &it->second->fast_id, sizeof(uint));
 		cursor += sizeof(uint);
 		memcpy(cursor, &it->second->fast_par_id, sizeof(uint));
@@ -238,7 +249,50 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		}
 
 		// OffsetMatrix Copy
+		if(it->second->Bone != nullptr)
+		{
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.a1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.a2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.a3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.a4, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.b1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.b2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.b3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.b4, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.c1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.c2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.c3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.c4, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.d1, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.d2, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.d3, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &it->second->Bone->mOffsetMatrix.d4, sizeof(float));	cursor += sizeof(float);
+		}
+		else
+		{
+			int one = 1;
+			int zero = 0;
+			memcpy(cursor, &one, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
 
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &one, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &one, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
+			memcpy(cursor, &one, sizeof(float));	cursor += sizeof(float);
+		}
+		cursor += sizeof(float) * 16;
 		aiMatrix4x4 cpy = it->second->BoneNode->mTransformation;
 		if (it->second->AddedTransform.size() > 0)
 			cpy = it->second->AddedTransform[it->second->AddedTransform.size() - 1];
