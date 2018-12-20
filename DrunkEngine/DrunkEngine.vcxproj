@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClInclude Include="AboutWindow.h" />
     <ClInclude Include="AnimationImport.h" />
+    <ClInclude Include="AnimationInspector.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Assimp\include\ai_assert.h" />
     <ClInclude Include="Assimp\include\anim.h" />
@@ -281,6 +282,7 @@
   <ItemGroup>
     <ClCompile Include="AboutWindow.cpp" />
     <ClCompile Include="AnimationImport.cpp" />
+    <ClCompile Include="AnimationInspector.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
