@@ -68,24 +68,24 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones, ResourceMesh * def
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
 			//Vertex
-			GLfloat* curr_vertex = &deformable_mesh->vertex[deformable_mesh->index[bones[i]->weights[j]->VertexID]];
-			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
-			
-			movement = b_trans.Col3(3) - movement;
-
-			curr_vertex[0] = movement.x * bones[i]->weights[j]->w;
-			curr_vertex[1] = movement.y * bones[i]->weights[j]->w;
-			curr_vertex[2] = movement.z * bones[i]->weights[j]->w;
-
-			//Normal
-			GLfloat* curr_normal = &deformable_mesh->vert_normals[deformable_mesh->index[bones[i]->weights[j]->VertexID]];
-			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
-
-			movement = b_trans.Col3(3) - movement;
-
-			curr_normal[0] = movement.x * bones[i]->weights[j]->w;
-			curr_normal[1] = movement.y * bones[i]->weights[j]->w;
-			curr_normal[2] = movement.z * bones[i]->weights[j]->w;
+			GLfloat* curr_vertex = &deformable_mesh->vertex[bones[i]->weights[j]->VertexID];
+			GLfloat* curr_normal = &deformable_mesh->vert_normals[bones[i]->weights[j]->VertexID];
+			float3 movement(b_trans.Col3(3));
+			if (bones[i]->weights[j]->VertexID % 3 == 0)
+			{
+				*curr_vertex = (movement.x - *curr_vertex) * bones[i]->weights[j]->w;
+				*curr_normal = (movement.x - *curr_normal) * bones[i]->weights[j]->w;
+			}
+			else if ((bones[i]->weights[j]->VertexID - 1) % 3 == 0)
+			{
+				*curr_vertex = (movement.y - *curr_vertex) * bones[i]->weights[j]->w;
+				*curr_normal = (movement.y - *curr_normal) * bones[i]->weights[j]->w;
+			}
+			else if ((bones[i]->weights[j]->VertexID - 2) % 3 == 0)
+			{
+				*curr_vertex = (movement.z - *curr_vertex) * bones[i]->weights[j]->w;
+				*curr_normal = (movement.z - *curr_normal) * bones[i]->weights[j]->w;
+			}				
 		}
 
 		for (int j = 0; j < bones[i]->children.size(); ++j)

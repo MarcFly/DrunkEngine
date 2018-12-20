@@ -130,6 +130,9 @@ void ComponentMesh::DrawMesh()
 		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vert_normals);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
 	}
+	else
+		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
+
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
