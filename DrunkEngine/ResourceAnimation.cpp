@@ -22,10 +22,10 @@ float3Key* AnimChannel::LastTKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_translation_keys; ++i)
 	{
-		if (time < TranslationKeys[0].time || num_rotation_keys == 1)
+		if (num_translation_keys == 1 || time < TranslationKeys[0].time)
 			return &TranslationKeys[num_translation_keys - 1];
 
-		if (i == num_translation_keys - 1 || (time > TranslationKeys[i].time && time < TranslationKeys[i + 1].time))
+		if (i == num_translation_keys - 1 || (time >= TranslationKeys[i].time && time < TranslationKeys[i + 1].time))
 			return &TranslationKeys[i];
 	}
 }
@@ -34,10 +34,10 @@ QuatKey* AnimChannel::LastRKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_rotation_keys; ++i)
 	{
-		if (time < RotationKeys[0].time || num_rotation_keys == 1)
+		if (num_rotation_keys == 1 || time < RotationKeys[0].time)
 			return &RotationKeys[num_rotation_keys - 1];
 
-		if (i == num_rotation_keys - 1 || (time > RotationKeys[i].time && time < RotationKeys[i + 1].time))
+		if (i == num_rotation_keys - 1 || (time >= RotationKeys[i].time && time < RotationKeys[i + 1].time))
 			return &RotationKeys[i];
 	}
 }
@@ -46,10 +46,10 @@ float3Key* AnimChannel::LastSKey(float time, float duration, float tickrate)
 {
 	for (int i = 0; i < num_scaling_keys; ++i)
 	{
-		if (time < ScalingKeys[i].time || num_rotation_keys == 1)
+		if (num_rotation_keys == 1 || time < ScalingKeys[i].time)
 			return &ScalingKeys[num_scaling_keys - 1];
 
-		if (i == num_scaling_keys - 1 || (time > ScalingKeys[i].time && time < ScalingKeys[i + 1].time))
+		if (i == num_scaling_keys - 1 || (time >= ScalingKeys[i].time && time < ScalingKeys[i + 1].time))
 			return &ScalingKeys[i];
 	}
 }

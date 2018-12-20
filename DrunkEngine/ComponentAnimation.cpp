@@ -57,7 +57,7 @@ void ComponentAnimation::Update(const float dt)
 			//Scale
 			if (r_anim->channels[i]->num_scaling_keys > 1)
 			{
-				r_anim->channels[i]->curr_bone->transform.SetTransformScale(r_anim->channels[i]->curr_bone->permanent_local_scale.x + step_scale.x, r_anim->channels[i]->curr_bone->permanent_local_scale.y + step_scale.y, r_anim->channels[i]->curr_bone->permanent_local_scale.z + step_scale.z);
+				r_anim->channels[i]->curr_bone->transform.SetTransformScale(r_anim->channels[i]->curr_bone->permanent_local_scale.x + step_scale.x - 1, r_anim->channels[i]->curr_bone->permanent_local_scale.y + step_scale.y - 1, r_anim->channels[i]->curr_bone->permanent_local_scale.z + step_scale.z - 1);
 			}	
 			
 
