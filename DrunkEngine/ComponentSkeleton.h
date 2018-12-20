@@ -23,7 +23,7 @@ public:
 
 	void Draw();
 	void DrawDeformedMesh();
-	void DeformMesh(std::vector<Bone*>& bones, ResourceMesh* deformable_mesh);
+	void DeformMesh(std::vector<Bone*>& bones);
 	void DrawToChildren(Bone* bone);
 	
 	void CleanUp();

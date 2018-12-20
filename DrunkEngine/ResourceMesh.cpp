@@ -78,10 +78,14 @@ void ResourceMesh::GenBuffers()
 void ResourceMesh::SetValsFromMesh(const ResourceMesh * cpy)
 {
 	memcpy(index, cpy->index, sizeof(GLuint)*num_index);
-	memcpy(vertex, cpy->vertex, sizeof(GLfloat)*num_vertex * 3);
+	for (int i = 0; i < num_vertex * 3; ++i)
+	{
+		vertex[i] = 0;
+		vert_normals[i] = 0;
+	}
+	//memcpy(vertex, cpy->vertex, sizeof(GLfloat)*num_vertex * 3);
 	memcpy(tex_coords, cpy->tex_coords, sizeof(GLfloat)*num_uvs * 3);
 	memcpy(normal, cpy->normal, sizeof(GLfloat)*num_normal*3);
-	memcpy(vert_normals, cpy->vert_normals, sizeof(GLfloat)*num_vertex * 3);
 }
 
 void ResourceMesh::UnloadBuffers()

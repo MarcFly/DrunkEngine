@@ -55,11 +55,14 @@ void ComponentSkeleton::DrawDeformedMesh()
 {
 	c_mesh->deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
 	
-	DeformMesh(r_skel->bones, c_mesh->deformable_mesh);
+	DeformMesh(r_skel->bones);
 }
 
-void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones, ResourceMesh * deformable_mesh)
+void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 {
+	ResourceMesh* d_mesh = c_mesh->deformable_mesh;
+	ResourceMesh* mesh = c_mesh->r_mesh;
+	float3* par_local = &parent->GetTransform()->position;
 	for (int i = 0; i < bones.size(); ++i)
 	{
 
@@ -67,28 +70,33 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones, ResourceMesh * def
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
-			//Vertex
-			GLfloat* curr_vertex = &deformable_mesh->vertex[bones[i]->weights[j]->VertexID * 3];
-			GLfloat* curr_normal = &deformable_mesh->vert_normals[bones[i]->weights[j]->VertexID * 3];
+			// Vertex
+			GLfloat* curr_vertex = &mesh->vertex[bones[i]->weights[j]->VertexID * 3];
+			GLfloat* def_vertex = &d_mesh->vertex[bones[i]->weights[j]->VertexID * 3];
+
 			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
 
-			movement = b_trans.Col3(3) - movement;
+			movement = b_trans.Col3(3) - movement - *par_local;
 
-			curr_vertex[0] = movement.x * bones[i]->weights[j]->w;
-			curr_vertex[1] = movement.y * bones[i]->weights[j]->w;
-			curr_vertex[2] = movement.z * bones[i]->weights[j]->w;
+			def_vertex[0] += movement.x * bones[i]->weights[j]->w;
+			def_vertex[1] += movement.y * bones[i]->weights[j]->w;
+			def_vertex[2] += movement.z * bones[i]->weights[j]->w;
+
+			// Normal
+			GLfloat* curr_normal = &mesh->vert_normals[bones[i]->weights[j]->VertexID * 3];
+			GLfloat* def_normal = &d_mesh->vert_normals[bones[i]->weights[j]->VertexID * 3];
 
 			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
 
-			movement = b_trans.Col3(3) - movement;
+			movement = b_trans.Col3(3) - movement - *par_local;
 
-			curr_normal[0] = movement.x * bones[i]->weights[j]->w;
-			curr_normal[1] = movement.y * bones[i]->weights[j]->w;
-			curr_normal[2] = movement.z * bones[i]->weights[j]->w;
+			def_normal[0] += movement.x * bones[i]->weights[j]->w;
+			def_normal[1] += movement.y * bones[i]->weights[j]->w;
+			def_normal[2] += movement.z * bones[i]->weights[j]->w;
 		}
 
 		for (int j = 0; j < bones[i]->children.size(); ++j)
-			DeformMesh(bones[i]->children, deformable_mesh);
+			DeformMesh(bones[i]->children);
 	}
 }
 
