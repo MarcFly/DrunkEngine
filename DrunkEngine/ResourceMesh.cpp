@@ -18,10 +18,10 @@ ResourceMesh::ResourceMesh(const ResourceMesh * cpy)
 	def_color = cpy->def_color;
 
 	index = new uint[num_index];
-	vertex = new float[num_vertex];
-	tex_coords = new float[num_uvs];
-	normal = new float[num_normal];
-	vert_normals = new float[num_vertex];
+	vertex = new float[num_vertex * 3];
+	tex_coords = new float[num_uvs * 3];
+	normal = new float[num_normal * 3];
+	vert_normals = new float[num_vertex * 3];
 
 	SetValsFromMesh(cpy);
 
@@ -78,9 +78,10 @@ void ResourceMesh::GenBuffers()
 void ResourceMesh::SetValsFromMesh(const ResourceMesh * cpy)
 {
 	memcpy(index, cpy->index, sizeof(GLuint)*num_index);
-	memcpy(vertex, cpy->vertex, sizeof(GLfloat)*num_vertex);
-	memcpy(tex_coords, cpy->tex_coords, sizeof(GLfloat)*num_uvs);
-	memcpy(normal, cpy->normal, sizeof(GLfloat)*num_normal);
+	memcpy(vertex, cpy->vertex, sizeof(GLfloat)*num_vertex * 3);
+	memcpy(tex_coords, cpy->tex_coords, sizeof(GLfloat)*num_uvs * 3);
+	memcpy(normal, cpy->normal, sizeof(GLfloat)*num_normal*3);
+	memcpy(vert_normals, cpy->vert_normals, sizeof(GLfloat)*num_vertex * 3);
 }
 
 void ResourceMesh::UnloadBuffers()
