@@ -31,9 +31,9 @@ void ComponentAnimation::Update(const float dt)
 		{
 			float4x4 curr_step = r_anim->channels[i]->GetMatrix(timer, duration, tickrate);
 
-			float4x4 base_t = float4x4::FromTRS(r_anim->channels[i]->curr_bone->permanent_local_pos, r_anim->channels[i]->curr_bone->permanent_local_rot, r_anim->channels[i]->curr_bone->permanent_local_scale);
+			//float4x4 base_t = float4x4::FromTRS(r_anim->channels[i]->curr_bone->permanent_local_pos, r_anim->channels[i]->curr_bone->permanent_local_rot, r_anim->channels[i]->curr_bone->permanent_local_scale);
 
-			/*
+			
 			float3 step_pos;
 			Quat step_rot;
 			float3 step_scale;
@@ -59,11 +59,11 @@ void ComponentAnimation::Update(const float dt)
 			{
 				r_anim->channels[i]->curr_bone->transform.SetTransformScale(r_anim->channels[i]->curr_bone->permanent_local_scale.x + step_scale.x, r_anim->channels[i]->curr_bone->permanent_local_scale.y + step_scale.y, r_anim->channels[i]->curr_bone->permanent_local_scale.z + step_scale.z);
 			}	
-			*/
+			
 
-			base_t = base_t * curr_step;
-
-			r_anim->channels[i]->curr_bone->transform.SetFromMatrix(&base_t);
+			//base_t = base_t * curr_step;
+			//
+			//r_anim->channels[i]->curr_bone->transform.SetFromMatrix(&base_t);
 		}
 
 
