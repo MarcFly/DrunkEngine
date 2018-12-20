@@ -104,12 +104,9 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 
 				bone->weights.push_back(weight);
 			}
-
-			if (is_bone)
-			{
-				memcpy(&bone->OffsetMatrix, cursor, sizeof(float) * 16);
-				cursor += sizeof(float) * 16;
-			}
+			
+			memcpy(&bone->OffsetMatrix, cursor, sizeof(float) * 16);
+			cursor += sizeof(float) * 16;
 
 			aiMatrix4x4 get_matrix;
 			memcpy(&get_matrix, cursor, sizeof(float) * 16);
@@ -150,13 +147,13 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 	uint skeleton_size = Skeleton.size();
 	uint weight_size = sizeof(float) + sizeof(uint);
 	uint id_size = 32;
-	uint bone_size = id_size + sizeof(uint);
+	uint bone_size = id_size + 2 * sizeof(float) * 16;
 
 	char* data = new char[sizeof(uint)];
 	memcpy(data, &skeleton_size, sizeof(uint));
 	write_file.write(data, sizeof(uint));
 
-	delete data;
+	delete[] data;
 	data = nullptr;
 	std::multimap<uint, BoneCrumb*>::iterator it = Skeleton.begin();
 
@@ -165,10 +162,14 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		write_file.close();
 		write_file.open((filename + ".skeldrnk").c_str(), std::fstream::app | std::fstream::binary);
 		
+		uint buf_size = bone_size;
+
 		bool is_bone = false;
-		uint buf_size = 0;
+		buf_size += sizeof(bool);
 		uint num_weights = 0;
+		buf_size += sizeof(uint);
 		uint name_size = 1;
+		buf_size += sizeof(uint);
 		DGUID id;
 		std::string name = "";
 		if (it->second->Bone != nullptr)
@@ -188,10 +189,13 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 
 			id.cpyfromstring(StringMD5ID(name));
 		}
-
+		buf_size += name_size;
+		buf_size += num_weights * weight_size;
+		
 		std::string affected_mesh = ""; 
 		uint mesh_id = INT_MAX;
 		uint mesh_name_size = 1;
+		buf_size += sizeof(uint);
 		if (it->second->Mesh != nullptr)
 		{
 			affected_mesh = GetFileName(path) + "_Mesh_";
@@ -206,17 +210,18 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 
 			mesh_name_size += affected_mesh.length();
 		}
+		buf_size += mesh_name_size;
+
+		buf_size += sizeof(uint) * 2; // The fast ids
 
 		// These are the original bone, bone node and the transformations between nodes
 		// Between nodes sometimes assimp create $AssimpFbx$ nodes that only explain transformations
-
-		buf_size = sizeof(bool) + bone_size + sizeof(uint) * 3 + name_size + mesh_name_size + weight_size * num_weights + sizeof(uint) +  2 * sizeof(float) * 16;
 
 		data = new char[buf_size];
 		char* cursor = data;
 
 		// Bone Info Copy
-		memcpy(&cursor, &is_bone, sizeof(bool));
+		memcpy(cursor, &is_bone, sizeof(bool));
 		cursor += sizeof(bool);
 		memcpy(cursor, &it->second->fast_id, sizeof(uint));
 		cursor += sizeof(uint);
@@ -270,8 +275,8 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 		}
 		else
 		{
-			int one = 1;
-			int zero = 0;
+			float one = 1;
+			float zero = 0;
 			memcpy(cursor, &one, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
@@ -292,7 +297,7 @@ void SkeletonImport::ExportMapSkeleton(const aiScene* scene, const aiNode* SkelR
 			memcpy(cursor, &zero, sizeof(float));	cursor += sizeof(float);
 			memcpy(cursor, &one, sizeof(float));	cursor += sizeof(float);
 		}
-		cursor += sizeof(float) * 16;
+
 		aiMatrix4x4 cpy = it->second->BoneNode->mTransformation;
 		if (it->second->AddedTransform.size() > 0)
 			cpy = it->second->AddedTransform[it->second->AddedTransform.size() - 1];
