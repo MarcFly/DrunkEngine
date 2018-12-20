@@ -120,22 +120,23 @@ void ComponentMesh::DrawMesh()
 		used_mesh = deformable_mesh;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
 
-	if (deformable_mesh != nullptr)
+	/*if (deformable_mesh != nullptr)
 	{
+		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
-
+		
 		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vert_normals);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vert_normals, GL_DYNAMIC_DRAW);	
 	}
 	else
-		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
-
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
+	
+	glVertexPointer(3, GL_FLOAT, 0, NULL);*/
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
+
+	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
 
 	if (used_mesh->tex_coords != nullptr)
 	{

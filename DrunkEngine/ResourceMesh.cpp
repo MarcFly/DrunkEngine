@@ -37,7 +37,7 @@ void ResourceMesh::GenBuffers()
 	{
 		glGenBuffers(1, &r_mesh->id_vertex);
 		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_vertex * 3, r_mesh->vertex, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_vertex * 3, r_mesh->vertex, GL_DYNAMIC_DRAW);
 	}
 
 	// **Unbind Buffer**
@@ -47,7 +47,7 @@ void ResourceMesh::GenBuffers()
 	{
 		glGenBuffers(1, &r_mesh->id_vert_normals);
 		glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vert_normals);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_vertex * 3, r_mesh->vert_normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * r_mesh->num_vertex * 3, r_mesh->vert_normals, GL_DYNAMIC_DRAW);
 	}
 
 	// **Unbind Buffer**
@@ -84,6 +84,7 @@ void ResourceMesh::SetValsFromMesh(const ResourceMesh * cpy)
 		vert_normals[i] = 0;
 	}
 	//memcpy(vertex, cpy->vertex, sizeof(GLfloat)*num_vertex * 3);
+	//memcpy(vert_normals, cpy->vert_normals, sizeof(GLfloat)*num_vertex * 3);
 	memcpy(tex_coords, cpy->tex_coords, sizeof(GLfloat)*num_uvs * 3);
 	memcpy(normal, cpy->normal, sizeof(GLfloat)*num_normal*3);
 }
