@@ -63,23 +63,29 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones, ResourceMesh * def
 	for (int i = 0; i < bones.size(); ++i)
 	{
 
-		float4x4 b_trans = bones[i]->transform.global_transform;
+		float4x4 b_trans = bones[i]->transform.local_transform;
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
-			GLfloat* curr_vertex = &deformable_mesh->vertex[deformable_mesh->index[bones[i]->weights[j]->VertexID]/3];
+			//Vertex
+			GLfloat* curr_vertex = &deformable_mesh->vertex[deformable_mesh->index[bones[i]->weights[j]->VertexID]];
 			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
-			movement = b_trans.TransformPos(movement);
-			curr_vertex[0] += movement.x * bones[i]->weights[j]->w;
-			curr_vertex[1] += movement.y * bones[i]->weights[j]->w;
-			curr_vertex[2] += movement.z * bones[i]->weights[j]->w;
+			
+			movement = b_trans.Col3(3) - movement;
 
-			GLfloat* curr_normal = &deformable_mesh->vert_normals[deformable_mesh->index[bones[i]->weights[j]->VertexID]/3];
+			curr_vertex[0] = movement.x * bones[i]->weights[j]->w;
+			curr_vertex[1] = movement.y * bones[i]->weights[j]->w;
+			curr_vertex[2] = movement.z * bones[i]->weights[j]->w;
+
+			//Normal
+			GLfloat* curr_normal = &deformable_mesh->vert_normals[deformable_mesh->index[bones[i]->weights[j]->VertexID]];
 			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
-			movement = b_trans.TransformPos(movement);
-			curr_normal[0] += movement.x * bones[i]->weights[j]->w;
-			curr_normal[1] += movement.y * bones[i]->weights[j]->w;
-			curr_normal[2] += movement.z * bones[i]->weights[j]->w;
+
+			movement = b_trans.Col3(3) - movement;
+
+			curr_normal[0] = movement.x * bones[i]->weights[j]->w;
+			curr_normal[1] = movement.y * bones[i]->weights[j]->w;
+			curr_normal[2] = movement.z * bones[i]->weights[j]->w;
 		}
 
 		for (int j = 0; j < bones[i]->children.size(); ++j)
