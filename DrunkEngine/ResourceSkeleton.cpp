@@ -53,9 +53,15 @@ void Bone::CalculateBoneGlobalTransforms()
 	{
 		transform.global_transform = transform.world_pos * transform.world_rot * parent->transform.global_transform * transform.local_transform;
 
+		//transform.global_transform[0][0] = 1;
+		//transform.global_transform[1][1] = 1;
+		//transform.global_transform[2][2] = 1;
+
 		transform.global_pos = transform.global_transform.Col3(3);
 		transform.global_rot = transform.GetRotFromMat(transform.global_transform);
-		transform.global_scale = transform.global_transform.GetScale();
+		transform.global_scale.x = transform.global_transform[0][0];
+		transform.global_scale.y = transform.global_transform[1][1];
+		transform.global_scale.z = transform.global_transform[2][2];
 	}
 
 	for (int i = 0; i < children.size(); i++)

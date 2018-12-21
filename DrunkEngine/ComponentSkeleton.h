@@ -31,6 +31,8 @@ public:
 	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
+	float4x4 RecursiveParentInverted(float4x4& t, Bone& b);
+
 	void UpdateTransform();
 
 	bool CheckSkeletonValidity();

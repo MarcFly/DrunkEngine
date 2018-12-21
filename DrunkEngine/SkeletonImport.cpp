@@ -109,13 +109,47 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			cursor += sizeof(float) * 16;
 
 			aiMatrix4x4 get_matrix;
+			//{
+			//	memcpy(&get_matrix.a1, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.a2, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.a3, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.a4, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.b1, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.b2, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.b3, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.b4, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.c1, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.c2, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.c3, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.c4, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.d1, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.d2, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.d3, cursor, sizeof(float)); cursor += sizeof(float);
+			//	memcpy(&get_matrix.d4, cursor, sizeof(float)); cursor += sizeof(float);
+			//}
+
 			memcpy(&get_matrix, cursor, sizeof(float) * 16);
 			cursor += sizeof(float) * 16;
 			
+
 			// For now only push first bone matrix
 			bone->transform.SetFromMatrix(&get_matrix);
+
+			//bone->transform.local_transform.Transpose();
+
 			bone->transform.global_transform = bone->transform.local_transform;
 			bone->transform.global_transform.Decompose(bone->permanent_local_pos, bone->permanent_local_rot, bone->permanent_local_scale);
+
+			//Scale needs to be 1
+			//bone->transform.local_transform[0][0] = 1;
+			//bone->transform.local_transform[1][1] = 1;
+			//bone->transform.local_transform[2][2] = 1;
+			//
+			//bone->permanent_local_scale = float3::one;
+			//
+			//bone->transform.global_transform[0][0] = 1;
+			//bone->transform.global_transform[1][1] = 1;
+			//bone->transform.global_transform[2][2] = 1;
 
 			ret->bones.push_back(bone);
 		}
