@@ -76,6 +76,24 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 		float4x4 b_trans = bones[i]->transform.local_transform;
 
+		//aiVector3D offset_aiscale;
+		//aiVector3D offset_aipos;
+		//aiQuaternion offset_airot;
+		//
+		//bones[i]->OffsetMatrix.Decompose(offset_aiscale, offset_airot, offset_aipos);
+		//
+		//float3 offset_scale = float3(offset_scale.x, offset_scale.y, offset_scale.z);
+		//Quat offset_rot = Quat(offset_rot.x, offset_rot.y, offset_rot.z, offset_rot.w);
+		//float3 offset_pos = float3(offset_pos.x, offset_pos.y, offset_pos.z);
+
+		float4x4 offset_mat;
+
+		for (int k = 0; k < 4; k++)
+			for (int l = 0; l < 4; l++)
+				offset_mat[k][l] = bones[i]->OffsetMatrix[k][l];
+
+		b_trans = b_trans * offset_mat;
+
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
 			// Vertex
