@@ -84,7 +84,7 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 {
 	if (timer > anims[curr_animation].blend_time)
 	{
-		timer = 0;
+		timer = anims[curr_animation].start;
 		blending = false;
 	}
 
@@ -116,8 +116,8 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 
 void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 {
-	if (timer > abs(anims[curr_animation].end - anims[curr_animation].start))
-		timer = 0;
+	if (timer > anims[curr_animation].start + abs(anims[curr_animation].end - anims[curr_animation].start))
+		timer = anims[curr_animation].start;
 
 	float4x4* curr_step = &curr_channel->curr_bone->last_anim_step;
 
