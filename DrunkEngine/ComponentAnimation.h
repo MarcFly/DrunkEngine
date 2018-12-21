@@ -57,7 +57,7 @@ public:
 		anim_blend = 1;
 
 		blending = true;
-		playing = false;
+		playing = true;
 	}
 
 };

@@ -97,7 +97,8 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 		//b_trans * parent->GetTransform()->global_transform;
 		//b_trans = RecursiveParentInverted(b_trans, *bones[i]);
 		float4x4 bind_pose_t = float4x4::FromTRS(bones[i]->permanent_local_pos, bones[i]->permanent_local_rot, bones[i]->permanent_local_scale);
-		//b_trans = b_trans * bones[i]->transform.local_transform.Inverted();
+		//b_trans = b_trans * parent->GetTransform()->local_transform.Inverted();
+
 		//b_trans = b_trans * bind_pose_t.Inverted();
 
 		b_trans = b_trans * offset_mat;
