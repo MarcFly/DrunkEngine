@@ -82,8 +82,7 @@ void ComponentMesh::SetMeshBoundBox()
 
 void ComponentMesh::Draw()
 {
-	glPushMatrix();
-	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
+	
 
 	if (CheckMeshValidity())
 	{
@@ -118,6 +117,11 @@ void ComponentMesh::DrawMesh()
 	ResourceMesh* used_mesh = r_mesh;
 	if (deformable_mesh != nullptr)
 		used_mesh = deformable_mesh;
+	else
+	{
+		glPushMatrix();
+		glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
+	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -134,9 +138,9 @@ void ComponentMesh::DrawMesh()
 	
 	glVertexPointer(3, GL_FLOAT, 0, NULL);*/
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
-
 	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
 
 	if (used_mesh->tex_coords != nullptr)
 	{
@@ -178,6 +182,9 @@ void ComponentMesh::DrawMesh()
 
 void ComponentMesh::DrawMeshWire() const
 {
+	glPushMatrix();
+	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -192,10 +199,15 @@ void ComponentMesh::DrawMeshWire() const
 	// Unbind Buffers
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glPopMatrix();
 }
 
 void ComponentMesh::DrawNormals() const
 {
+	glPushMatrix();
+	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
+
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
 
@@ -212,7 +224,7 @@ void ComponentMesh::DrawNormals() const
 	glColor3f(0, 1, 0);
 	glEnd();
 
-	
+	glPopMatrix();
 }
 
 void ComponentMesh::CleanUp()

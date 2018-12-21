@@ -55,13 +55,13 @@ void ComponentSkeleton::DrawDeformedMesh()
 {
 	c_mesh->deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
 	
-	float3 par_pos = parent->GetTransform()->position;
+	/*float3 par_pos = parent->GetTransform()->position;
 	for (int i = 0; i < c_mesh->deformable_mesh->num_vertex; ++i)
 	{
 		c_mesh->deformable_mesh->vertex[i * 3] -= par_pos.x;
 		c_mesh->deformable_mesh->vertex[i * 3 + 1] -= par_pos.y;
 		c_mesh->deformable_mesh->vertex[i * 3 + 2] -= par_pos.z;
-	}
+	}*/
 
 	DeformMesh(r_skel->bones);
 }
@@ -74,7 +74,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 	for (int i = 0; i < bones.size(); ++i)
 	{
 
-		float4x4 b_trans = bones[i]->transform.local_transform;
+		float4x4 b_trans = bones[i]->transform.global_transform;
 
 		//aiVector3D offset_aiscale;
 		//aiVector3D offset_aipos;
@@ -92,6 +92,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 			for (int l = 0; l < 4; l++)
 				offset_mat[k][l] = bones[i]->OffsetMatrix[k][l];
 
+		//b_trans = b_trans * parent->GetTransform()->global_transform.Inverted();
 		b_trans = b_trans * offset_mat;
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
@@ -102,11 +103,12 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
 
-			movement = b_trans.Col3(3) - movement;
+			//movement = b_trans.Col3(3) - movement;
+			float3 new_movement = b_trans.TransformPos(movement);
 
-			def_vertex[0] += movement.x * bones[i]->weights[j]->w;
-			def_vertex[1] += movement.y * bones[i]->weights[j]->w;
-			def_vertex[2] += movement.z * bones[i]->weights[j]->w;
+			def_vertex[0] += new_movement.x * bones[i]->weights[j]->w;
+			def_vertex[1] += new_movement.y * bones[i]->weights[j]->w;
+			def_vertex[2] += new_movement.z * bones[i]->weights[j]->w;
 
 			// Normal
 			GLfloat* curr_normal = &mesh->vert_normals[bones[i]->weights[j]->VertexID * 3];
@@ -114,11 +116,12 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
 
-			movement = b_trans.Col3(3) - movement;
+			//movement = b_trans.Col3(3) - movement;
+			new_movement = b_trans.TransformPos(movement);
 
-			def_normal[0] += movement.x * bones[i]->weights[j]->w;
-			def_normal[1] += movement.y * bones[i]->weights[j]->w;
-			def_normal[2] += movement.z * bones[i]->weights[j]->w;
+			def_normal[0] += new_movement.x * bones[i]->weights[j]->w;
+			def_normal[1] += new_movement.y * bones[i]->weights[j]->w;
+			def_normal[2] += new_movement.z * bones[i]->weights[j]->w;
 		}
 
 		for (int j = 0; j < bones[i]->children.size(); ++j)
