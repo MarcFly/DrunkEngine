@@ -29,54 +29,16 @@ void ComponentAnimation::Update(const float dt)
 	{
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
-			float4x4* curr_step = &r_anim->channels[i]->curr_bone->last_anim_step;
-			if (!curr_step->IsIdentity())
-			{
-
-			}
-			r_anim->channels[i]->curr_bone->last_anim_step = r_anim->channels[i]->GetMatrix(timer, duration, tickrate);
-			
-			//float4x4 base_t = float4x4::FromTRS(r_anim->channels[i]->curr_bone->permanent_local_pos, r_anim->channels[i]->curr_bone->permanent_local_rot, r_anim->channels[i]->curr_bone->permanent_local_scale);
-			
-			float3 step_pos;
-			Quat step_rot;
-			float3 step_scale;
-
-			curr_step->Decompose(step_pos, step_rot, step_scale);
-
-			// Do the animation calculations for skeleton here
-			
-			//Pos
-			if (r_anim->channels[i]->num_translation_keys > 1)
-			{
-				r_anim->channels[i]->curr_bone->transform.SetTransformPosition(r_anim->channels[i]->curr_bone->permanent_local_pos.x + step_pos.x, r_anim->channels[i]->curr_bone->permanent_local_pos.y + step_pos.y, r_anim->channels[i]->curr_bone->permanent_local_pos.z + step_pos.z);
-			}
-
-			//Rot
-			if (r_anim->channels[i]->num_rotation_keys > 1)
-			{
-				r_anim->channels[i]->curr_bone->transform.SetTransformRotation(r_anim->channels[i]->curr_bone->permanent_local_rot * step_rot);
-			}
-
-			//Scale
-			if (r_anim->channels[i]->num_scaling_keys > 1)
-			{
-				r_anim->channels[i]->curr_bone->transform.SetTransformScale(r_anim->channels[i]->curr_bone->permanent_local_scale.x + step_scale.x - 1, r_anim->channels[i]->curr_bone->permanent_local_scale.y + step_scale.y - 1, r_anim->channels[i]->curr_bone->permanent_local_scale.z + step_scale.z - 1);
-			}	
-			
-
-			//base_t = base_t * curr_step;
-			//
-			//r_anim->channels[i]->curr_bone->transform.SetFromMatrix(&base_t);
+			if (blending == true)
+				BlendFrom(r_anim->channels[i]);
+			else
+				AnimateSkel(r_anim->channels[i]);
 		}
 
 
 	}
 
 	timer += tickrate / (1 / dt);
-
-	if (timer > duration)
-		timer = 0;
 }
 
 void ComponentAnimation::Draw()
@@ -115,6 +77,76 @@ void ComponentAnimation::Save(JSON_Array* comps)
 
 
 	json_array_append_value(comps, append);
+}
+
+void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
+{
+	if (timer > anim_blend)
+	{
+		timer = 0;
+		blending = false;
+	}
+
+	float3 TA, TB, step_pos;
+	Quat RA, RB, step_rot;
+	float3 SA, SB, step_scale;
+	float4x4 start_step = curr_channel->GetFirstFrame(duration, tickrate);
+	
+	curr_channel->curr_bone->last_anim_step.Decompose(TA, RA, SA);
+	start_step.Decompose(TB, RB, SB);
+
+	step_pos = TB * (timer / anim_blend);
+	step_pos += TA * (timer / anim_blend);
+
+	float3 rot_test = RadToDeg(RB.ToEulerXYZ());
+	float3 ret_rot;
+	ret_rot = rot_test * anim_blend;
+	ret_rot += rot_test * (1 - anim_blend);
+	step_rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
+
+	step_scale = SB * (timer / anim_blend);
+	step_scale += SA * (timer / anim_blend);
+
+	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
+	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
+	curr_channel->curr_bone->transform.SetTransformScale(curr_channel->curr_bone->permanent_local_scale.x + step_scale.x - 1, curr_channel->curr_bone->permanent_local_scale.y + step_scale.y - 1, curr_channel->curr_bone->permanent_local_scale.z + step_scale.z - 1);
+
+}
+
+void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
+{
+	if (timer > duration)
+		timer = 0;
+
+	float4x4* curr_step = &curr_channel->curr_bone->last_anim_step;
+
+	curr_channel->curr_bone->last_anim_step = curr_channel->GetMatrix(timer, duration, tickrate);
+
+	float3 step_pos;
+	Quat step_rot;
+	float3 step_scale;
+
+	curr_step->Decompose(step_pos, step_rot, step_scale);
+
+	// Do the animation calculations for skeleton here
+
+	//Pos
+	if (curr_channel->num_translation_keys > 1)
+	{
+		curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
+	}
+
+	//Rot
+	if (curr_channel->num_rotation_keys > 1)
+	{
+		curr_channel->curr_bone->transform.SetTransformRotation(curr_channel->curr_bone->permanent_local_rot * step_rot);
+	}
+
+	//Scale
+	if (curr_channel->num_scaling_keys > 1)
+	{
+		curr_channel->curr_bone->transform.SetTransformScale(curr_channel->curr_bone->permanent_local_scale.x + step_scale.x - 1, curr_channel->curr_bone->permanent_local_scale.y + step_scale.y - 1, curr_channel->curr_bone->permanent_local_scale.z + step_scale.z - 1);
+	}
 }
 
 void ComponentAnimation::LinkMesh()

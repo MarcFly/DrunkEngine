@@ -43,7 +43,7 @@ struct AnimChannel{
 	float3Key* NextSKey(float time, float duration, float tickrate);
 
 	float4x4 GetMatrix(float time, float duration, float tickrate);
-
+	float4x4 GetFirstFrame(float duration, float tickrate);
 	float GetInBetweenKeysTime(float curr_time, float key1_time, float key2_time, float total_time) const;
 
 	AnimChannel() {};

@@ -5,7 +5,7 @@
 #include "Component.h"
 
 struct ResourceAnimation;
-
+struct AnimChannel;
 class GameObject;
 
 class ComponentAnimation : public Component
@@ -26,6 +26,8 @@ public:
 	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
 
+	void BlendFrom(AnimChannel* curr_channel);
+	void AnimateSkel(AnimChannel* curr_channel);
 public:
 	ResourceAnimation* r_anim;
 	ComponentMesh* c_mesh;
@@ -37,7 +39,7 @@ public:
 	float timer;
 	float curr_time;
 
-	
+	bool blending;
 
 public:
 	void SetBaseVals()
@@ -50,7 +52,9 @@ public:
 		c_mesh = nullptr;
 		c_skel = nullptr;
 		timer = 0;
-		anim_blend = 0;
+		anim_blend = 1;
+
+		blending = true;
 	}
 };
 

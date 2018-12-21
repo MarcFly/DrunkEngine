@@ -353,8 +353,8 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 
 		ImGui::Text("Blend Time: ");
 		ImGui::SameLine();
-		if (anim->anim_blend < 0)
-			anim->anim_blend = 0;
+		if (anim->anim_blend < 1)
+			anim->anim_blend = 1;
 		if (anim->anim_blend > 10)
 			anim->anim_blend = 10;
 		ImGui::DragInt("##BlendTime", &anim->anim_blend, 0, 10);

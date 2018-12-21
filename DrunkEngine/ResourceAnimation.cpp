@@ -118,13 +118,13 @@ float4x4 AnimChannel::GetMatrix(float time, float duration, float tickrate)
 	{
 		rot = CurrRot->value;
 
-		//float time_between_keys = GetInBetweenKeysTime(time, CurrRot->time, NextRot->time, duration);
+		float time_between_keys = GetInBetweenKeysTime(time, CurrRot->time, NextRot->time, duration);
+		float3 rot_test = RadToDeg(NextRot->value.ToEulerXYZ());
+		float3 ret_rot;
+		ret_rot = rot_test * time_between_keys;
+		ret_rot += rot_test * (1 - time_between_keys);
 		
-		//rot = NextRot->value * time_between_keys;
-		//rot = rot + CurrRot->value * (1 - time_between_keys);
-
-		//for (int i = 0; i < 16; i++)
-		//	NextRot->value[i] *= time_between_keys;
+		rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
 	}
 
 	//Scale
@@ -141,6 +141,16 @@ float4x4 AnimChannel::GetMatrix(float time, float duration, float tickrate)
 	ret = float4x4::FromTRS(trans, rot, scale);
 	
 	return ret;
+}
+float4x4 AnimChannel::GetFirstFrame(float duration, float tickrate)
+{
+	float3Key* CurrTrans = LastTKey(0, duration, tickrate);
+
+	QuatKey* CurrRot = LastRKey(0, duration, tickrate);
+
+	float3Key* CurrScale = LastSKey(0, duration, tickrate);
+
+	return float4x4::FromTRS(CurrTrans->value, CurrRot->value,CurrScale->value);
 }
 float AnimChannel::GetInBetweenKeysTime(float curr_time, float key1_time, float key2_time, float total_time) const
 {
