@@ -34,6 +34,7 @@ public:
 	int tickrate;
 	
 	float timer;
+	float curr_time;
 
 public:
 	void SetBaseVals()

@@ -62,17 +62,26 @@ void AnimationInspectorWin::Draw()
 
 						if (anim != nullptr && sel_bone_anim != nullptr)
 						{
-							if (sel_bone_anim->TranslationKeys[i].time == i)
+							for (int j = 0; j < sel_bone_anim->num_translation_keys; ++j)
 							{
-								ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + 1, p.y + 35), 6.0f, ImColor(0.0f, 0.0f, 1.0f, 0.5f));
+								if (sel_bone_anim->TranslationKeys[j].time == i)
+								{
+									ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + 1, p.y + 35), 6.0f, ImColor(0.0f, 0.5f, 1.0f, 0.5f));
+								}
 							}
-							if (sel_bone_anim->RotationKeys[i].time == i)
+							for (int j = 0; j < sel_bone_anim->num_rotation_keys; ++j)
 							{
-								ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + 1, p.y + 75), 6.0f, ImColor(0.0f, 1.0f, 0.0f, 0.5f));
+								if (sel_bone_anim->RotationKeys[j].time == i)
+								{
+									ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + 1, p.y + 75), 6.0f, ImColor(0.0f, 1.0f, 0.0f, 0.5f));
+								}
 							}
-							if (sel_bone_anim->ScalingKeys[i].time == i)
+							for (int j = 0; j < sel_bone_anim->num_scaling_keys; ++j)
 							{
-								ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + 1, p.y + 115), 6.0f, ImColor(1.0f, 0.0f, 0.0f, 0.5f));
+								if (sel_bone_anim->ScalingKeys[j].time == i)
+								{
+									ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + 1, p.y + 115), 6.0f, ImColor(1.0f, 0.5f, 0.0f, 0.5f));
+								}
 							}
 						}
 
@@ -88,7 +97,7 @@ void AnimationInspectorWin::Draw()
 
 				ImGui::GetWindowDrawList()->AddLine({ redbar.x + progress,redbar.y - 10 }, ImVec2(redbar.x + progress, redbar.y + 165), IM_COL32(255, 0, 0, 255), 1.0f);
 
-				progress = zoom;
+				progress += zoom;
 				scrolled = false;
 
 				float framesInWindow = winSize / zoom;
