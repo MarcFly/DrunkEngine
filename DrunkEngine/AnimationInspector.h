@@ -15,6 +15,22 @@ public:
 
 public:
 	ComponentAnimation* anim;
+
+	AnimChannel* sel_bone_anim = nullptr;
+
+	//bool interpolation = false;
+
+	ImVec2 barMovement = { 0, 0 };
+	ImVec2 mouseMovement = { 0, 0 };
+	bool dragging = false;
+	bool scrolled = false;
+
+	float recSize = 700;
+	float zoom = 50;
+	float speed = 0.0f;
+	float progress = 0.0f;
+	float winSize = 0.0f;
+
 };
 
 #endif

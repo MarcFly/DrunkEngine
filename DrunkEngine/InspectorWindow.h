@@ -6,6 +6,7 @@
 
 class GameObject;
 class SkeletonInspectorWin;
+class AnimationInspectorWin;
 struct Bone;
 struct BoneWeight;
 
@@ -45,9 +46,9 @@ public:
 
 	ImVec2 show_size = { 128,128 };
 
-	// Skeleton Inspector
+	// External Inspectors
 	SkeletonInspectorWin* skel_ins = nullptr;
-
+	AnimationInspectorWin* anim_ins = nullptr;
 
 };
 

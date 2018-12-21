@@ -11,6 +11,7 @@
 #include "ResourceAnimation.h"
 #include "KdTreeWindow.h"
 #include "SkeletonInspector.h"
+#include "AnimationInspector.h"
 
 Inspector::Inspector() : Window("Inspector")
 {
@@ -19,7 +20,7 @@ Inspector::Inspector() : Window("Inspector")
 	check_info = false;
 
 	skel_ins = new SkeletonInspectorWin();
-
+	anim_ins = new AnimationInspectorWin();
 }
 
 Inspector::~Inspector()
@@ -27,6 +28,9 @@ Inspector::~Inspector()
 
 	delete skel_ins;
 	skel_ins = nullptr;
+
+	delete anim_ins;
+	anim_ins = nullptr;
 
 }
 
@@ -319,7 +323,7 @@ void Inspector::BillboardInspector(ComponentBillboard* billboard, const int& cmp
 
 void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
 {
-	if (ImGui::Button("OpenSkeletonInspector"))
+	if (ImGui::Button("Open Skeleton Inspector"))
 		skel_ins->active = true;
 
 	skel_ins->base_skel = skel;
@@ -342,5 +346,11 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 		if (anim->tickrate < 1)
 			anim->tickrate = 1;
 		ImGui::DragInt("##Framerate", &anim->tickrate, 1, 9999999);
+
+		if (ImGui::Button("Open Animation Inspector"))
+			anim_ins->active = true;
+
+		anim_ins->anim = anim;
+		anim_ins->Draw();
 	}
 }
