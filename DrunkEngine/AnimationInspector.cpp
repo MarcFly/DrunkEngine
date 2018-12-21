@@ -45,7 +45,7 @@ void AnimationInspectorWin::Draw()
 			ImGui::BeginChild("TimeLine", ImVec2(winSize, 180), true, ImGuiWindowFlags_HorizontalScrollbar);
 			{
 				ImVec2 p = ImGui::GetCursorScreenPos();
-				ImVec2 redbar = ImGui::GetCursorScreenPos();
+				ImVec2 anim_bar = ImGui::GetCursorScreenPos();
 				ImGui::InvisibleButton("scrollbar", {(float)anim->duration*zoom ,140 });
 				ImGui::SetCursorScreenPos(p);
 
@@ -95,9 +95,9 @@ void AnimationInspectorWin::Draw()
 
 				//RedLine 
 
-				ImGui::GetWindowDrawList()->AddLine({ redbar.x + progress,redbar.y - 10 }, ImVec2(redbar.x + progress, redbar.y + 165), IM_COL32(255, 0, 0, 255), 1.0f);
+				ImGui::GetWindowDrawList()->AddLine({ anim_bar.x + progress,anim_bar.y - 10 }, ImVec2(anim_bar.x + progress, anim_bar.y + 165), IM_COL32(255, 255, 0, 120), (float)zoom);
 
-				progress += zoom;
+				progress = zoom * anim->timer;
 				scrolled = false;
 
 				float framesInWindow = winSize / zoom;
