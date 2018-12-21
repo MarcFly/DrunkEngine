@@ -109,12 +109,6 @@ void AnimationInspectorWin::Draw()
 					scrolled = true;
 				}
 
-				if (progress == zoom * anim->duration)
-				{
-					progress = 0.0f;
-					ImGui::SetScrollX(0);
-				}
-
 			}
 			ImGui::EndChild();
 

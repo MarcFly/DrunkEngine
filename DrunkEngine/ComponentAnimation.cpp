@@ -29,16 +29,20 @@ void ComponentAnimation::Update(const float dt)
 	{
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
-			float4x4 curr_step = r_anim->channels[i]->GetMatrix(timer, duration, tickrate);
+			float4x4* curr_step = &r_anim->channels[i]->curr_bone->last_anim_step;
+			if (!curr_step->IsIdentity())
+			{
 
+			}
+			r_anim->channels[i]->curr_bone->last_anim_step = r_anim->channels[i]->GetMatrix(timer, duration, tickrate);
+			
 			//float4x4 base_t = float4x4::FromTRS(r_anim->channels[i]->curr_bone->permanent_local_pos, r_anim->channels[i]->curr_bone->permanent_local_rot, r_anim->channels[i]->curr_bone->permanent_local_scale);
-
 			
 			float3 step_pos;
 			Quat step_rot;
 			float3 step_scale;
 
-			curr_step.Decompose(step_pos, step_rot, step_scale);
+			curr_step->Decompose(step_pos, step_rot, step_scale);
 
 			// Do the animation calculations for skeleton here
 			

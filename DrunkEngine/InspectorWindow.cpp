@@ -339,13 +339,25 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 		ImGui::SameLine();
 		if (anim->duration < 0)
 			anim->duration = 0;
-		ImGui::DragInt("##Duration", &anim->duration, 0, 9999999);
+		if (anim->duration > 10000)
+			anim->duration = 10000;
+		ImGui::DragInt("##Duration", &anim->duration, 0, 10000);
 
 		ImGui::Text("Framerate: ");
 		ImGui::SameLine();
 		if (anim->tickrate < 1)
 			anim->tickrate = 1;
-		ImGui::DragInt("##Framerate", &anim->tickrate, 1, 9999999);
+		if (anim->tickrate > 1000)
+			anim->tickrate = 1000;
+		ImGui::DragInt("##Framerate", &anim->tickrate, 1, 1000);
+
+		ImGui::Text("Blend Time: ");
+		ImGui::SameLine();
+		if (anim->anim_blend < 0)
+			anim->anim_blend = 0;
+		if (anim->anim_blend > 10)
+			anim->anim_blend = 10;
+		ImGui::DragInt("##BlendTime", &anim->anim_blend, 0, 10);
 
 		if (ImGui::Button("Open Animation Inspector"))
 			anim_ins->active = true;

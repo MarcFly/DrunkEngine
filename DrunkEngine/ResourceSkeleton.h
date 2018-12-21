@@ -24,6 +24,8 @@ struct Bone
 
 	aiMatrix4x4 OffsetMatrix;
 
+	float4x4 last_anim_step = float4x4::identity;
+
 	float3 permanent_local_pos = float3::zero;
 	Quat permanent_local_rot = Quat::identity;
 	float3 permanent_local_scale = float3::one;

@@ -32,9 +32,12 @@ public:
 	ComponentSkeleton* c_skel;
 	int duration; // In Frames
 	int tickrate;
-	
+	int anim_blend;
+
 	float timer;
 	float curr_time;
+
+	
 
 public:
 	void SetBaseVals()
@@ -47,6 +50,7 @@ public:
 		c_mesh = nullptr;
 		c_skel = nullptr;
 		timer = 0;
+		anim_blend = 0;
 	}
 };
 
