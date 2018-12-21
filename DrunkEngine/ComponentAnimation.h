@@ -66,9 +66,10 @@ public:
 		timer = 0;
 
 		blending = true;
-		playing = false;
 
 		curr_animation = 0;
+
+		playing = true;
 	}
 
 };

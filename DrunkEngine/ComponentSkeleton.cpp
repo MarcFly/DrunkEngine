@@ -26,7 +26,9 @@ void ComponentSkeleton::Update(const float dt)
 	{
 		initial_pos = parent->GetTransform()->global_transform.Col3(3);
 		initial_rot = parent->GetTransform()->GetRotFromMat(parent->GetTransform()->global_transform);
-		initial_scale = parent->GetTransform()->global_transform.GetScale();
+		initial_scale.x = parent->GetTransform()->global_transform[0][0];
+		initial_scale.y = parent->GetTransform()->global_transform[1][1];
+		initial_scale.z = parent->GetTransform()->global_transform[2][2];
 
 		check_vecs++;
 	}
@@ -55,13 +57,13 @@ void ComponentSkeleton::DrawDeformedMesh()
 {
 	c_mesh->deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
 	
-	/*float3 par_pos = parent->GetTransform()->position;
-	for (int i = 0; i < c_mesh->deformable_mesh->num_vertex; ++i)
-	{
-		c_mesh->deformable_mesh->vertex[i * 3] -= par_pos.x;
-		c_mesh->deformable_mesh->vertex[i * 3 + 1] -= par_pos.y;
-		c_mesh->deformable_mesh->vertex[i * 3 + 2] -= par_pos.z;
-	}*/
+	//float3 par_pos = parent->GetTransform()->position;
+	//for (int i = 0; i < c_mesh->deformable_mesh->num_vertex; ++i)
+	//{
+	//	c_mesh->deformable_mesh->vertex[i * 3] -= par_pos.x;
+	//	c_mesh->deformable_mesh->vertex[i * 3 + 1] -= par_pos.y;
+	//	c_mesh->deformable_mesh->vertex[i * 3 + 2] -= par_pos.z;
+	//}
 
 	DeformMesh(r_skel->bones);
 }
@@ -91,8 +93,14 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 		for (int k = 0; k < 4; k++)
 			for (int l = 0; l < 4; l++)
 				offset_mat[k][l] = bones[i]->OffsetMatrix[k][l];
+		
+		//b_trans * parent->GetTransform()->global_transform;
+		//b_trans = RecursiveParentInverted(b_trans, *bones[i]);
+		float4x4 bind_pose_t = float4x4::FromTRS(bones[i]->permanent_local_pos, bones[i]->permanent_local_rot, bones[i]->permanent_local_scale);
+		//b_trans = b_trans * parent->GetTransform()->local_transform.Inverted();
 
-		//b_trans = b_trans * parent->GetTransform()->global_transform.Inverted();
+		//b_trans = b_trans * bind_pose_t.Inverted();
+
 		b_trans = b_trans * offset_mat;
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
@@ -178,6 +186,16 @@ void ComponentSkeleton::Save(JSON_Array* comps)
 
 	json_array_append_value(comps, append);
 
+}
+
+float4x4 ComponentSkeleton::RecursiveParentInverted(float4x4& t, Bone& b)
+{
+	if (b.parent != nullptr)
+	{
+		t = t * b.parent->transform.local_transform.Inverted();
+		t = RecursiveParentInverted(t, *b.parent);
+	}
+	return t;
 }
 
 void ComponentSkeleton::UpdateTransform()

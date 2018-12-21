@@ -54,6 +54,16 @@ void SkeletonInspectorWin::Draw()
 									ev.bone.ptr = selected_bone;
 									App->eventSys->BroadcastEvent(ev);
 								}
+								//Global Scale
+								float scale[3] = { selected_bone->transform.global_scale.x, selected_bone->transform.global_scale.y, selected_bone->transform.global_scale.z };
+								if (ImGui::DragFloat3("Scale", scale, 0.2f))
+								{
+									selected_bone->transform.SetTransformPosition(scale[0], scale[1], scale[2]);
+
+									Event ev(EventType::Bone_Updated, Event::UnionUsed::UseBone);
+									ev.bone.ptr = selected_bone;
+									App->eventSys->BroadcastEvent(ev);
+								}
 							}
 						}
 						ImGui::EndChild();
