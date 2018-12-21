@@ -38,5 +38,9 @@ public:
 
 	void ExportMeta(const aiAnimation* anim, const int& anim_id, std::string path);
 	void LoadMeta(const char* file, MetaAnimation* meta);
+
+	ComponentAnimation* ImportAnimationForSkeleton(ResourceSkeleton* skel, GameObject* par);
+
+
 };
 #endif

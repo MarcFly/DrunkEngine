@@ -8,6 +8,14 @@ struct ResourceAnimation;
 struct AnimChannel;
 class GameObject;
 
+struct VirtualAnimation
+{
+	int start = 0;
+	int end = 0;
+	int tickrate = 1;
+	int blend_time = 1;
+};
+
 class ComponentAnimation : public Component
 {
 public:
@@ -32,16 +40,18 @@ public:
 	ResourceAnimation* r_anim;
 	ComponentMesh* c_mesh;
 	ComponentSkeleton* c_skel;
-	int duration; // In Frames
-	int tickrate;
-	int anim_blend;
+
+	std::vector<VirtualAnimation> anims;
+
+	int curr_animation;
 
 	float timer;
-	float curr_time;
 
 	bool blending;
 
 	bool playing;
+
+	int duration;
 
 public:
 	void SetBaseVals()
@@ -54,10 +64,11 @@ public:
 		c_mesh = nullptr;
 		c_skel = nullptr;
 		timer = 0;
-		anim_blend = 1;
 
 		blending = true;
 		playing = false;
+
+		curr_animation = 0;
 	}
 
 };

@@ -57,12 +57,15 @@ void AnimationInspectorWin::Draw()
 			//Animation TimeLine
 			ImGui::BeginChild("TimeLine", ImVec2(winSize, 180), true, ImGuiWindowFlags_HorizontalScrollbar);
 			{
+				int duration = abs(anim->anims[anim->curr_animation].end - anim->anims[anim->curr_animation].start);
+				if (duration == 0)
+					duration = 1;
 				ImVec2 p = ImGui::GetCursorScreenPos();
 				ImVec2 anim_bar = ImGui::GetCursorScreenPos();
-				ImGui::InvisibleButton("scrollbar", {(float)anim->duration*zoom ,140 });
+				ImGui::InvisibleButton("scrollbar", {(float)duration*zoom ,140 });
 				ImGui::SetCursorScreenPos(p);
 
-				for (int i = 0; i < anim->duration; i++)
+				for (int i = 0; i < duration; i++)
 				{
 					ImGui::BeginGroup();
 					{

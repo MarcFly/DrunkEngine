@@ -150,8 +150,13 @@ void AnimationImport::LinkAnim(DGUID fID, ComponentAnimation* anim)
 
 	anim->r_anim = res->Asset.animation.ptr;
 	anim->UID = fID;
+
+	VirtualAnimation push;
+	push.end = res->duration;
+	push.tickrate = res->tickrate;
+	anim->anims.push_back(push);
+
 	anim->duration = res->duration;
-	anim->tickrate = res->tickrate;
 
 	res->UseCount++;
 }
@@ -284,4 +289,28 @@ void AnimationImport::LoadMeta(const char* file, MetaAnimation* meta)
 	// Free Meta Value
 	json_object_clear(meta_obj);
 	json_value_free(meta_file);
+}
+
+//------------------------------
+
+ComponentAnimation* AnimationImport::ImportAnimationForSkeleton(ResourceSkeleton* skel, GameObject* par)
+{
+	/*OPENFILENAME ofn;
+	char fileName[MAX_PATH] = "";
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFilter = "DrunkEngine Scenes (*.drnk*)\0*.drnk*\0";
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
+	ofn.lpstrDefExt = "";
+
+	GetSaveFileName(&ofn);
+	if (fileName[0] != '\0')
+	{
+		const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_Fast);
+	}*/
+
+	return nullptr;
 }

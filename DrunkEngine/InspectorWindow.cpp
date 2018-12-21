@@ -262,44 +262,44 @@ void Inspector::TransformInspector(ComponentTransform* transform, const int& cmp
 			{
 				transform->SetTransformRotation((float3)rot);
 
-				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-				ev.game_object.ptr = transform->parent;
-				App->eventSys->BroadcastEvent(ev);
+Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+ev.game_object.ptr = transform->parent;
+App->eventSys->BroadcastEvent(ev);
 			}
 		}
 		else if (App->gameObj->mCurrentGizmoMode == ImGuizmo::WORLD)
-		{	
-			float3 pos_vec;
-			Quat rot_quat;
-			float3 aux;
+		{
+		float3 pos_vec;
+		Quat rot_quat;
+		float3 aux;
 
-			//transform->aux_world_pos.Decompose(pos_vec, rot_quat, aux);
-			pos_vec = transform->aux_world_pos.Col3(3);
-			transform->world_rot.Decompose(aux, rot_quat, aux);
+		//transform->aux_world_pos.Decompose(pos_vec, rot_quat, aux);
+		pos_vec = transform->aux_world_pos.Col3(3);
+		transform->world_rot.Decompose(aux, rot_quat, aux);
 
-			//Pos
-			float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
-			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
-			{
-				transform->SetWorldPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
+		//Pos
+		float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
+		if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+		{
+			transform->SetWorldPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
 
-				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-				ev.game_object.ptr = transform->parent;
-				App->eventSys->BroadcastEvent(ev);
-			}
+			Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+			ev.game_object.ptr = transform->parent;
+			App->eventSys->BroadcastEvent(ev);
+		}
 
-			//Rot
-			float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
-			float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
-			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
-			{
-				Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z));
-				transform->SetWorldRot(rot_quat);
+		//Rot
+		float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
+		float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
+		if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
+		{
+			Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z));
+			transform->SetWorldRot(rot_quat);
 
-				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-				ev.game_object.ptr = transform->parent;
-				App->eventSys->BroadcastEvent(ev);
-			}
+			Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+			ev.game_object.ptr = transform->parent;
+			App->eventSys->BroadcastEvent(ev);
+		}
 		}
 
 		//Scale
@@ -323,9 +323,16 @@ void Inspector::BillboardInspector(ComponentBillboard* billboard, const int& cmp
 
 void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
 {
-	if (ImGui::Button("Open Skeleton Inspector"))
-		skel_ins->active = true;
+	std::string HeaderID = "Skeleton: " + skel->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
+	{
+		if (ImGui::Button("Open Skeleton Inspector"))
+			skel_ins->active = true;
 
+		if (ImGui::Button("Import Animation for this Skeleton"))
+			App->importer->anim_i->ImportAnimationForSkeleton(skel->r_skel, skel->parent);
+
+	}
 	skel_ins->base_skel = skel;
 	skel_ins->Draw();
 }
@@ -335,34 +342,72 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 	std::string HeaderID = "Animation: " + anim->name + "##" + std::to_string(cmpt_id);
 	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
-		ImGui::Text("Duration in Frames: ");
-		ImGui::SameLine();
-		if (anim->duration < 0)
-			anim->duration = 0;
-		if (anim->duration > 10000)
-			anim->duration = 10000;
-		ImGui::DragInt("##Duration", &anim->duration, 0, 10000);
-
-		ImGui::Text("Framerate: ");
-		ImGui::SameLine();
-		if (anim->tickrate < 1)
-			anim->tickrate = 1;
-		if (anim->tickrate > 1000)
-			anim->tickrate = 1000;
-		ImGui::DragInt("##Framerate", &anim->tickrate, 1, 1000);
-
-		ImGui::Text("Blend Time: ");
-		ImGui::SameLine();
-		if (anim->anim_blend < 1)
-			anim->anim_blend = 1;
-		if (anim->anim_blend > 10)
-			anim->anim_blend = 10;
-		ImGui::DragInt("##BlendTime", &anim->anim_blend, 0, 10);
-
 		if (ImGui::Button("Open Animation Inspector"))
 			anim_ins->active = true;
+		for (int i = 0; i < anim->anims.size(); i++)
+		{
+			if (ImGui::Button("X"))
+			{
+				if (anim->anims.size() > 1)
+				{
+					for (int j = i; j < anim->anims.size() - 1; j++)
+						anim->anims[j] = anim->anims[j + 1];
+					anim->anims.pop_back();
+				}
+			}
+			ImGui::SameLine();
 
-		anim_ins->anim = anim;
-		anim_ins->Draw();
+			std::string AnimHeaderID = "Anim: " + std::to_string(i);
+			std::string Labels = "##" + std::to_string(i);
+			if (ImGui::CollapsingHeader(AnimHeaderID.c_str()))
+			{
+				if (ImGui::Button(("SET" + Labels).c_str()))
+				{
+					anim->curr_animation = i;
+					anim->blending = true;
+				}
+				ImGui::Text("Starting Frame: ");
+				ImGui::SameLine();
+				if (anim->anims[i].start < 0)
+					anim->anims[i].start = 0;
+				if (anim->anims[i].start > anim->duration)
+					anim->anims[i].start = anim->duration;
+				ImGui::DragInt((Labels + "Start").c_str(), &anim->anims[i].start, 1,0, anim->duration - 1);
+
+				ImGui::Text("Duration in Frames: ");
+				ImGui::SameLine();
+				if (anim->anims[i].end < 0)
+					anim->anims[i].end = 0;
+				if (anim->anims[i].end > anim->duration - 1)
+					anim->anims[i].end = anim->duration - 1;
+				ImGui::DragInt((Labels + "Duration").c_str(), &anim->anims[i].end, 1,0, anim->duration - 1);
+
+				ImGui::Text("Framerate: ");
+				ImGui::SameLine();
+				if (anim->anims[i].tickrate < 1)
+					anim->anims[i].tickrate = 1;
+				if (anim->anims[i].tickrate > 1000)
+					anim->anims[i].tickrate = 1000;
+				ImGui::DragInt((Labels + "Framerate").c_str(), &anim->anims[i].tickrate, 1, 1, 1000);
+
+				ImGui::Text("Blend Time: ");
+				ImGui::SameLine();
+				if (anim->anims[i].blend_time < 1)
+					anim->anims[i].blend_time = 1;
+				if (anim->anims[i].blend_time > 10)
+					anim->anims[i].blend_time = 10;
+				ImGui::DragInt((Labels + "BlendTime").c_str(), &anim->anims[i].blend_time, 1, 1, 10);
+
+			}
+		}
+
+		if (ImGui::Button("Add Animation from Same Timeline"))
+		{
+			VirtualAnimation push;
+			push.tickrate = (--anim->anims.end())->tickrate;
+			anim->anims.push_back(push);
+		}
 	}
+	anim_ins->anim = anim;
+	anim_ins->Draw();
 }
