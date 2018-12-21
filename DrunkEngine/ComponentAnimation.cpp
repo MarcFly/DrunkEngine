@@ -39,7 +39,7 @@ void ComponentAnimation::Update(const float dt)
 	}
 
 	if(playing)
-		timer += tickrate / (1 / dt);
+		timer += anims[curr_animation].tickrate / (1 / dt);
 }
 
 void ComponentAnimation::Draw()
@@ -74,39 +74,39 @@ void ComponentAnimation::Save(JSON_Array* comps)
 
 	json_object_dotset_string(curr, "properties.filename", App->resources->Library.at(UID)->file.c_str());
 	json_object_dotset_number(curr, "properties.duration", duration);
-	json_object_dotset_number(curr, "properties.tickrate", tickrate);
-
+	//json_object_dotset_number(curr, "properties.tickrate", anims[0].tickrate);
+	//Will have to save all the created animations
 
 	json_array_append_value(comps, append);
 }
 
 void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 {
-	if (timer > anim_blend)
+	if (timer > anims[curr_animation].blend_time)
 	{
-		timer = 0;
+		timer = anims[curr_animation].start;
 		blending = false;
 	}
 
 	float3 TA, TB, step_pos;
 	Quat RA, RB, step_rot;
 	float3 SA, SB, step_scale;
-	float4x4 start_step = curr_channel->GetFirstFrame(duration, tickrate);
+	float4x4 start_step = curr_channel->GetFirstFrame(duration, anims[curr_animation].tickrate);
 	
 	curr_channel->curr_bone->last_anim_step.Decompose(TA, RA, SA);
 	start_step.Decompose(TB, RB, SB);
 
-	step_pos = TB * (timer / anim_blend);
-	step_pos += TA * (timer / anim_blend);
+	step_pos = TB * (timer / anims[curr_animation].blend_time);
+	step_pos += TA * (timer / anims[curr_animation].blend_time);
 
 	float3 rot_test = RadToDeg(RB.ToEulerXYZ());
 	float3 ret_rot;
-	ret_rot = rot_test * anim_blend;
-	ret_rot += rot_test * (1 - anim_blend);
+	ret_rot = rot_test * anims[curr_animation].blend_time;
+	ret_rot += rot_test * (1 - anims[curr_animation].blend_time);
 	step_rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
 
-	step_scale = SB * (timer / anim_blend);
-	step_scale += SA * (timer / anim_blend);
+	step_scale = SB * (timer / anims[curr_animation].blend_time);
+	step_scale += SA * (timer / anims[curr_animation].blend_time);
 
 	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
 	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
@@ -116,12 +116,12 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 
 void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 {
-	if (timer > duration)
-		timer = 0;
+	if (timer > anims[curr_animation].start + abs(anims[curr_animation].end - anims[curr_animation].start))
+		timer = anims[curr_animation].start;
 
 	float4x4* curr_step = &curr_channel->curr_bone->last_anim_step;
 
-	curr_channel->curr_bone->last_anim_step = curr_channel->GetMatrix(timer, duration, tickrate);
+	curr_channel->curr_bone->last_anim_step = curr_channel->GetMatrix(timer, duration, anims[curr_animation].tickrate);
 
 	float3 step_pos;
 	Quat step_rot;
