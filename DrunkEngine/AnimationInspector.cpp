@@ -19,6 +19,19 @@ void AnimationInspectorWin::Draw()
 	{
 		ImGui::Begin(name.c_str(), &active, ImGuiWindowFlags_HorizontalScrollbar);
 		{
+			if (ImGui::Button("PLAY", ImVec2(60, 20)))
+				anim->playing = true;
+			ImGui::SameLine();
+
+			if (ImGui::Button("PAUSE", ImVec2(60, 20)))
+				anim->playing = false;
+			ImGui::SameLine();
+			if (ImGui::Button("STOP", ImVec2(60,20)))
+			{
+				anim->playing = false;
+				anim->timer = 0;
+			}
+			
 			ImGui::SliderInt("Zoom", &zoom, 15, 100);
 
 			//Animation typeos of Keys
@@ -97,7 +110,8 @@ void AnimationInspectorWin::Draw()
 
 				ImGui::GetWindowDrawList()->AddLine({ anim_bar.x + progress,anim_bar.y - 10 }, ImVec2(anim_bar.x + progress, anim_bar.y + 165), IM_COL32(255, 255, 0, 120), (float)zoom);
 
-				progress = zoom * anim->timer;
+				if(anim->playing)
+					progress = zoom * anim->timer;
 				scrolled = false;
 
 				float framesInWindow = winSize / zoom;

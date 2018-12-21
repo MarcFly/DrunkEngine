@@ -41,6 +41,8 @@ public:
 
 	bool blending;
 
+	bool playing;
+
 public:
 	void SetBaseVals()
 	{
@@ -55,7 +57,9 @@ public:
 		anim_blend = 1;
 
 		blending = true;
+		playing = false;
 	}
+
 };
 
 #endif

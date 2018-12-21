@@ -38,7 +38,8 @@ void ComponentAnimation::Update(const float dt)
 
 	}
 
-	timer += tickrate / (1 / dt);
+	if(playing)
+		timer += tickrate / (1 / dt);
 }
 
 void ComponentAnimation::Draw()
