@@ -26,7 +26,7 @@ public:
 	bool scrolled = false;
 
 	float recSize = 700;
-	float zoom = 50;
+	int zoom = 50;
 	float speed = 0.0f;
 	float progress = 0.0f;
 	float winSize = 0.0f;

@@ -19,7 +19,7 @@ void AnimationInspectorWin::Draw()
 	{
 		ImGui::Begin(name.c_str(), &active, ImGuiWindowFlags_HorizontalScrollbar);
 		{
-			ImGui::ProgressBar((progress / (zoom*anim->duration)), { winSize,0 });
+			ImGui::SliderInt("Zoom", &zoom, 15, 100);
 
 			//Animation typeos of Keys
 			ImGui::BeginGroup();
@@ -30,11 +30,12 @@ void AnimationInspectorWin::Draw()
 
 				ImGui::SetCursorPosY(125);
 
-				ImGui::Text("Scale");
+				ImGui::Text("Rotation");
 
 				ImGui::SetCursorPosY(165);
 
-				ImGui::Text("Rotation");
+				ImGui::Text("Scale");
+				
 			}
 			ImGui::EndGroup();
 
@@ -45,7 +46,7 @@ void AnimationInspectorWin::Draw()
 			{
 				ImVec2 p = ImGui::GetCursorScreenPos();
 				ImVec2 redbar = ImGui::GetCursorScreenPos();
-				ImGui::InvisibleButton("scrollbar", { anim->duration*zoom ,140 });
+				ImGui::InvisibleButton("scrollbar", {(float)anim->duration*zoom ,140 });
 				ImGui::SetCursorScreenPos(p);
 
 				for (int i = 0; i < anim->duration; i++)
@@ -87,12 +88,15 @@ void AnimationInspectorWin::Draw()
 
 				ImGui::GetWindowDrawList()->AddLine({ redbar.x + progress,redbar.y - 10 }, ImVec2(redbar.x + progress, redbar.y + 165), IM_COL32(255, 0, 0, 255), 1.0f);
 
+				progress = zoom;
+				scrolled = false;
+
 				float framesInWindow = winSize / zoom;
 
 				if (progress != 0 && fmod(progress, winSize) == 0 && !scrolled)
 				{
-					float scroolPos = ImGui::GetScrollX();
-					ImGui::SetScrollX(scroolPos + winSize);
+					float scrollPos = ImGui::GetScrollX();
+					ImGui::SetScrollX(scrollPos + winSize);
 					scrolled = true;
 				}
 
