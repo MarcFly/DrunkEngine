@@ -151,10 +151,13 @@ void AnimationImport::LinkAnim(DGUID fID, ComponentAnimation* anim)
 	anim->r_anim = res->Asset.animation.ptr;
 	anim->UID = fID;
 
-	VirtualAnimation push;
-	push.end = res->duration;
-	push.tickrate = res->tickrate;
-	anim->anims.push_back(push);
+	if (anim->anims.size() == 0)
+	{
+		VirtualAnimation push;
+		push.end = res->duration;
+		push.tickrate = res->tickrate;
+		anim->anims.push_back(push);
+	}
 
 	anim->duration = res->duration;
 

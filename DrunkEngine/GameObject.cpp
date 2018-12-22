@@ -275,7 +275,7 @@ void GameObject::RecursiveSetNewUUID()
 
 void GameObject::Load(const JSON_Value* go, const char* file)
 {
-	
+	bool ret = true;
 
 }
 
