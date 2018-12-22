@@ -76,7 +76,8 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 	for (int i = 0; i < bones.size(); ++i)
 	{
 
-		float4x4 b_trans = bones[i]->transform.global_transform;
+		float4x4 b_trans = parent->GetTransform()->global_transform.Inverted();
+			b_trans = b_trans * bones[i]->transform.global_transform;
 
 		//aiVector3D offset_aiscale;
 		//aiVector3D offset_aipos;
@@ -88,6 +89,17 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 		//Quat offset_rot = Quat(offset_rot.x, offset_rot.y, offset_rot.z, offset_rot.w);
 		//float3 offset_pos = float3(offset_pos.x, offset_pos.y, offset_pos.z);
 
+		/*
+		float4x4 boneTransform = (((ComponentTransformation)gameObject->GetComponent(TRANSFORMATION))->globalMatrix.Inverted() // Invertida transform "mesh"
+		((ComponentTransformation)bone->gameObject->GetComponent(TRANSFORMATION))->globalMatrix) // global de l'os
+		rBone->Offset; // offset assimp
+
+		float4x4 trans = component_bone->GetEmbeddedObject()->GetTransform()->GetMatrix(); // global de l'os
+		trans = trans * component_bone->attached_mesh->GetEmbeddedObject()->GetTransform()->GetLocal().Inverted(); // invertida del gameobject conenint el mesh
+
+		trans = trans * rbone->offset_matrix; // offset assimp
+		*/
+
 		float4x4 offset_mat;
 
 		for (int k = 0; k < 4; k++)
@@ -97,7 +109,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 		//b_trans * parent->GetTransform()->global_transform;
 		//b_trans = RecursiveParentInverted(b_trans, *bones[i]);
 		float4x4 bind_pose_t = float4x4::FromTRS(bones[i]->permanent_local_pos, bones[i]->permanent_local_rot, bones[i]->permanent_local_scale);
-		//b_trans = b_trans * parent->GetTransform()->local_transform.Inverted();
+		//b_trans = b_trans * bones[i]->transform.local_transform.Inverted();
 
 		//b_trans = b_trans * bind_pose_t.Inverted();
 
