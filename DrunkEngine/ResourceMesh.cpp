@@ -110,6 +110,8 @@ void ResourceMesh::UnloadBuffers()
 
 void ResourceMesh::UnloadMem()
 {
+	UnloadBuffers();
+
 	if (index != nullptr)
 	{
 		delete[] index;
@@ -140,8 +142,6 @@ void ResourceMesh::UnloadMem()
 		delete[] vert_normals;
 		vert_normals = nullptr;
 	}
-
-	UnloadBuffers();
 }
 
 //--------------------------------------------------------------------------------------------------------------

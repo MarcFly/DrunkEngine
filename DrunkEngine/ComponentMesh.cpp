@@ -125,18 +125,17 @@ void ComponentMesh::DrawMesh()
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	/*if (deformable_mesh != nullptr)
+	/*glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
+
+	if (deformable_mesh != nullptr)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
 		
 		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vert_normals);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vert_normals, GL_DYNAMIC_DRAW);	
-	}
-	else
-		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
+	}*/
 	
-	glVertexPointer(3, GL_FLOAT, 0, NULL);*/
+	//glVertexPointer(3, GL_FLOAT, 0, NULL);
 
 	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
 
@@ -243,8 +242,12 @@ void ComponentMesh::CleanUp()
 		this->BoundingBox = nullptr;
 	}
 
-	delete deformable_mesh;
-	deformable_mesh = nullptr;
+	if (deformable_mesh != nullptr)
+	{
+		delete deformable_mesh;
+		deformable_mesh = nullptr;
+	}
+	
 
 	this->parent = nullptr;
 }

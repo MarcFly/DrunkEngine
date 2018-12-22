@@ -60,6 +60,19 @@ void ComponentAnimation::Load(const JSON_Object* comp)
 	this->name = json_object_get_string(comp, "filename");
 	this->UID = DGUID(name.c_str());
 
+	JSON_Array* anim_arr = json_object_get_array(comp, "animations");
+	for (int i = 0; i < json_array_get_count(anim_arr); ++i)
+	{
+		VirtualAnimation push;
+
+		JSON_Value* val = json_object_get_value(json_value_get_object(json_array_get_value(anim_arr, i)), "properties");
+		JSON_Object* obj = json_value_get_object(val);
+
+		push.start = json_object_get_number(obj, "start");
+		push.end = json_object_get_number(obj, "end");
+		push.tickrate = json_object_get_number(obj, "tickrate");
+		push.blend_time = json_object_get_number(obj, "blend_time");
+	}
 
 	if (!App->resources->InLibrary(UID))
 		this->UID = App->resources->AddResource(name.c_str());
@@ -78,6 +91,23 @@ void ComponentAnimation::Save(JSON_Array* comps)
 
 	json_object_dotset_string(curr, "properties.filename", App->resources->Library.at(UID)->file.c_str());
 	json_object_dotset_number(curr, "properties.duration", duration);
+
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* anim_arr = json_value_get_array(set_array);
+	for (int i = 0; i < anims.size(); ++i)
+	{
+		JSON_Value* append_anim = json_value_init_object();
+		JSON_Object* curr_anim = json_value_get_object(append_anim);
+
+		json_object_dotset_number(curr_anim, "properties.start", anims[i].start);
+		json_object_dotset_number(curr_anim, "properties.end", anims[i].end);
+		json_object_dotset_number(curr_anim, "properties.tickrate", anims[i].tickrate);
+		json_object_dotset_number(curr_anim, "properties.blend_time", anims[i].blend_time);
+
+		json_array_append_value(anim_arr, append_anim);
+	}
+
+	json_object_dotset_value(curr, "properties.animations", set_array);
 	//json_object_dotset_number(curr, "properties.tickrate", anims[0].tickrate);
 	//Will have to save all the created animations
 
