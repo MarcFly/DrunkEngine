@@ -375,7 +375,7 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 					anim->anims[i].start = anim->duration;
 				ImGui::DragInt((Labels + "Start").c_str(), &anim->anims[i].start, 1,0, anim->duration - 1);
 
-				ImGui::Text("Duration in Frames: ");
+				ImGui::Text("End Frame: ");
 				ImGui::SameLine();
 				if (anim->anims[i].end < 0)
 					anim->anims[i].end = 0;
@@ -395,9 +395,9 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 				ImGui::SameLine();
 				if (anim->anims[i].blend_time < 1)
 					anim->anims[i].blend_time = 1;
-				if (anim->anims[i].blend_time > 10)
-					anim->anims[i].blend_time = 10;
-				ImGui::DragInt((Labels + "BlendTime").c_str(), &anim->anims[i].blend_time, 1, 1, 10);
+				if (anim->anims[i].blend_time > 20)
+					anim->anims[i].blend_time = 20;
+				ImGui::DragInt((Labels + "BlendTime").c_str(), &anim->anims[i].blend_time, 1, 1, 20);
 
 			}
 		}
