@@ -72,6 +72,8 @@ void ComponentAnimation::Load(const JSON_Object* comp)
 		push.end = json_object_get_number(obj, "end");
 		push.tickrate = json_object_get_number(obj, "tickrate");
 		push.blend_time = json_object_get_number(obj, "blend_time");
+
+		anims.push_back(push);
 	}
 
 	if (!App->resources->InLibrary(UID))
