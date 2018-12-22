@@ -127,28 +127,32 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 	float blend_percentage = total_blend_time / anims[curr_animation].blend_time;
 
 	//Pos
-	step_pos = Tnew_anim * blend_percentage;
-	step_pos += Tprev_anim * (1 - blend_percentage);
-
+	if (curr_channel->num_translation_keys > 1)
+	{	
+		step_pos = Tnew_anim * blend_percentage;
+		step_pos += Tprev_anim * (1 - blend_percentage);
+		curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
+	}
 	//Rot (prob not working)
-	float3 rot_new = RadToDeg(Rnew_anim.ToEulerXYZ());
-	float3 rot_prev = RadToDeg(Rprev_anim.ToEulerXYZ());
-	
-	float3 ret_rot;
-	ret_rot = rot_new * blend_percentage;
-	ret_rot += rot_prev * (1 - blend_percentage);
+	if (curr_channel->num_rotation_keys > 1)
+	{
+		float3 rot_new = RadToDeg(Rnew_anim.ToEulerXYZ());
+		float3 rot_prev = RadToDeg(Rprev_anim.ToEulerXYZ());
 
-	step_rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
+		float3 ret_rot;
+		ret_rot = rot_new * blend_percentage;
+		ret_rot += rot_prev * (1 - blend_percentage);
 
+		step_rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
+		curr_channel->curr_bone->transform.SetTransformRotation(step_rot * curr_channel->curr_bone->permanent_local_rot);
+	}
 	//Scale
-	step_scale = Sprev_anim * blend_percentage;
-	step_scale += Snew_anim * (1 - blend_percentage);
-
-	//Calculate new pos
-	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
-	curr_channel->curr_bone->transform.SetTransformRotation(step_rot * curr_channel->curr_bone->permanent_local_rot);
-	curr_channel->curr_bone->transform.SetTransformScale(curr_channel->curr_bone->permanent_local_scale.x + step_scale.x - 1, curr_channel->curr_bone->permanent_local_scale.y + step_scale.y - 1, curr_channel->curr_bone->permanent_local_scale.z + step_scale.z - 1);
-
+	if (curr_channel->num_scaling_keys > 1)
+	{
+		step_scale = Sprev_anim * blend_percentage;
+		step_scale += Snew_anim * (1 - blend_percentage);
+		curr_channel->curr_bone->transform.SetTransformScale(curr_channel->curr_bone->permanent_local_scale.x + step_scale.x - 1, curr_channel->curr_bone->permanent_local_scale.y + step_scale.y - 1, curr_channel->curr_bone->permanent_local_scale.z + step_scale.z - 1);
+	}
 }
 
 void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
