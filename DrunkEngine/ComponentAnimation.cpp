@@ -29,16 +29,20 @@ void ComponentAnimation::Update(const float dt)
 	{
 		if (r_anim->channels[i]->curr_bone != nullptr)
 		{
-			if (blending == true)
+			if (phase != BlendPhase::End)
+			{
 				BlendFrom(r_anim->channels[i]);
+			}
 			else
 				AnimateSkel(r_anim->channels[i]);
 		}
 
 
 	}
+	if (phase != BlendPhase::End && playing)
+		blend_timer += anims[prev_animation].tickrate / (1 / dt);
 
-	if(playing)
+	if (playing)
 		timer += anims[curr_animation].tickrate / (1 / dt);
 }
 
@@ -82,34 +86,67 @@ void ComponentAnimation::Save(JSON_Array* comps)
 
 void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 {
-	if (timer > anims[curr_animation].blend_time)
+	float curr_anim_duration = abs(anims[curr_animation].end - anims[curr_animation].start);
+
+	if (phase == BlendPhase::MidBlend)
 	{
+		if (blend_timer > anims[prev_animation].start + abs(anims[prev_animation].end - anims[prev_animation].start))
+			blend_timer = anims[prev_animation].start;
+
+		if (timer > anims[curr_animation].start + curr_anim_duration)
+		{
+			timer = anims[curr_animation].start;
+			++blend_timer_loops;
+		}
+	}
+	else
+	{
+		blend_timer = timer;
 		timer = anims[curr_animation].start;
-		blending = false;
+		phase = BlendPhase::MidBlend;
 	}
 
-	float3 TA, TB, step_pos;
-	Quat RA, RB, step_rot;
-	float3 SA, SB, step_scale;
-	float4x4 start_step = curr_channel->GetFirstFrame(duration, anims[curr_animation].tickrate);
+	float total_blend_time = (timer - anims[curr_animation].start) + curr_anim_duration * blend_timer_loops;
+
+	if (total_blend_time >= anims[curr_animation].blend_time)
+	{
+		phase = BlendPhase::End;
+		blend_timer_loops = 0;
+	}
+
+	float3 Tprev_anim, Tnew_anim, step_pos;
+	Quat Rprev_anim, Rnew_anim, step_rot;
+	float3 Sprev_anim, Snew_anim, step_scale;
+
+	float4x4 new_anim_matrix = curr_channel->GetMatrix(timer, duration, anims[curr_animation].tickrate);
+	float4x4 prev_anim_matrix = curr_channel->GetMatrix(blend_timer, duration, anims[prev_animation].tickrate);
+
+	prev_anim_matrix.Decompose(Tprev_anim, Rprev_anim, Sprev_anim);
+	new_anim_matrix.Decompose(Tnew_anim, Rnew_anim, Snew_anim);
+
+	float blend_percentage = total_blend_time / anims[curr_animation].blend_time;
+
+	//Pos
+	step_pos = Tnew_anim * blend_percentage;
+	step_pos += Tprev_anim * (1 - blend_percentage);
+
+	//Rot (prob not working)
+	float3 rot_new = RadToDeg(Rnew_anim.ToEulerXYZ());
+	float3 rot_prev = RadToDeg(Rprev_anim.ToEulerXYZ());
 	
-	curr_channel->curr_bone->last_anim_step.Decompose(TA, RA, SA);
-	start_step.Decompose(TB, RB, SB);
-
-	step_pos = TB * (timer / anims[curr_animation].blend_time);
-	step_pos += TA * (timer / anims[curr_animation].blend_time);
-
-	float3 rot_test = RadToDeg(RB.ToEulerXYZ());
 	float3 ret_rot;
-	ret_rot = rot_test * anims[curr_animation].blend_time;
-	ret_rot += rot_test * (1 - anims[curr_animation].blend_time);
+	ret_rot = rot_new * blend_percentage;
+	ret_rot += rot_prev * (1 - blend_percentage);
+
 	step_rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
 
-	step_scale = SB * (timer / anims[curr_animation].blend_time);
-	step_scale += SA * (timer / anims[curr_animation].blend_time);
+	//Scale
+	step_scale = Sprev_anim * blend_percentage;
+	step_scale += Snew_anim * (1 - blend_percentage);
 
+	//Calculate new pos
 	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
-	curr_channel->curr_bone->transform.SetTransformPosition(curr_channel->curr_bone->permanent_local_pos.x + step_pos.x, curr_channel->curr_bone->permanent_local_pos.y + step_pos.y, curr_channel->curr_bone->permanent_local_pos.z + step_pos.z);
+	curr_channel->curr_bone->transform.SetTransformRotation(step_rot * curr_channel->curr_bone->permanent_local_rot);
 	curr_channel->curr_bone->transform.SetTransformScale(curr_channel->curr_bone->permanent_local_scale.x + step_scale.x - 1, curr_channel->curr_bone->permanent_local_scale.y + step_scale.y - 1, curr_channel->curr_bone->permanent_local_scale.z + step_scale.z - 1);
 
 }

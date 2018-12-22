@@ -363,8 +363,9 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 			{
 				if (ImGui::Button(("SET" + Labels).c_str()))
 				{
+					anim->prev_animation = anim->curr_animation;
 					anim->curr_animation = i;
-					anim->blending = true;
+					anim->phase = BlendPhase::Start;
 				}
 				ImGui::Text("Starting Frame: ");
 				ImGui::SameLine();

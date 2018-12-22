@@ -16,6 +16,13 @@ struct VirtualAnimation
 	int blend_time = 1;
 };
 
+enum BlendPhase
+{
+	Start,
+	MidBlend,
+	End
+};
+
 class ComponentAnimation : public Component
 {
 public:
@@ -44,10 +51,13 @@ public:
 	std::vector<VirtualAnimation> anims;
 
 	int curr_animation;
+	int prev_animation;
 
 	float timer;
+	float blend_timer;
+	int blend_timer_loops;
 
-	bool blending;
+	BlendPhase phase;
 
 	bool playing;
 
@@ -64,10 +74,13 @@ public:
 		c_mesh = nullptr;
 		c_skel = nullptr;
 		timer = 0;
+		blend_timer = 0;
 
-		blending = true;
+		phase = BlendPhase::End;
 
 		curr_animation = 0;
+		prev_animation = 0;
+		blend_timer_loops = 0;
 
 		playing = true;
 	}
