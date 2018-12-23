@@ -10,8 +10,6 @@ ComponentTransform::ComponentTransform(const aiMatrix4x4 * t, GameObject* par)
 	SetFromMatrix(t);
 	parent = par;
 
-	world_rot = world_pos = float4x4::FromTRS(float3::zero, Quat::identity, float3::one);
-
 	SetLocalTransform();
 }
 
@@ -26,6 +24,17 @@ void ComponentTransform::SetFromMatrix(const aiMatrix4x4* t)
 	scale = float3(local_scale.x, local_scale.y, local_scale.z);
 	rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w);
 	position = float3(pos.x, pos.y, pos.z);
+
+	SetTransformRotation(rotate_quat);
+}
+
+void ComponentTransform::SetFromMatrix(const float4x4 * t)
+{
+	float3 local_scale;
+	float3 pos;
+	Quat rot;
+
+	t->Decompose(position, rotate_quat, scale);
 
 	SetTransformRotation(rotate_quat);
 }
@@ -55,79 +64,49 @@ void ComponentTransform::SetTransformRotation(const float3 rot_vec)
 
 void ComponentTransform::SetTransformScale(const float scale_x, const float scale_y, const float scale_z)
 {	
-	scale.x = scale_x;
-	scale.y = scale_y;
-	scale.z = scale_z;
+	if (scale.x != scale_x && scale_x > 0.1f)
+		scale.x = scale_x;
+	if (scale.y != scale_y && scale_y > 0.1f)
+		scale.y = scale_y;
+	if (scale.z != scale_z && scale_z > 0.1f)
+		scale.z = scale_z;
+
 	SetLocalTransform();
 }
 
 void ComponentTransform::SetLocalTransform()
 {
 	local_transform = float4x4::FromTRS(position, rotate_quat, scale);
-
-	RecursiveSetChildrenToUpdate(this);
-	RecursiveSetParentToUpdate(this);
-
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = parent;
-	App->eventSys->BroadcastEvent(ev);
-}
-
-void ComponentTransform::RecursiveSetChildrenToUpdate(ComponentTransform * t)
-{
-	if (t == nullptr)
-		t = this;
-
-	t->update_bounding_box = true;
-	t->update_camera_transform = true;
-
-	for (int i = 0; i < t->parent->children.size(); i++)
-	{
-		RecursiveSetChildrenToUpdate(t->parent->children[i]->GetTransform());
-	}
-}
-
-void ComponentTransform::RecursiveSetParentToUpdate(ComponentTransform * t)
-{
-	t->update_bounding_box = true;
-	t->update_camera_transform = true;
-
-	if (t->parent->parent != nullptr)
-		RecursiveSetParentToUpdate(t->parent->parent->GetTransform());
 }
 
 void ComponentTransform::SetWorldPos(const float4x4 new_transform)
 {
 	aux_world_pos = aux_world_pos * new_transform;
 	world_pos = world_pos * new_transform;
-
-	RecursiveSetChildrenToUpdate(this);
-	RecursiveSetParentToUpdate(this);
-
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = parent;
-	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::SetWorldRot(const Quat new_rot)
 {
 	world_rot = world_rot * world_rot.FromQuat(new_rot, aux_world_pos.Col3(3) - world_pos.Col3(3));
 
-	RecursiveSetChildrenToUpdate(this);
-	RecursiveSetParentToUpdate(this);
+	//world_rot[0][0] = 1.f;
+	//world_rot[1][1] = 1.f;
+	//world_rot[2][2] = 1.f;
+	//world_rot[3][3] = 1.f;
 
-	Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
-	ev.game_object.ptr = parent;
-	App->eventSys->BroadcastEvent(ev);
 }
 
 void ComponentTransform::CalculateGlobalTransforms()
 {
 	if (parent->parent != nullptr)
 		global_transform = world_pos * world_rot * parent->parent->GetTransform()->global_transform * local_transform;
-
 	else
 		global_transform = local_transform;
+
+	global_transform.Decompose(global_pos, global_rot, global_scale);
+	//global_pos = global_transform.Col3(3);
+	//global_rot = GetRotFromMat(global_transform);
+	//global_scale = global_transform.GetScale();
 
 	if (parent->children.size() > 0)
 	{
@@ -144,6 +123,26 @@ void ComponentTransform::SetAuxWorldPos()
 {
 	aux_world_pos = float4x4::FromTRS(float3(float3::zero - global_transform.Col3(3)), Quat::identity.Neg(), float3::one);
 	aux_world_pos = -aux_world_pos;
+}
+
+Quat ComponentTransform::GetRotFromMat(float4x4 mat)
+{
+	Quat rot;	
+	
+	rot.w = Sqrt(max(0, 1 + mat.Diagonal3().x + mat.Diagonal3().y + mat.Diagonal3().z)) / 2;
+	rot.x = Sqrt(max(0, 1 + mat.Diagonal3().x - mat.Diagonal3().y - mat.Diagonal3().z)) / 2;
+	rot.y = Sqrt(max(0, 1 - mat.Diagonal3().x + mat.Diagonal3().y - mat.Diagonal3().z)) / 2;
+	rot.z = Sqrt(max(0, 1 - mat.Diagonal3().x - mat.Diagonal3().y + mat.Diagonal3().z)) / 2;
+
+	rot.x *= sgn(rot.x * (mat.Col3(2).y - mat.Col3(1).z));
+	rot.y *= sgn(rot.y * (mat.Col3(0).z - mat.Col3(2).x));
+	rot.z *= sgn(rot.z * (mat.Col3(1).x - mat.Col3(0).y));
+
+	rot.x = -rot.x;
+	rot.y = -rot.y;
+	rot.z = -rot.z;
+
+	return rot;
 }
 
 void ComponentTransform::CleanUp()

@@ -18,6 +18,8 @@ public:
 	bool Init();
 	bool Start();
 
+	
+
 	bool CleanUp();
 
 	bool LoadFBX(const char* file_path);
@@ -28,11 +30,9 @@ public:
 
 	std::string SaveScene(const char* filename = "");
 
-	//TODO
-	//void OrderScene();
-	//bool LoadTextCurrentObj(const char* path, GameObject* curr_obj);
-	//bool DestroyScene();
-	//void SetCurrTexTo(GameObject& curr_obj, const int tex_ind);
+	// Delivery HardCode
+	bool Update(float dt);
+	ComponentAnimation* A3Animation = nullptr;
 
 	void RecieveEvent(const Event & event);
 

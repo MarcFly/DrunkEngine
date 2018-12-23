@@ -6,21 +6,32 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "ResourceSkeleton.h"
+#include "ResourceAnimation.h"
 
 void Resource::LoadToMem()
 {
-	switch (par->type)
+	switch (bs.par->type)
 	{
 	case RT_Prefab:
 		break;
 	case RT_Mesh:
-		mesh.ptr = App->importer->mesh_i->LoadMesh(par->file.c_str());
+		mesh.ptr = App->importer->mesh_i->LoadMesh(bs.par->file.c_str());
 		break;
 	case RT_Material:
-		mat.ptr = App->importer->mat_i->LoadMat(par->file.c_str());
+		mat.ptr = App->importer->mat_i->LoadMat(bs.par->file.c_str());
 		break;
 	case RT_Texture:
-		texture.ptr = App->importer->mat_i->LoadTexture(par->file.c_str());
+		texture.ptr = App->importer->mat_i->LoadTexture(bs.par->file.c_str());
+		break;
+	case RT_Billboard:
+		//billboard.ptr = App->importer->mat_i->LoadTexture(bs.par->file.c_str());
+		break;
+	case RT_Skeleton:
+		skeleton.ptr = App->importer->skel_i->LoadSkeleton(bs.par->file.c_str());
+		break;
+	case RT_Animation:
+		animation.ptr = App->importer->anim_i->LoadAnimation(bs.par->file.c_str());
 		break;
 	default:
 		break;
@@ -29,46 +40,75 @@ void Resource::LoadToMem()
 
 void Resource::UnloadFromMem()
 {
-	switch (par->type)
+	switch (bs.par->type)
 	{
 	case RT_Prefab:
 		break;
 	case RT_Mesh:
+		mesh.ptr->UnloadMem();
 		delete mesh.ptr;
 		mesh.ptr = nullptr;
 		break;
 	case RT_Material:
+		mat.ptr->UnloadMem();
 		delete mat.ptr;
 		mat.ptr = nullptr;
 		break;
 	case RT_Texture:
+		texture.ptr->UnloadMem();
 		delete texture.ptr;
 		texture.ptr = nullptr;
+		break;
+	case RT_Billboard:
+		/*billboard.ptr->UnloadMem();
+		delete billboard.ptr;
+		billboard.ptr = nullptr;*/
+		break;
+	case RT_Skeleton:
+		skeleton.ptr->UnloadMem();
+		delete skeleton.ptr;
+		skeleton.ptr = nullptr;
+		break;
+	case RT_Animation:
+		animation.ptr->UnloadMem();
+		delete animation.ptr;
+		animation.ptr = nullptr;
 		break;
 	default:
 		break;
 	}
 }
 
-bool Resource::IsInUse()
+bool Resource::IsLoaded()
 {
-	if (par->UseCount > 0)
+	bool ret = false;
+	switch(bs.par->type)
 	{
-		switch (par->type)
-		{
-		case RT_Prefab:
-			break;
-		case RT_Mesh:
-			return (mesh.ptr != nullptr);
-		case RT_Material:
-			return (mat.ptr != nullptr);
-		case RT_Texture:
-			return (texture.ptr != nullptr);
-		default:
-			break;
-		}
+	case RT_Prefab:
+		break;
+	case RT_Mesh:
+		ret = (mesh.ptr != nullptr);
+		break;
+	case RT_Material:
+		ret = (mat.ptr != nullptr);
+		break;
+	case RT_Texture:
+		ret = (texture.ptr != nullptr);
+		break;
+	case RT_Billboard:
+		//ret = (billboard.ptr != nullptr);
+		break;
+	case RT_Skeleton:
+		ret = (skeleton.ptr != nullptr);
+		break;
+	case RT_Animation:
+		ret = (animation.ptr != nullptr);
+		break;
+	default:
+		ret = false;
 	}
-	return false;
+
+	return ret;
 }
 
 //--------------------------------------
@@ -160,4 +200,9 @@ bool DGUID::CheckValidity()
 	}
 
 	return ret;
+}
+
+void DGUID::cpyfromstring(std::string cmp_id)
+{
+	memcpy(MD5ID, cmp_id.c_str(), 32);
 }

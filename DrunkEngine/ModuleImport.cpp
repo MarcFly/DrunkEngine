@@ -17,6 +17,8 @@
 #include "ResourceMaterial.h"
 #include "MD5.h"
 #include "PrefabImport.h"
+#include "SkeletonImport.h"
+#include "AnimationImport.h"
 
 #include <fstream>
 #include <iostream>
@@ -35,6 +37,8 @@ bool ModuleImport::Init()
 	mesh_i = new MeshImport();
 	mat_i = new MatImport();
 	prefab_i = new PrefabImport();
+	skel_i = new SkeletonImport();
+	anim_i = new AnimationImport();
 
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -49,6 +53,8 @@ bool ModuleImport::CleanUp()
 	delete mesh_i;
 	delete mat_i;
 	delete prefab_i;
+	delete skel_i;
+	delete anim_i;
 
 	return true;
 }
@@ -95,11 +101,13 @@ void ModuleImport::LoadScene(const char* path)
 		par->OrderChildren();
 		par->RecursiveSetNewUUID();
 
-		par->GetTransform()->CalculateGlobalTransforms();
-		par->SetTransformedBoundBox();
+		Event evTrans(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+		evTrans.game_object.ptr = par;
+		App->eventSys->BroadcastEvent(evTrans);
 
-		App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
-		App->gameObj->Main_Cam->LookToObj(par, par->max_distance_point);
+		Event evCam(EventType::Update_Cam_Focus, Event::UnionUsed::UseGameObject);
+		evCam.game_object.ptr = par;
+		App->eventSys->BroadcastEvent(evCam);
 	}
 }
 
@@ -123,6 +131,7 @@ void ModuleImport::ExportScene(const char* path)
 
 	if (scene != nullptr)
 	{
+		// Export Materials
 		for (int i = 0; i < scene->mNumMaterials; i++)
 		{
 			aiMaterial* mat = scene->mMaterials[i];
@@ -134,6 +143,7 @@ void ModuleImport::ExportScene(const char* path)
 				mat_i->ExportAIMat(mat, i, path);
 		}
 
+		// Export Meshes
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[i];
@@ -142,13 +152,54 @@ void ModuleImport::ExportScene(const char* path)
 			meshname.append(".meshdrnk");
 			DGUID fID(meshname.c_str());
 			if (!fID.CheckValidity())
+			{
 				mesh_i->ExportAIMesh(mesh, i, path);
+			}
+		}
+		
+		// Export Skeletons
+		// I don't know how to check if the skeleton is written
+		// As it has to be reconstructed before being able to export it
+		std::vector<const aiNode*> NodesWithSkeleton;
+		std::vector<std::multimap<uint, BoneCrumb*>> Skeletons;
+		{
+			std::vector<const aiNode*> BoneNodes;
+
+			skel_i->FindBoneNodes(scene->mMeshes, scene->mRootNode, NodesWithSkeleton);
+
+			Skeletons = skel_i->ReconstructSkeletons(scene, NodesWithSkeleton);
+
+			for (int i = 0; i < Skeletons.size(); i++)
+			{
+				skel_i->ExportMapSkeleton(scene, NodesWithSkeleton[i], Skeletons[i], i, scene->mRootNode, path);
+			}
+
+			if (Skeletons.size() > 1)
+			{
+				NodesWithSkeleton.clear();
+				Skeletons.clear();
+			}
 		}
 
+		// Export Animations
+		std::vector<std::vector<AnimToExport>> Animations;
+		for (int i = 0; i < Skeletons.size(); i++)
+		{
+			std::vector<AnimToExport> anim_exports;
+			for (int j = 0; j < scene->mNumAnimations; j++)
+				anim_exports.push_back(anim_i->PrepSkeletonAnimationExport(Skeletons[i], scene->mAnimations[j]));
+			
+			for (int j = 0; j < anim_exports.size(); j++)
+				anim_i->ExportSkelAnimation(Skeletons[i], anim_exports[j], i, path);
+
+			Animations.push_back(anim_exports);
+		}
+
+		// Export Scene as Prefab
 		{
 			std::string scenename = ".\\Library\\";
 			scenename += GetFileName(path) + ".prefabdrnk";
-			ExportSceneNodes(scenename.c_str(), scene->mRootNode, scene);
+			ExportSceneNodes(scenename.c_str(), NodesWithSkeleton, Animations, scene->mRootNode, scene);
 		}
 	}
 
@@ -157,26 +208,22 @@ void ModuleImport::ExportScene(const char* path)
 	//scene->mNumLights
 }
 
-void ModuleImport::ExportSceneNodes(const char* path, const aiNode* root_node, const aiScene* aiscene)
+void ModuleImport::ExportSceneNodes(const char* path, std::vector<const aiNode*>& NodesWithSkeleton, std::vector<std::vector<AnimToExport>>& Animations, const aiNode* root_node, const aiScene* aiscene)
 {
 	JSON_Value* scene = json_parse_file(path);
-	if (scene == nullptr)
-	{
-		scene = json_value_init_object();
-		json_serialize_to_file(scene, path);
-		scene = json_parse_file(path);
+	
+	JSON_Value* set_array = json_value_init_array();
+	JSON_Array* go = json_value_get_array(set_array);
 
-		JSON_Value* set_array = json_value_init_array();
-		JSON_Array* go = json_value_get_array(set_array);
+	prefab_i->ExportAINode(aiscene, NodesWithSkeleton, Animations, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
 
-		prefab_i->ExportAINode(aiscene, root_node, go, UINT_FAST32_MAX, GetFileName(path).c_str());
+	JSON_Object* set = json_value_get_object(scene = json_value_init_object());
+	json_object_set_value(set, "scene", set_array);
 
-		JSON_Object* set = json_value_get_object(scene);
-		json_object_set_value(set, "scene", set_array);
-		json_serialize_to_file(scene, path);
+	json_serialize_to_file(scene, path);
 
-		App->ui->console_win->AddLog("%s Scene exported", path);
-	}
+	App->ui->console_win->AddLog("%s Scene exported", path);
+	
 	
 }
 

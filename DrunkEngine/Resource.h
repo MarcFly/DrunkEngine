@@ -6,10 +6,13 @@
 #include "FileHelpers.h"
 
 class GameObject;
-class ResourceMesh;
+struct ResourceMesh;
 struct ResourceMaterial;
 struct ResourceTexture;
 struct MetaResource;
+struct ResourceSkeleton;
+struct ResourceBillboard;
+struct ResourceAnimation;
 
 enum ResourceTypes
 {
@@ -18,6 +21,9 @@ enum ResourceTypes
 	RT_Mesh,
 	RT_Material,
 	RT_Texture,
+	RT_Billboard,
+	RT_Skeleton,
+	RT_Animation,
 
 	RT_MAX
 };
@@ -74,47 +80,66 @@ struct DGUID
 
 	void SetInvalid();
 	bool CheckValidity();
+	void cpyfromstring(std::string cmp_id);
 	
 };
 
 union Resource
 {
 	Resource() {};
-	Resource(MetaResource* parent) : par{parent} {};
-	
-	// Dirty check ptr to know if it is in mem, ask check as a global mem check
-	struct check
-	{
-		bool* ptr = nullptr;
-	}inmem;
+	Resource(MetaResource* parent) {
+		bs.par = parent;
+	}
 
+	struct base
+	{
+		bool* filler = nullptr;
+		MetaResource* par = nullptr;
+	} bs;
 	struct mesh
 	{
 		ResourceMesh* ptr = nullptr;
+		MetaResource* par = nullptr;
 	} mesh;
 	struct material
 	{
 		ResourceMaterial* ptr = nullptr;
+		MetaResource* par = nullptr;
 	} mat;
 	struct tex
 	{
 		ResourceTexture* ptr = nullptr;
+		MetaResource* par = nullptr;
 	} texture;
-
-	MetaResource* par = nullptr;
+	struct bb
+	{
+		ResourceBillboard* ptr = nullptr;
+		MetaResource* par = nullptr;
+	} billboard;
+	struct skel
+	{
+		ResourceSkeleton* ptr = nullptr;
+		MetaResource* par = nullptr;
+	} skeleton;
+	struct anim
+	{
+		ResourceAnimation* ptr = nullptr;
+		MetaResource* par = nullptr;
+	} animation;
+	
 
 public:
 	void LoadToMem();
 	void UnloadFromMem();
-	bool IsInUse();
-	bool IsLoaded() {return inmem.ptr != nullptr;};
+	bool IsLoaded();
 };
 
 class MetaResource
 {
 public:
 	MetaResource() {
-		Asset.par = this; 
+		Asset.bs.filler = nullptr;
+		Asset.bs.par = this; 
 	};
 	virtual ~MetaResource() {};
 
@@ -122,9 +147,11 @@ public:
 	std::string file;
 	uint UseCount = 0;
 	bool to_pop = false;
+	bool res_found = false;
 	Resource Asset;
 
 	virtual void LoadMetaFile(const char* path) {};
+	bool InUse() { return UseCount > 0; };
 };
 
 #endif

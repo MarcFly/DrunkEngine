@@ -112,11 +112,47 @@ std::string GetMD5ID(std::string file)
 	return retstr;
 }
 
+std::string StringMD5ID(const char* str_pass)
+{
+	Timer checkmd5;
+
+	MD5 md5;
+	std::string str(str_pass);
+	char* dest = new char[str.length() + 1];
+	std::copy(str.begin(), str.end(), dest);
+	char* cursor = dest + str.length();
+	*cursor = '\0';
+	const char* ret = md5.digestString(dest);
+	std::string retstr(ret);
+
+	PLOG("MD5 creation took %d", checkmd5.Read());
+
+	return retstr;
+}
+
+std::string StringMD5ID(std::string str_pass)
+{
+	Timer checkmd5;
+
+	MD5 md5;
+	std::string str(str_pass);
+	char* dest = new char[str.length() + 1];
+	std::copy(str.begin(), str.end(), dest);
+	char* cursor = dest + str.length();
+	*cursor = '\0';
+	const char* ret = md5.digestString(dest);
+	std::string retstr(ret);
+
+	PLOG("MD5 creation took %d", checkmd5.Read());
+
+	return retstr;
+}
+
 FileType CheckExtension(std::string& ext)
 {
 	FileType ret = FT_Error;
 
-	if (ext == std::string(".fbx") || ext == std::string(".FBX"))
+	if (ext == std::string(".fbx") || ext == std::string(".FBX") || ext == std::string(".dae") || ext == std::string(".DAE"))
 		ret = FT_FBX;
 	else if (ext == std::string(".png") || ext == std::string(".bmp") || ext == std::string(".jpg") || ext == std::string(".dds"))
 		ret = FT_Texture;
@@ -124,5 +160,29 @@ FileType CheckExtension(std::string& ext)
 		ret = FT_Mesh;
 	else if (ext == std::string(".matdrnk"))
 		ret = FT_Material;
+	else if (ext == std::string(".skeldrnk"))
+		ret = FT_Skeleton;
+	else if (ext == std::string(".animdrnk"))
+		ret = FT_Animation;
+	return ret;
+}
+
+int StringToInt(std::string str)
+{
+	int ret = 0;
+
+	for (int i = 0, j = str.length() - 1; i < str.length(); i++, j--)
+		ret += (str[i] - 48) * (std::pow(10,j));
+
+	return ret;
+}
+
+int StringToInt(const char* str, int size)
+{
+	int ret = 0;
+
+	for (int i = 0, j = size - 1; i < size; i++, j--)
+		ret += (str[i] - 48) * (std::pow(10, j));
+
 	return ret;
 }

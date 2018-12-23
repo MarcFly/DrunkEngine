@@ -663,6 +663,33 @@
     <ClInclude Include="InspectorWindow.h">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentBillboard.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceSkeleton.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSkeleton.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAnimation.h">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationImport.h">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAnimation.h">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonInspector.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationInspector.h">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -939,6 +966,33 @@
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
     <ClCompile Include="InspectorWindow.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBillboard.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceSkeleton.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSkeleton.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceAnimation.cpp">
+      <Filter>Sources\Modules\ResourceManager\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationImport.cpp">
+      <Filter>Sources\Modules\ModuleImport\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAnimation.cpp">
+      <Filter>Sources\Modules\GameObject Structure\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonInspector.cpp">
+      <Filter>Sources\Modules\UI\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationInspector.cpp">
       <Filter>Sources\Modules\UI\WindowSystem</Filter>
     </ClCompile>
   </ItemGroup>

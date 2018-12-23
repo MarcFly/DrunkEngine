@@ -74,17 +74,6 @@ void ComponentCamera::Update(const float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 2 * MOV_SPEED * dt;
 
-	if (parent->GetTransform()->update_camera_transform)
-	{
-		TransformPos(parent->GetTransform()->position);
-		TransformRot(parent->GetTransform()->rotate_quat);
-		TransformScale(parent->GetTransform()->scale);
-
-		SetbbFrustum();
-
-		parent->GetTransform()->update_camera_transform = false;
-	}
-
 	// To rotate Component Cameras (not editor camera)
 	//if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	//{

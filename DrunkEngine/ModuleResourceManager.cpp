@@ -3,6 +3,9 @@
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
+#include "ResourceSkeleton.h"
+#include "ResourceAnimation.h"
+
 #include <map>
 ModuleResourceManager::ModuleResourceManager(bool start_enabled) : Module(start_enabled, Type_ResManager)
 {
@@ -23,10 +26,9 @@ bool ModuleResourceManager::PostUpdate(float dt)
 	{
 		MetaResource* item = it._Ptr->_Myval.second;
 
-		//item->Asset.par = item;
-
-		if (item->Asset.IsInUse())
-			item->Asset.UnloadFromMem();
+		if (!item->InUse())
+			if(item->Asset.IsLoaded())
+				item->Asset.UnloadFromMem();
 	}
 
 	return true;
@@ -82,6 +84,10 @@ MetaResource* ModuleResourceManager::NewResource(FileType type)
 		return new MetaMat();
 	case FT_Mesh:
 		return new MetaMesh();
+	case FT_Skeleton:
+		return new MetaSkeleton();
+	case FT_Animation:
+		return new MetaAnimation();
 	default:
 		return nullptr;
 	}

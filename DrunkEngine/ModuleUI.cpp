@@ -78,13 +78,11 @@ bool ModuleUI::PreUpdate(float dt)
 
 	for (vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
 	{
-		Window* windows = (*it);	
+		if (!CheckDataWindows() && App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey((*it)->GetShortCut()) == KEY_DOWN)
+			(*it)->SwitchActive();
 
-		if (!CheckDataWindows() && App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(windows->GetShortCut()) == KEY_DOWN)
-			windows->SwitchActive();
-
-		if (windows->IsActive())
-			windows->Draw();
+		if ((*it)->IsActive())
+			(*it)->Draw();
 	}
 	
 	

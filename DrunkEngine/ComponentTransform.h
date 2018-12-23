@@ -11,6 +11,7 @@ class ComponentMesh;
 class ComponentTransform : public Component
 {
 public:
+	ComponentTransform() { SetBaseVals(); }
 	ComponentTransform(GameObject* par) { parent = par; SetBaseVals();  }
 	ComponentTransform(const aiMatrix4x4* t, GameObject* par);
 
@@ -23,17 +24,18 @@ public:
 
 	void SetLocalTransform();
 
-	void RecursiveSetChildrenToUpdate(ComponentTransform* t = nullptr);
-	void RecursiveSetParentToUpdate(ComponentTransform* t = nullptr);
-
 	void SetFromMatrix(const aiMatrix4x4* t);
+	void SetFromMatrix(const float4x4* t);
 
 	void SetWorldPos(const float4x4 new_transform);
 	void SetWorldRot(const Quat new_rot);
 
 	void CalculateGlobalTransforms();
+	//void CalculateGlobalTransforms(GameObject* parent);
 
 	void SetAuxWorldPos();
+
+	Quat GetRotFromMat(float4x4 mat);
 
 	void CleanUp();
 
@@ -50,31 +52,29 @@ public:
 	float4x4 local_transform;
 	float4x4 global_transform;
 
-	bool update_bounding_box;
-
 	float4x4 world_pos;		//Initialized as (0,0,0), this one is used to calculate the real position
 	float4x4 world_rot;
 
 	float4x4 aux_world_pos;		//The user sees this one
 
-	bool update_camera_transform;
+	float3 global_pos;
+	Quat global_rot;
+	float3 global_scale;
 
 public:
 	void SetBaseVals()
 	{
-		position = { 0,0,0 }; 
+		position = { 0,0,0 };
 		scale = { 1,1,1 }; 
 		rotate_euler = { 0,0,0 };
-		aux_world_pos = world_rot = world_pos = float4x4::identity;
+		local_transform = global_transform = aux_world_pos = world_rot = world_pos = float4x4::identity;
 		SetTransformRotation(rotate_euler);
 		type = CT_Transform;
 		multiple = false;
-    
-		update_bounding_box = true;
-
-		update_camera_transform = true;
 	}
-
+	template <typename T> int sgn(T val) {
+		return (T(0) < val) - (val < T(0));
+	}
 };
 
 #endif

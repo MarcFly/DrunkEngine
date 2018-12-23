@@ -12,11 +12,16 @@ struct ResourceMaterial
 {
 	uint NumDiffTextures = 0;
 	std::vector<DGUID> textures;
-	uint NumProperties = 0;
-	Color default_print = { 1,1,1,1 };
 
+	uint NumProperties = 0;
+	
 	~ResourceMaterial();
 	void UnloadMem();
+
+	// Material Properties
+	Color default_print = { 1,1,1,1 };	
+	bool AlphaTest = false;
+	float AlphaVal = 1;
 };
 
 class MetaMat : public MetaResource

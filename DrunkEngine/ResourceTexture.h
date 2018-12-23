@@ -11,7 +11,16 @@ enum TextureMode
 {
 	TM_Error = -1,
 	TM_DIFFUSE,
+	TM_SPECULAR,
 	TM_AMBIENT,
+	TM_EMISSIVE,
+	TM_HEIGHT,
+	TM_NORMALS,
+	TM_SHININESS,
+	TM_OPACITY,
+	TM_DISPLACEMENT,
+	TM_LIGTHMAP,
+	TM_REFLECTION,
 
 	TM_MAX
 };
@@ -38,6 +47,8 @@ public:
 	{
 		App->importer->mat_i->LoadMetaTex(file, this);
 	}
+
+	TextureMode tex_type = TM_Error;
 };
 
 #endif

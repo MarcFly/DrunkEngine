@@ -4,7 +4,6 @@
 #include "SceneViewerWindow.h"
 #include "GameObject.h"
 #include "ComponentMaterial.h"
-#include "ComponentCamera.h"
 #include "MeshImport.h"
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
@@ -16,22 +15,12 @@ ComponentMesh::ComponentMesh()
 	SetBaseVals();
 }
 
-bool ComponentMesh::SetTexCoords(const aiMesh * mesh)
+ComponentMesh::ComponentMesh(GameObject* par) 
 {
-	bool ret = true;
+	SetBaseVals();
 
-	// Set TexCoordinates
-	if (mesh->HasTextureCoords(0))
-	{
-		r_mesh->num_uvs = r_mesh->num_vertex;
-		r_mesh->tex_coords = new float[r_mesh->num_uvs * 3];
-		memcpy(r_mesh->tex_coords, mesh->mTextureCoords[0], r_mesh->num_uvs * sizeof(float) * 3);
-	}
-	else
-		App->ui->console_win->AddLog("No texture coordinates to be set");
-
-	return ret;
-}
+	parent = par;
+};
 
 void ComponentMesh::SetNormals(const int& index)
 {
@@ -93,6 +82,7 @@ void ComponentMesh::SetMeshBoundBox()
 
 void ComponentMesh::Draw()
 {
+	
 	glPushMatrix();
 	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
@@ -126,17 +116,33 @@ void ComponentMesh::Draw()
 
 void ComponentMesh::DrawMesh()
 {
+	ResourceMesh* used_mesh = r_mesh;
+	if (deformable_mesh != nullptr)
+		used_mesh = deformable_mesh;
+
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
+	/*glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
 
-	if (r_mesh->tex_coords != nullptr)
+	if (deformable_mesh != nullptr)
+	{
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vertex, GL_DYNAMIC_DRAW);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vert_normals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * used_mesh->num_vertex * 3, used_mesh->vert_normals, GL_DYNAMIC_DRAW);	
+	}*/
+	
+	//glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
+
+	if (used_mesh->tex_coords != nullptr)
 	{
 		LinkMat();
 
-		if (c_mat != nullptr)
+		if (c_mat != nullptr && c_mat->r_mat != nullptr)
 		{
 			Color c = c_mat->r_mat->default_print;
 			glColor4f(c.r, c.g, c.b, c.a);
@@ -144,14 +150,7 @@ void ComponentMesh::DrawMesh()
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
 			
-			for (int i = 0; i < c_mat->textures.size(); i++)
-			{
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_uvs);
-				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
-
-				glBindTexture(GL_TEXTURE_2D, c_mat->textures[i]->id_tex);
-			}	
+			c_mat->DrawTextures(used_mesh);
 		}
 		else
 		{
@@ -165,30 +164,35 @@ void ComponentMesh::DrawMesh()
 	}
 	else
 	{
-		glColor4f(r_mesh->def_color.r, r_mesh->def_color.g, r_mesh->def_color.b, r_mesh->def_color.a);
+		glColor4f(used_mesh->def_color.r, used_mesh->def_color.g, used_mesh->def_color.b, used_mesh->def_color.a);
 	}
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, used_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
 void ComponentMesh::DrawMeshWire() const
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	ResourceMesh* used_mesh = r_mesh;
+	if (deformable_mesh != nullptr)
+		used_mesh = deformable_mesh;
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	//glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
+	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
 
 	glColor3f(1, 1, 1);
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, used_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -212,8 +216,6 @@ void ComponentMesh::DrawNormals() const
 	}
 	glColor3f(0, 1, 0);
 	glEnd();
-
-	
 }
 
 void ComponentMesh::CleanUp()
@@ -226,6 +228,13 @@ void ComponentMesh::CleanUp()
 		delete this->BoundingBox;
 		this->BoundingBox = nullptr;
 	}
+
+	if (deformable_mesh != nullptr)
+	{
+		delete deformable_mesh;
+		deformable_mesh = nullptr;
+	}
+	
 
 	this->parent = nullptr;
 }
@@ -257,7 +266,7 @@ void ComponentMesh::Save(JSON_Array* comps)
 
 bool ComponentMesh::CheckMeshValidity()
 {
-	if (App->gameObj->camera_rendering != nullptr && r_mesh != nullptr)
+	if (App->gameObj->camera_rendering != nullptr && r_mesh != nullptr && this->parent->GetBB() != nullptr)
 	{
 		if (this->parent->is_static == false)
 			return App->gameObj->isInsideFrustum(App->gameObj->camera_rendering, this->parent->GetBB());		

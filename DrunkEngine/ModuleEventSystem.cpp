@@ -34,6 +34,8 @@ void ModuleEventSystem::BroadcastEvent(const Event & event)
 		ev->point2d = event.point2d;
 	case Event::UseGameObject:
 		ev->game_object = event.game_object;
+	case Event::UseBone:
+		ev->bone = event.bone;
 	default:
 		break;
 	}

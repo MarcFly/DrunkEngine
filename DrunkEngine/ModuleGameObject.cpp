@@ -3,13 +3,14 @@
 #include "ComponentCamera.h"
 #include "KdTree.h"
 #include "InspectorWindow.h"
+#include "ConsoleWindow.h"
 
 ModuleGameObject::ModuleGameObject(bool start_enabled) : Module(start_enabled, Type_GameObj)
 {
 	mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	mCurrentGizmoMode = ImGuizmo::WORLD;
-	previous_scale = float3::one;
-	previous_pos = float3::zero;
+	on_click_scale = float3::one;
+	on_click_pos = float3::zero;
 }
 
 ModuleGameObject::~ModuleGameObject()
@@ -21,6 +22,7 @@ bool ModuleGameObject::Init()
 	bool ret = true;
 
 	App->eventSys->Subscribe(EventType::Transform_Updated, this);
+	App->eventSys->Subscribe(EventType::Update_Cam_Focus, this);
 
 	return ret;
 }
@@ -75,7 +77,7 @@ void ModuleGameObject::SetActiveFalse()
 {
 	for (int i = 0; i < active_objects.size(); i++)
 	{
-		active_objects[i]->active = false;
+		active_objects[i]->sv_active = false;
 	}
 	active_objects.clear();
 }
@@ -97,6 +99,8 @@ void ModuleGameObject::NewScene(GameObject* base)
 	}
 	else
 		Root_Object = base;
+
+	SetActiveFalse();
 }
 
 void ModuleGameObject::CreateMainCam()
@@ -107,6 +111,10 @@ void ModuleGameObject::CreateMainCam()
 		Game_camera->components.push_back(new ComponentCamera(Game_camera));
 		getRootObj()->children.push_back(Game_camera);
 		Game_camera->GetTransform()->SetTransformPosition(0.f, 0.f, -100.f);
+		
+		Event evTrans(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+		evTrans.game_object.ptr = Game_camera;
+		App->eventSys->BroadcastEvent(evTrans);
 	}
 }
 
@@ -220,18 +228,17 @@ KDTree * ModuleGameObject::GetSceneKDTree() const
 
 void ModuleGameObject::DeleteSceneKDTree()
 {
-	Scene_KdTree->CleanUp();
-	Scene_KdTree = nullptr;
+	if (Scene_KdTree != nullptr)
+	{
+		Scene_KdTree->CleanUp();
+		Scene_KdTree = nullptr;
+		App->ui->console_win->AddLog("KD-Tree Deleted.");
+	}
 }
 
 void ModuleGameObject::SetRootObject(GameObject * root)
 {
 	Root_Object = root;
-}
-
-GameObject * ModuleGameObject::GetRootObject() const
-{
-	return Root_Object;
 }
 
 void ModuleGameObject::ManageGuizmo()
@@ -259,11 +266,6 @@ void ModuleGameObject::ManageGuizmo()
 			float aux_vals[16];
 			float4x4 aux_mat;
 
-			if (active_objects[i]->GetComponent(CTypes::CT_Camera) != nullptr)
-				mCurrentGizmoMode = ImGuizmo::LOCAL;
-			else if (App->ui->inspector_win->radio_world == true)
-				mCurrentGizmoMode = ImGuizmo::WORLD;
-
 			if (mCurrentGizmoMode == ImGuizmo::LOCAL || mCurrentGizmoOperation == ImGuizmo::SCALE || active_objects[i]->parent == nullptr)
 				aux_mat = active_objects[i]->GetTransform()->global_transform.Transposed();
 
@@ -277,6 +279,12 @@ void ModuleGameObject::ManageGuizmo()
 													aux_vals[4], aux_vals[5], aux_vals[6], aux_vals[7],
 													aux_vals[8], aux_vals[9], aux_vals[10], aux_vals[11],
 													aux_vals[12], aux_vals[13], aux_vals[14], aux_vals[15]);
+
+			if (mCurrentGizmoOperation == ImGuizmo::SCALE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && ImGuizmo::IsOver())
+				on_click_scale = active_objects[i]->GetTransform()->scale;
+
+			if (mCurrentGizmoOperation == ImGuizmo::TRANSLATE && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && ImGuizmo::IsOver())
+				on_click_pos = active_objects[i]->GetTransform()->position;
 
 			if (ImGuizmo::IsUsing() && App->input->GetKey(App->input->controls[ORBIT_CAMERA]) != KEY_REPEAT)
 			{
@@ -293,16 +301,24 @@ void ModuleGameObject::ManageGuizmo()
 				{
 					if (mCurrentGizmoMode == ImGuizmo::WORLD)
 					{
-						float4x4 new_transform = float4x4::FromTRS(float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z), Quat::identity, float3::one);
+						float4x4 new_transform = float4x4::FromTRS(float3(pos.x, pos.y, pos.z), Quat::identity, float3::one);
 						active_objects[i]->GetTransform()->SetWorldPos(new_transform);
-						previous_pos = float3(pos.x, pos.y, pos.z);
+
+						Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+						ev.game_object.ptr = active_objects[i];
+						App->eventSys->BroadcastEvent(ev);
+
 						break;
 					}
 					else	// LOCAL
 					{
-						float3 pos_float3 = float3(pos.x - previous_pos.x, pos.y - previous_pos.y, pos.z - previous_pos.z) + active_objects[i]->GetTransform()->position;
+						float3 pos_float3 = float3(pos.x, pos.y, pos.z) + on_click_pos;
 						active_objects[i]->GetTransform()->SetTransformPosition(pos_float3.x, pos_float3.y, pos_float3.z);
-						previous_pos = float3(pos.x, pos.y, pos.z);
+						
+						Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+						ev.game_object.ptr = active_objects[i];
+						App->eventSys->BroadcastEvent(ev);
+
 						break;
 					}
 				}
@@ -311,31 +327,39 @@ void ModuleGameObject::ManageGuizmo()
 					if (mCurrentGizmoMode == ImGuizmo::WORLD)
 					{
 						active_objects[i]->GetTransform()->SetWorldRot(Quat(rot.x, rot.y, rot.z, rot.w));
+
+						Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+						ev.game_object.ptr = active_objects[i];
+						App->eventSys->BroadcastEvent(ev);
+
 						break;
 					}
 					else	// LOCAL
 					{
 						Quat rotate_quat = Quat(rot.x, rot.y, rot.z, rot.w).Mul(active_objects[i]->GetTransform()->rotate_quat);
 						active_objects[i]->GetTransform()->SetTransformRotation(rotate_quat);
+
+						Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+						ev.game_object.ptr = active_objects[i];
+						App->eventSys->BroadcastEvent(ev);
+
 						break;
 					}
 				}
 				case ImGuizmo::SCALE:
 				{
 					//Only Local
-					float3 scale_float3 = float3(scale.x - previous_scale.x, scale.y - previous_scale.y, scale.z - previous_scale.z) + active_objects[i]->GetTransform()->scale;
-					active_objects[i]->GetTransform()->SetTransformScale(scale_float3.x, scale_float3.y, scale_float3.z);
-					previous_scale = float3(scale.x, scale.y, scale.z);
+					float3 scale_float3 = float3(scale.x - 1, scale.y - 1, scale.z - 1).Mul(on_click_scale);
+					active_objects[i]->GetTransform()->SetTransformScale(on_click_scale.x + scale_float3.x, on_click_scale.y + scale_float3.y, on_click_scale.z + scale_float3.z);
+
+					Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+					ev.game_object.ptr = active_objects[i];
+					App->eventSys->BroadcastEvent(ev);
+
 					break;
-
 				}
 				}
 
-			}
-			else
-			{
-				previous_scale = float3::one;
-				previous_pos = float3::zero;
 			}
 		}
 	}
@@ -386,10 +410,169 @@ void ModuleGameObject::RecieveEvent(const Event & event)
 	{
 	case EventType::Transform_Updated:
 	{
-		event.game_object.ptr->GetTransform()->CalculateGlobalTransforms();
+		event.game_object.ptr->GetTransform()->CalculateGlobalTransforms();	
+
+		UpdateTransforms(event.game_object.ptr);
+
+		break;
+	}
+	case EventType::Update_Cam_Focus:
+	{
+		App->gameObj->Main_Cam->LookToObj(event.game_object.ptr, event.game_object.ptr->max_distance_point);
+
 		break;
 	}
 	default:
 		break;
 	}
+}
+
+void ModuleGameObject::UpdateTransforms(GameObject * obj)
+{
+	if (obj->parent != nullptr)
+		RecursiveUpdateParents(obj->parent);
+
+	// For the camera components
+	if (obj->GetComponent(CTypes::CT_Camera) != nullptr)
+	{
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformPos(obj->GetTransform()->global_pos);
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformRot(obj->GetTransform()->global_rot);
+
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
+	}
+
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveUpdateChilds(obj->children[i]);
+
+	//Calculating again BBs after the global transformations have been set.
+	//First the childs, as the BBs of the parents are calculated from them.
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveCalcBBsChilds(obj);
+
+	CalculateBBs(obj);
+
+	if (obj->parent != nullptr)
+		RecursiveCalcBBsParents(obj);
+}
+
+void ModuleGameObject::RecursiveUpdateParents(GameObject * obj)
+{
+	if (obj->parent != nullptr)
+		RecursiveUpdateParents(obj->parent);
+
+	// For the camera components
+	if (obj->GetComponent(CTypes::CT_Camera) != nullptr)
+	{
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformPos(obj->GetTransform()->global_pos);
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformRot(obj->GetTransform()->global_rot);
+
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
+	}
+}
+
+void ModuleGameObject::RecursiveUpdateChilds(GameObject * obj)
+{
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveUpdateChilds(obj->children[i]);
+
+	// For the camera components
+	if (obj->GetComponent(CTypes::CT_Camera) != nullptr)
+	{
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformPos(obj->GetTransform()->global_pos);
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->TransformRot(obj->GetTransform()->global_rot);
+
+		obj->GetComponent(CTypes::CT_Camera)->AsCamera()->SetbbFrustum();
+	}
+}
+
+void ModuleGameObject::CalculateBBs(GameObject * obj)
+{
+	obj->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX), vec(INT_MIN, INT_MIN, INT_MIN));
+	obj->max_distance_point = 0;
+
+	std::vector<Component*> cmp_meshes;
+	cmp_meshes = obj->GetComponents(CT_Mesh);
+
+	if (obj->children.size() == 0)
+	{
+		if (cmp_meshes.size() > 0)
+		{
+			for (int i = 0; i < cmp_meshes.size(); i++)
+			{
+				math::AABB auxBB = *cmp_meshes[i]->AsMesh()->BoundingBox;
+				auxBB.TransformAsAABB(cmp_meshes[i]->AsMesh()->parent->GetTransform()->global_transform);
+
+				// Setting the BB min and max points
+
+				if (obj->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
+					obj->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
+				if (obj->BoundingBox->minPoint.x > auxBB.minPoint.x)
+					obj->BoundingBox->minPoint.x = auxBB.minPoint.x;
+				if (obj->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
+					obj->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
+				if (obj->BoundingBox->minPoint.y > auxBB.minPoint.y)
+					obj->BoundingBox->minPoint.y = auxBB.minPoint.y;
+				if (obj->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
+					obj->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
+				if (obj->BoundingBox->minPoint.z > auxBB.minPoint.z)
+					obj->BoundingBox->minPoint.z = auxBB.minPoint.z;
+			}
+		}
+		else
+		{
+			obj->BoundingBox->maxPoint = obj->GetTransform()->global_pos + float3(1, 1, 1);
+			obj->BoundingBox->minPoint = obj->GetTransform()->global_pos + float3(-1, -1, -1);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < obj->children.size(); i++)
+		{
+			if (obj->children[i]->BoundingBox != nullptr)
+			{
+				math::AABB* auxBB = obj->children[i]->BoundingBox;
+
+				// Setting the BB min and max points with transforms
+
+				if (obj->BoundingBox->maxPoint.x < auxBB->maxPoint.x)
+					obj->BoundingBox->maxPoint.x = auxBB->maxPoint.x;
+				if (obj->BoundingBox->minPoint.x > auxBB->minPoint.x)
+					obj->BoundingBox->minPoint.x = auxBB->minPoint.x;
+				if (obj->BoundingBox->maxPoint.y < auxBB->maxPoint.y)
+					obj->BoundingBox->maxPoint.y = auxBB->maxPoint.y;
+				if (obj->BoundingBox->minPoint.y > auxBB->minPoint.y)
+					obj->BoundingBox->minPoint.y = auxBB->minPoint.y;
+				if (obj->BoundingBox->maxPoint.z < auxBB->maxPoint.z)
+					obj->BoundingBox->maxPoint.z = auxBB->maxPoint.z;
+				if (obj->BoundingBox->minPoint.z > auxBB->minPoint.z)
+					obj->BoundingBox->minPoint.z = auxBB->minPoint.z;
+			}
+		}
+	}
+
+	// Set maxPoint Value
+	{
+		if (abs(obj->BoundingBox->maxPoint.x) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->maxPoint.x); }
+		if (abs(obj->BoundingBox->maxPoint.y) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->maxPoint.y); }
+		if (abs(obj->BoundingBox->maxPoint.z) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->maxPoint.z); }
+		if (abs(obj->BoundingBox->minPoint.x) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->minPoint.x); }
+		if (abs(obj->BoundingBox->minPoint.y) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->minPoint.y); }
+		if (abs(obj->BoundingBox->minPoint.z) > obj->max_distance_point) { obj->max_distance_point = abs(obj->BoundingBox->minPoint.z); }
+	}
+}
+
+void ModuleGameObject::RecursiveCalcBBsParents(GameObject * obj)
+{
+	CalculateBBs(obj);
+
+	if (obj->parent != nullptr)
+		RecursiveCalcBBsParents(obj->parent);
+}
+
+void ModuleGameObject::RecursiveCalcBBsChilds(GameObject * obj)
+{
+	for (int i = 0; i < obj->children.size(); i++)
+		RecursiveCalcBBsChilds(obj->children[i]);
+
+	CalculateBBs(obj);
 }

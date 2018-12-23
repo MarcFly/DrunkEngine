@@ -5,6 +5,10 @@
 #include "ModuleScene.h"
 
 class GameObject;
+class SkeletonInspectorWin;
+class AnimationInspectorWin;
+struct Bone;
+struct BoneWeight;
 
 class Inspector : public Window
 {
@@ -16,11 +20,16 @@ public:
 
 	void CheckMeshInfo();
 
-	void ComponentInspector(Component* component);
-	void MeshInspector(ComponentMesh* mesh);
-	void MatInspector(ComponentMaterial* mat);
-	void CamInspector(ComponentCamera* cam);
-	void TransformInspector(ComponentTransform* transform);
+	void ComponentInspector(Component* component, const int& cmpt_id);
+	void MeshInspector(ComponentMesh* mesh, const int& cmpt_id);
+	void MatInspector(ComponentMaterial* mat, const int& cmpt_id);
+	void CamInspector(ComponentCamera* cam, const int& cmpt_id);
+	void TransformInspector(ComponentTransform* transform, const int& cmpt_id);
+	void BillboardInspector(ComponentBillboard* billboard, const int& cmpt_id);
+	
+	void AnimationInspector(ComponentAnimation* anim, const int& cmpt_id);
+
+	void SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id);
 
 public:
 	int total_num_vertex;
@@ -36,6 +45,10 @@ public:
 	bool main_cam = false;
 
 	ImVec2 show_size = { 128,128 };
+
+	// External Inspectors
+	SkeletonInspectorWin* skel_ins = nullptr;
+	AnimationInspectorWin* anim_ins = nullptr;
 
 };
 

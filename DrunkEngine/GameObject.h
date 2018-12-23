@@ -5,7 +5,6 @@
 #include <string>
 #include "Assimp/include/scene.h"
 #include "MGL/MathGeoLib.h"
-#include <Windows.h>
 #include <math.h>
 #include "parson/parson.h"
 #include "ComponentTransform.h"
@@ -35,9 +34,6 @@ public:
 	void Load(const JSON_Value* scene, const char* file);
 
 	vec getObjectCenter();
-	float SetBoundBox();
-	void SetTransformedBoundBox();
-	void SetBoundBoxFromMeshes();
 
 	Component* NewComponent(const CTypes type);
 	void OrderChildren();
@@ -69,7 +65,8 @@ public:
 
 	bool to_pop = false;
 	bool static_pop = false;
-	bool active = false;
+	bool active = true;
+	bool sv_active = false;
 	bool is_static = false;
 
 	bool static_to_draw = false;
@@ -80,10 +77,10 @@ public:
 
 	AABB* GetBB()
 	{
-		if (BoundingBox == nullptr)
-			SetBoundBox();
-
-		return BoundingBox;
+		if (BoundingBox != nullptr)
+			return BoundingBox;
+		else
+			return nullptr;
 	}
 
 	ComponentTransform* GetTransform()

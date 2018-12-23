@@ -150,7 +150,6 @@ void ModuleCamera3D::MousePicking()
 	picking = (main_camera->frustum.UnProjectLineSegment(x,y));
 
 	App->gameObj->SetActiveFalse();
-	//App->ui->inspector->selection_mask_vec.clear();
 
 	std::vector<GameObject*> intersected;
 	std::vector<GameObject*> objects_to_check;
@@ -159,9 +158,6 @@ void ModuleCamera3D::MousePicking()
 		objects_to_check = App->gameObj->non_static_objects_in_scene;
 	else
 		objects_to_check = App->gameObj->objects_in_scene;
-
-	/*for(int i = 0; i < App->gameObj->getRootObj()->children.size(); i++)
-		TestIntersect(App->gameObj->getRootObj()->children[i], picking, intersected);*/
 
 	if (App->gameObj->GetSceneKDTree() != nullptr)
 		TreeTestIntersect(App->gameObj->GetSceneKDTree()->base_node, picking, objects_to_check);
@@ -177,7 +173,7 @@ void ModuleCamera3D::MousePicking()
 			App->gameObj->SetActiveFalse();
 			dist = new_dist;
 			App->gameObj->active_objects.push_back(intersected[i]);
-			intersected[i]->active = true;
+			intersected[i]->sv_active = true;
 		}
 	}
 
@@ -187,9 +183,10 @@ void ModuleCamera3D::TestIntersect(const std::vector<GameObject*>& objs, const L
 {
 	for (int i = 0; i < objs.size(); i++)
 	{
-		if (ray.ToRay().Intersects(*objs[i]->GetBB()))
+		if (objs[i]->parent != nullptr && ray.ToRay().Intersects(*objs[i]->GetBB()))
 		{
-			if (objs[i]->GetComponent(CT_Mesh) != nullptr)
+			Component* get = objs[i]->GetComponent(CT_Mesh);
+			if (get != nullptr && get->active)
 				intersected.push_back(objs[i]);
 		}
 	}

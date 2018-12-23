@@ -23,6 +23,8 @@ public:
 
 	void CleanUp();
 
+	void DrawTextures(ResourceMesh* r_mesh);
+	void DrawDiffuse(ResourceMesh* r_mesh, ResourceTexture* tex);
 
 	void Load(const JSON_Object* comp);
 	void Save(JSON_Array* comps);
@@ -31,6 +33,10 @@ public:
 
 	ResourceMaterial* r_mat = nullptr;
 	std::vector<ResourceTexture*> textures;
+
+	// Non Specific Resource Vals
+	bool AlphaTest;
+	float AlphaVal;
 
 public:
 	void SetBaseVals()
@@ -42,6 +48,9 @@ public:
 		this->parent = nullptr;
 
 		this->to_pop = false;
+
+		AlphaTest = false;
+		float AlphaVal = 1;
 	}
 };
 

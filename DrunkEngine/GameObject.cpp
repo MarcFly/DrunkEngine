@@ -4,6 +4,9 @@
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
 #include "ResourceMesh.h"
+#include "ComponentBillboard.h"
+#include "ComponentSkeleton.h"
+#include "ComponentAnimation.h"
 
 // Creation of Root Node from a file
 GameObject::GameObject()
@@ -45,35 +48,40 @@ void GameObject::Start()
 
 	for (int i = 0; i < this->children.size(); i++)
 		this->children[i]->Start();
-
-	if (this->parent != nullptr)
-		SetTransformedBoundBox();
-
 }
 
 void GameObject::Update(float dt)
 {
 	for (int i = 0; i < this->components.size(); i++)
-		this->components[i]->Update(dt);
+	{
+		if (this->components[i]->active)
+		{
+			this->components[i]->Update(dt);
+		}
+	}
 
 	for (int i = 0; i < this->children.size(); i++)
-		this->children[i]->Update(dt);
-	
+	{
+		if(this->children[i]->active)
+		{
+			this->children[i]->Update(dt);
+		}
+	}
+
 	Draw();
 }
 
 void GameObject::Draw()
 {
-	for (int i = 0; i < this->components.size(); i++)		
-		this->components[i]->Draw();
-
-	if (this->BoundingBox != nullptr && this->GetTransform()->update_bounding_box)
+	for (int i = 0; i < this->components.size(); i++)
 	{
-		SetTransformedBoundBox();
-		this->GetTransform()->update_bounding_box = false;
+		if (this->components[i]->active)
+		{
+			this->components[i]->Draw();
+		}
 	}
 
-	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->active))
+	if (this->BoundingBox != nullptr && (App->renderer3D->bounding_box || this->sv_active))
 		this->DrawBB();
 }
 
@@ -131,184 +139,16 @@ void GameObject::DrawBB() const
 
 vec GameObject::getObjectCenter()
 {
-	if (this->BoundingBox == nullptr)
-		this->SetTransformedBoundBox();
-
-	float aux_x = (this->BoundingBox->maxPoint.x + this->BoundingBox->minPoint.x) / 2;
-	float aux_y = (this->BoundingBox->maxPoint.y + this->BoundingBox->minPoint.y) / 2;
-	float aux_z = (this->BoundingBox->maxPoint.z + this->BoundingBox->minPoint.z) / 2;
-
-	return vec(aux_x, aux_y, aux_z);
-}
-
-float GameObject::SetBoundBox()
-{
-	max_distance_point = 0;
-
-	this->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX),vec(INT_MIN, INT_MIN, INT_MIN));
-
-	if (this->children.size() == 0)
+	if (BoundingBox != nullptr)
 	{
-		SetBoundBoxFromMeshes();
-	}
-	else
-	{
-		// Set Children Bounding Boxes
-		for (int i = 0; i < this->children.size(); i++)
-			this->children[i]->SetBoundBox();
+		float aux_x = (BoundingBox->maxPoint.x + BoundingBox->minPoint.x) / 2;
+		float aux_y = (BoundingBox->maxPoint.y + BoundingBox->minPoint.y) / 2;
+		float aux_z = (BoundingBox->maxPoint.z + BoundingBox->minPoint.z) / 2;
 
-		for (int i = 0; i < this->children.size(); i++)
-		{
-
-			// Setting the BB min and max points
-
-			if (this->BoundingBox->maxPoint.x < this->children[i]->BoundingBox->maxPoint.x)
-				this->BoundingBox->maxPoint.x = this->children[i]->BoundingBox->maxPoint.x;		
-
-			if (this->BoundingBox->minPoint.x > this->children[i]->BoundingBox->minPoint.x)
-				this->BoundingBox->minPoint.x = this->children[i]->BoundingBox->minPoint.x;	
-
-			if (this->BoundingBox->maxPoint.y < this->children[i]->BoundingBox->maxPoint.y)
-				this->BoundingBox->maxPoint.y = this->children[i]->BoundingBox->maxPoint.y;	
-
-			if (this->BoundingBox->minPoint.y > this->children[i]->BoundingBox->minPoint.y)
-				this->BoundingBox->minPoint.y = this->children[i]->BoundingBox->minPoint.y;
-
-			if (this->BoundingBox->maxPoint.z < this->children[i]->BoundingBox->maxPoint.z)
-				this->BoundingBox->maxPoint.z = this->children[i]->BoundingBox->maxPoint.z;	
-
-			if (this->BoundingBox->minPoint.z > this->children[i]->BoundingBox->minPoint.z)
-				this->BoundingBox->minPoint.z = this->children[i]->BoundingBox->minPoint.z;
-		}
+		return vec(aux_x, aux_y, aux_z);
 	}
 
-	// Set Return Value
-	{
-		if (abs(this->BoundingBox->maxPoint.x) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.x); }
-		if (abs(this->BoundingBox->maxPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.y); }
-		if (abs(this->BoundingBox->maxPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.z); }
-		if (abs(this->BoundingBox->minPoint.x) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.x); }
-		if (abs(this->BoundingBox->minPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.y); }
-		if (abs(this->BoundingBox->minPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.z); }
-	}
-
-	return max_distance_point;
-}
-
-void GameObject::SetTransformedBoundBox()
-{
-	max_distance_point = 0;
-
-	this->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX), vec(INT_MIN, INT_MIN, INT_MIN));
-
-	if (this->children.size() == 0)
-	{
-		std::vector<Component*> cmp_meshes;
-		cmp_meshes = GetComponents(CT_Mesh);
-
-		if (cmp_meshes.size() > 0)
-		{
-
-
-			for (int i = 0; i < cmp_meshes.size(); i++)
-			{
-				math::AABB auxBB = *cmp_meshes[i]->AsMesh()->BoundingBox;
-				auxBB.TransformAsAABB(cmp_meshes[i]->AsMesh()->parent->GetTransform()->global_transform);
-
-				// Setting the BB min and max points
-
-				if (this->BoundingBox->maxPoint.x < auxBB.maxPoint.x)
-					this->BoundingBox->maxPoint.x = auxBB.maxPoint.x;
-				if (this->BoundingBox->minPoint.x > auxBB.minPoint.x)
-					this->BoundingBox->minPoint.x = auxBB.minPoint.x;
-				if (this->BoundingBox->maxPoint.y < auxBB.maxPoint.y)
-					this->BoundingBox->maxPoint.y = auxBB.maxPoint.y;
-				if (this->BoundingBox->minPoint.y > auxBB.minPoint.y)
-					this->BoundingBox->minPoint.y = auxBB.minPoint.y;
-				if (this->BoundingBox->maxPoint.z < auxBB.maxPoint.z)
-					this->BoundingBox->maxPoint.z = auxBB.maxPoint.z;
-				if (this->BoundingBox->minPoint.z > auxBB.minPoint.z)
-					this->BoundingBox->minPoint.z = auxBB.minPoint.z;
-			}
-		}
-		else
-		{
-			this->BoundingBox->maxPoint = this->GetTransform()->position + float3(1, 1, 1);
-			this->BoundingBox->minPoint = this->GetTransform()->position + float3(-1, -1, -1);
-		}
-		
-	}
-	else
-	{
-		// Set Children Bounding Boxes
-		for (int i = 0; i < this->children.size(); i++)
-			if (this->children[i]->BoundingBox == nullptr)
-				this->children[i]->SetBoundBox();
-
-		for (int i = 0; i < this->children.size(); i++)
-		{
-			math::AABB* auxBB = this->children[i]->BoundingBox;
-
-			// Setting the BB min and max points with transforms
-
-			if (this->BoundingBox->maxPoint.x < auxBB->maxPoint.x)
-				this->BoundingBox->maxPoint.x = auxBB->maxPoint.x;
-			if (this->BoundingBox->minPoint.x > auxBB->minPoint.x)
-				this->BoundingBox->minPoint.x = auxBB->minPoint.x;
-			if (this->BoundingBox->maxPoint.y < auxBB->maxPoint.y)
-				this->BoundingBox->maxPoint.y = auxBB->maxPoint.y;
-			if (this->BoundingBox->minPoint.y > auxBB->minPoint.y)
-				this->BoundingBox->minPoint.y = auxBB->minPoint.y;
-			if (this->BoundingBox->maxPoint.z < auxBB->maxPoint.z)
-				this->BoundingBox->maxPoint.z = auxBB->maxPoint.z;
-			if (this->BoundingBox->minPoint.z > auxBB->minPoint.z)
-				this->BoundingBox->minPoint.z = auxBB->minPoint.z;
-		}
-	}
-
-	// Set Return Value
-	{
-		if (abs(this->BoundingBox->maxPoint.x) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.x); }
-		if (abs(this->BoundingBox->maxPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.y); }
-		if (abs(this->BoundingBox->maxPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->maxPoint.z); }
-		if (abs(this->BoundingBox->minPoint.x) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.x); }
-		if (abs(this->BoundingBox->minPoint.y) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.y); }
-		if (abs(this->BoundingBox->minPoint.z) > max_distance_point) { max_distance_point = abs(this->BoundingBox->minPoint.z); }
-	}
-}
-
-void GameObject::SetBoundBoxFromMeshes()
-{
-	this->BoundingBox = new AABB(vec(INT_MAX, INT_MAX, INT_MAX), vec(INT_MIN, INT_MIN, INT_MIN));
-
-	std::vector<Component*> cmp_meshes;
-	cmp_meshes = GetComponents(CT_Mesh);
-
-	if (cmp_meshes.size() > 0)
-	{
-		for (int i = 0; i < cmp_meshes.size(); i++)
-		{
-			// Setting the BB min and max points
-
-			if (this->BoundingBox->maxPoint.x < cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.x)
-				this->BoundingBox->maxPoint.x = cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.x;
-			if (this->BoundingBox->minPoint.x > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.x)
-				this->BoundingBox->minPoint.x = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.x;
-			if (this->BoundingBox->maxPoint.y < cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.y)
-				this->BoundingBox->maxPoint.y = cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.y;
-			if (this->BoundingBox->minPoint.y > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.y)
-				this->BoundingBox->minPoint.y = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.y;
-			if (this->BoundingBox->maxPoint.z < cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.z)
-				this->BoundingBox->maxPoint.z = cmp_meshes[i]->AsMesh()->BoundingBox->maxPoint.z;
-			if (this->BoundingBox->minPoint.z > cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.z)
-				this->BoundingBox->minPoint.z = cmp_meshes[i]->AsMesh()->BoundingBox->minPoint.z;
-		}
-	}
-	else
-	{
-		this->BoundingBox->maxPoint = this->GetTransform()->position + float3(1, 1, 1);
-		this->BoundingBox->minPoint = this->GetTransform()->position + float3(-1, -1, -1);
-	}
+	return vec(0, 0, 0);
 }
 
 void GameObject::OrderChildren()
@@ -435,7 +275,7 @@ void GameObject::RecursiveSetNewUUID()
 
 void GameObject::Load(const JSON_Value* go, const char* file)
 {
-	
+	bool ret = true;
 
 }
 
@@ -469,7 +309,6 @@ void GameObject::Save(JSON_Array* go)
 
 	for(int i = 0; i < this->children.size(); i++)
 		this->children[i]->Save(go);
-
 }
 
 std::vector<uint> GameObject::GetMeshProps()
@@ -508,6 +347,12 @@ Component* GameObject::NewComponent(const CTypes type)
 		return new ComponentCamera(this);
 	else if (type == CT_Transform)
 		return new ComponentTransform(this);
+	/*else if (type == CT_Billboard)
+		return new ComponentBillboard(this);*/
+	else if (type == CT_Skeleton)
+		return new ComponentSkeleton(this);
+	else if (type == CT_Animation)
+		return new ComponentAnimation(this);
 	
 	return nullptr;
 }

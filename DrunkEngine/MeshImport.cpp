@@ -26,20 +26,25 @@ void MeshImport::Init()
 void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 {
 	MetaMesh* res = (MetaMesh*)App->resources->Library.at(fID);
-	res->Asset.par = res;
 
-	mesh->name = res->file;
+	if (res->res_found)
+	{
+		mesh->name = res->file;
 
-	if (res->Asset.IsLoaded())
-		res->Asset.LoadToMem();
-	
+		if (!res->Asset.IsLoaded())
+			res->Asset.LoadToMem();
+
+
+		mesh->Material_Ind = res->Material_ind;
+		mesh->mat_ind = res->mat_ind;
+		res->UseCount++;
+
+	}
 	mesh->r_mesh = res->Asset.mesh.ptr;
-	mesh->Material_Ind = res->Material_ind;
-	mesh->mat_ind = res->mat_ind;
-	res->UseCount++;
-
-	mesh->SetMeshBoundBox();
 	mesh->UID = fID;
+	
+	if (mesh->r_mesh != nullptr)
+		mesh->SetMeshBoundBox();
 }
 
 ResourceMesh* MeshImport::LoadMesh(const char* file)
@@ -52,7 +57,7 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 	int size = read_file.seekg(0, read_file.end).tellg();
 	read_file.seekg(0, read_file.beg);
 
-	if (size > 1024)
+	if (size > 0)
 	{
 		char* data = new char[size];
 		read_file.read(data, sizeof(char)*size);
@@ -63,10 +68,17 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 		cursor += sizeof(ranges);
 
 		ret->num_vertex = ranges[0] / 3;
-		if ( ret->num_vertex)
+		if ( ret->num_vertex > 0)
 		{
 			ret->vertex = new GLfloat[ret->num_vertex * 3];
 			memcpy(ret->vertex, cursor, ret->num_vertex * 3 * sizeof(GLfloat));
+		}
+		cursor += (ret->num_vertex * 3 * sizeof(GLfloat));
+
+		if (ret->num_vertex > 0)
+		{
+			ret->vert_normals = new GLfloat[ret->num_vertex * 3];
+			memcpy(ret->vert_normals, cursor, ret->num_vertex * 3 * sizeof(GLfloat));
 		}
 		cursor += (ret->num_vertex * 3 * sizeof(GLfloat));
 
@@ -103,6 +115,8 @@ ResourceMesh* MeshImport::LoadMesh(const char* file)
 		App->ui->console_win->AddLog("New mesh with %d vertices, %d indices, %d faces (tris)", ret->num_vertex, ret->num_index, ret->num_faces);
 
 		ret->GenBuffers();
+
+		delete data;
 	}
 	else
 	{
@@ -123,8 +137,9 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 {
 	uint buf_size = 0;
 
-	uint vertex_size = (mesh->mNumVertices * 3); 
-	buf_size += sizeof(GLfloat)*vertex_size;
+	uint vertex_size = (mesh->mNumVertices * 3);
+	// Allocate double the vertex size for vertex normals, which are float3 and vertex_size in size
+	buf_size += sizeof(GLfloat)*vertex_size * 2;
 	uint index_size = 0;
 	uint normal_size = 0;
 	if (mesh->HasFaces())
@@ -167,6 +182,18 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 		vertex_aux.push_back(mesh->mVertices[j].x);
 		vertex_aux.push_back(mesh->mVertices[j].y);
 		vertex_aux.push_back(mesh->mVertices[j].z);
+	}
+	if (vertex_aux.size() > 0)
+	{
+		memcpy(cursor, &vertex_aux[0], sizeof(GLfloat)*vertex_size);
+		cursor += (sizeof(GLfloat)*vertex_size);
+	}
+	
+	for (uint j = 0; j < mesh->mNumVertices; ++j)
+	{
+		vertex_aux[j] = mesh->mNormals[j].x; ++j;
+		vertex_aux[j] = mesh->mNormals[j].y; ++j;
+		vertex_aux[j] = mesh->mNormals[j].z;
 	}
 	if (vertex_aux.size() > 0)
 	{
@@ -227,6 +254,8 @@ void MeshImport::ExportAIMesh(const aiMesh* mesh, const int& mesh_id, const char
 	write_file.close();
 
 	ExportMeta(mesh, mesh_id, path);
+
+	delete data;
 }
 
 void MeshImport::ExportIndexNormals(const int& ind, std::vector<GLfloat>& normals, std::vector<GLuint>& index, std::vector<GLfloat>& vertex)
@@ -277,72 +306,37 @@ void MeshImport::ExportMeta(const aiMesh* mesh, const int& mesh_id, std::string 
 	write[32] = '\0';
 	json_object_dotset_string(meta_obj, "Material_Ind", write.c_str());
 	json_object_dotset_number(meta_obj, "mat_ind", mesh->mMaterialIndex);
-	
+
 	json_serialize_to_file(meta_file, meta_name.c_str());
+
+	// Free Meta Value
+	json_object_clear(meta_obj);
+	json_value_free(meta_file);
 }
+
 void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 {
 	meta->type = RT_Mesh;
 
 	JSON_Value* meta_file = json_parse_file(file);
-	JSON_Object* meta_obj = json_value_get_object(meta_file);
-
-	meta->file = json_object_dotget_string(meta_obj, "File");
-	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
-	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
-
-
-}
-////////////------------------------------------------------------------------------------------------------------------------
-//-SaveDT-//------------------------------------------------------------------------------------------------------------------
-////////////------------------------------------------------------------------------------------------------------------------
-
-void MeshImport::ExportMesh(const ComponentMesh* mesh)
-{
-	uint vertex_size = sizeof(GLfloat)*(mesh->r_mesh->num_vertex * 3);
-	uint index_size = sizeof(GLuint)*(mesh->r_mesh->num_faces);
-	uint normal_size = sizeof(GLfloat)*(mesh->r_mesh->num_faces);
-	uint uv_size = sizeof(float)*(mesh->r_mesh->num_vertex * 3);
-	uint BBox_size = sizeof(GLfloat) * 3 * 2; // 2 Vertex of 3 float each
-	uint Mat_index = sizeof(unsigned int); // The material index 
-
-	uint size_size = sizeof(uint) * 4; // Amount of data put inside, the first values of data will be the size of each part
-
-	uint buf_size = size_size + vertex_size + index_size + normal_size + uv_size + BBox_size + Mat_index;
-
-	char* data = new char[buf_size];
-	char* cursor = data;
-
-	uint ranges[4] =
+	if (meta_file != nullptr)
 	{
-		vertex_size / sizeof(GLfloat),
-		index_size / sizeof(GLuint),
-		normal_size / sizeof(GLfloat),
-		uv_size / sizeof(float)
-	};
+		meta->res_found = true;
+		JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	memcpy(cursor, ranges, sizeof(ranges));
-	cursor += sizeof(ranges);
+		meta->file = json_object_dotget_string(meta_obj, "File");
+		meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
+		meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
 
-	memcpy(cursor, mesh->r_mesh->vertex, vertex_size);
-	cursor += vertex_size;
-
-	memcpy(cursor, mesh->r_mesh->index, index_size);
-	cursor += index_size;
-
-	memcpy(cursor, mesh->r_mesh->normal, normal_size);
-	cursor += normal_size;
-
-	memcpy(cursor, mesh->r_mesh->tex_coords, uv_size);
-	cursor += uv_size;
-
-	memcpy(cursor, &mesh->Material_Ind, Mat_index);
-
-	std::ofstream write_file;
-
-	write_file.open(mesh->name.c_str(), std::fstream::out | std::ios::binary);
-
-	write_file.write(data, buf_size);
-
-	write_file.close();
+		// Free Meta Value
+		json_object_clear(meta_obj);
+		json_value_free(meta_file);
+	}
 }
+
+//------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
+
+
+

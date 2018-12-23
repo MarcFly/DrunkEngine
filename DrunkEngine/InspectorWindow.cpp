@@ -3,19 +3,35 @@
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
+#include "ComponentBillboard.h"
+#include "ComponentSkeleton.h"
+#include "ComponentAnimation.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "ResourceAnimation.h"
 #include "KdTreeWindow.h"
+#include "SkeletonInspector.h"
+#include "AnimationInspector.h"
 
 Inspector::Inspector() : Window("Inspector")
 {
 	total_num_vertex = 0;
 	total_num_faces = 0;
 	check_info = false;
+
+	skel_ins = new SkeletonInspectorWin();
+	anim_ins = new AnimationInspectorWin();
 }
 
 Inspector::~Inspector()
 {
+
+	delete skel_ins;
+	skel_ins = nullptr;
+
+	delete anim_ins;
+	anim_ins = nullptr;
+
 }
 
 void Inspector::Draw()
@@ -30,20 +46,16 @@ void Inspector::Draw()
 			{
 				for (int i = 0; i < App->gameObj->active_objects[0]->components.size(); i++)
 				{
-					ComponentInspector(App->gameObj->active_objects[0]->components[i]);
+					ComponentInspector(App->gameObj->active_objects[0]->components[i], i);
+					ImGui::Separator();
 				}
-
 			}
 		}
 
-		else if (App->gameObj->active_objects.size() > 1) //objects.size() > 0)
+		else if (App->gameObj->active_objects.size() > 1)
 		{
 			ImGui::Text("+ 1 obj selected");
 		}
-
-		//if (ImGui::Button("Select")) {}
-		//ImGui::SameLine();
-		//if (ImGui::Button("Save")) {}
 	}
 	ImGui::End();
 }
@@ -57,20 +69,27 @@ void Inspector::CheckMeshInfo()
 
 //----------------------------
 // Component Inspectors
-void Inspector::ComponentInspector(Component* component)
+void Inspector::ComponentInspector(Component* component, const int& cmpt_id)
 {
+	std::string cb_active_name = "##active_" + component->name;
+	ImGui::Checkbox(cb_active_name.c_str(), &component->active);
+	ImGui::SameLine();
 	switch (component->type)
 	{
-	case CT_Mesh: MeshInspector(component->AsMesh()); break;
-	case CT_Material: MatInspector(component->AsMaterial()); break;
-	case CT_Camera: CamInspector(component->AsCamera()); break;
-	case CT_Transform: TransformInspector(component->AsTransform()); break;
+	case CT_Mesh: MeshInspector(component->AsMesh(), cmpt_id); break;
+	case CT_Material: MatInspector(component->AsMaterial(), cmpt_id); break;
+	case CT_Camera: CamInspector(component->AsCamera(), cmpt_id); break;
+	case CT_Transform: TransformInspector(component->AsTransform(), cmpt_id); break;
+	case CT_Billboard: BillboardInspector(component->AsBillboard(), cmpt_id); break;
+	case CT_Skeleton: SkeletonInspector(component->AsSkeleton(), cmpt_id); break;
+	case CT_Animation: AnimationInspector(component->AsAnimation(), cmpt_id); break;
 	}
 }
 
-void Inspector::MeshInspector(ComponentMesh* mesh)
+void Inspector::MeshInspector(ComponentMesh* mesh, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Mesh"))
+	std::string HeaderID = "Mesh: " + mesh->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 		if (check_info)
 		{
@@ -85,9 +104,10 @@ void Inspector::MeshInspector(ComponentMesh* mesh)
 	}
 }
 
-void Inspector::MatInspector(ComponentMaterial* mat)
+void Inspector::MatInspector(ComponentMaterial* mat, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Material"))
+	std::string HeaderID = "Matrial: " + mat->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 
 		for (int i = 0; mat != nullptr && i < mat->r_mat->textures.size(); i++)
@@ -123,13 +143,18 @@ void Inspector::MatInspector(ComponentMaterial* mat)
 			{
 			}
 				//mat->DestroyTexture(i);
+
+			ImGui::Checkbox("AlphaTest", &mat->AlphaTest);
+			ImGui::SliderFloat("AlphaVal", &mat->AlphaVal, 0, 1);
+
 		}
 	}
 }
 
-void Inspector::CamInspector(ComponentCamera* cam)
+void Inspector::CamInspector(ComponentCamera* cam, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Camera"))
+	std::string HeaderID = "Camera: " + cam->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 		ImGui::Spacing();
 		
@@ -166,9 +191,10 @@ void Inspector::CamInspector(ComponentCamera* cam)
 	}
 }
 
-void Inspector::TransformInspector(ComponentTransform* transform)
+void Inspector::TransformInspector(ComponentTransform* transform, const int& cmpt_id)
 {
-	if (ImGui::CollapsingHeader("Transform"))
+	std::string HeaderID = "Transform: " + transform->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
 	{
 		ImGui::Spacing();
 
@@ -186,10 +212,6 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 				else
 				{
 					App->gameObj->DeleteFromStaticObjects(transform->parent);
-
-					if (App->gameObj->GetSceneKDTree() != nullptr)
-						App->gameObj->DeleteSceneKDTree();
-
 					App->ui->kdtree_win->CreateKDTree();
 				}
 			}
@@ -203,69 +225,190 @@ void Inspector::TransformInspector(ComponentTransform* transform)
 
 		ImGui::Spacing();
 
-		if (transform->parent->GetComponent(CTypes::CT_Camera) == nullptr)
+		if (ImGui::RadioButton("World", radio_world))
 		{
-			if (ImGui::RadioButton("World", radio_world))
-			{
-				radio_world = true;
-				radio_local = false;
-				App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::RadioButton("Local", radio_local))
-			{
-				radio_world = false;
-				radio_local = true;
-				App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
-			}
-
-			ImGui::Spacing();
+			radio_world = true;
+			radio_local = false;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::WORLD;
 		}
+
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Local", radio_local))
+		{
+			radio_world = false;
+			radio_local = true;
+			App->gameObj->mCurrentGizmoMode = ImGuizmo::LOCAL;
+		}
+
+		ImGui::Spacing();
 
 		if (App->gameObj->mCurrentGizmoMode == ImGuizmo::LOCAL)
 		{
 			//Pos
 			float pos[3] = { transform->position.x, transform->position.y, transform->position.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+			{
 				transform->SetTransformPosition(pos[0], pos[1], pos[2]);
+
+				Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+				ev.game_object.ptr = transform->parent;
+				App->eventSys->BroadcastEvent(ev);
+			}
 
 			//Rot
 			float rot[3] = { transform->rotate_euler.x, transform->rotate_euler.y, transform->rotate_euler.z };
 			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
+			{
 				transform->SetTransformRotation((float3)rot);
+
+Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+ev.game_object.ptr = transform->parent;
+App->eventSys->BroadcastEvent(ev);
+			}
 		}
 		else if (App->gameObj->mCurrentGizmoMode == ImGuizmo::WORLD)
-		{	
-			float3 pos_vec;
-			Quat rot_quat;
-			float3 aux;
+		{
+		float3 pos_vec;
+		Quat rot_quat;
+		float3 aux;
 
-			//transform->aux_world_pos.Decompose(pos_vec, rot_quat, aux);
-			pos_vec = transform->aux_world_pos.Col3(3);
-			transform->world_rot.Decompose(aux, rot_quat, aux);
+		//transform->aux_world_pos.Decompose(pos_vec, rot_quat, aux);
+		pos_vec = transform->aux_world_pos.Col3(3);
+		transform->world_rot.Decompose(aux, rot_quat, aux);
 
-			//Pos
-			float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
-			if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
-				transform->SetWorldPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
+		//Pos
+		float pos[3] = { pos_vec.x, pos_vec.y, pos_vec.z };
+		if (!transform->parent->is_static && ImGui::DragFloat3("Position", pos, 0.2f))
+		{
+			transform->SetWorldPos(float4x4::FromTRS(float3(pos[0] - pos_vec.x, pos[1] - pos_vec.y, pos[2] - pos_vec.z), Quat::identity, float3::one));
 
-			//Rot
-			float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
-			float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
-			if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
-			{
-				Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z));
-				transform->SetWorldRot(rot_quat);
-			}
+			Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+			ev.game_object.ptr = transform->parent;
+			App->eventSys->BroadcastEvent(ev);
+		}
+
+		//Rot
+		float3 vec_rot = RadToDeg(rot_quat.ToEulerXYZ());
+		float rot[3] = { vec_rot.x, vec_rot.y, vec_rot.z };
+		if (!transform->parent->is_static && ImGui::DragFloat3("Rotation", rot, 0.5f))
+		{
+			Quat rot_quat = Quat::FromEulerXYZ(DegToRad(rot[0] - vec_rot.x), DegToRad(rot[1] - vec_rot.y), DegToRad(rot[2] - vec_rot.z));
+			transform->SetWorldRot(rot_quat);
+
+			Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+			ev.game_object.ptr = transform->parent;
+			App->eventSys->BroadcastEvent(ev);
+		}
 		}
 
 		//Scale
 		float scale[3] = { transform->scale.x, transform->scale.y, transform->scale.z };
 		if (!transform->parent->is_static && ImGui::DragFloat3("Scale", scale, 0.2f))
+		{
 			transform->SetTransformScale(scale[0], scale[1], scale[2]);
 
+			Event ev(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+			ev.game_object.ptr = transform->parent;
+			App->eventSys->BroadcastEvent(ev);
+		}
 		ImGui::Spacing();
 	}
+}
+
+void Inspector::BillboardInspector(ComponentBillboard* billboard, const int& cmpt_id)
+{
+
+}
+
+void Inspector::SkeletonInspector(ComponentSkeleton* skel, const int& cmpt_id)
+{
+	std::string HeaderID = "Skeleton: " + skel->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
+	{
+		if (ImGui::Button("Open Skeleton Inspector"))
+			skel_ins->active = true;
+
+		if (ImGui::Button("Import Animation for this Skeleton"))
+			App->importer->anim_i->ImportAnimationForSkeleton(skel->r_skel, skel->parent);
+
+	}
+	skel_ins->base_skel = skel;
+	skel_ins->Draw();
+}
+
+void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
+{
+	std::string HeaderID = "Animation: " + anim->name + "##" + std::to_string(cmpt_id);
+	if (ImGui::CollapsingHeader(HeaderID.c_str()))
+	{
+		if (ImGui::Button("Open Animation Inspector"))
+			anim_ins->active = true;
+		for (int i = 0; i < anim->anims.size(); i++)
+		{
+			if (ImGui::Button("X"))
+			{
+				if (anim->anims.size() > 1)
+				{
+					for (int j = i; j < anim->anims.size() - 1; j++)
+						anim->anims[j] = anim->anims[j + 1];
+					anim->anims.pop_back();
+				}
+			}
+			ImGui::SameLine();
+
+			std::string AnimHeaderID = "Anim: " + std::to_string(i);
+			std::string Labels = "##" + std::to_string(i);
+			if (ImGui::CollapsingHeader(AnimHeaderID.c_str()))
+			{
+				if (ImGui::Button(("SET" + Labels).c_str()))
+				{
+					anim->prev_animation = anim->curr_animation;
+					anim->curr_animation = i;
+					anim->phase = BlendPhase::Start;
+				}
+				ImGui::Text("Starting Frame: ");
+				ImGui::SameLine();
+				if (anim->anims[i].start < 0)
+					anim->anims[i].start = 0;
+				if (anim->anims[i].start > anim->duration)
+					anim->anims[i].start = anim->duration;
+				ImGui::DragInt((Labels + "Start").c_str(), &anim->anims[i].start, 1,0, anim->duration - 1);
+
+				ImGui::Text("End Frame: ");
+				ImGui::SameLine();
+				if (anim->anims[i].end < 0)
+					anim->anims[i].end = 0;
+				if (anim->anims[i].end > anim->duration - 1)
+					anim->anims[i].end = anim->duration - 1;
+				ImGui::DragInt((Labels + "Duration").c_str(), &anim->anims[i].end, 1,0, anim->duration - 1);
+
+				ImGui::Text("Framerate: ");
+				ImGui::SameLine();
+				if (anim->anims[i].tickrate < 1)
+					anim->anims[i].tickrate = 1;
+				if (anim->anims[i].tickrate > 1000)
+					anim->anims[i].tickrate = 1000;
+				ImGui::DragInt((Labels + "Framerate").c_str(), &anim->anims[i].tickrate, 1, 1, 1000);
+
+				ImGui::Text("Blend Time: ");
+				ImGui::SameLine();
+				if (anim->anims[i].blend_time < 1)
+					anim->anims[i].blend_time = 1;
+				if (anim->anims[i].blend_time > 20)
+					anim->anims[i].blend_time = 20;
+				ImGui::DragInt((Labels + "BlendTime").c_str(), &anim->anims[i].blend_time, 1, 1, 20);
+
+			}
+		}
+
+		if (ImGui::Button("Add Animation from Same Timeline"))
+		{
+			VirtualAnimation push;
+			push.tickrate = (--anim->anims.end())->tickrate;
+			anim->anims.push_back(push);
+		}
+	}
+	anim_ins->anim = anim;
+	anim_ins->Draw();
 }

@@ -6764,7 +6764,9 @@ static bool NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
         quadrant = (window->DC.LastItemId < g.NavId) ? ImGuiDir_Left : ImGuiDir_Right;
     }
 
-#if IMGUI_DEBUG_NAV_SCORING
+#if IMGUI_
+	
+	_NAV_SCORING
     char buf[128];
     if (ImGui::IsMouseHoveringRect(cand.Min, cand.Max))
     {

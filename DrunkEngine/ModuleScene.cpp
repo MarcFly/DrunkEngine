@@ -35,10 +35,9 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	LoadFBX("./Assets/Street environment_V01.FBX");
-	//LoadFBX("./Assets/Ogre.fbx");
-	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
-	//LoadFBX("./Assets/Cube3d.fbx");
+
+	// Setup for Delivery of Assignment 3
+	//App->importer->LoadScene("./Assets/SceneAnim.drnk");
 
 	App->renderer3D->OnResize();
 
@@ -49,6 +48,33 @@ bool ModuleScene::Start()
 
 
 	return ret;
+}
+
+bool ModuleScene::Update(float dt)
+{
+	if (A3Animation != nullptr && A3Animation->anims.size() == 3)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			A3Animation->curr_animation = 2;
+			A3Animation->prev_animation = 0;
+			A3Animation->phase = BlendPhase::Start;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		{
+			A3Animation->curr_animation = 1;
+			A3Animation->prev_animation = 0;
+			A3Animation->phase = BlendPhase::Start;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_UP)
+		{
+			A3Animation->prev_animation = 1;
+			A3Animation->curr_animation = 0;
+			A3Animation->phase = BlendPhase::Start;
+		}
+	}
+
+	return true;
 }
 
 bool ModuleScene::CleanUp()
@@ -101,10 +127,13 @@ bool ModuleScene::LoadSceneFile(const char* file_path)
 	App->gameObj->getRootObj()->OrderChildren();
 	App->gameObj->getRootObj()->RecursiveSetNewUUID();
 
-	App->gameObj->getRootObj()->GetTransform()->CalculateGlobalTransforms();
-	App->gameObj->getRootObj()->SetTransformedBoundBox();
+	Event evTrans(EventType::Transform_Updated, Event::UnionUsed::UseGameObject);
+	evTrans.game_object.ptr = App->gameObj->getRootObj();
+	App->eventSys->BroadcastEvent(evTrans);
 
-	App->gameObj->Main_Cam->LookToObj(App->gameObj->getRootObj(), App->gameObj->getRootObj()->max_distance_point);
+	Event evCam(EventType::Update_Cam_Focus, Event::UnionUsed::UseGameObject);
+	evCam.game_object.ptr = App->gameObj->getRootObj();
+	App->eventSys->BroadcastEvent(evCam);
 
 	return true;
 }
@@ -152,8 +181,12 @@ std::string ModuleScene::SaveScene(const char* filename)
 		root->name = GetFileName(filename);
 
 	CreateDirectory(".\\Assets\\", NULL);
-	std::string Save_scene = ".\\Assets\\" + App->gameObj->getRootObj()->name + ".drnk";
-	
+	std::string Save_scene = ".\\Assets\\";
+	if (App->gameObj->getRootObj() != nullptr)
+		Save_scene += App->gameObj->getRootObj()->name + ".drnk";
+	else
+		Save_scene += "NullScene.drnk";
+
 	if (App->gameObj->getRootObj() != nullptr)
 	{
 		JSON_Value* scene = json_parse_file(Save_scene.c_str());

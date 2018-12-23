@@ -7,12 +7,16 @@
 #include "MeshImport.h"
 #include "Resource.h"
 #include "Color.h"
+#include "ComponentTransform.h"
 
 struct ResourceMaterial;
 struct DGUID;
 
 struct ResourceMesh
 {
+	ResourceMesh() {};
+	ResourceMesh(const ResourceMesh* cpy);
+
 	GLuint id_index = 0; // index in VRAM
 	GLuint num_index = 0;
 	GLuint* index = nullptr;
@@ -29,6 +33,9 @@ struct ResourceMesh
 	GLuint num_normal = 0;
 	GLfloat* normal = nullptr;
 
+	GLuint id_vert_normals = 0;
+	GLfloat* vert_normals = nullptr;
+
 	ResourceMaterial* mat = nullptr;
 
 	GLuint num_faces = 0;
@@ -36,6 +43,10 @@ struct ResourceMesh
 	Color def_color = { 1,1,1,1 };
 
 	void GenBuffers();
+
+	void SetValsFromMesh(const ResourceMesh* cpy);
+
+	void UnloadBuffers();
 
 	void UnloadMem();
 	~ResourceMesh();
@@ -49,7 +60,8 @@ public:
 
 	DGUID Material_ind;
 	uint mat_ind;
-	
+	bool has_skeleton;
+
 	// More Load Options
 	void LoadMetaFile(const char* file);
 
