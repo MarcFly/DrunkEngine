@@ -346,7 +346,10 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 			anim_ins->active = true;
 		for (int i = 0; i < anim->anims.size(); i++)
 		{
-			if (ImGui::Button("X"))
+			std::string AnimHeaderID = "Anim: " + std::to_string(i);
+			std::string Labels = "##" + std::to_string(i);
+
+			if (ImGui::Button(("X" + Labels).c_str()))
 			{
 				if (anim->anims.size() > 1)
 				{
@@ -357,8 +360,7 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 			}
 			ImGui::SameLine();
 
-			std::string AnimHeaderID = "Anim: " + std::to_string(i);
-			std::string Labels = "##" + std::to_string(i);
+			
 			if (ImGui::CollapsingHeader(AnimHeaderID.c_str()))
 			{
 				if (ImGui::Button(("SET" + Labels).c_str()))
