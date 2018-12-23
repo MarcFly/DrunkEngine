@@ -12,7 +12,6 @@ Github Page - https://github.com/MarcFly/DrunkEngine
 The people currently working in this engine are Andreu Sacasas and Marc Torres, currently 3rd Year students coursing Design and Game Development at CITM, a center abscribed to the UPC.
 
 
-
 ## How to use it
 DrunkEngine will automatically load an .FBX file with a street and some houses with textures.
 It will export the files to our own format under a HIDDEN directory ./Library/
@@ -78,7 +77,17 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 
 ## SubSystems
 
-### 
+### Base Sub-Systems  
+- Event System: To have a better control throughout the engine subsystems.  
+- Scene: Gameobject hierarchy management and all of its components.  
+- Input: Takes care of the user I/O using SDL.  
+- Renderer: Initializes OpenGL to use it with SDL and ImGui.  
+- Window: Application control through SDL.  
+- Time: Module that controls in-game and editor time.  
+- Import: Translates external files to engine format for efficiency purposes.  
+- Resource: Manages memory usage with asets.  
+- UI: Uses ImGui to manage all the editor controls.  
+- KDTree: To optimize the engine.  
 
 ### Skeletal Animation Sub-System
 As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.  
