@@ -50,6 +50,33 @@ bool ModuleScene::Start()
 	return ret;
 }
 
+bool ModuleScene::Update(float dt)
+{
+	if (A3Animation != nullptr && A3Animation->anims.size() == 3)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			A3Animation->curr_animation = 2;
+			A3Animation->prev_animation = 0;
+			A3Animation->phase = BlendPhase::Start;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		{
+			A3Animation->curr_animation = 1;
+			A3Animation->prev_animation = 0;
+			A3Animation->phase = BlendPhase::Start;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_UP)
+		{
+			A3Animation->prev_animation = 1;
+			A3Animation->curr_animation = 0;
+			A3Animation->phase = BlendPhase::Start;
+		}
+	}
+
+	return true;
+}
+
 bool ModuleScene::CleanUp()
 {
 	bool ret = false;

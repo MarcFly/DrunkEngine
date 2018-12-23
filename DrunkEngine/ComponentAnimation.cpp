@@ -81,8 +81,11 @@ void ComponentAnimation::Load(const JSON_Object* comp)
 	if (App->resources->InLibrary(UID))
 		App->importer->anim_i->LinkAnim(UID, this);
 
-	if(r_anim != nullptr)
+	if (r_anim != nullptr)
+	{
 		LinkMesh();
+		App->scene->A3Animation = this;
+	}
 }
 
 void ComponentAnimation::Save(JSON_Array* comps)
@@ -185,7 +188,18 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 {
 	if (timer > anims[curr_animation].start + abs(anims[curr_animation].end - anims[curr_animation].start))
+	{
+		// Im sorry
+		if (curr_animation == 2)
+		{
+			curr_animation = 0;
+			prev_animation = 2;
+			phase = BlendPhase::Start;
+		}
 		timer = anims[curr_animation].start;
+		
+		
+	}
 
 	float4x4* curr_step = &curr_channel->curr_bone->last_anim_step;
 
