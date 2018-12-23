@@ -37,7 +37,7 @@ bool ModuleScene::Start()
 
 
 	// Setup for Delivery of Assignment 3
-	//App->importer->LoadScene("./Assets/SceneAnim.drnk");
+	App->importer->LoadScene("./Assets/SceneAnim.drnk");
 
 	App->renderer3D->OnResize();
 
