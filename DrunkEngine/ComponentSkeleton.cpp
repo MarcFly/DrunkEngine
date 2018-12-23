@@ -77,31 +77,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 	for (int i = 0; i < bones.size(); ++i)
 	{
-
 		float4x4 b_trans = bones[i]->transform.global_transform;
-
-		//aiVector3D offset_aiscale;
-		//aiVector3D offset_aipos;
-		//aiQuaternion offset_airot;
-		//
-		//bones[i]->OffsetMatrix.Decompose(offset_aiscale, offset_airot, offset_aipos);
-		//
-		//float3 offset_scale = float3(offset_scale.x, offset_scale.y, offset_scale.z);
-		//Quat offset_rot = Quat(offset_rot.x, offset_rot.y, offset_rot.z, offset_rot.w);
-		//float3 offset_pos = float3(offset_pos.x, offset_pos.y, offset_pos.z);
-
-		
-		//b_trans * parent->GetTransform()->global_transform.Inverted();
-		//b_trans = RecursiveParentInverted(b_trans, *bones[i]);
-		float4x4 bind_pose_t = float4x4::FromTRS(bones[i]->permanent_local_pos, bones[i]->permanent_local_rot, bones[i]->permanent_local_scale);
-		//b_trans = b_trans * parent->GetTransform()->local_transform.Inverted();
-
-		//b_trans = b_trans * bind_pose_t.Inverted();
-		
-
-		//RecursiveParentInverted(b_trans, *bones[i]);
-		//b_trans = b_trans * bones[i]->parent->OffsetMatrix.Inverted();
-
 		b_trans = b_trans * bones[i]->OffsetMatrix;
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
@@ -112,9 +88,8 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
 
-			//float3 new_movement = b_trans.Col3(3) - movement;
 			float3 new_movement = b_trans.TransformPos(movement);
-
+			
 			def_vertex[0] += new_movement.x * bones[i]->weights[j]->w;
 			def_vertex[1] += new_movement.y * bones[i]->weights[j]->w;
 			def_vertex[2] += new_movement.z * bones[i]->weights[j]->w;
@@ -125,7 +100,6 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
 
-			//new_movement = b_trans.Col3(3) - movement;
 			new_movement = b_trans.TransformPos(movement);
 
 			def_normal[0] += new_movement.x * bones[i]->weights[j]->w;
@@ -133,7 +107,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 			def_normal[2] += new_movement.z * bones[i]->weights[j]->w;
 		}
 
-		for (int j = 0; j < bones[i]->children.size(); ++j)
+		if (bones[i]->children.size() != 0)
 			DeformMesh(bones[i]->children);
 	}
 }
@@ -193,8 +167,8 @@ float4x4 ComponentSkeleton::RecursiveParentInverted(float4x4& t, Bone& b)
 {
 	if (b.parent != nullptr)
 	{
-		t = t * b.parent->OffsetMatrix.Inverted();
-		//t = t * b.parent->transform.global_transform.Inverted();
+		//t = t * b.parent->OffsetMatrix.Inverted();
+		t = t * b.parent->transform.global_transform.Inverted();
 		t = RecursiveParentInverted(t, *b.parent);
 	}
 	return t;
