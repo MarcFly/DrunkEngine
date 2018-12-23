@@ -10,8 +10,8 @@ Github Page - https://github.com/MarcFly/DrunkEngine
 
 ## Authors
 The people currently working in this engine are Andreu Sacasas and Marc Torres, currently 3rd Year students coursing Design and Game Development at CITM, a center abscribed to the UPC.
-![](https://i.imgur.com/Utvce3m.jpg)
-![](https://i.imgur.com/FDIMTi4.jpg)
+
+
 
 ## How to use it
 DrunkEngine will automatically load an .FBX file with a street and some houses with textures.
@@ -49,6 +49,7 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 
 ## Each member's Work
 
+![](https://i.imgur.com/2GgGvr3.png)  
 ### Andreu Sacasas
 
 - Imput options.
@@ -61,6 +62,7 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 - Scene Viewer (Objs Tree + Selection).
 - Implementation of the skeletal animation system.
 
+![](https://i.imgur.com/1uM1OJA.jpg)  
 ### Marc Torres
 
 - Mouse Pick.
