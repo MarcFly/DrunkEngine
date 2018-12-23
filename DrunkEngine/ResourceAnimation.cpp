@@ -116,15 +116,9 @@ float4x4 AnimChannel::GetMatrix(float time, float duration, float tickrate)
 		rot = CurrRot->value;
 	else
 	{
-		rot = CurrRot->value;
-
 		float time_between_keys = GetInBetweenKeysTime(time, CurrRot->time, NextRot->time, duration);
-		float3 rot_test = RadToDeg(NextRot->value.ToEulerXYZ());
-		float3 ret_rot;
-		ret_rot = rot_test * time_between_keys;
-		ret_rot += rot_test * (1 - time_between_keys);
-		
-		rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
+
+		rot = Quat::Slerp(CurrRot->value, NextRot->value, time_between_keys);
 	}
 
 	//Scale

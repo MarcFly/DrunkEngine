@@ -105,10 +105,16 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 				bone->weights.push_back(weight);
 			}
 			
-			memcpy(&bone->OffsetMatrix, cursor, sizeof(float) * 16);
+			aiMatrix4x4 offsetMat;
+			memcpy(&offsetMat, cursor, sizeof(float) * 16);
 			cursor += sizeof(float) * 16;
 
+			for (int k = 0; k < 4; k++)
+				for (int l = 0; l < 4; l++)
+					bone->OffsetMatrix[k][l] = offsetMat[k][l];
+
 			aiMatrix4x4 get_matrix;
+
 			//{
 			//	memcpy(&get_matrix.a1, cursor, sizeof(float)); cursor += sizeof(float);
 			//	memcpy(&get_matrix.a2, cursor, sizeof(float)); cursor += sizeof(float);

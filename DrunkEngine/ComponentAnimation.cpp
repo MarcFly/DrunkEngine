@@ -168,14 +168,8 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 	//Rot (prob not working)
 	if (curr_channel->num_rotation_keys > 1)
 	{
-		float3 rot_new = RadToDeg(Rnew_anim.ToEulerXYZ());
-		float3 rot_prev = RadToDeg(Rprev_anim.ToEulerXYZ());
+		step_rot = Quat::Slerp(Rprev_anim, Rnew_anim, blend_percentage);
 
-		float3 ret_rot;
-		ret_rot = rot_new * blend_percentage;
-		ret_rot += rot_prev * (1 - blend_percentage);
-
-		step_rot = Quat::FromEulerXYZ(DegToRad(ret_rot.x), DegToRad(ret_rot.y), DegToRad(ret_rot.z));
 		curr_channel->curr_bone->transform.SetTransformRotation(step_rot * curr_channel->curr_bone->permanent_local_rot);
 	}
 	//Scale
