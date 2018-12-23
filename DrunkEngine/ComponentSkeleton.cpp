@@ -48,7 +48,9 @@ void ComponentSkeleton::Draw()
 
 	glColor3f(0, 1, 0);
 
-	DrawDeformedMesh();
+	if (check_vecs == 2)
+		DrawDeformedMesh();
+
 
 	glEnd();
 }
@@ -75,33 +77,8 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 	for (int i = 0; i < bones.size(); ++i)
 	{
-
 		float4x4 b_trans = bones[i]->transform.global_transform;
-
-		//aiVector3D offset_aiscale;
-		//aiVector3D offset_aipos;
-		//aiQuaternion offset_airot;
-		//
-		//bones[i]->OffsetMatrix.Decompose(offset_aiscale, offset_airot, offset_aipos);
-		//
-		//float3 offset_scale = float3(offset_scale.x, offset_scale.y, offset_scale.z);
-		//Quat offset_rot = Quat(offset_rot.x, offset_rot.y, offset_rot.z, offset_rot.w);
-		//float3 offset_pos = float3(offset_pos.x, offset_pos.y, offset_pos.z);
-
-		float4x4 offset_mat;
-
-		for (int k = 0; k < 4; k++)
-			for (int l = 0; l < 4; l++)
-				offset_mat[k][l] = bones[i]->OffsetMatrix[k][l];
-		
-		//b_trans * parent->GetTransform()->global_transform;
-		//b_trans = RecursiveParentInverted(b_trans, *bones[i]);
-		float4x4 bind_pose_t = float4x4::FromTRS(bones[i]->permanent_local_pos, bones[i]->permanent_local_rot, bones[i]->permanent_local_scale);
-		//b_trans = b_trans * parent->GetTransform()->local_transform.Inverted();
-
-		//b_trans = b_trans * bind_pose_t.Inverted();
-
-		b_trans = b_trans * offset_mat;
+		b_trans = b_trans * bones[i]->OffsetMatrix;
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
@@ -111,9 +88,8 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
 
-			//movement = b_trans.Col3(3) - movement;
 			float3 new_movement = b_trans.TransformPos(movement);
-
+			
 			def_vertex[0] += new_movement.x * bones[i]->weights[j]->w;
 			def_vertex[1] += new_movement.y * bones[i]->weights[j]->w;
 			def_vertex[2] += new_movement.z * bones[i]->weights[j]->w;
@@ -124,7 +100,6 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
 
-			//movement = b_trans.Col3(3) - movement;
 			new_movement = b_trans.TransformPos(movement);
 
 			def_normal[0] += new_movement.x * bones[i]->weights[j]->w;
@@ -132,7 +107,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 			def_normal[2] += new_movement.z * bones[i]->weights[j]->w;
 		}
 
-		for (int j = 0; j < bones[i]->children.size(); ++j)
+		if (bones[i]->children.size() != 0)
 			DeformMesh(bones[i]->children);
 	}
 }
@@ -192,7 +167,8 @@ float4x4 ComponentSkeleton::RecursiveParentInverted(float4x4& t, Bone& b)
 {
 	if (b.parent != nullptr)
 	{
-		t = t * b.parent->transform.local_transform.Inverted();
+		//t = t * b.parent->OffsetMatrix.Inverted();
+		t = t * b.parent->transform.global_transform.Inverted();
 		t = RecursiveParentInverted(t, *b.parent);
 	}
 	return t;
@@ -203,58 +179,17 @@ void ComponentSkeleton::UpdateTransform()
 	ComponentTransform* root_transform = &r_skel->bones[0]->transform;
 	ComponentTransform* parent_transform = parent->GetTransform();
 
-	//1
-	/*{
-		root_transform->global_transform = this->parent->GetTransform()->global_transform;
+	root_transform->global_pos = parent_transform->global_pos - initial_pos;
 
-		//Global values
-		//root_transform->global_pos = parent->getObjectCenter();
-		root_transform->global_pos = root_transform->global_transform.Col3(3);
+	root_transform->global_rot.x = parent_transform->global_rot.x;
+	root_transform->global_rot.y = parent_transform->global_rot.y;
+	root_transform->global_rot.z = parent_transform->global_rot.z;
+	root_transform->global_rot.w = parent_transform->global_rot.w;
 
-		root_transform->global_rot = root_transform->GetRotFromMat(root_transform->global_transform);
+	root_transform->global_scale = float3(parent->GetTransform()->global_scale.x / initial_scale.x, parent->GetTransform()->global_scale.y / initial_scale.y, parent->GetTransform()->global_scale.z / initial_scale.z);
+	//root_transform->global_scale = float3(1, 1, 1);
 
-		//root_transform->global_transform.Decompose(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
-
-		//root_transform->global_pos -= initial_pos;
-		root_transform->global_scale = float3(root_transform->global_transform[0][0] / initial_scale.x, root_transform->global_transform[1][1] / initial_scale.y, root_transform->global_transform[2][2] / initial_scale.z);
-
-		//Position
-		root_transform->global_transform.SetCol3(3, root_transform->global_pos - initial_pos);
-
-		//Rotation
-		root_transform->global_rot.x = root_transform->global_rot.x - initial_rot.x;
-		root_transform->global_rot.y = root_transform->global_rot.y - initial_rot.y;
-		root_transform->global_rot.z = root_transform->global_rot.z - initial_rot.z;
-		root_transform->global_rot.w = root_transform->global_rot.w - initial_rot.w;
-
-		//root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
-
-		//Scale
-		root_transform->global_transform[0][0] = root_transform->global_scale.x;
-		root_transform->global_transform[1][1] = root_transform->global_scale.y;
-		root_transform->global_transform[2][2] = root_transform->global_scale.z;
-
-		//root_transform->global_transform.Scale(root_transform->global_scale, parent->GetTransform()->global_pos); //not working
-	}*/
-
-	//2
-	{
-
-
-		root_transform->global_pos = parent_transform->global_pos - initial_pos;
-
-		root_transform->global_rot.x = parent_transform->global_rot.x;
-		root_transform->global_rot.y = parent_transform->global_rot.y;
-		root_transform->global_rot.z = parent_transform->global_rot.z;
-		root_transform->global_rot.w = parent_transform->global_rot.w;
-
-		root_transform->global_scale = float3(parent->GetTransform()->global_scale.x / initial_scale.x, parent->GetTransform()->global_scale.y / initial_scale.y, parent->GetTransform()->global_scale.z / initial_scale.z);
-		//root_transform->global_scale = float3(1, 1, 1);
-
-		root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
-
-	}
-
+	root_transform->global_transform = float4x4::FromTRS(root_transform->global_pos, root_transform->global_rot, root_transform->global_scale);
 
 	r_skel->CalculateSkeletonTransforms();
 }

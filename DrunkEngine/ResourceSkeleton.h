@@ -22,7 +22,7 @@ struct Bone
 	std::vector<BoneWeight*> weights;
 	ComponentTransform transform;
 
-	aiMatrix4x4 OffsetMatrix;
+	float4x4 OffsetMatrix;
 
 	float4x4 last_anim_step = float4x4::identity;
 

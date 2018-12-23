@@ -99,6 +99,8 @@ void ModuleGameObject::NewScene(GameObject* base)
 	}
 	else
 		Root_Object = base;
+
+	SetActiveFalse();
 }
 
 void ModuleGameObject::CreateMainCam()
