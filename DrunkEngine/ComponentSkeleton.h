@@ -22,7 +22,7 @@ public:
 	void Update(const float dt);
 
 	void Draw();
-	void DrawDeformedMesh();
+	void PrepDrawDeformedMesh(std::vector<Bone*>& bones);
 	void DeformMesh(std::vector<Bone*>& bones);
 	void DrawToChildren(Bone* bone);
 	
@@ -38,6 +38,7 @@ public:
 	bool CheckSkeletonValidity();
 	//void LinkMesh();
 	void CreateDeformableMesh();
+	void SkinBindPose();
 
 public:
 	ResourceSkeleton* r_skel;

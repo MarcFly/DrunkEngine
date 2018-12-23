@@ -1,31 +1,78 @@
 #include "ResourceMesh.h"
 #include "Application.h"
 
+AnimMesh::~AnimMesh()
+{
+	UnloadBuffers();
+	if (vertex != nullptr)
+	{
+		delete[] vertex;
+		vertex = nullptr;
+	}
+
+	if (vert_normals != nullptr)
+	{
+		delete[] vert_normals;
+		vert_normals = nullptr;
+	}
+}
+
+void AnimMesh::GenBuffers()
+{
+	// Vertex Buffer
+
+	if (num_vertex > 0)
+	{
+		glGenBuffers(1, &id_vertex);
+		glBindBuffer(GL_ARRAY_BUFFER, id_vertex);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * num_vertex * 3, vertex, GL_DYNAMIC_DRAW);
+	}
+
+	// **Unbind Buffer**
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	if (num_vertex > 0)
+	{
+		glGenBuffers(1, &id_vert_normals);
+		glBindBuffer(GL_ARRAY_BUFFER, id_vert_normals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * num_vertex * 3, vert_normals, GL_DYNAMIC_DRAW);
+	}
+
+	// **Unbind Buffer**
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void AnimMesh::UnloadBuffers()
+{
+	if (vertex != nullptr)
+		glDeleteBuffers(1, &id_vertex);
+
+	if (vert_normals != nullptr)
+		glDeleteBuffers(1, &id_vert_normals);
+}
+
+void AnimMesh::SetValsFromMesh(const ResourceMesh* cpy)
+{
+	num_vertex = cpy->num_vertex;
+	vertex = new float[num_vertex * 3];
+
+	vert_normals = new float[num_vertex * 3];
+
+	memset(vertex, 0, sizeof(GLfloat) * num_vertex * 3);
+	memset(vert_normals, 0, sizeof(GLfloat) * num_vertex * 3);
+
+	GenBuffers();
+}
+
+void AnimMesh::SetFromBind(const AnimMesh * cpy)
+{
+	memcpy(vertex, cpy->vertex, sizeof(GLfloat) * num_vertex * 3);
+	memcpy(vert_normals, cpy->vert_normals, sizeof(GLfloat) * num_vertex * 3);
+}
+
 ResourceMesh::~ResourceMesh()
 {
 	UnloadMem();
-}
-
-ResourceMesh::ResourceMesh(const ResourceMesh * cpy)
-{
-
-	num_index = cpy->num_index;
-	num_vertex = cpy->num_vertex;
-	num_uvs = cpy->num_uvs;
-	num_normal = cpy->num_normal;
-	num_faces = cpy->num_faces;
-	mat = cpy->mat;
-	def_color = cpy->def_color;
-
-	index = new uint[num_index];
-	vertex = new float[num_vertex * 3];
-	tex_coords = new float[num_uvs * 3];
-	normal = new float[num_normal * 3];
-	vert_normals = new float[num_vertex * 3];
-
-	SetValsFromMesh(cpy);
-
-	GenBuffers();
 }
 
 void ResourceMesh::GenBuffers()
@@ -75,22 +122,6 @@ void ResourceMesh::GenBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ResourceMesh::SetValsFromMesh(const ResourceMesh * cpy)
-{
-	memcpy(index, cpy->index, sizeof(GLuint)*num_index);
-
-	//To 0
-	memset(vertex, 0, sizeof(GLfloat)*num_vertex * 3);
-	memset(vert_normals, 0, sizeof(GLfloat)*num_vertex * 3); for (int i = 0; i < num_vertex * 3; ++i)
-	
-	//To original
-	//memcpy(vertex, cpy->vertex, sizeof(GLfloat)*num_vertex * 3);
-	//memcpy(vert_normals, cpy->vert_normals, sizeof(GLfloat)*num_vertex * 3);
-
-	memcpy(tex_coords, cpy->tex_coords, sizeof(GLfloat)*num_uvs * 3);
-	memcpy(normal, cpy->normal, sizeof(GLfloat)*num_normal*3);
-}
-
 void ResourceMesh::UnloadBuffers()
 {
 	if (index != nullptr)
@@ -113,6 +144,18 @@ void ResourceMesh::UnloadBuffers()
 void ResourceMesh::UnloadMem()
 {
 	UnloadBuffers();
+
+	if (BindPose != nullptr)
+	{
+		delete BindPose;
+		BindPose = nullptr;
+	}
+
+	if (DefMesh != nullptr)
+	{
+		delete DefMesh;
+		DefMesh = nullptr;
+	}
 
 	if (index != nullptr)
 	{

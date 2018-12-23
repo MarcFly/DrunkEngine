@@ -44,6 +44,8 @@ void ComponentAnimation::Update(const float dt)
 
 	if (playing)
 		timer += anims[curr_animation].tickrate / (1 / dt);
+	else
+		c_mesh->animating = false;
 }
 
 void ComponentAnimation::Draw()

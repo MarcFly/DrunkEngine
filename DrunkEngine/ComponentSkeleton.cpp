@@ -48,31 +48,48 @@ void ComponentSkeleton::Draw()
 
 	glColor3f(0, 1, 0);
 
-	if (check_vecs == 2)
-		DrawDeformedMesh();
-
+	if (check_vecs == 2 && c_mesh->animating)
+	{
+		c_mesh->r_mesh->DefMesh->SetFromBind(c_mesh->r_mesh->BindPose);
+		PrepDrawDeformedMesh(r_skel->bones);
+	}
 
 	glEnd();
 }
 
-void ComponentSkeleton::DrawDeformedMesh()
+void ComponentSkeleton::PrepDrawDeformedMesh(std::vector<Bone*>& bones)
 {
-	c_mesh->deformable_mesh->SetValsFromMesh(c_mesh->r_mesh);
-	
-	//float3 par_pos = parent->GetTransform()->position;
-	//for (int i = 0; i < c_mesh->deformable_mesh->num_vertex; ++i)
-	//{
-	//	c_mesh->deformable_mesh->vertex[i * 3] -= par_pos.x;
-	//	c_mesh->deformable_mesh->vertex[i * 3 + 1] -= par_pos.y;
-	//	c_mesh->deformable_mesh->vertex[i * 3 + 2] -= par_pos.z;
-	//}
+	// Do the new way of animating
+	AnimMesh* anim_pose = c_mesh->r_mesh->DefMesh;
 
-	DeformMesh(r_skel->bones);
+	for (int i = 0; i < bones.size(); ++i)
+	{
+		float3 movement = bones[i]->transform.local_transform.Col3(3) - bones[i]->permanent_local_pos;
+		for (int j = 0; j < bones[i]->weights.size(); ++j)
+		{
+			// Vertex
+			GLfloat* def_vertex = &anim_pose->vertex[bones[i]->weights[j]->VertexID * 3];
+
+			def_vertex[0] += movement.x * bones[i]->weights[j]->w;
+			def_vertex[1] += movement.y * bones[i]->weights[j]->w;
+			def_vertex[2] += movement.z * bones[i]->weights[j]->w;
+
+			// Normal
+			GLfloat* def_normal = &anim_pose->vert_normals[bones[i]->weights[j]->VertexID * 3];
+
+			def_normal[0] += movement.x * bones[i]->weights[j]->w;
+			def_normal[1] += movement.y * bones[i]->weights[j]->w;
+			def_normal[2] += movement.z * bones[i]->weights[j]->w;
+		}
+
+		if (bones[i]->children.size() != 0)
+			PrepDrawDeformedMesh(bones[i]->children);
+	}
 }
 
 void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 {
-	ResourceMesh* d_mesh = c_mesh->deformable_mesh;
+	AnimMesh* bind_pose = c_mesh->r_mesh->BindPose;
 	ResourceMesh* mesh = c_mesh->r_mesh;
 
 	for (int i = 0; i < bones.size(); ++i)
@@ -84,7 +101,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 		{
 			// Vertex
 			GLfloat* curr_vertex = &mesh->vertex[bones[i]->weights[j]->VertexID * 3];
-			GLfloat* def_vertex = &d_mesh->vertex[bones[i]->weights[j]->VertexID * 3];
+			GLfloat* def_vertex = &bind_pose->vertex[bones[i]->weights[j]->VertexID * 3];
 
 			float3 movement(curr_vertex[0], curr_vertex[1], curr_vertex[2]);
 
@@ -96,7 +113,7 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 			// Normal
 			GLfloat* curr_normal = &mesh->vert_normals[bones[i]->weights[j]->VertexID * 3];
-			GLfloat* def_normal = &d_mesh->vert_normals[bones[i]->weights[j]->VertexID * 3];
+			GLfloat* def_normal = &bind_pose->vert_normals[bones[i]->weights[j]->VertexID * 3];
 
 			movement = float3(curr_normal[0], curr_normal[1], curr_normal[2]);
 
@@ -217,7 +234,14 @@ void ComponentSkeleton::CreateDeformableMesh()
 			}
 		}
 
-	c_mesh->deformable_mesh = new ResourceMesh(c_mesh->r_mesh);
+	if (c_mesh != nullptr)
+	{
+		DeformMesh(r_skel->bones);
+		c_mesh->binded = true;
+	}
+}
 
+void ComponentSkeleton::SkinBindPose()
+{
 
 }

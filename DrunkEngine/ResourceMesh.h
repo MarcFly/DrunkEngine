@@ -12,6 +12,25 @@
 struct ResourceMaterial;
 struct DGUID;
 
+struct AnimMesh
+{
+	GLuint id_vertex = 0; // unique vertex in VRAM
+	GLuint num_vertex = 0;
+	GLfloat* vertex = nullptr;
+
+	GLuint id_vert_normals = 0;
+	GLfloat* vert_normals = nullptr;
+
+	void GenBuffers();
+
+	void SetValsFromMesh(const ResourceMesh* cpy);
+	void SetFromBind(const AnimMesh* cpy);
+
+	void UnloadBuffers();
+
+	~AnimMesh();
+};
+
 struct ResourceMesh
 {
 	ResourceMesh() {};
@@ -42,9 +61,10 @@ struct ResourceMesh
 
 	Color def_color = { 1,1,1,1 };
 
-	void GenBuffers();
+	AnimMesh* BindPose = nullptr;
+	AnimMesh* DefMesh = nullptr;
 
-	void SetValsFromMesh(const ResourceMesh* cpy);
+	void GenBuffers();
 
 	void UnloadBuffers();
 

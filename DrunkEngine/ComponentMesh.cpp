@@ -82,7 +82,8 @@ void ComponentMesh::SetMeshBoundBox()
 
 void ComponentMesh::Draw()
 {
-	
+	glPushMatrix();
+	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
 	if (CheckMeshValidity())
 	{
@@ -114,15 +115,6 @@ void ComponentMesh::Draw()
 
 void ComponentMesh::DrawMesh()
 {
-	ResourceMesh* used_mesh = r_mesh;
-	if (deformable_mesh != nullptr)
-		used_mesh = deformable_mesh;
-	else
-	{
-		glPushMatrix();
-		glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
-	}
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	/*glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
@@ -136,12 +128,17 @@ void ComponentMesh::DrawMesh()
 	}*/
 	
 	//glVertexPointer(3, GL_FLOAT, 0, NULL);
+	
+	if(!binded && !animating)
+		glVertexPointer(3, GL_FLOAT, 0, r_mesh->vertex);
+	else if(binded && !animating)
+		glVertexPointer(3, GL_FLOAT, 0, r_mesh->BindPose->vertex);
+	else if(binded && animating)
+		glVertexPointer(3, GL_FLOAT, 0, r_mesh->DefMesh->vertex);
 
-	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
-
-	if (used_mesh->tex_coords != nullptr)
+	if (r_mesh->tex_coords != nullptr)
 	{
 		LinkMat();
 
@@ -153,7 +150,7 @@ void ComponentMesh::DrawMesh()
 			// Technically this will do for all textures in a material, so for diffuse, ambient,... 
 			// I don't know if the texture coordinates should be binded every time for each texture or just binding different textures
 			
-			c_mat->DrawTextures(used_mesh);
+			c_mat->DrawTextures(r_mesh);
 		}
 		else
 		{
@@ -167,28 +164,20 @@ void ComponentMesh::DrawMesh()
 	}
 	else
 	{
-		glColor4f(used_mesh->def_color.r, used_mesh->def_color.g, used_mesh->def_color.b, used_mesh->def_color.a);
+		glColor4f(r_mesh->def_color.r, r_mesh->def_color.g, r_mesh->def_color.b, r_mesh->def_color.a);
 	}
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, used_mesh->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	if(deformable_mesh == nullptr)
-	{
-		glPopMatrix();
-	}
 }
 
 void ComponentMesh::DrawMeshWire() const
 {
-	glPushMatrix();
-	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -203,15 +192,10 @@ void ComponentMesh::DrawMeshWire() const
 	// Unbind Buffers
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glPopMatrix();
 }
 
 void ComponentMesh::DrawNormals() const
 {
-	glPushMatrix();
-	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
-
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
 
@@ -227,8 +211,6 @@ void ComponentMesh::DrawNormals() const
 	}
 	glColor3f(0, 1, 0);
 	glEnd();
-
-	glPopMatrix();
 }
 
 void ComponentMesh::CleanUp()
@@ -240,14 +222,7 @@ void ComponentMesh::CleanUp()
 	if (this->BoundingBox != nullptr) {
 		delete this->BoundingBox;
 		this->BoundingBox = nullptr;
-	}
-
-	if (deformable_mesh != nullptr)
-	{
-		delete deformable_mesh;
-		deformable_mesh = nullptr;
-	}
-	
+	}	
 
 	this->parent = nullptr;
 }
@@ -263,6 +238,13 @@ void ComponentMesh::Load(const JSON_Object* comp)
 	if(App->resources->InLibrary(UID))
 		App->importer->mesh_i->LinkMesh(UID, this);
 
+	if (r_mesh != nullptr)
+	{
+		r_mesh->BindPose = new AnimMesh();
+		r_mesh->DefMesh = new AnimMesh();
+		r_mesh->BindPose->SetValsFromMesh(r_mesh);
+		r_mesh->DefMesh->SetValsFromMesh(r_mesh);
+	}
 }
 
 void ComponentMesh::Save(JSON_Array* comps)

@@ -37,11 +37,13 @@ public:
 
 public:
 	ResourceMesh* r_mesh;
-	ResourceMesh* deformable_mesh;
 	ComponentMaterial* c_mat;
 	DGUID Material_Ind;
 	uint mat_ind;
 	AABB* BoundingBox;
+
+	bool binded;
+	bool animating;
 
 public:
 	void SetTexTo(const DGUID& nUID);
@@ -55,8 +57,6 @@ public:
 		to_pop = false;
 		mat_ind = -1;
 		c_mat = nullptr;
-
-		deformable_mesh = nullptr;
 	}
 };
 
