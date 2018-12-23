@@ -1,10 +1,10 @@
-# DrunkEngine
+﻿# DrunkEngine
 
 ## About the Project
 DrunkEngine is the the result of developing a 3D Game Engine for our third year subject Game Engines. This is not a fully fledged game engine but holds core subsystems for building one.
 
 ## Info
-This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you will be able to save the scene and load it from the editor).
+This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you are able to save the scene and load it from the editor). It also includes an animation subsistem to load fbx with animations.
 
 Github Page - https://github.com/MarcFly/DrunkEngine
 
@@ -41,14 +41,15 @@ When saving a scene, it will be created automatically under an Assets folder ins
 If you make a mess loading things, you can clear up the editor at Options->Delete Scene.
 
 ## Innovation
-- KD-Tree (used on frustum and mouse-picking to accelerate static Objs)
+- World and Local transformations for gameobjects (only accesible through the inspector->transform window).
 - Input window in options to change the camera controls and the window shortcuts.
+- Managing Components through the inspector (activate/deactivate them).
 
 ## Each member's Work
 
 ### Andreu Sacasas
 
-- Amplified Input options.
+- Imput options.
 - Frustum implementation (Editor camera + component Cameras & FOV).
 - Static System.
 - KD-Tree + implemented it on frustum culling / mouse picking optimizations.
@@ -56,6 +57,7 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 - World / Local transformations to GameObjs.
 - Event System.
 - Scene Viewer (Objs Tree + Selection).
+- Implementation of the skeletal animation system.
 
 ### Marc Torres
 
@@ -67,6 +69,8 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 - Export assets to our own format (into a hidden "Library" folder in Game).
 - Reference counting for Resource Management
 - Engine Time Management for Game and Editor mode.
+- File management for the animation system.
+- Activate / Deactivate components.
 
 ### Skeletal Animation Sub-System
 As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.  
@@ -74,8 +78,8 @@ As part of the last assignment, a basic skeletal animation sub-system has been i
 ![](https://media.giphy.com/media/9x5b92dJqSBvtiqYBQ/giphy.gif)
 ![](https://media.giphy.com/media/A7VJ37OYWXSTzRGHP1/giphy.gif)
 
-For a detailed explanation on our susbsystem and getting into our engine, refer to he following video:
-[![](https://img.youtube.com/vi/bNXV1bHX8Es&feature=youtu.be/0.jpg)](https://www.youtube.com/watch?v=bNXV1bHX8Es&feature=youtu.be)
+For a detailed explanation on our susbsystem and getting into our engine, refer to the following video:  
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/YouTube_icon.png/800px-YouTube_icon.png)](https://www.youtube.com/watch?v=bNXV1bHX8Es&feature=youtu.be)
 
 [**Link to Repo**][1]  
 [**Latest Release**][2] 
