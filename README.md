@@ -74,8 +74,8 @@ GIFS
 
 For a detailed explanation on our susbsystem and getting into our engine, refer to he following video:
 [![](https://img.youtube.com/vi/bZ9W4b0eMIY&feature=youtu.be/0.jpg)](https://www.youtube.com/watch?v=bZ9W4b0eMIY&feature=youtu.be)
-!(https://media.giphy.com/media/9x5b92dJqSBvtiqYBQ/giphy.gif)
-!(https://media.giphy.com/media/A7VJ37OYWXSTzRGHP1/giphy.gif)
+![](https://media.giphy.com/media/9x5b92dJqSBvtiqYBQ/giphy.gif)
+![](https://media.giphy.com/media/A7VJ37OYWXSTzRGHP1/giphy.gif)
 
 [**Link to Repo**][1]  
 [**Latest Release**][2] 
