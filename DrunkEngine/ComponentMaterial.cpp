@@ -67,7 +67,7 @@ void ComponentMaterial::Load(const JSON_Object* comp)
 	else
 		App->ui->console_win->AddLog("Not in library!");
 
-	for (int i = 0; i < r_mat->textures.size(); i++)
+	for (int i = 0; r_mat != nullptr && i < r_mat->textures.size(); i++)
 		this->textures.push_back(App->importer->mat_i->LinkTexture(r_mat->textures[i]));
 
 }

@@ -115,25 +115,6 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 
 			aiMatrix4x4 get_matrix;
 
-			//{
-			//	memcpy(&get_matrix.a1, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.a2, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.a3, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.a4, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.b1, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.b2, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.b3, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.b4, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.c1, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.c2, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.c3, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.c4, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.d1, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.d2, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.d3, cursor, sizeof(float)); cursor += sizeof(float);
-			//	memcpy(&get_matrix.d4, cursor, sizeof(float)); cursor += sizeof(float);
-			//}
-
 			memcpy(&get_matrix, cursor, sizeof(float) * 16);
 			cursor += sizeof(float) * 16;
 			
@@ -141,21 +122,8 @@ ResourceSkeleton* SkeletonImport::LoadSkeleton(const char* file)
 			// For now only push first bone matrix
 			bone->transform.SetFromMatrix(&get_matrix);
 
-			//bone->transform.local_transform.Transpose();
-
 			bone->transform.global_transform = bone->transform.local_transform;
 			bone->transform.global_transform.Decompose(bone->permanent_local_pos, bone->permanent_local_rot, bone->permanent_local_scale);
-
-			//Scale needs to be 1
-			//bone->transform.local_transform[0][0] = 1;
-			//bone->transform.local_transform[1][1] = 1;
-			//bone->transform.local_transform[2][2] = 1;
-			//
-			//bone->permanent_local_scale = float3::one;
-			//
-			//bone->transform.global_transform[0][0] = 1;
-			//bone->transform.global_transform[1][1] = 1;
-			//bone->transform.global_transform[2][2] = 1;
 
 			ret->bones.push_back(bone);
 		}
@@ -402,13 +370,17 @@ void SkeletonImport::LoadMeta(const char* file, MetaSkeleton* meta)
 	meta->type = RT_Skeleton;
 
 	JSON_Value* meta_file = json_parse_file(file);
-	JSON_Object* meta_obj = json_value_get_object(meta_file);
+	if (meta_file != nullptr)
+	{
+		meta->res_found = true;
+		JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	meta->file = json_object_dotget_string(meta_obj, "File");
+		meta->file = json_object_dotget_string(meta_obj, "File");
 
-	// Free Meta Value
-	json_object_clear(meta_obj);
-	json_value_free(meta_file);
+		// Free Meta Value
+		json_object_clear(meta_obj);
+		json_value_free(meta_file);
+	}
 }
 
 

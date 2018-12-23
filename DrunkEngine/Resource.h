@@ -147,6 +147,7 @@ public:
 	std::string file;
 	uint UseCount = 0;
 	bool to_pop = false;
+	bool res_found = false;
 	Resource Asset;
 
 	virtual void LoadMetaFile(const char* path) {};

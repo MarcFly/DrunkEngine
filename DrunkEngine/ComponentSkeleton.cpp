@@ -67,7 +67,12 @@ void ComponentSkeleton::DrawDeformedMesh()
 	//	c_mesh->deformable_mesh->vertex[i * 3 + 2] -= par_pos.z;
 	//}
 
+	for (int i = 0; i < c_mesh->r_mesh->num_vertex; i++)
+		sums.push_back(0);
+
 	DeformMesh(r_skel->bones);
+
+	sums.clear();
 }
 
 void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
@@ -77,11 +82,13 @@ void ComponentSkeleton::DeformMesh(std::vector<Bone*>& bones)
 
 	for (int i = 0; i < bones.size(); ++i)
 	{
-		float4x4 b_trans = bones[i]->transform.global_transform;
+		float4x4 b_trans = parent->GetTransform()->global_transform.Inverted();
+			b_trans = b_trans * bones[i]->transform.global_transform;
 		b_trans = b_trans * bones[i]->OffsetMatrix;
 
 		for (int j = 0; j < bones[i]->weights.size(); ++j)
 		{
+			sums[bones[i]->weights[j]->VertexID] += bones[i]->weights[j]->w;
 			// Vertex
 			GLfloat* curr_vertex = &mesh->vertex[bones[i]->weights[j]->VertexID * 3];
 			GLfloat* def_vertex = &d_mesh->vertex[bones[i]->weights[j]->VertexID * 3];
@@ -116,11 +123,11 @@ void ComponentSkeleton::DrawToChildren(Bone* bone)
 {
 	for (int i = 0; i < bone->children.size(); i++)
 	{
-		//if (bone->parent != nullptr)
-		//{
+		if (bone->parent != nullptr)
+		{
 			glVertex3f(bone->transform.global_pos.x, bone->transform.global_pos.y, bone->transform.global_pos.z);
 			glVertex3f(bone->children[i]->transform.global_pos.x, bone->children[i]->transform.global_pos.y, bone->children[i]->transform.global_pos.z);
-		//}
+		}
 
 		DrawToChildren(bone->children[i]);
 	}

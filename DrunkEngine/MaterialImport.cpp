@@ -29,11 +29,14 @@ void MatImport::Init()
 void MatImport::LinkMat(DGUID fID, ComponentMaterial* mat)
 {
 	MetaMat* meta = (MetaMat*)App->resources->Library.at(fID);
+	
+	if (meta->res_found)
+	{
+		if (!meta->Asset.IsLoaded())
+			meta->Asset.LoadToMem();
 
-	if (!meta->Asset.IsLoaded())
-		meta->Asset.LoadToMem();
-
-	meta->UseCount++;
+		meta->UseCount++;
+	}
 
 	mat->r_mat = meta->Asset.mat.ptr;
 }
@@ -42,12 +45,15 @@ ResourceTexture* MatImport::LinkTexture(DGUID fID)
 {
 	MetaTexture* meta = (MetaTexture*)App->resources->Library.at(fID);
 
-	if (!meta->Asset.IsLoaded())
-		meta->Asset.LoadToMem();
+	if (meta->res_found)
+	{
+		if (!meta->Asset.IsLoaded())
+			meta->Asset.LoadToMem();
 
-	meta->Asset.texture.ptr->type = meta->tex_type;
+		meta->Asset.texture.ptr->type = meta->tex_type;
 
-	meta->UseCount++;
+		meta->UseCount++;
+	}
 
 	return meta->Asset.texture.ptr;
 }
@@ -349,15 +355,19 @@ void MatImport::ExportMeta(const aiMaterial* mat, const int& mat_id, std::string
 void MatImport::LoadMeta(const char* file, MetaMat* meta)
 {
 	meta->type = RT_Material;
-
+		
 	JSON_Value* meta_file = json_parse_file(file);
-	JSON_Object* meta_obj = json_value_get_object(meta_file);
+	if (meta_file != nullptr)
+	{
+		meta->res_found = true;
+		JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	meta->file = json_object_dotget_string(meta_obj, "File");
+		meta->file = json_object_dotget_string(meta_obj, "File");
 
-	// Free Meta Value
-	json_object_clear(meta_obj);
-	json_value_free(meta_file);
+		// Free Meta Value
+		json_object_clear(meta_obj);
+		json_value_free(meta_file);
+	}
 }
 
 void MatImport::ExportMetaTex(std::string path)
@@ -379,13 +389,17 @@ void MatImport::ExportMetaTex(std::string path)
 void MatImport::LoadMetaTex(const char* file, MetaTexture* meta)
 {
 	meta->type = RT_Texture;
-
+	
 	JSON_Value* meta_file = json_parse_file(file);
-	JSON_Object* meta_obj = json_value_get_object(meta_file);
+	if (meta_file != nullptr)
+	{
+		meta->res_found = true;
+		JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	meta->file = json_object_dotget_string(meta_obj, "File");
+		meta->file = json_object_dotget_string(meta_obj, "File");
 
-	// Free Meta Value
-	json_object_clear(meta_obj);
-	json_value_free(meta_file);
+		// Free Meta Value
+		json_object_clear(meta_obj);
+		json_value_free(meta_file);
+	}
 }

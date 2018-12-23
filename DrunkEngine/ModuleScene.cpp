@@ -35,10 +35,9 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	//LoadFBX("./Assets/Street environment_V01.FBX");
-	//LoadFBX("./Assets/Ogre.fbx");
-	//LoadFBX("./Assets/KSR-29 sniper rifle new_fbx_74_binary.fbx");
-	//LoadFBX("./Assets/Cube3d.fbx");
+
+	// Setup for Delivery of Assignment 3
+	//App->importer->LoadScene("./Assets/SceneAnim.drnk");
 
 	App->renderer3D->OnResize();
 

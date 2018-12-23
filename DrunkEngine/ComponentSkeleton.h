@@ -50,6 +50,8 @@ private:
 
 	int check_vecs;
 
+	std::vector<float> sums;
+
 public:
 	void SetBaseVals()
 	{

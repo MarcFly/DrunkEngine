@@ -27,18 +27,24 @@ void MeshImport::LinkMesh(DGUID fID, ComponentMesh* mesh)
 {
 	MetaMesh* res = (MetaMesh*)App->resources->Library.at(fID);
 
-	mesh->name = res->file;
+	if (res->res_found)
+	{
+		mesh->name = res->file;
 
-	if (!res->Asset.IsLoaded())
-		res->Asset.LoadToMem();
-	
+		if (!res->Asset.IsLoaded())
+			res->Asset.LoadToMem();
+
+
+		mesh->Material_Ind = res->Material_ind;
+		mesh->mat_ind = res->mat_ind;
+		res->UseCount++;
+
+	}
 	mesh->r_mesh = res->Asset.mesh.ptr;
-	mesh->Material_Ind = res->Material_ind;
-	mesh->mat_ind = res->mat_ind;
-	res->UseCount++;
-
-	mesh->SetMeshBoundBox();
 	mesh->UID = fID;
+	
+	if (mesh->r_mesh != nullptr)
+		mesh->SetMeshBoundBox();
 }
 
 ResourceMesh* MeshImport::LoadMesh(const char* file)
@@ -313,15 +319,19 @@ void MeshImport::LoadMeta(const char* file, MetaMesh * meta)
 	meta->type = RT_Mesh;
 
 	JSON_Value* meta_file = json_parse_file(file);
-	JSON_Object* meta_obj = json_value_get_object(meta_file);
+	if (meta_file != nullptr)
+	{
+		meta->res_found = true;
+		JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	meta->file = json_object_dotget_string(meta_obj, "File");
-	meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
-	meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
+		meta->file = json_object_dotget_string(meta_obj, "File");
+		meta->Material_ind = json_object_dotget_string(meta_obj, "Material_Ind");
+		meta->mat_ind = json_object_dotget_number(meta_obj, "mat_ind");
 
-	// Free Meta Value
-	json_object_clear(meta_obj);
-	json_value_free(meta_file);
+		// Free Meta Value
+		json_object_clear(meta_obj);
+		json_value_free(meta_file);
+	}
 }
 
 //------------------------------------------------------------------------------------------

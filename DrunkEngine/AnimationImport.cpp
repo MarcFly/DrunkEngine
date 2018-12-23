@@ -143,25 +143,28 @@ void AnimationImport::LinkAnim(DGUID fID, ComponentAnimation* anim)
 {
 	MetaAnimation* res = (MetaAnimation*)App->resources->Library.at(fID);
 
-	anim->name = res->file;
+	if (res->res_found)
+	{
+		anim->name = res->file;
 
-	if (!res->Asset.IsLoaded())
-		res->Asset.LoadToMem();
+		if (!res->Asset.IsLoaded())
+			res->Asset.LoadToMem();
+
+		if (anim->anims.size() == 0)
+		{
+			VirtualAnimation push;
+			push.end = res->duration;
+			push.tickrate = res->tickrate;
+			anim->anims.push_back(push);
+		}
+
+		anim->duration = res->duration;
+
+		res->UseCount++;
+	}
 
 	anim->r_anim = res->Asset.animation.ptr;
 	anim->UID = fID;
-
-	if (anim->anims.size() == 0)
-	{
-		VirtualAnimation push;
-		push.end = res->duration;
-		push.tickrate = res->tickrate;
-		anim->anims.push_back(push);
-	}
-
-	anim->duration = res->duration;
-
-	res->UseCount++;
 }
 
 ResourceAnimation* AnimationImport::LoadAnimation(const char* file)
@@ -283,15 +286,19 @@ void AnimationImport::LoadMeta(const char* file, MetaAnimation* meta)
 	meta->type = RT_Animation;
 
 	JSON_Value* meta_file = json_parse_file(file);
-	JSON_Object* meta_obj = json_value_get_object(meta_file);
+	if (meta_file != nullptr)
+	{
+		meta->res_found = true;
+		JSON_Object* meta_obj = json_value_get_object(meta_file);
 
-	meta->file = json_object_dotget_string(meta_obj, "File");
-	meta->duration = json_object_dotget_number(meta_obj, "duration");
-	meta->tickrate = json_object_dotget_number(meta_obj, "tickrate");
+		meta->file = json_object_dotget_string(meta_obj, "File");
+		meta->duration = json_object_dotget_number(meta_obj, "duration");
+		meta->tickrate = json_object_dotget_number(meta_obj, "tickrate");
 
-	// Free Meta Value
-	json_object_clear(meta_obj);
-	json_value_free(meta_file);
+		// Free Meta Value
+		json_object_clear(meta_obj);
+		json_value_free(meta_file);
+	}
 }
 
 //------------------------------

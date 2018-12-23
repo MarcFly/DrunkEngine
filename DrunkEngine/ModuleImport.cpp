@@ -173,6 +173,12 @@ void ModuleImport::ExportScene(const char* path)
 			{
 				skel_i->ExportMapSkeleton(scene, NodesWithSkeleton[i], Skeletons[i], i, scene->mRootNode, path);
 			}
+
+			if (Skeletons.size() > 1)
+			{
+				NodesWithSkeleton.clear();
+				Skeletons.clear();
+			}
 		}
 
 		// Export Animations

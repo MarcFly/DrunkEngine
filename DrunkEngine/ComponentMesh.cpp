@@ -83,6 +83,8 @@ void ComponentMesh::SetMeshBoundBox()
 void ComponentMesh::Draw()
 {
 	
+	glPushMatrix();
+	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
 
 	if (CheckMeshValidity())
 	{
@@ -117,11 +119,6 @@ void ComponentMesh::DrawMesh()
 	ResourceMesh* used_mesh = r_mesh;
 	if (deformable_mesh != nullptr)
 		used_mesh = deformable_mesh;
-	else
-	{
-		glPushMatrix();
-		glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
-	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -145,7 +142,7 @@ void ComponentMesh::DrawMesh()
 	{
 		LinkMat();
 
-		if (c_mat != nullptr)
+		if (c_mat != nullptr && c_mat->r_mat != nullptr)
 		{
 			Color c = c_mat->r_mat->default_print;
 			glColor4f(c.r, c.g, c.b, c.a);
@@ -178,40 +175,32 @@ void ComponentMesh::DrawMesh()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	if(deformable_mesh == nullptr)
-	{
-		glPopMatrix();
-	}
 }
 
 void ComponentMesh::DrawMeshWire() const
 {
-	glPushMatrix();
-	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
+	ResourceMesh* used_mesh = r_mesh;
+	if (deformable_mesh != nullptr)
+		used_mesh = deformable_mesh;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, r_mesh->id_vertex);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, used_mesh->id_vertex);
+	glVertexPointer(3, GL_FLOAT, 0, used_mesh->vertex);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_mesh->id_index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, used_mesh->id_index);
 
 	glColor3f(1, 1, 1);
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, r_mesh->num_index, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, used_mesh->num_index, GL_UNSIGNED_INT, NULL);
 
 	// Unbind Buffers
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glPopMatrix();
 }
 
 void ComponentMesh::DrawNormals() const
 {
-	glPushMatrix();
-	glMultMatrixf(this->parent->GetTransform()->global_transform.Transposed().ptr());
-
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
 
@@ -227,8 +216,6 @@ void ComponentMesh::DrawNormals() const
 	}
 	glColor3f(0, 1, 0);
 	glEnd();
-
-	glPopMatrix();
 }
 
 void ComponentMesh::CleanUp()
