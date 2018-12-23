@@ -70,12 +70,11 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 
 ### Skeletal Animation Sub-System
 As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.
-GIFS
-
-For a detailed explanation on our susbsystem and getting into our engine, refer to he following video:
-[![](https://img.youtube.com/vi/bZ9W4b0eMIY&feature=youtu.be/0.jpg)](https://www.youtube.com/watch?v=bZ9W4b0eMIY&feature=youtu.be)
 ![](https://media.giphy.com/media/9x5b92dJqSBvtiqYBQ/giphy.gif)
 ![](https://media.giphy.com/media/A7VJ37OYWXSTzRGHP1/giphy.gif)
+
+For a detailed explanation on our susbsystem and getting into our engine, refer to he following video:
+[![](https://img.youtube.com/vi/bNXV1bHX8Es&feature=youtu.be/0.jpg)](https://www.youtube.com/watch?v=bNXV1bHX8Es&feature=youtu.be)
 
 [**Link to Repo**][1]  
 [**Latest Release**][2] 
@@ -102,5 +101,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-[1]:
+[1]:https://github.com/MarcFly/DrunkEngine
 [2]:
