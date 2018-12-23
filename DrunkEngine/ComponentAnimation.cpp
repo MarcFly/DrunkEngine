@@ -188,18 +188,7 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 {
 	if (timer > anims[curr_animation].start + abs(anims[curr_animation].end - anims[curr_animation].start))
-	{
-		// Im sorry
-		if (curr_animation == 2)
-		{
-			curr_animation = 0;
-			prev_animation = 2;
-			phase = BlendPhase::Start;
-		}
 		timer = anims[curr_animation].start;
-		
-		
-	}
 
 	float4x4* curr_step = &curr_channel->curr_bone->last_anim_step;
 
@@ -229,6 +218,14 @@ void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 	if (curr_channel->num_scaling_keys > 1)
 	{
 		curr_channel->curr_bone->transform.SetTransformScale(step_scale.x, step_scale.y, step_scale.z);
+	}
+
+	// We are sorry
+	if (curr_animation == 2 && timer >= anims[curr_animation].end - 1)
+	{
+		curr_animation = 0;
+		prev_animation = 2;
+		phase = BlendPhase::Start;
 	}
 }
 
