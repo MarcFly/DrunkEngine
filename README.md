@@ -76,6 +76,10 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 - File management for the animation system.
 - Activate / Deactivate components.
 
+## SubSystems
+
+### 
+
 ### Skeletal Animation Sub-System
 As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.  
 
