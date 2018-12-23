@@ -7,6 +7,7 @@ DrunkEngine is the the result of developing a 3D Game Engine for our third year 
 This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you are able to save the scene and load it from the editor). It also includes an animation subsistem to load fbx with animations.
 
 Github Page - https://github.com/MarcFly/DrunkEngine
+Project Website - https://marcfly.github.io/DrunkEngine/
 
 ## Authors
 The people currently working in this engine are Andreu Sacasas and Marc Torres, currently 3rd Year students coursing Design and Game Development at CITM, a center abscribed to the UPC.
