@@ -69,7 +69,8 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 - Engine Time Management for Game and Editor mode.
 
 ### Skeletal Animation Sub-System
-As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.
+As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.  
+
 ![](https://media.giphy.com/media/9x5b92dJqSBvtiqYBQ/giphy.gif)
 ![](https://media.giphy.com/media/A7VJ37OYWXSTzRGHP1/giphy.gif)
 
@@ -102,4 +103,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 [1]:https://github.com/MarcFly/DrunkEngine
-[2]:
+[2]:https://github.com/MarcFly/DrunkEngine/releases
