@@ -1,7 +1,10 @@
 # DrunkEngine
 
+## About the Project
+DrunkEngine is the the result of developing a 3D Game Engine for our third year subject Game Engines. This is not a fully fledged game engine but holds core subsystems for building one.
+
 ## Info
-DrunkEngine is the the result of developing a 3D Game Engine for our third year subject of Game Engines. This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you will be able to save the scene and load it from the editor).
+This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you will be able to save the scene and load it from the editor).
 
 Github Page - https://github.com/MarcFly/DrunkEngine
 
@@ -63,7 +66,17 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 - GameObject Components in the Inspector.
 - Export assets to our own format (into a hidden "Library" folder in Game).
 - Reference counting for Resource Management
-- Start/Pause/Stop options on the editor.
+- Engine Time Management for Game and Editor mode.
+
+### Skeletal Animation Sub-System
+As part of the last assignment, a basic skeletal animation sub-system has been implemented. Currently it can handle single mesh skeletons with different animations. Animations can be created from a single timeline import, through the inspector and later revised with the animation panel or ingame.
+GIFS
+
+For a detailed explanation on our susbsystem and getting into our engine, refer to he following video:
+[![](https://img.youtube.com/vi/bZ9W4b0eMIY&feature=youtu.be/0.jpg)](https://www.youtube.com/watch?v=bZ9W4b0eMIY&feature=youtu.be)
+
+[**Link to Repo**][1]  
+[**Latest Release**][2] 
 
 ## MIT License
 
@@ -86,3 +99,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+[1]:
+[2]:
