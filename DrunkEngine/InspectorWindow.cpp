@@ -383,7 +383,7 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 					anim->anims[i].end = 0;
 				if (anim->anims[i].end > anim->duration - 1)
 					anim->anims[i].end = anim->duration - 1;
-				ImGui::DragInt((Labels + "Duration").c_str(), &anim->anims[i].end, 1,0, anim->duration - 1);
+				ImGui::DragInt((Labels + "Duration").c_str(), &anim->anims[i].end, 1, 0, anim->duration - 1);
 
 				ImGui::Text("Framerate: ");
 				ImGui::SameLine();
@@ -401,6 +401,13 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 					anim->anims[i].blend_time = 20;
 				ImGui::DragInt((Labels + "BlendTime").c_str(), &anim->anims[i].blend_time, 1, 1, 20);
 
+				ImGui::Text("Next Animation: ");
+				ImGui::SameLine();
+				ImGui::DragInt((Labels + "Next Animation").c_str(), &anim->anims[i].next_animation, 1, 0, anim->anims.size() - 1);
+				if (anim->anims[i].next_animation < 0)
+					anim->anims[i].next_animation = 0;
+				if (anim->anims[i].next_animation > anim->anims.size() - 1)
+					anim->anims[i].next_animation = anim->anims.size() - 1;
 			}
 		}
 
@@ -408,6 +415,7 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 		{
 			VirtualAnimation push;
 			push.tickrate = (--anim->anims.end())->tickrate;
+			push.next_animation = anim->anims.size();
 			anim->anims.push_back(push);
 		}
 	}

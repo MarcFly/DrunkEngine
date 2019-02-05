@@ -14,6 +14,7 @@ struct VirtualAnimation
 	int end = 0;
 	int tickrate = 1;
 	int blend_time = 1;
+	int next_animation = 0;
 };
 
 enum BlendPhase

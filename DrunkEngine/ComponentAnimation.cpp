@@ -169,7 +169,7 @@ void ComponentAnimation::BlendFrom(AnimChannel* curr_channel)
 		step_pos += Tprev_anim * (1 - blend_percentage);
 		curr_channel->curr_bone->transform.SetTransformPosition(step_pos.x, step_pos.y, step_pos.z);
 	}
-	//Rot (prob not working)
+	//Rot
 	if (curr_channel->num_rotation_keys > 1)
 	{
 		step_rot = Quat::Slerp(Rprev_anim, Rnew_anim, blend_percentage);
@@ -220,12 +220,11 @@ void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 		curr_channel->curr_bone->transform.SetTransformScale(step_scale.x, step_scale.y, step_scale.z);
 	}
 
-	// We are sorry
-	if (curr_animation == 2 && timer >= anims[curr_animation].end - 1)
+	if (timer >= anims[curr_animation].end - 1)
 	{
-		curr_animation = 0;
-		prev_animation = 2;
-		phase = BlendPhase::Start;
+		prev_animation = curr_animation;
+		curr_animation = anims[curr_animation].next_animation;
+		phase = BlendPhase::Start;	
 	}
 }
 
