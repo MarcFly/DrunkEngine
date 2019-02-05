@@ -355,7 +355,10 @@ void Inspector::AnimationInspector(ComponentAnimation* anim, const int& cmpt_id)
 				{
 					for (int j = i; j < anim->anims.size() - 1; j++)
 						anim->anims[j] = anim->anims[j + 1];
+					anim->curr_animation = 0;
+					anim->prev_animation = 0;
 					anim->anims.pop_back();
+					break;
 				}
 			}
 			ImGui::SameLine();
