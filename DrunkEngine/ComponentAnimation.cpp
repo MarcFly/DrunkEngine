@@ -211,7 +211,7 @@ void ComponentAnimation::AnimateSkel(AnimChannel* curr_channel)
 	//Rot
 	if (curr_channel->num_rotation_keys > 1)
 	{
-		curr_channel->curr_bone->transform.SetTransformRotation(curr_channel->curr_bone->permanent_local_rot * step_rot);
+		curr_channel->curr_bone->transform.SetTransformRotation(step_rot * curr_channel->curr_bone->permanent_local_rot);
 	}
 
 	//Scale
