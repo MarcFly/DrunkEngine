@@ -72,6 +72,7 @@ void ComponentAnimation::Load(const JSON_Object* comp)
 		push.end = json_object_get_number(obj, "end");
 		push.tickrate = json_object_get_number(obj, "tickrate");
 		push.blend_time = json_object_get_number(obj, "blend_time");
+		push.next_animation = json_object_get_number(obj, "next_anim");
 
 		anims.push_back(push);
 	}
@@ -109,6 +110,7 @@ void ComponentAnimation::Save(JSON_Array* comps)
 		json_object_dotset_number(curr_anim, "properties.end", anims[i].end);
 		json_object_dotset_number(curr_anim, "properties.tickrate", anims[i].tickrate);
 		json_object_dotset_number(curr_anim, "properties.blend_time", anims[i].blend_time);
+		json_object_dotset_number(curr_anim, "properties.next_anim", anims[i].next_animation);
 
 		json_array_append_value(anim_arr, append_anim);
 	}

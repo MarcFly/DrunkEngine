@@ -7,6 +7,7 @@ DrunkEngine is the the result of developing a 3D Game Engine for our third year 
 This release includes an editor where you can import a .FBX file, transform all its contents and make your own scenes (you are able to save the scene and load it from the editor). It also includes an animation subsistem to load fbx with animations.
 
 Github Page - https://github.com/MarcFly/DrunkEngine
+
 Project Website - https://marcfly.github.io/DrunkEngine/
 
 ## Authors
@@ -14,7 +15,9 @@ The people currently working in this engine are Andreu Sacasas and Marc Torres, 
 
 
 ## How to use it
-DrunkEngine will automatically load an .FBX file with a street and some houses with textures.
+DrunkEngine will automatically load an .FBX file with a street and some houses with textures and a basic animation to showcase the animation system.
+To test the animation blending you can press 1 on the keyboard to throw a punch or hold 2 to make a walking animation.
+
 It will export the files to our own format under a HIDDEN directory ./Library/
 
 To move around the space, you can orbit around something with Alt+LeftClick or move in first person using RightClick+WASD. If you wander off to far, don't worry, press F to focus again to the current model.
@@ -41,11 +44,6 @@ Currently game time is not used in any shape or form, but there is a structure p
 When saving a scene, it will be created automatically under an Assets folder inside the Executable directory.
 
 If you make a mess loading things, you can clear up the editor at Options->Delete Scene.
-
-## Innovation
-- World and Local transformations for gameobjects (only accesible through the inspector->transform window).
-- Input window in options to change the camera controls and the window shortcuts.
-- Managing Components through the inspector (activate/deactivate them).
 
 ## Each member's Work
 
