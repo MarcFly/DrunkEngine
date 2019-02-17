@@ -50,15 +50,15 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 ![](https://i.imgur.com/2GgGvr3.png)  
 ### Andreu Sacasas
 
-- Imput options.
+- Input options.
 - Frustum implementation (Editor camera + component Cameras & FOV).
-- Static System.
+- Static objects System.
 - KD-Tree + implemented it on frustum culling / mouse picking optimizations.
-- ImGuizmo.
+- Implementation of ImGuizmo.
 - World / Local transformations to GameObjs.
 - Event System.
 - Scene Viewer (Objs Tree + Selection).
-- Implementation of the skeletal animation system.
+- Implementation of the skeletal animation subsystem.
 
 ![](https://i.imgur.com/1uM1OJA.jpg)  
 ### Marc Torres
