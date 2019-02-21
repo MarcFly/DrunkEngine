@@ -53,7 +53,7 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 <details><summary>Input options.</summary>  
 <p>    
    
-TEXT  
+The input on the engine can be personalized and saved for future uses.  
 
 <a href="https://gyazo.com/9d995af0f8ce2298e3e03b468e906ea8"><img src="https://i.gyazo.com/9d995af0f8ce2298e3e03b468e906ea8.gif" alt="Image from Gyazo" width="300"/></a>  
 
@@ -62,7 +62,7 @@ TEXT
 <details><summary>Frustum implementation (Editor camera + component Cameras & FOV).</summary>  
 <p>  
   
-TEXT  
+All the cameras are components that work as frustums and there is a module for normal cameras and a "fake" one for the editor camera. As the window resizes, the FOV is automatically adjusted to the new proportions and all its values can be adjusted from the option panel.  
 
 Editor Camera:  
 <a href="https://gyazo.com/9d3a69bc0125d8a719edb56b7979ebd9"><img src="https://i.gyazo.com/9d3a69bc0125d8a719edb56b7979ebd9.gif" alt="Image from Gyazo" width="800"/></a>  
@@ -75,59 +75,70 @@ Component:
 <details><summary>Static objects System.</summary>  
 <p>  
  
-TEXT  
+The engine uses a Static system for the objects in it (as in Unity), and it is used to optimize rendering through the KD-Tree.  
 
 </p>  
 </details> 
 <details><summary>KD-Tree + implemented it on frustum culling / mouse picking optimizations.</summary>  
 <p>    
    
-TEXT  
+The KD-Tree divides the static objects of the scene into multiple nodes depending on the limit of objects per node and the maximum number of sub-divisions that the user gives.  
 
-Image  
+Each time an object is put to static the KD-Tree is created again, and it is used to optimize the frustum culling and the mouse pick of the user.  
+
+In this KD-Tree the objects in between nodes count as in both. To put an example of how it works, take a look into the white cut; as each node can only contain 2 objects (in this case), the white cut is dividing a node with 3 objects into 2 nodes with 2 objects each (one is repeated).  
+
+<a href="https://gyazo.com/affc10ab2196555ee641e2569850c09c"><img src="https://i.gyazo.com/affc10ab2196555ee641e2569850c09c.png" alt="Image from Gyazo" width="873"/></a>  
+<a href="https://gyazo.com/0d3da0596d6e2826c3af1f0670977f7e"><img src="https://i.gyazo.com/0d3da0596d6e2826c3af1f0670977f7e.png" alt="Image from Gyazo" width="825"/></a>
 
 </p>  
 </details> 
 <details><summary>Implementation of ImGuizmo.</summary>  
-<p>    
-   
-TEXT  
+<p>  
 
-Image  
+<a href="https://gyazo.com/615f75e43e10d6776ab8019328f159ac"><img src="https://i.gyazo.com/615f75e43e10d6776ab8019328f159ac.gif" alt="Image from Gyazo" width="484"/></a>  
 
 </p>   
 </details> 
 <details><summary>World / Local transformations to GameObjs.</summary>  
 <p>    
    
-TEXT  
+The objects can be transformed on local and/or world space. In this example the rotation of the whole scene is rotated 90º in the X-axis as you can see in the inspector.  
 
-Image  
+<a href="https://gyazo.com/8979f4158205b8f73996b8c6a22ee29c"><img src="https://i.gyazo.com/8979f4158205b8f73996b8c6a22ee29c.png" alt="Image from Gyazo" width="1270"/></a>  
+
+So, if we select a house and move it, it will transform diferently depending if we are on "world" or on "local".  
+
+<a href="https://gyazo.com/f9640517d440f0ee104c85a31c95a938"><img src="https://i.gyazo.com/f9640517d440f0ee104c85a31c95a938.gif" alt="Image from Gyazo" width="800"/></a>   
 
 </p>   
 </details> 
 <details><summary>Event System.</summary>  
 <p>  
    
-TEXT  
+I developed a subscription-based Event System to keep some order on our code. It is used mostly for the update of GameObjects (when transforming them) and for screen resizes.  
 
-Image  
+The module that detects a change on something important sends an specific event with information to the system and, at the start of the next cycle, it sends that information to all the modules that are subscribed to that particular event.  
 
 </p>   
 </details> 
 <details><summary>Scene Viewer (Objs Tree + Selection).</summary>  
 <p>    
    
-TEXT  
+Not much to say on this one.  
 
-Image  
+<a href="https://gyazo.com/0d8630719e114c1ba1649a385b1cf7ea"><img src="https://i.gyazo.com/0d8630719e114c1ba1649a385b1cf7ea.gif" alt="Image from Gyazo" width="800"/></a>  
 
 </p>  
 </details> 
 <details><summary>Implementation of the skeletal animation subsystem.</summary>  
 <p>    
    
-TEXT  
+Bones  
+
+Mesh  
+
+Animation System  
 
 Image  
 
