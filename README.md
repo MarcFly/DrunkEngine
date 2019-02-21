@@ -50,18 +50,89 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 ![](https://i.imgur.com/2GgGvr3.png)  
 ### Andreu Sacasas
 
-- <details><summary>Input options.</summary>
-<p>
-![](https://https://i.gyazo.com/9d995af0f8ce2298e3e03b468e906ea8.gif)
-</p>
-- Frustum implementation (Editor camera + component Cameras & FOV).
-- Static objects System.
-- KD-Tree + implemented it on frustum culling / mouse picking optimizations.
-- Implementation of ImGuizmo.
-- World / Local transformations to GameObjs.
-- Event System.
-- Scene Viewer (Objs Tree + Selection).
-- Implementation of the skeletal animation subsystem.
+<details><summary>Input options.</summary>  
+<p>    
+   
+TEXT  
+
+<a href="https://gyazo.com/9d995af0f8ce2298e3e03b468e906ea8"><img src="https://i.gyazo.com/9d995af0f8ce2298e3e03b468e906ea8.gif" alt="Image from Gyazo" width="300"/></a>  
+
+</p>  
+</details>  
+<details><summary>Frustum implementation (Editor camera + component Cameras & FOV).</summary>  
+<p>  
+  
+TEXT  
+
+Editor Camera:  
+<a href="https://gyazo.com/9d3a69bc0125d8a719edb56b7979ebd9"><img src="https://i.gyazo.com/9d3a69bc0125d8a719edb56b7979ebd9.gif" alt="Image from Gyazo" width="800"/></a>  
+
+Component:  
+<a href="https://gyazo.com/dc4f9ff165e5b1fddb1bf70b76f76960"><img src="https://i.gyazo.com/dc4f9ff165e5b1fddb1bf70b76f76960.gif" alt="Image from Gyazo" width="800"/></a>  
+
+</p>  
+</details>   
+<details><summary>Static objects System.</summary>  
+<p>  
+ 
+TEXT  
+
+</p>  
+</details> 
+<details><summary>KD-Tree + implemented it on frustum culling / mouse picking optimizations.</summary>  
+<p>    
+   
+TEXT  
+
+Image  
+
+</p>  
+</details> 
+<details><summary>Implementation of ImGuizmo.</summary>  
+<p>    
+   
+TEXT  
+
+Image  
+
+</p>   
+</details> 
+<details><summary>World / Local transformations to GameObjs.</summary>  
+<p>    
+   
+TEXT  
+
+Image  
+
+</p>   
+</details> 
+<details><summary>Event System.</summary>  
+<p>  
+   
+TEXT  
+
+Image  
+
+</p>   
+</details> 
+<details><summary>Scene Viewer (Objs Tree + Selection).</summary>  
+<p>    
+   
+TEXT  
+
+Image  
+
+</p>  
+</details> 
+<details><summary>Implementation of the skeletal animation subsystem.</summary>  
+<p>    
+   
+TEXT  
+
+Image  
+
+</p>  
+</details> 
 
 ![](https://i.imgur.com/1uM1OJA.jpg)  
 ### Marc Torres
