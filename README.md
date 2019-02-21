@@ -50,7 +50,10 @@ If you make a mess loading things, you can clear up the editor at Options->Delet
 ![](https://i.imgur.com/2GgGvr3.png)  
 ### Andreu Sacasas
 
-- Input options.
+- <details><summary>Input options.</summary>
+<p>
+![](https://https://i.gyazo.com/9d995af0f8ce2298e3e03b468e906ea8.gif)
+</p>
 - Frustum implementation (Editor camera + component Cameras & FOV).
 - Static objects System.
 - KD-Tree + implemented it on frustum culling / mouse picking optimizations.
