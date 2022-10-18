@@ -1,6 +1,6 @@
 #ifndef _GLOBALS_
 #define _GLOBALS_
-
+#define WINDOWS_IGNORE_PACKING_MISMATCH 1
 // Warning disabled ---
 #pragma warning( disable : 4577 ) // Warning that exceptions are disabled
 #pragma warning( disable : 4530 ) // Warning that exceptions are disabled
