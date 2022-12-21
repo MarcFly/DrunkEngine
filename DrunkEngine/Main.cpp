@@ -1,3 +1,5 @@
+#define WINDOWS_IGNORE_PACKING_MISMATCH
+
 #include <stdlib.h>
 #include "Application.h"
 #include "Globals.h"
